@@ -1,0 +1,442 @@
+Encoding is for maintaining data usability and can be reversed by employing the same algorithm that encoded the content, i.e. no key is used.
+
+Encryption is for maintaining data confidentiality and requires the use of a key (kept secret) in order to return to plaintext.
+
+Hashing is for validating the integrity of content by detecting all modification thereof via obvious changes to the hash output.
+
+Obfuscation is used to prevent people from understanding the meaning of something, 
+and is often used with computer code to help prevent successful reverse engineering and/or theft of a product’s functionality.
+
+
+==========================================================================================================================================================================================
+Maven==>BUild tool,project management tool===>dependency solved using pom.xml.
+
+Download it from apache.mavens==>
+
+1)first set m2_home  =>till where we install maven..in environment variable.
+2)set path==> so that it can be run from anywhere..add in path till bin.
+
+check via mvn-version   ///command to check
+
+a)add whatever u need in pom.xml
+
+b)now create a folder for your app wherever u want..
+-->go to cmd till path
+-->run mvn archetype:generate.                 // for first time. archetype  is template here.
+-->now choose a no for your archetype.         // archetype is nothing predefined structure or models for your project..
+-->now choose a no for your version.           // it will attatched with your archeetype.
+-->set groupId.                                // package name.  or company name
+-->artifactId.                                 //contextpath.   project name
+-->version no.                                 //by default 1.0 snapshot(development)
+-->packagename<==>groupId.
+
+c)now write any code..
+
+d)now go to path till pom.xml.
+
+e)mvn compile===>download all dependency and compile all java classes in directory.
+
+f)mvn package==>it will convert project into jar file.
+
+g)now check it by run in cmd ==>java -jar pathofjar
+
+h)maven different build phases..remeber new phase automatic called old phases.
+
+mvn validate==> it will check all thing is order//configuration etc
+mvn compile==>//we already know also run validate...target folder will be created with .class file.
+mvn test  ==>// it run test cases...
+mvn package==>to create package..
+mvn install==>install the package into local..and we can use jar anywhere. in other project.check with java -cp jar //.class ///running or not.
+mvn deploy==>deploy phase into remote-access.
+mvn clean==>which removes all classes and dependency..
+
+why maven is better than ant?
+
+*)Ant doesn't has formal conventions, so we need to provide information of the project structure in build.xml file.	
+Maven has a convention to place source code, compiled code etc. So we don't need to provide information about the project structure in pom.xml file.
+
+*)Ant is procedural, you need to provide information about what to do and when to do through code. You need to provide order.	
+Maven is declarative, everything you define in the pom.xml file.
+
+*)There is no life cycle in Ant.	
+There is life cycle in Maven.
+
+*)It is a tool box.	
+It is a framework.
+
+*)It is mainly a build tool.	
+It is mainly a project management tool.
+
+*)The ant scripts are not reusable.	
+The maven plugins are reusable.
+
+*)It is less preferred than Maven.	
+It is more preferred than Ant.
+
+
+
+========================================================
+if we want to run project on other server just add it in plugin under web.xml
+
+convert simple java application into maven.
+
+use configure--->convert into maven project--->add dependency manually.
+
+
+========================================================================
+maven module project --->it is child project of parent project.
+
+================================================================================
+
+maven dependency scopes-->
+
+Dependency scopes can help to limit transitivity of the dependencies and they modify classpath for different built tasks. Maven has 6 default dependency scopes.
+
+And it's important to understand that each scope – except for import – does have an impact on transitive dependencies.
+
+3.1. Compile
+This is the default scope when no other scope is provided.
+
+
+
+Dependencies with this scope are available on the classpath of the project in all build tasks and they're propagated to the dependent projects.
+
+More importantly, these dependencies are also transitive:
+In a computer program a direct dependency is functionality exported by a library, or API, or any software component that is referenced directly by the program itself. A transitive dependency is any dependency that is induced by the components that the program references directly. E.g. a call to a log() function will usually induce a transitive dependency to a library that manages the I/O to write the log message in a file.
+
+<dependency>
+    <groupId>commons-lang</groupId>
+    <artifactId>commons-lang</artifactId>
+    <version>2.6</version>
+</dependency>
+
+
+3.2. Provided
+
+This scope is used to mark dependencies that should be provided at runtime by JDK or a container, hence the name.
+
+A good use case for this scope would be a web application deployed in some container, where the container already provides some libraries itself.
+
+For example, a web server that already provides the Servlet API at runtime, thus in our project, those dependencies can be defined with the provided scope:
+
+
+
+<dependency>
+    <groupId>javax.servlet</groupId>
+    <artifactId>servlet-api</artifactId>
+    <version>2.5</version>
+    <scope>provided</scope>
+</dependency>
+The provided dependencies are available only at compile-time and in the test classpath of the project; what's more, they aren't transitive.
+
+3.3. Runtime
+The dependencies with this scope are required at runtime, but they're not needed for compilation of the project code. Because of that, dependencies marked with the runtime scope will be present in runtime and test classpath, but they will be missing from compile classpath.
+
+A good example of dependencies that should use the runtime scope is a JDBC driver:
+
+<dependency>
+    <groupId>mysql</groupId>
+    <artifactId>mysql-connector-java</artifactId>
+    <version>6.0.6</version>
+    <scope>runtime</scope>
+</dependency>
+
+3.4. Test
+This scope is used to indicate that dependency isn't required at standard runtime of the application, but is used only for test purposes. Test dependencies aren't transitive(indirect) and are only present for test and execution classpaths.
+
+The standard use case for this scope is adding test library like JUnit to our application:
+
+<dependency>
+    <groupId>junit</groupId>
+    <artifactId>junit</artifactId>
+    <version>4.12</version>
+    <scope>test</scope>
+</dependency>
+
+
+3.5. System
+system scope is much similar to the provided scope. The main difference between those two scopes is that system requires us to directly point to a specific jar on the system.
+
+It's worthwhile to mention that system scope is deprecated.
+
+The important thing to remember is that building the project with system scope dependencies may fail on different machines if dependencies aren't present or are located in a different place than the one systemPath points to:
+
+
+freestar
+<dependency>
+    <groupId>com.baeldung</groupId>
+    <artifactId>custom-dependency</artifactId>
+    <version>1.3.2</version>
+    <scope>system</scope>
+    <systemPath>${project.basedir}/libs/custom-dependency-1.3.2.jar</systemPath>
+</dependency>
+3.6. Import
+This scope was added in Maven 2.0.9 and it's only available for the dependency type pom. We're going to speak more about the type of the dependency in future articles.
+
+Import indicates that this dependency should be replaced with all effective dependencies declared in it's POM:
+
+<dependency>
+    <groupId>com.baeldung</groupId>
+    <artifactId>custom-project</artifactId>
+    <version>1.3.2</version>
+    <type>pom</type>
+    <scope>import</scope>
+</dependency>
+
+
+=================================================================================
+
+configure external dependency in maven==>
+
+Add lib folder to the src folder.
+
+Copy any jar into the lib folder. We've used ldapjdk.jar, which is a helper library for LDAP operations.
+
+ <dependency>
+         <groupId>ldapjdk</groupId>
+         <artifactId>ldapjdk</artifactId>
+         <scope>system</scope>
+         <version>1.0</version>
+         <systemPath>${basedir}\src\lib\ldapjdk.jar</systemPath>
+      </dependency>
+	  
+====================================================================================
+what is super pom?
+
+every pom.xml extend it.it has default configuration.which is shared by every pom.xml
+
+======================================================================================
+snapshot version---> it is development version.
+maven always check the new version of snapshot and build according to it in local.
+
+
+==========================================================================================
+setting.xml-->
+
+this have data like 
+local repository path
+alternate remote repository path
+authentication information etc.
+
+path-->
+maven path/conf/setting.xml
+
+
+it look like this-->
+
+  <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 https://maven.apache.org/xsd/settings-1.0.0.xsd">
+      <localRepository/>
+      <interactiveMode/>
+      <offline/>
+      <pluginGroups/>
+      <servers/>
+      <mirrors/>
+      <proxies/>
+      <profiles/>
+      <activeProfiles/>
+    </settings>
+	
+	localRepository: This value is the path of this build system’s local repository. The default value is ${user.home}/.m2/repository. This element is especially useful for a main build server allowing all logged-in users to build from a common local repository.
+	
+	
+interactiveMode: true if Maven should attempt to interact with the user for input, false if not. Defaults to true.
+
+offline: true if this build system should operate in offline mode, defaults to false. This element is useful for build servers which cannot connect to a remote repository, either because of network setup or security reasons.if true it will not download plugins.
+
+
+Plugin Groups
+This element contains a list of pluginGroup elements, each contains a groupId. The list is searched when a plugin is used and the groupId is not provided in the command line. This list automatically contains org.apache.maven.plugins and org.codehaus.mojo.
+
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 https://maven.apache.org/xsd/settings-1.0.0.xsd">
+  ...
+  <pluginGroups>
+    <pluginGroup>org.eclipse.jetty</pluginGroup>
+  </pluginGroups>
+  ...
+</settings>
+For example, given the above settings the Maven command line may execute org.eclipse.jetty:jetty-maven-plugin:run with the truncated command:
+
+mvn jetty:run
+
+
+Servers
+The repositories for download and deployment are defined by the repositories and distributionManagement elements of the POM. However, certain settings such as username and password should not be distributed along with the pom.xml. This type of information should exist on the build server in the settings.xml.
+
+
+
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 https://maven.apache.org/xsd/settings-1.0.0.xsd">
+  ...
+  <servers>
+    <server>
+      <id>server001</id>
+      <username>my_login</username>
+      <password>my_password</password>
+      <privateKey>${user.home}/.ssh/id_dsa</privateKey>
+      <passphrase>some_passphrase</passphrase>
+      <filePermissions>664</filePermissions>
+      <directoryPermissions>775</directoryPermissions>
+      <configuration></configuration>
+    </server>
+  </servers>
+  ...
+</settings>
+id: This is the ID of the server (not of the user to login as) that matches the id element of the repository/mirror that Maven tries to connect to.
+username, password: These elements appear as a pair denoting the login and password required to authenticate to this server.
+privateKey, passphrase: Like the previous two elements, this pair specifies a path to a private key (default is ${user.home}/.ssh/id_dsa) and a passphrase, if required. The passphrase and password elements may be externalized in the future, but for now they must be set plain-text in the settings.xml file.
+filePermissions, directoryPermissions: When a repository file or directory is created on deployment, these are the permissions to use. The legal values of each is a three digit number corresponding to *nix file permissions, e.g. 664, or 775.
+
+
+
+
+
+Proxies-->we will use it to bypass firewall setting.
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 https://maven.apache.org/xsd/settings-1.0.0.xsd">
+  ...
+  <proxies>
+    <proxy>
+      <id>myproxy</id>
+      <active>true</active>
+      <protocol>http</protocol>
+      <host>proxy.somewhere.com</host>
+      <port>8080</port>
+      <username>proxyuser</username>
+      <password>somepassword</password>
+      <nonProxyHosts>*.google.com|ibiblio.org</nonProxyHosts>
+    </proxy>
+  </proxies>
+  ...
+</settings>
+id: The unique identifier for this proxy. This is used to differentiate between proxy elements.
+active: true if this proxy is active. This is useful for declaring a set of proxies, but only one may be active at a time.
+protocol, host, port: The protocol://host:port of the proxy, separated into discrete elements.
+username, password: These elements appear as a pair denoting the login and password required to authenticate to this proxy server.
+nonProxyHosts: This is a list of hosts which should not be proxied. The delimiter of the list is the expected type of the proxy server; the example above is pipe delimited - comma delimited is also common.
+
+
+
+
+here main is profile--->we use it to build on different environments.
+
+Build profiles are majorly of three types.
+
+Type	        Where it is defined
+Per Project 	Defined in the project POM file, pom.xml
+Per User	    Defined in Maven settings xml file (%USER_HOME%/.m2/settings.xml)
+Global	        Defined in Maven global settings xml file (%M2_HOME%/conf/settings.xml)
+
+
+
+Now, under src/main/resources, there are three environment specific files -
+
+Sr.No.	File Name & Description
+1	
+env.properties
+
+default configuration used if no profile is mentioned.
+
+2	
+env.test.properties
+
+test configuration when test profile is used.
+
+3	
+env.prod.properties
+
+production configuration when prod profile is used.
+
+
+a)explicit Profile Activation
+In the following example, we will attach maven-antrun-plugin:run goal to test the phase. This will allow us to echo text messages for different profiles. We will be using pom.xml to define different profiles and will activate profile at command console using maven command.
+
+Assume, we've created the following pom.xml in C:\MVN\project folder.
+
+<project xmlns = "http://maven.apache.org/POM/4.0.0"
+   xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation = "http://maven.apache.org/POM/4.0.0
+   http://maven.apache.org/xsd/maven-4.0.0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+   <groupId>com.companyname.projectgroup</groupId>
+   <artifactId>project</artifactId>
+   <version>1.0</version>
+   <profiles>
+      <profile>
+         <id>test</id>
+         <build>
+            <plugins>
+               <plugin>
+                  <groupId>org.apache.maven.plugins</groupId>
+                  <artifactId>maven-antrun-plugin</artifactId>
+                  <version>1.1</version>
+                  <executions>
+                     <execution>
+                        <phase>test</phase>
+                        <goals>
+                           <goal>run</goal>
+                        </goals>
+                        <configuration>
+                           <tasks>
+                              <echo>Using env.test.properties</echo>
+                              <copy file="src/main/resources/env.test.properties"
+                                 tofile="${project.build.outputDirectory}
+                                 /env.properties"/>
+                           </tasks>
+                        </configuration>
+                     </execution>
+                  </executions>
+               </plugin>
+            </plugins>
+         </build>
+      </profile>
+   </profiles>
+</project>
+Now open the command console, go to the folder containing pom.xml and execute the following mvn command. Pass the profile name as argument using -P option.
+
+C:\MVN\project>mvn test -Ptest
+
+
+C:\MVN\project>mvn test -Pnormal
+
+C:\MVN\project>mvn test -Pprod                  //if we have other profile.
+
+
+
+
+
+
+
+*************************************************
+
+Profile Activation via Maven Settings
+Open Maven settings.xml file available in %USER_HOME%/.m2 directory where %USER_HOME% represents the user home directory. If settings.xml file is not there, then create a new one.
+
+Add test profile as an active profile using active Profiles node as shown below in example.
+
+<settings xmlns = "http://maven.apache.org/POM/4.0.0"
+   xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+   http://maven.apache.org/xsd/settings-1.0.0.xsd">
+   <mirrors>
+      <mirror>
+         <id>maven.dev.snaponglobal.com</id>
+         <name>Internal Artifactory Maven repository</name>
+         <url>http://repo1.maven.org/maven2/</url>
+         <mirrorOf>*</mirrorOf>
+      </mirror>
+   </mirrors>
+   <activeProfiles>
+      <activeProfile>test</activeProfile>
+   </activeProfiles>
+</settings>
+Now open command console, go to the folder containing pom.xml and execute the following mvn command. Do not pass the profile name using -P option. Maven will display result of test profile being an active profile.
+
+C:\MVN\project>mvn test
+
+
+
+========================================================================================
+for deep knowledge?
+https://www.youtube.com/watch?v=c6IfptPjKRM&list=PLzS3AYzXBoj8E3NjjWNjrrFjyexXIyZbL&index=25

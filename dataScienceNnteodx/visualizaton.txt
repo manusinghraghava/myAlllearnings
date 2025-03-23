@@ -1,0 +1,387 @@
+Visualization-->
+we use matplotlib for visualization
+
+first understand some concepts to draw graph in matplotlib-->
+a)first we need some white space to draw graph.
+b)we need axis for our graphs.x,y
+c)title xlabel and ylabel where we draw graph.
+d)legend  like sales ad profit.
+e)last is grid lines.
+
+so these are different components what we do we stack one component on other for view it from top.
+these all components are code .
+we have to mix and match the components and create the graph.
+
+code-->
+pip install matplotlib
+
+import matplotlib.pyplot as plt       // using pyplot from library
+dir(plt)                               // will give all methods
+
+
+a)now first understand plot function
+
+Plotting x and y points
+The plot() function is used to draw points (markers) in a diagram.
+
+By default, the plot() function draws a line from point to point.
+
+The function takes parameters for specifying points in the diagram.
+
+Parameter 1 is an array containing the points on the x-axis.
+
+Parameter 2 is an array containing the points on the y-axis.
+
+If we need to plot a line from (1, 3) to (8, 10), we have to pass two arrays [1, 8] and [3, 10] to the plot function.
+
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+xpoints = np.array([1, 8])       //remember these are x axis points not the (x,y) point
+ypoints = np.array([3, 10])
+
+plt.plot(xpoints, ypoints)
+plt.show()
+
+plt.plot(xpoints, ypoints, 'o')   // if want to use only marker not line
+-----------------
+
+
+Multiple Points
+You can plot as many points as you like, just make sure you have the same number of points in both axis.
+
+Example
+Draw a line in a diagram from position (1, 3) to (2, 8) then to (6, 1) and finally to position (8, 10):
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+xpoints = np.array([1, 2, 6, 8])
+ypoints = np.array([3, 8, 1, 10])      //length must be equal
+
+plt.plot(xpoints, ypoints)
+plt.show()
+
+
+-------------
+Default X-Points
+If we do not specify the points on the x-axis, they will get the default values 0, 1, 2, 3 (etc., depending on the length of the y-points.
+
+So, if we take the same example as above, and leave out the x-points, the diagram will look like this:
+
+Example
+Plotting without x-points:
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+ypoints = np.array([3, 8, 1, 10, 5, 7])
+
+plt.plot(ypoints)
+plt.show()
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+now creating components and plotting points-->
+
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+#data creating
+a= np.linspace(0,10,20)    #20 equivalent points between 0 to 10
+b= np.linspace(10,30,20)  #20 equivalent points between 20 to 30
+
+
+#graph space
+fig=plt.figure(figsize=(6,2))    // it will give u a fix size of 6 inch on x and 2 inch on y inside plt
+ax1=plt.subplot()                // it will create space where u can plot your points as it empty it will take all figsize
+
+ax1.plot(a)                      // passing y points x will be default
+ax1.plot(b)
+plt.show()                       // will show graphs
+
+----------------------------------------------------------------------------
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+#data creating
+a= np.linspace(0,10,20)    #20 equivalent points between 0 to 10
+b= np.linspace(5,0,20)  #20 equivalent points between 20 to 30
+
+#graph
+fig=plt.figure(figsize=(5,6))
+ax1=plt.subplot(221)
+ax2=plt.subplot(344)
+ax1.plot(a,linewidth=1.0,linestyle='-',color='k',alpha=1,marker='*')
+ax2.plot(b,linewidth=1.0,linestyle='--',color='r',alpha=0.4,marker='^')
+ax1.set(title='a-title')    // or use axi.title('a-title')
+ax2.set(title='b-title')
+plt.show()
+
+now points by point
+a)creating two datas
+b)we are creating a fix size of 5 inches on x and 6 inches on y-axis
+c)here we are creating two graphs by subplot
+d)but we can see some parametres in the subplot
+understand the parametre it is 221 means dividing the available space in (2,2) matrix and taking the first grid for our graph.
+same as 344 taking 4 th grid in 3*4 matrix
+now we are plotting points with some properties
+linewidth --> width of line
+linestyle --> what style should be used for lining
+alpha     --> it means transparent and opeque should be between 0 and 1 .....0 means transparent
+in last we are setting title for both graphs..
+
+----------------------------------------------------------------------------------
+multiple lines with 2d array
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+#data creating
+b= np.array([[1,2,3],[4,5,6],[7,8,9]])  
+fig=plt.figure(figsize=(6,2))
+ax1=plt.subplot()
+
+ax1.plot(b,marker='.')  // here x axis is default so 0,1,2
+plt.show()
+
+now-->
+as we have 3*3 matrix 
+1 2 3
+4 5 6
+7 8 9
+
+so line is divided per column (1,4,7)  (2,5,8) (3,6,9)   // three lines will be created
+and all three are associated with x axis as 0,1,2
+
+
+if b= np.array([[1,2],[4,5],[7,8]])
+
+so it 3*2 matrix so two lines only created..
+
+all ways remember per column there is a line which will work same as on data frame
+-------------------------------------------------------------------------------------------
+Different Different graphs-->
+ If the independent and dependent variables are numeric, use line diagrams or scattergrams; if only the dependent variable is numeric, use bar graphs; for proportions, use bar graphs or pie charts.
+-------------------------------------------------------------------
+StackPlot---> graph one over another  like a graph which shows how much time i am spending in which activity in a month daily,
+for day go to pie chart.
+
+#data creating
+a=np.array([1,2,3])
+b= np.array([[1,2,3],[4,5,6],[7,8,9]])
+fig=plt.figure(figsize=(6,2))
+ax1=plt.subplot()
+ax1.stackplot(a,b)                         //it will create stack graph
+plt.title('manu')                          // if single graph we can set title like this also
+plt.xlabel('edeer')                        // setting label for x axis
+plt.ylabel('cdef')
+plt.show()
+
+
+remember stacking of second grap starts with adding points on last graph
+
+-----------------------------------------------------------
+Bar Graph-->Bar graphs are one of the most common types of graphs and are used to show frequency data associated with the categorical variables. Matplotlib provides a bar() to make bar graphs which accepts arguments such as: categorical variables, their value and color.
+
+A bar graph may consist of either horizontal or vertical columns. The greater the length of the bars, the greater the value. They are used to compare a single variable value between several groups, such as the mean protein concentration levels of a cohort of patients and a control group.
+
+example-->
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+#data creating
+dict_name={1:'manu',2:'akasd',3:'shikha',4:'nanu',5:'shelly'}
+a=list(dict_name.keys())
+b= list(dict_name.values())
+fig=plt.figure(figsize=(6,2))
+ax1=plt.subplot()
+ax1.bar(a,b)                                      //it will create bar graph
+plt.title('manu')
+plt.xlabel('edeer')
+plt.ylabel('cdef')
+plt.show()
+
+---------------------------------------------------------------
+horizental bar-->
+ax1.barh(a,b,color='r')                             
+
+-----------------------------------------------------------------
+#scatter plot
+A scattergram is used to show the relationship between two variables and whether their values change in a consistent way, such as analyzing the relationship between the concentration levels of two different proteins
+
+#data creating
+a=[1,2,3,4,5]
+b=[6,7,8,9,10]
+c=[23,22,12,6,9]
+fig=plt.figure(figsize=(6,2))
+ax1=plt.subplot()
+ax1.scatter(a,b,c='r',s=120,edgecolor='k',marker='o',alpha=0.5)  /c=color,s=size,edgecolor=boundrycolor of marker
+ax1.scatter(a,c,c='y',s=150,edgecolor='g',marker='^',alpha=1)
+plt.title('manu')
+plt.xlabel('edeer')
+plt.ylabel('cdef')
+plt.grid(True)                         //make grid visible
+#ax1.bar_label(ax1.bar(a,b))
+plt.show()
+
+--------------------------------------------------------------------
+Histogram-->
+
+histogram first arrange the data in ascending order and also bins which is number of histogram to show in graph
+
+The histogram, also called a frequency distributions graph, is a specialized type of bar graph that resembles a column graph, but without any gaps between the columns. It is used to represent data from the measurement of a continuous variable. Individual data points are grouped together in classes to show the frequency of data in each class. The frequency is measured by the area of the column. These can be used to show how a measured category is distributed along a measured variable. These graphs are typically used, for example, to check if a variable follows a normal distribution, such as the distribution of protein levels between different individuals of a population.
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+#data creating
+a=[1,12,34,54,243,2,3,22,112,119,200,178,169,4,5]
+
+fig=plt.figure(figsize=(6,2))
+ax1=plt.subplot()
+ax1.hist(a,bins=10,histtype='bar',rwidth=0.9)                               //creating histogram with 10 bins
+plt.title('manu')
+plt.xlabel('edeer')
+plt.ylabel('cdef')
+
+#ax1.bar_label(ax1.bar(a,b))
+plt.show()
+
+rwidth /// is used for space between bars
+---------------------------------------------------------------------------------
+pie chart  /// it is type of percentage chart in a form of pie
+A pie chart shows classes or groups of data in proportion to the whole data set. The entire pie represents all the data, while each slice or segment represents a different class or group within the whole. Each slice should show significant variations. The number of categories should be generally limited to between 3 and 10.
+
+import numpy as np
+import matplotlib.pyplot as plt
+a=np.array([1,2,3,4,5])
+labels=['A','B','C','D','E']
+
+fig=plt.figure(figsize=(6,2))
+explode=(0,0.1,0,0,0)
+plt.pie(a,labels=labels,autopct='%0.1f%%',radius=2,shadow=True,explode=explode,startangle=180)
+plt.show()
+
+attribute-->
+labels---> whatever u pass will show on specific pie
+explode--> it will take a tuple which have elemts equal to size and explode it between 0 and 1...1 is highest
+autopct---> will show % on pie take this format//////0.1 defines to 1 decimal
+startangle--> it will make the anlge with the start position for 1 attribute in element.
+radius -== radius of pie in cm
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+from matplotlib import pyplot as plt
+from matplotlib import style
+
+style.use('ggplot')
+x = [16, 8, 10]
+y = [8, 16, 6]
+x2 = [8, 15, 11]
+y2 = [6, 15, 7]
+fig = plt.figure()
+plt.plot(x, y, 'r', label='line one', linewidth=5)
+plt.plot(x2, y2, 'm', label='line two', linewidth=5)
+plt.title('Epic Info')
+plt.ylabel('Y axis')
+plt.xlabel('X axis')
+plt.legend()
+                             // it will show label we define while while plotting otherwise not
+plt.grid(True, color='k',which='minor',axis=x)
+plt.show()  
+
+attribute in grid()4
+axis=x or y will show axis only of those axis
+which===type---> three types major,minor,both
+
+in case of minor we need to call another method
+plt.minoronticks()
+-------------------------------------------------------------------
+axes and add_axes method in matplotlib.
+
+it is same as subplot(212)      //// but we cannot add or append axes in it
+
+Axes is a flexible and easy-to-use class of the Matplotlib that helps produce multiple sub-plots under a single set of axes
+
+axes([left, bottom, width, height])     // it will create a plot starting with left,bottom to width,height
+
+we can also add axes in our figure-->
+axes=fig.add_axes([left, bottom, width, height]) ///
+
+if we add it again it will take first axes as staring point....
+
+but remember than we have plot using axes object later not the plt or subplot
+
+axes.plot(a,b)
+
+---------------------------------------------------------------------------
+
+adjust the origin(0,0) to another point using xlim() and ylim()
+
+plt.xlim(start,end)    // to adjust x axis
+plt.ylim(start,end)    // to adjust y axis    we can use these function to fetch current position by passing no parametre.
+
+------------------------------------------------------------------------------
+adjusting the legend location-->
+
+plt.legend(loc='upper left',ncol=2)   /// check codes online
+
+ncol is legends column ///default is 1 or we can create per line 
+
+-------------------------------------------------------------------------------
+plotting using pandas
+
+one way-->
+
+import pandas as pd
+import matplotlib.pyplot as plt
+
+df = pd.read_csv('data.csv')
+
+df.plot(kind = 'scatter', x = 'Duration', y = 'Calories')
+
+plt.show()
+
+
+----------
+other way--->
+
+import pandas as pd
+import matplotlib.pyplot as plt
+
+df = pd.read_csv('data.csv')
+
+x= df['column_name'].tolist()
+y= df['column_name'].tolist()
+
+plt.plot(x,y)
+plt.show()
+
+-----------------------------------------------------
+boxplot-->
+when we use describe on data frame we can see min , max , mean etc...
+for this type of purpose we use boxplot
+
+ax1=plt.subplot()
+ax1.boxplot(data,showmeans=True)    /// it will show mean of the data in form of boxplot
+
+violinplot-->
+it is same as boxplot just use violinplot instead of boxplot
+
+example-->
+import numpy as np
+import matplotlib.pyplot as plt
+
+x=[1,3,5,7,89,12,1,3,12,34,54,2,12,34]
+y=np.arange(0,34,2).tolist()
+z=np.arange(6,34,3).tolist()
+data=list([z,y,z])
+print(data)
+plt.violinplot(data,showmeans=True)
+plt.show()
+
+-------------------
+===================================

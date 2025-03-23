@@ -1,0 +1,1902 @@
+Sql-->
+password-->SA/MAnv12@3april2023
+
+SQL stands for Structured Query Language which is a standard language for accessing and manipulating
+ databases.
+ 
+Types of command-->
+a)DQL ---> Data query language---->select
+b)DDL ---> Data definition language ----->create alter
+c)DML ---> Data manipulation language ---->insert update
+d)DCL ---> Data Control Language ---->grant, revoke
+
+here fields are column and records are row..
+
+creating database --->
+
+CREATE DATABASE database_name;
+USE database_name;                    // to use it
+drop database_name;                   // deleting database
+
+one file is created databasename_log.ldf   //it is for checking logs
+--------------------------------------------
+comments use /* */  or -- for single line
+
+---------------------------------------------
+Schema ----> logical representation of database
+by default dbo is default user and have admin access.and also schema with created with same name.
+if we donot created another schema by default dbo is default schema.
+schema is here like package to store similiar tables.
+and also we can map users to schema for good security.
+if we dont use any schema while cxreating table it will go to dbo. 
+
+CREATE SCHEMA schemaname
+   [AUTHORIZATION ownername]
+GO
+SQL Server utilities interpret GO as a signal that they should send the current batch of Transact-SQL statements to an instance of SQL Server
+
+Example –
+CREATE SCHEMA geeks_sch;
+GO 
+
+
+To select SQL Server SCHEMA :
+To list all schema in the current database, use query as shown below :
+
+SELECT  *
+FROM sys.schemas 
+
+
+---------------------------------------------
+
+CONSTRAINT ---->
+ Rules for the data in a table can be specified using SQL constraints.The kinds of data that can be entered
+ into a table are restricted by constraints. This validates the reliability and accuracy of the data in the table
+ 
+NOT NULL - prevents a column from having a NULL value.
+UNIQUE - ensure that each value in a column is unique.
+PRIMARY KEY - A combination of a NOT NULL and UNIQUE.
+FOREIGN KEY - A field or column used to create a connection between two tables is known as a foreign key.
+CHECK - check whether the values in a column satisfy a particular requirement.
+DEFAULT - Sets a default value for a column in the absence of a value
+
+------------------------------------------------
+Data Types-->
+int,bigint,smallint,tinyint,decimal,char,varchar,text(sentences),date(dd-mm-yyyy),time(HH:mm:ss),year(YYYY)
+
+CHAR(Size)	It is used to specify a fixed length string that can contain numbers, letters, and special characters. Its size can be 0 to 255 characters. Default is 1.
+
+VARCHAR(Size)	It is used to specify a variable length string that can contain numbers, letters, and special characters. Its size can be from 0 to 65535 characters.
+
+image	It is also a variable width Binary string data type. Its size can be up to 2GB.   //sql
+
+-----------------
+A byte is a group of 8 bits. A bit is the most basic unit and can be either 1 or 0. A byte is not just 8 values between 0 and 1, but 256 (28) different combinations (rather permutations) ranging from 00000000 via e.g. 01010101 to 11111111 . Thus, one byte can represent a decimal number between 0(00) and 255.
+-----------------
+BIT(Size)	It is an integer type that allows us to store 0, 1, and NULL values.. The default value is 1 and size of 1 BYTE.
+
+TINYINT     It allows us to store whole numbers from 0 to 255. size is also 1 byte
+
+SMALLINT    It allows us to store whole numbers between -32768 to 32767.2 bute
+
+INT	It is used for the integer value. Its signed range varies from -2147483648 to 2147483647 and unsigned range varies from 0 to 4294967295. 4  byte
+
+BIGINT      8 byte
+
+DECIMAL(size, d)	It is used to specify a fixed point number. Its size parameter specifies the total number of digits. The number of digits after the decimal parameter is specified by d parameter. The maximum value for the size is 65, and the default value is 10. The maximum value for d is 30, and the default value is 0.
+
+FLOAT(p)	It is used to specify a floating point number. MySQL used p parameter to determine whether to use FLOAT or DOUBLE. If p is between 0 to24, the data type becomes FLOAT (). If p is from 25 to 53, the data type becomes DOUBLE().
+
+money	It allows to store monetary or currency values.
+
+
+BOOL	It is used to specify Boolean values true and false. Zero is considered as false, and nonzero values are considered as true.
+
+------------------------
+Float stores an approximate value and decimal stores an exact value. In summary, exact values like money should use decimal, and approximate values like scientific measurements should use float.
+------------------------
+This data type allows us to define the full range of Unicode character sets encoded in the UTF-16 character set. 
+Unicode is an international character encoding standard that provides a unique number for every character across languages and scripts, making almost all characters accessible across platforms, programs, and devices.
+
+Recall that UTF-8 encodes each ASCII character in just one byte. UTF-16 must encode these same characters in either two or four bytes. This means that an English text file encoded with UTF-16 would be at least double the size of the same file encoded with UTF-8
+
+nchar	It is a fixed width Unicode string data type. Its size can be up to 4000 characters.
+nvarchar	It is a variable width Unicode string data type. Its size can be up to 4000 characters.
+
+-------------------------
+Date and time -->
+
+date	It is used to store dates in SQL Server. By default, its format is YYYY-MM-DD, and its value is 1900-01-01.
+
+datetime	It is used to store date and time with fractional seconds. Its default value is 1900-01-01 00:00:00. Its accuracy is in the increment of .000, .003, or .007 seconds. It is recommended to avoid this data type and use datetime2 instead.
+
+--------------------------------------------------------------------------------------------------------------
+
+Table-->
+a) create
+
+We should provide a primary key column for each table. It can have single or multiple columns. Usually, we use the first column as a primary key and then other columns. If we define only one primary key column in a table, we should use the PRIMARY KEY keywords. Otherwise, it is advised to define a PRIMARY KEY as a table constraint. A column can have single or multiple constraints, such as CHECK, UNIQUE, and NOT NULL.
+
+CREATE TABLE [database_name.][schema_name.]table_name (     database//schema are optional
+    column_definition1,    
+    column_definition2,    
+    ........,    
+    table_constraints    
+);  
+
+ It consists of SQL commands which is used to define the database schema.
+Syntax – create table table_name(field datatype constraints)
+
+Sample Problem Statement -
+Write a query to create the Store Details table with
+following constraints :
+1. Store Column As Primary Key
+2. Store_name Column As Not Null
+3. Sales Column As Check
+4. Order_no Column As Unique
+5. Store_location Column As Default Constraint With
+Default Value As Bangalore
+6. City Column as Varchar
+7. Pincode as int
+
+
+Create table Store_Details(
+ Store int primary key, 
+ Store_Name varchar(200) not null,
+ Sales int check(Sales>20),
+ Order_No int unique,
+ Store_Location varchar(200) Default'Bangalore', 
+ City varchar(200),
+ pincode int);
+ 
+ 
+we can also create table from other table using select into -->
+
+SELECT age,name                           //fields u need
+    INTO student2                         // new table automatically create
+  FROM student                            //old table
+  
+it will also copy data from second table
+---------------------------------------------------------------
+SELECT
+*
+FROM
+information_schema.tables;   // to see all tables in database and their fields to see tables on db/schema
+
+or
+
+USE YourDBName
+GO 
+SELECT *
+FROM sys.Tables
+GO
+
+
+ 
+----------------------------------------------------------------
+b)delete table 
+
+DROP TABLE [IF EXISTS] [database_name.][schema_name.]table_name;  
+
+The IF EXIST is an optional clause indicating the table will be deleted only if it already exists in the database.
+
+drop table Store_Details;
+
+truncate table table_name   // to make table empty
+-----------------------------------------------------------------
+Insert data in table--->
+
+example-->
+insert into Student (name,dob,age)
+values('manvendra' ,'12-12-2021',15),      // always remember dob is in bracket also
+('shelly' ,'12-1-2021',15)
+
+INSERT statement in SQL Server is used for adding records in a table within the specified database. SQL Server performs insertion operation in two ways within a single query:
+
+Add data in a single row
+Add data in multiple rows
+
+INSERT INTO [database_name].[dbo].[table_name]    
+(column_name1, column_name2, ... )    
+VALUES    
+(value1, value2, ... );   
+
+CREATE TABLE dbo.Student(    
+    Id INT IDENTITY PRIMARY KEY,        //IDENTITY is AUTO_INCREMENT
+    Name VARCHAR(65) NOT NULL,    
+    Gender VARCHAR(20),    
+    Age INT,    
+    Marks INT   
+ )   
+ 
+INSERT INTO Student     
+VALUES ('Jolly Evans', 'Female', 28, 475),  
+('Alan Simmons', 'Male', 32, 405),  
+('Laura Bennet', 'Female', 30, 435);  
+
+
+-->Sometimes, we want to store records without giving all column's names. In that case, we can use the following statement where we specify only partial fields. All unspecified fields will add NULL value except the identity column.
+
+INSERT INTO Student (Name, Gender)     
+VALUES ('Diego Bennet', 'Male');  
+
+INSERT with SELECT statement:
+SQL Server also allows us to insert records from one table into another table using the INSERT INTO SELECT statement. Suppose we want to insert 'Student' table data into 'Student_info'. We can do this by using the following statement:
+
+INSERT INTO Student_info                     //inserting values into student_info from student..
+SELECT Name, Gender, Marks FROM Student; 
+
+----------------------------------------
+if we are using IDENTITY constraint it is difficult to insert any value into it but we can do in three steps.
+
+SET IDENTITY_INSERT table_name ON;  
+Let's execute the following statements to insert a value for the identity column in the Student table:
+
+INSERT INTO Student (Id, Name, Gender, Age, Marks )  
+VALUES (9, 'Maria Smith', 'Feale', 32, 465);  
+After executing this statement, we can see that the statement is executed correctly.
+
+SET IDENTITY_INSERT table_name OFF;  
+
+-----------------------------------------
+Update data in table-->
+
+UPDATE [database_name].[ schema_name].table_name       
+SET column1 = new_value1,     
+        column2 = new_value2, ...      
+[WHERE Clause]    
+
+
+UPDATE Student         //tablename
+SET Marks = 492        //updated value
+WHERE Name = 'Alan Simmons';     //on given condition..
+
+
+update with joins --->
+
+update prod                     //using alias
+set prod.productname='manu'
+from product as prod            // use from
+join
+supplier as sup
+on sup.Id=prod.SupplierId
+where sup.id > 28               // where in last
+
+
+-----------------------------------------
+delete data in table--->
+
+DELETE FROM [javatpoint].[dbo].[STUDENT]  
+      WHERE ID =3;  
+
+
+delete with join also need a alias like update
+
+delete prod
+from product as prod
+join
+supplier as sup
+on sup.Id=prod.SupplierId
+where prod.productname='manu'	  
+-----------------------------------------
+
+In SQL Server, DELETE TOP statement is used to delete the records from a table and limit the number of records deleted regarding a fixed value or percentage.
+
+Syntax:
+
+DELETE TOP (top_value) [ PERCENT ]   
+FROM [database_name].[dbo].[table_name]  
+[WHERE conditions];   
+
+TOP (top_value): It is used to delete the top number of rows in the result set based on top_value. For example, TOP(10) would delete the top 10 rows matching the delete criteria.
+
+PERCENT: It is optional. It is used to delete the percentage of of top rows. For example, TOP(10) PERCENT would delete the top 10% of the records matching the delete criteria.
+
+
+DELETE TOP(2)  
+FROM [javatpoint].[dbo].[Employees]  
+WHERE salary >= 20000;  
+
+
+---------------------------------------------
+---------------------------------------------
+ALTER TABLE---->
+
+ALTER command in SQL Server is used to make modifications in an existing table. These alterations can be adding a column, deleting a column, changing the size, modifying the data type, adding or removing indexes, and adding or deleting constraints in a table definition. It also allows us to rename and rebuild partitions and disable and enable constraints and triggers. 
+
+a)SQL Server Add New Column
+A database developer several times need to add a new column to the existing table. They can do this by using the ALTER TABLE ADD COLUMN command. It will always add the new column at the last position in the table. The syntax to add a new column is given below:
+
+ALTER TABLE table_name  ADD column_name data_type column_constraints;
+
+If we want to add more than one column, we can use the following syntax:
+
+ALTER TABLE table_name     
+    ADD column_name1 column_definition,  
+    column_name2 column_definition;    
+Example
+
+
+alter table manu.Student
+add dob date,
+city varchar(20)
+
+Suppose we want to add a new column 'Phone_number' into the Student table. We can do this by using the below command:
+
+ALTER TABLE Student ADD Phone_number VARCHAR(20) NOT NULL;  
+
+or
+
+alter table student2
+add phone varchar(20) not null default '9981367458'; 
+
+
+b)SQL Server Delete Column
+We can also use the ALTER command to remove single or multiple columns from the table. SQL Server provides the ALTER TABLE DROP COLUMN statement to delete the existing column from the table. To do this, we can use the following syntax:
+
+ALTER TABLE table_name  DROP COLUMN column_name;   
+
+ALTER TABLE Student DROP COLUMN Phone_number;  
+
+
+c)SQL Server Modify Column Data Type
+We can also use the ALTER command to change the column's data type into the specified table. SQL Server provides the ALTER TABLE ALTER COLUMN statement to modify the column data type. We can do this by using the following syntax:
+
+ALTER TABLE table_name ALTER COLUMN column_name new_data_type(size);  
+
+ALTER TABLE [Student] ALTER COLUMN Gender NVARCHAR(10);  
+
+
+d)Add Constraint on the Column
+We can also use the ALTER command to add or remove the constraints into the specified table. SQL Server provides the ALTER TABLE ADD CONSTRAINT statement for adding a constraint to the specified column. The following syntax illustrates this alteration:
+
+ALTER TABLE table_name  
+ADD CONSTRAINT [constraint_name] PRIMARY KEY ([column_name])  
+
+Suppose we want to add a PRIMARY KEY constraint on the Id column into the Student table. We can do this by using the below statement:
+
+ALTER TABLE Student ADD CONSTRAINT PrimaryKey PRIMARY KEY (Id); 
+alter table marks
+example-->
+add constraint fk_student_studentid foreign key(student_id) references manu.student(id) 
+
+
+e)Drop Constraint on the Column
+SQL Server provides the ALTER TABLE DROP CONSTRAINT statement for removing constraints from the specified column. The following syntax illustrates this alteration:
+
+ALTER TABLE table_name DROP CONSTRAINT [constraint_name]  
+
+ALTER TABLE Student DROP CONSTRAINT PrimaryKey;  
+
+-------------------------------------
+Add a NOT NULL Constraint to a NULLABLE Column
+We can also change the nullable column into a NOT NULL column. To do this, we first need to update the NULL to non-null and then add the NOT NULL constraint to the column.
+
+Example
+
+The Age column of the Student table allows us to store null values. If we want to change it from null to NOT NULL, we must update NULL to non-null first using the below statement:
+
+UPDATE Student SET Age = '' WHERE Age IS NULL;  
+Now, we can add the NOT NULL constraint using the below statement:
+
+ALTER TABLE Student ALTER COLUMN Age VARCHAR (10) NOT NULL;  
+
+
+--------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------
+View In Sql Server---->
+A view is a database object that has no values. It is a virtual table, which is created according to the result set of an SQL query. However, it looks similar to an actual table containing rows and columns. Therefore, we can say that its contents are based on the base table. It is operated similarly to the base table but does not contain any data of its own. Its name is always unique, like tables. The views differ from tables as they are definitions that are created on top of other tables (or views). If any changes occur in the underlying table, the same changes reflected in the views also.
+
+
+
+The primary use of view in SQL Server is to implement the security mechanism. It prevents users from seeing specific columns and rows from tables. It only shows the data returned by the query that was declared when the view was created. The rest of the information is completely hidden from the end-user.
+
+CREATE VIEW view_name AS    
+SELECT column1, column2, ...    
+FROM table_name    
+WHERE condition;     
+In this syntax, the view_name indicates the name of a view. It should be unique. The SELECT statement chooses columns from the source table. The WHERE is an optional clause specifying the conditions that must be met for the records to be included in the VIEW.
+
+
+
+CREATE VIEW course_enrolled  
+AS   
+SELECT first_name, last_name, course, amount_paid   
+FROM Student AS S   
+INNER JOIN Fee AS F  
+ON S.admission_no = F.admission_no;  
+We can verify the view data using the SELECT statement as below:
+
+SELECT * FROM course_enrolled;  
+
+whatever we change in view or in table will affect each other.
+remember if we have a join while creating view , we can update one table at one time otherwise it will throw error.
+
+------------
+
+
+ALTER VIEW Statement
+
+Suppose we want to add one more column named 'city' in the above-created view course_enrolled. To do this, we need to use the statements as follows:
+
+ALTER VIEW course_enrolled  
+AS                                      // it is important
+SELECT first_name, last_name, course, city, amount_paid   
+FROM Student AS S   
+INNER JOIN Fee AS F  
+ON S.admission_no = F.admission_no;  
+
+
+deleting view-->
+
+DROP VIEW [IF EXISTS] schema_name.view_name;  
+Suppose you want to delete a view course_enrolled, we can do this as follows:
+
+DROP VIEW course_enrolled  
+===========================================================================================================================
+Operators and clause in sql--->
+
+1)	=	         It specifies equal symbol.
+2)	<>	         It specifies not equal symbol.
+3)	!=	         It specifies not equal symbol.
+4)	>	         It specifies greater than symbol.
+5)	>=	         It specifies greater than or equal symbol.
+6)	<	         It specifies less than symbol.
+7)	<=	         It specifies less than or equal symbol.
+8)	!>	         It specifies not greater than symbol.
+9)	!<	         It specifies not less than symbol.
+10)	IN ( )	     It matches a value in a list.
+11)	NOT	         It is used to negate a condition.
+12)	BETWEEN	     It is used to specify within a range (inclusive) value.
+13)	IS NULL	     It specifies null value.
+14)	IS NOT NULL	 It specifies non-null value.
+15)	LIKE	     It specifies pattern matching with % and _
+16)	EXISTS	     It specifies that the condition is met if subquery returns at least one row.
+
+some other operator example-->
+
+a)UNION
+
+In SQL Server, the UNION operator is used to combine the result-set of two or more SELECT statements.
+
+SELECT expression1, expression2, ... expression_n  
+FROM tables  
+[WHERE conditions]  
+UNION        
+SELECT expression1, expression2, ... expression_n  
+FROM tables  
+[WHERE conditions];   
+
+union will give distinct values, so if u want repeated value u can go for union all.
+
+SELECT id, name, salary  
+FROM [javatpoint].[dbo].[Employees]  
+WHERE salary >= 15000  
+UNION  
+SELECT id, name, salary  
+FROM [javatpoint].[dbo].[Employee2]  
+
+-----------------------------------------------------------------------------------------
+b)intersect is opposite of union will give those values which are same no union...
+In SQL Server, the INTERSECT operator is used to fetch the records that are in common between two SELECT statements or data sets. If a record exists in one query and not in the other, it will be omitted from the INTERSECT results.
+
+Mandatory conditions for INTERSECT operation
+The number of expressions in both SELECT statements must be same.
+The corresponding columns in each of the SELECT statements must have similar data types.
+The INTERSECT operator fetch only common records the SELECT statements.
+
+SELECT name  
+FROM [javatpoint].[dbo].[Employees]  
+INTERSECT  
+SELECT name  
+FROM [javatpoint].[dbo].[Employee2];   
+
+-----------------------------------------------------------------------------------------
+EXCEPT --->
+It is used to combine two SELECT statements and returns rows from the first SELECT
+statement that are not returned by the second SELECT statement. In other terms, EXCEPT
+returns only rows, which are not available in the second SELECT statement.
+
+Syntax:
+Select Column_Names From Table_Name1
+Where Condition;
+EXCEPT
+Select Column_Names From Table_Name2
+Where Condition;
+
+-----------------------------------------------------------------------------------------
+c)IN, NOT IN
+
+SELECT *  
+FROM [javatpoint].[dbo].[Employees]  
+WHERE name NOT IN ('Mahesh', 'Lily', 'Rahul');   
+
+SELECT *  
+FROM [javatpoint].[dbo].[Employees]  
+WHERE name IN ('Mahesh', 'Lily', 'Rahul');   
+--------------------------------------------------------------------------------------------
+BETWEEN-->
+The SQL Server BETWEEN operator is used to retrieve values within a specified range in a SELECT, INSERT, UPDATE, or DELETE statement.
+
+BETWEEN operator with Numeric Value
+Retrieve all employees from table "Employees" where id is between 7 and 13.
+
+SELECT *  
+FROM [javatpoint].[dbo].[Employees]  
+WHERE id BETWEEN 7 AND 13;   
+
+--------------------------------------------------------------------------------------------
+LIKE-->work on regex
+
+SQL Server LIKE condition or operator is used to perform pattern matching. It is used with WHERE clause and SELECT, INSERT, UPDATE and DELETE statement.
+
+%	Represents zero or more characters	bl% finds bl, black, blue, and blob
+_	Represents a single character	h_t finds hot, hat, and hit
+[]	Represents any single character within the brackets	h[oa]t finds hot and hat, but not hit
+^	Represents any character not in the brackets	h[^oa]t finds hit, but not hot and hat
+-	Represents any single character within the specified range	c[a-b]t finds cat and cbt
+
+All the wildcards can also be used in combinations!
+
+Here are some examples showing different LIKE operators with '%' and '_' wildcards:
+
+LIKE Operator	Description
+WHERE CustomerName LIKE 'a%'	Finds any values that starts with "a"
+WHERE CustomerName LIKE '%a'	Finds any values that ends with "a"
+WHERE CustomerName LIKE '%or%'	Finds any values that have "or" in any position
+WHERE CustomerName LIKE '_r%'	Finds any values that have "r" in the second position
+WHERE CustomerName LIKE 'a__%'	Finds any values that starts with "a" and are at least 3 characters in length
+WHERE ContactName LIKE 'a%o'	Finds any values that starts with "a" and ends with "o"
+
+Let's use % wildcard with SQL Server LIKE condition. Here we retrieve all of the students from "Student" table whose name begins with 'L'.
+
+SELECT *  
+FROM [javatpoint].[dbo].[Student]  
+WHERE name LIKE 'L%';   
+
+---------
+SELECT *  
+FROM [javatpoint].[dbo].[Student]  
+WHERE name LIKE 'Aj[ie]et%';  
+Note:
+It will return all students whose name is 5 characters long, where the first two characters is 'Aj' and the last two characters is 'et', and the third character is either 'i' or 'e'. So in this case, it would match on either 'Ajiet' or 'Ajeet'.
+
+--------------------------------------------------------------------------------------------
+EXISTS-->
+
+The EXISTS operator is used to test for the existence of any record in a subquery.
+
+The EXISTS operator returns TRUE if the subquery returns one or more records.used with where clause always
+
+here without join we can also check the items of both table-->
+
+SELECT SupplierName
+FROM Suppliers
+WHERE EXISTS (SELECT ProductName FROM Products WHERE Products.SupplierID = Suppliers.supplierID AND Price < 20);  //corelated
+
+Suppliers  is one table and Products is another table.
+
+The following SQL statement returns TRUE and lists the suppliers with a product price less than 20:
+
+it will return those suppliername which are present in products table and price> 20
+
+it is like join but we cannot fetch other table data in select here like joins.
+
+example-->
+
+select * from Product
+where exists(select * from supplier where product.SupplierId = Supplier.Id and Supplier.id>5)
+
+it will give all those results from product table who having supplierid > 5
+
+--------------------------------------------------------------------------------------------
+d)NOT
+
+SELECT *  
+FROM [javatpoint].[dbo].[Employees]  
+WHERE name IS NOT NULL;   
+
+SELECT *  
+FROM [javatpoint].[dbo].[Employees]  
+WHERE name NOT LIKE 'M%';   
+
+SELECT *  
+FROM [javatpoint].[dbo].[Employees]  
+WHERE id NOT BETWEEN 8 AND 13;   
+
+SELECT *  
+FROM [javatpoint].[dbo].[Employees]  
+WHERE NOT EXISTS (SELECT *  
+                  FROM [javatpoint].[dbo].[Employee2]  
+                  WHERE Employees.name = Employee2.name  
+                  OR Employees.salary = Employee2.salary);  
+
+if it return no result in query it will return data else empty	//always co relation is there in exists
+
+select pname from studies as s where not exists(select pname from software as sw where sw.pname=s.pname)
+
+for every pname for studies it will check is it available on software and return only those records which are not
+present in software		.	  
+===========================================================================================================================
+
+CLAUSES--->
+
+a)SQL Server DISTINCT Clause
+In SQL Server, DISTINCT clause is used to remove duplicates from the table. The DISTICT clause is only used with SELECT statement.
+
+Syntax:
+
+SELECT DISTINCT expressions  
+FROM [database_name].[dbo].[table_name]  
+[WHERE conditions];   
+
+---------------------------------------------------
+b)GROUP BY Clause
+SQL Server GROUP BY clause is used to collect data across multiple records and group the results by one or more columns. It is used with SELECT statement.
+
+Syntax:
+
+SELECT expression1, expression2, ... expression_n,   
+aggregate_function (expression)  
+FROM tables  
+[WHERE conditions]  
+GROUP BY expression1, expression2, ... expression_n;  
+Parameter explanation
+expression1, expression2, ... expression_n: These expressions are not encapsulated within an aggregate function and must be included in the GROUP BY clause.
+
+aggregate_function: It can be a function such as SUM, COUNT, MIN, MAX, or AVG functions.
+
+always these function will give result on group like in a group who is having max , min value.
+
+tables: The tables that you wish to retrieve records from. There must be at least one table listed in the FROM clause.
+
+WHERE conditions: It is optional. The conditions that must be met for the records to be selected.
+
+
+The SQL GROUP BY Statement
+The GROUP BY statement groups rows that have the same values into summary rows, like "find the number of customers in each country".
+
+The GROUP BY statement is often used with aggregate functions (COUNT(), MAX(), MIN(), SUM(), AVG()) to group the result-set by one or more columns.
+
+SELECT COUNT(CustomerID), Country     // have to select attribute also on which we are doing group by..
+FROM Customers
+GROUP BY Country;
+
+the group by with join-->>
+if we are making join and selecting values from both table we have to use groupby on both table fields--
+
+example-->
+
+select ed.departmentid , d.departmentname,
+max(salary)
+from employeedetails as ed
+join department as d
+on d.departmentid=ed.departmentid
+group by ed.departmentid , d.departmentname            
+
+
+----------------------------------------------------------------------------------
+Grouping set --> it is used by group by when we want result of different groups together
+
+example--> in employee table we can group by gender , or we can group by city or both
+
+select avg(salary),gender from employees group by gender  // it will give av salary of all gender
+select avg(salary),city from employees group by city  // it will give av salary of all city
+select avg(salary),gender,city from employees group by gender,city  // it will give av salary of all gender,city
+select avg(salary) from employees                                   // give total avg salary
+
+what if we want all these results together here picture comes with groupings set
+select avg(salary),gender,city from employees group by
+grouping sets(
+(gender),
+(city),
+(gender,city),
+()                        //empty denotes total
+)
+
+but it will give unordered result if we want a ordered reult then we use grouping here
+
+select avg(salary),gender,city from employees group by
+grouping sets(
+(gender),
+(city),
+(gender,city),
+()                        //empty denotes total
+)
+order by grouping(city),grouping(gender)
+
+//it will give first combination result , than city,than gender in last total ...u can verify by null value
+----------------------------------------------------------------------------------
+CUBE and ROLLUP
+
+cube is combination of groupset
+in above example if we use cube here it will give same result
+
+select avg(salary),gender,city from employees group by gender,city with cube
+//here it will break all posible group set as possible on gender and city which is equivalent to same above grouping set.
+
+rollup is also same but it will give combination on only parent...
+select avg(salary),gender,city from employees group by gender,city with rollup
+
+it will give result of
+gender city,
+gender
+and total    but not city here
+----------------------------------------------------------------------------------
+
+WHERE Clause
+The WHERE clause in SQL Server is used to filter records from the table. It is an optional clause that is used to limit the number of rows returned by the query. We can also say that this clause specifies a condition to return only those records that fulfill the defined conditions. The WHERE clause can also work with the UPDATE and DELETE query.
+
+SELECT column_list  
+FROM table_name  
+WHERE search_condition;  
+
+------------------------------------------------------------------------------------
+
+ORDER BY
+An ORDER BY clause is used to arrange the table's data in ascending or descending order based on the given column or list of columns. 
+
+SELECT column_lists   
+FROM table_name   
+WHERE conditions    
+ORDER BY column_name [ASC | DESC];  
+
+SELECT name, occupation, salary  
+FROM employee_info  
+ORDER BY salary, name;  
+
+
+using with group by-->
+
+SELECT movie_name, SUM((guest_total + 12) * ticket_cost) 
+AS total_revenue
+FROM movie_theater 
+GROUP BY movie_name 
+ORDER BY total_revenue;      // can also done on custom attribute
+-----------------------------------------------------------------------
+
+HAVING
+The HAVING clause in SQL Server is used to specify the search condition for a group or an aggregate. It can only work with the SELECT statement and is usually used with the GROUP BY clause.
+
+SELECT name, SUM(working_hours) AS "Total working hours"    
+FROM employee_info    
+GROUP BY name    
+HAVING SUM(working_hours) > 6;  // here we can use it on aggregrate functions but we cannot use where
+
+--------------------------------------------------------------------------
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Joins in sql-->
+
+By using joins, you can retrieve data from two or more tables based on logical relationships betweenthe tables. Joins indicate how SQL Server should use data from one table to select the rows in
+another table.
+
+types-->
+a)inner join / join
+b)left
+c)right
+d)full outer / full 
+
+every join we will get combined column for both tables
+
+INNER JOIN returns the records that have matching values in both tables
+SELECT * FROM store1 INNER JOIN store2 ON store1.Store=Store2.Store WHERE Avg_WS>50000
+if second table dont have any refrence of first table it will return common records....
+example --> we have 10 employess with department ids and 2 with non departments....
+when we make join on employee and department we will get record of only 10students....(intersect type)
+
+LEFT JOIN returns all records from the left table, and the matching records from the right table.
+SELECT * FROM store1 LEFT JOIN store2 ON store1.Store=Store2.Store WHERE Avg_WS<50000
+example-->
+in above exaple we will get all 12 employee records where department name will show null for rest of 2.
+
+Right JOIN returns all records from the right table, and the matching records from the left table
+SELECT * FROM store1 RIGHT JOIN store2 ON store1.Store=Store2.Store WHERE Avg_WS<50000
+
+FULL JOIN also known as FULL OUTER JOIN which returns all records when there is a match in left or right tablerecords
+and null values where values are not present
+
+SELECT Store2.Store, Store1.Avg_CPI,
+store1.Avg_Fuel_P, Store2.Avg_WS
+FROM Store1 FULL OUTER JOIN
+store2 ON store1.Store=Store2.Store
+WHERE Avg_WS BETWEEN 10000 AND
+40000
+
+
+CROSS JOIN--> this is the join where we dont have any common column.
+
+example-->
+select employeeid,departmentid from employee
+cross join department                             // here we dont have relation in any of table
+
+the output will sizeoffirsttable * sizeofsecondtable
+----------------------------------------------------------
+
+===========================================================================================================================
+keys in sql-->
+
+a)Primary Key
+SQL Server Primary key is a single field or combination of fields that is used to uniquely define a record. Any field of a primary key cannot contain a null value. A table can have only one primary key.
+
+You can define a primary key either in a CREATE TABLE statement or an ALTER TABLE statement.
+
+CREATE TABLE table_name  
+(   
+  column1 datatype [ NULL | NOT NULL ],  
+  column2 datatype [ NULL | NOT NULL ],  
+  ...  
+  CONSTRAINT constraint_name PRIMARY KEY (column1, column2, ... column_n)  
+);   
+Example:
+
+Create a table "cricketers" where "cricketer_id" is a primary key.
+
+CREATE TABLE cricketers  
+( cricketer_id INT PRIMARY KEY,  
+  last_name VARCHAR(50) NOT NULL,  
+  first_name VARCHAR(50) NOT NULL,  
+  salary MONEY  
+);   
+
+CREATE TABLE cricketers2  
+( cricketer_id INT,  
+  last_name VARCHAR(50) NOT NULL,  
+  first_name VARCHAR(50) NOT NULL,  
+  salary MONEY,  
+  CONSTRAINT cricketers2_pk PRIMARY KEY (cricketer_id)    //we can give any name to primarykey
+);   
+
+You can use an ALTER TABLE statement to create a primary key only on the column or columns that are already defined as NOT NULL.
+
+If a column of a table has NULL values, you cannot add a primary key without dropping and recreating the table.
+
+ALTER TABLE table_name  
+ADD CONSTRAINT constraint_name PRIMARY KEY (column1, column2, ... column_n);  
+
+
+In sql we have to enable the primary key-->
+
+ALTER INDEX constraint_name ON table_name  //as primary key use as index
+REBUILD;   
+
+ALTER INDEX cricketers2_pk ON [javatpoint].[dbo].[cricketers2]  
+REBUILD;   
+
+Disable Primary key
+ALTER INDEX statement is used to disable a primary key in SQL Server database.
+
+Syntax:
+
+ALTER INDEX constraint_name ON table_name  
+DISABLE
+
+ALTER TABLE table_name  
+DROP CONSTRAINT constraint_name;     /// to delete primary /foreign key
+
+----------------------------------------
+
+Foreign Key
+In SQL Server, foreign key is used to enforce referential integrity within your SQL Server database. It specifies that a value in one table must also appear in another table.
+
+The referenced table is called parent table while the table having foreign key is called child table. The foreign key in the child table will generally reference a primary key in the parent table.
+
+A foreign key can be created using either a CREATE TABLE statement or an ALTER TABLE statement.
+
+CREATE TABLE products  
+( product_id INT PRIMARY KEY,  
+  product_name VARCHAR(50) NOT NULL,  
+  category VARCHAR(25)  
+);  
+CREATE TABLE inventory  
+( inventory_id INT PRIMARY KEY,  
+  product_id INT NOT NULL,  
+  quantity INT,  
+  min_level INT,  
+  max_level INT,  
+  CONSTRAINT fk_inv_product_id  
+    FOREIGN KEY (product_id)      ///creating foreign key with refrence
+    REFERENCES products (product_id)  
+);  
+
+// we can provide null value while inserting data in refrence table
+
+alter table OrderItem
+   add constraint FK_ORDERITE_REFERENCE_ORDER foreign key (OrderId)
+      references "Order" (Id)
+	  
+
+ALTER TABLE inventory  
+CHECK CONSTRAINT fk_inv_product_id;      //enable is different than primary key
+
+ALTER TABLE table_name  
+NOCHECK CONSTRAINT fk_name;              // disable foreign key
+
+
+DELETE CASCADE: When we create a foreign key using this option, it deletes the referencing rows in the child table when the referenced row is deleted in the parent table which has a primary key.
+
+UPDATE CASCADE: When we create a foreign key using UPDATE CASCADE the referencing rows are updated in the child table when the referenced row is updated in the parent table which has a primary key.
+
+CONSTRAINT fk_name  
+    FOREIGN KEY (child_col1, child_col2, ... child_col_n)  
+    REFERENCES parent_table (parent_col1, parent_col2, ... parent_col_n)  
+    [ON DELETE {NO ACTION | CASCADE | SET NULL | SET DEFAULT} ]  
+    [ON UPDATE {NO ACTION | CASCADE | SET NULL | SET DEFAULT} ]   
+);
+
+
+ALTER TABLE [dbo].[States]  WITH CHECK ADD  CONSTRAINT [FK_States_Countries] FOREIGN KEY([CountryID])
+REFERENCES [dbo].[Countries] ([CountryID])
+ON UPDATE CASCADE
+ON DELETE CASCADE
+GO
+ 
+ALTER TABLE [dbo].[States] 
+CHECK CONSTRAINT [FK_States_Countries]
+GO  	  
+===========================================================================================================================
+Functions in sql-->
+
+a)MIN Function
+The MIN() function in SQL Server is a type of aggregate function. It is used to get the minimum or smallest value of a specified column or expression.
+
+SELECT MIN ( DISTINCT aggregate_expression)    
+FROM table_name(s)    
+[WHERE conditions];  
+
+NOTE: The MIN() function ignores NULL values.
+
+SELECT MIN(Quantity) AS "Minimum Quantity" FROM ProductQty;  
+
+opposite is max()
+
+like this we have sum(),AVG(),COUNT()
+
+
+mod function -=->
+
+select distinct city from station where mod(ID,2)=0 order by city asc
+
+select * from marks where student_id%2=0   // sql server use this
+
+
+String functions--->
+
+a)UPPER()               ----->convert result in uppercase
+b)LOWER()               ----->convert result in lowercase
+c)LTRIM()               ----->remove extra space from left side
+d)RTRIM()               ----->remove extra space from right side
+e)REPLACE()             ----->replace(string,substringwhichhastoreplaced,substringfromwhichhasttobereplace)
+f)SUBSTRING()           ----->same as othermethods but startindex here is 1...and all are inclusive
+g)REVERSE()             ----->reverse the input string in query
+h)TRIM()                ----->Combination from ltrim and rtrim.
+i)LEN()                 ----->length of a string.
+j)RIGHT()               -----> like a substring from right end need one extra argument for number of characters 
+
+Example-->replace('manu','a','i')--->minu
+substring('manu',1,3)     ---------->man   index 1 and we want 3 characters
+substring('manu',2,1)     ---------->a     index 2 and we want 1 characters
+right('manu',2)           ---------->nu    2 characters from right.
+
+select concat(prof1,'-',prof2) from programmer   //concating in sql
+
+
+k)---->STUFF()--->it is used to insert one string into another..also replacing the other string
+syntax-->
+stuff(string,indexfromwherewehavetoinsert,ifwewanttoreplacesomecharacter,stringtobeinserted)
+select stuff('manvendra',5,2,'singh')  //manvsinghdra 
+select stuff('manvendra',5,5,'singh')  //manvsingh
+l)STRING_AGG(column,seperator)   //it is like join
+
+select string_agg(firstname,'-') from employess
+manu-shelly-anki-voda
+
+
+Date function--->
+DAY()            ----->  fetch date from given date in sql format should be in yyyy-MM-dd     give dd
+MONTH()          ----->  fetch month from given date in sql format should be in yyyy-MM-dd
+YEAR()           ----->  fetch year from given date in sql format should be in yyyy-MM-dd
+DATEADD()        ----->  three parametres interval , no of days to be add or date , date value
+DATEDIFF()       ----->  three parametres interval(optional) , start date ,end date
+DATENAME()        -----> parametres interval , date value
+GETDATE()        ----->  give current date
+
+example-->
+dateadd(dd,5,'2024-11-03')                // will give 2024-11-08
+
+for interval dd for days , mm for month ,yy for year
+
+select Month(GETDATE())   --> 01
+
+select DATENAME(weekday,'2023-05-02')      // tuesday
+select DATENAME(mm,'2023-05-02')      // may 
+
+
+
+Mathematical functions-->
+
+a)POWER()   ---->  select power(2,3)--> 2*2*2==8
+b)ABS()     ---->  select abs(-100) ---> 100  it will make -ve value as positive
+c)FLOOR()   ---->  select floor(3.7)   --->3       one low integer value
+d)CEILING() ---->  select ceiling(3.7) --->4       one high int value.
+
+------------------------------------------------
+Window Function--->
+
+1)ROW_NUMBER()--->it returns the serial number of row order by specific row.
+
+example--> we want incremental order of rows according to highest salary
+
+select ROW_NUMBER()
+OVER(order by salary  desc),*                   //it is mandatory to use over() with row_number() and orderby clause
+from 
+employees 
+
+
+2)RANK()-->it is same as row_number but it will create same rank for same values...and next rank will decide on no.s of past
+select RANK()
+OVER(order by salary  desc),*                   //it is mandatory to use over() with rank() and orderby clause
+from 
+employees 
+
+
+3)DENSE_RANK()-->it is same as rank() but it will not jump sequence like it.
+select DENSE_RANK()
+OVER(order by salary  desc),*                   //it is mandatory to use over() with dense_rank() and orderby clause
+from 
+employees 
+
+
+4)ISNULL(value,ifvalue is null what should be the default value)
+
+one function same as isNULL-->COALESCE
+here we can define multiple values
+select coalesce(firstname,lastname,'notavailable')
+it will check both the column than will print not available,,,if value is present in any column it will print value
+always firstvalue is preferred
+
+
+5)Ntile(size)-----> it is used to divide the table in different group and sequence them..
+
+select ntile(3) over(order by salary asc) as ntileid,*
+from employees
+
+it will divide table into 3 parts after arrange  it on ascending order on salary.
+
+
+-------------------------------------------------------------
+partition by --> this is a clause which will be used by row_number,rank,dense_rank,ntile in over() before order by,,,
+
+it is like group by and row number will work on different groups.
+
+select ROW_NUMBER()
+OVER(partition by departmentid order by salary  desc),*                   //it is mandatory to use over() with row_number() and orderby clause
+from 
+employees 
+
+
+so here-->
+a)group data accoriding to ids.
+b)first sql sort the data in salary ascending order
+c)for different group row_number() will generated in sequence from 1.
+
+example-->
+
+
+we can use  where we want to find third heighest or fourth highest
+example-->
+SELECT TOP 1 salary 
+FROM 
+    (SELECT TOP 3 salary 
+     FROM Table_Name 
+     ORDER BY salary DESC) AS Comp 
+ORDER BY salary ASC
+----------------------------------------------------------------------------------------------------------
+write a query in which a employee salary is greater than avg(salary) of his department
+
+select * from employees as outer where salary >
+(
+select avg(salary) from employees as inner where outer.departmentid=inner.departmentid
+)
+
+//nice logic
+as department which ever will pass for row work as join for inner
+always inner query execute first remember ////////////}}}}}}}}}}}}}}::::::::::::::$$$$$$$$$$$$
+----------------------------------------------------------------------------------------------------------
+User defined function-->
+
+scalar--> return single value
+table valued ----> fn which will return multiple rows
+----------
+a)create a fn which will take employee as parametre and return its salary-->
+
+create FUNCTION udf_find_salary_by_employee        //naming conventions
+(
+@Employeeid INT                                    // paramtere shoul be with @name TYPE
+)
+RETURNS INT                                        // return type
+as
+BEGIN                                              // like {}
+
+DECLARE @salary int                                // declaring local variable
+
+select @salary=salary from employee where id = @Employeeid                //fetching data into local varaible 
+
+return @salary                                                            // returning local variable
+END
+
+calling function-->
+select dbo.udf_find_salary_by_employee(1000)
+--------------------
+
+we can also initialize local variable with some value
+
+DECLARE @salary int   =10
+select @salary  // give 10
+
+altering existing function
+
+
+alter FUNCTION udf_find_salary_by_employee        //naming conventions
+(
+@Employeeid INT,
+@abcid INT                                    // paramtere shoul be with @name TYPE
+)
+RETURNS INT                                        // return type
+as
+BEGIN                                              // like {}
+
+DECLARE @salary int                                // declaring local variable
+
+select @salary=salary from employee where id = @Employeeid  and abcid=@abcid              //fetching data into local varaible 
+
+return @salary                                                            // returning local variable
+END
+
+
+-------------------------------------------------------------------------------------
+Table valued functions-->
+
+al the syntax is same just in return use 
+
+returns table
+
+and we dont use begin and end here just we use return here 
+example-->
+
+create function udf_find_student_name_bystudent(
+@id int
+)
+returns table
+as
+return
+select * from manu.Student where student_id=@id;
+
+select * from dbo.udf_find_student_name_bystudent(2)
+
+==============================================================================================================
+Procedure--->
+syntax is little bit same as function but procedure dont have any return type.
+
+create procedure procedure_name
+(
+// useer defined parametres
+)
+as
+begin
+//ourcode
+end
+
+calling procedure-->
+exec procedure_name [parametres cooma separated]                   //dont need dbo here
+write a store procedure which will accept some parametre and insert data in employee table-->
+
+create procedure usp_insert_data_employee
+(
+@empname varchar(10),
+@empsalary double(4,2),
+@empcity varchar(10),
+)
+as
+begin
+insert into employees(name,salary,city) values (@empname,@empsalary,@empcity)
+select "data uploaded successfully"
+end
+
+calling-->
+
+exec usp_insert_data_employee 'manu',23.89,'gwalior'
+
+if we need data from other table we can use 
+
+Declare @variable
+select @variable=variable from table where userparametre=@userparametre
+
+
+-------------------------------------------------------
+if else-->
+
+declare @myname varchar(10)='manu'
+
+if(@myname is not null)                          //normal
+begin
+select 'value is present'
+end
+else
+begin
+select 'value is not present'
+end
+
+
+// we can also use if else without begin and end.
+------------------------------------
+Advance Differences between Stored Procedure and Function in SQL Server. The procedure allows SELECT as well as DML(INSERT/UPDATE/DELETE) statement in it whereas Function allows only SELECT statement in it. Procedures cannot be utilized in a SELECT statement whereas Function can be embedded in a SELECT statement.
+==============================================================================================================
+Exception handeling -->
+
+this is to handle run time exception 
+
+begin try
+select 1+'A'                               
+end try 
+begin catch
+select ERROR_MESSAGE(),ERROR_LINE() /// or we can give our message also
+end catch
+
+ERROR_PROCEDURE()// it will give the name of error in which procedure comes
+==============================================================================================================
+Transaction-->
+
+when we have a join and we need to insert data in both the table or neither of them get inserted with data.
+
+keywords used-->
+begin tran   // to begin the transaction
+commit tran  // when the transaction is ok persist the data in table
+rollback  tran   // it will revert the last changes on error
+rollback is not possible if the transaction got committed...
+
+example-->
+
+writing a procedure in proper format-->
+1)we will create a error table common for all procedures...
+
+create table error_log
+(
+errorMessage varchar(200),
+procedureName varchar(200),
+[lineNo] int,
+createdDate datetime
+)
+
+2)now we will create a procedure in which we will insert marks only when we are success to insert student data.
+
+create procedure usp_insert_student_data
+(
+@student_id int,
+@student_name varchar(23),
+@subject_name varchar(10)
+)
+as
+begin
+begin try
+begin tran                                          //transaction begin
+insert into manu.student(student_id,name)
+values(@student_id,@student_name);
+
+select 'data inserted into student table'
+
+insert into marks(student_id,subject_name)
+values(@student_id,@student_name);
+commit tran                                        // always commit in last
+end try
+begin catch
+rollback tran                                      // rollback in case of error
+insert into error_log
+values(ERROR_MESSAGE(),ERROR_PROCEDURE(),ERROR_LINE(),GETDATE())
+end catch
+end
+
+
+==============================================================================================================
+ternary in sql server
+iif(expression,ontrue,onfalse)
+
+if marks = sst return true else false-->
+
+select *,iif(subject_name='sst','true','false') from marks
+
+select iif(year(convert(date,getdate()))=2023,'true','false')
+
+-------------------------------------------------------------------------------------------------------------
+convert function for sql -->
+
+convert(datatype,columnname,stylecode)
+
+datatype--> which data type in which  we have to convert
+column--> which column we have to convert
+stylecode---> some specific code written in sql check on google
+
+example--> we have to convert date in specif format
+check format for google style code
+
+convert(varchar(100),getgate(),108)    // it will change date in varchar format
+convert(varchar(100),getgate(),108)    // it will change date in varchar format
+
+CONVERT(date, GETDATE())       //normal conversion
+
+===============================================================================================================
+TRIGGERS-->
+special kind of stored procedure but it get automatically executed...
+
+3 type of triggers we have--> 
+DML:
+a)insert
+b)update
+c)delete
+
+
+syntax-->
+
+create trigger trigger_name on table
+after operation
+as
+begin
+//logic
+end
+
+create trigger trigger_marks on marks
+after update
+as
+begin
+select 'data upadete';
+end
+
+accessing data in trigger-->using magic table-->
+
+we have two magic tables-->
+a)INSERTED:
+b)DELETED:
+
+we can use all data whatever we do operation by these tables
+--------------------
+example-->
+log all the data into a table whenever we insert any data in marks table
+
+create table marks_log
+(
+student_id int,
+student_log_marks varchar(206),
+created_date date
+)
+
+create trigger trigreer_marks_insert on marks
+after insert
+as 
+begin
+declare @emp_id varchar(20)
+declare @marks  varchar(20)
+
+select @emp_id=student_id,@marks=subject_name from inserted
+
+insert into marks_log(student_id,student_log_marks,created_date)
+select @emp_id,@marks+'is inserted for student :'+@emp_id,GETDATE()     //************************//
+end
+
+insert into marks(student_id,subject_name)
+values(2,'java')
+
+-----------------------
+
+PIVOT--->
+let we have a table with product name ,order amount,order date
+
+now we want the total amount of order placed for a product in a specif year ...
+here we do not go with group if we group by product name the total sum with come irrespective of year
+and if we go with year total amount come with irrespective of products,
+
+it is like converting row into column.
+
+first step -->
+a)select productname,orderyear,orderamount
+from order
+
+b)second step -->
+pivot
+(
+sum(orderamount) for orderyear in ([2022],[2023])    //different syntax
+)as p
+
+now we have to use both queries
+
+select productname,[2022],[2023]                 // this should be the same which we describe in pivot
+from
+(
+1st step
+)as p1
+2nd step
+
+----------------------------------------------------------------------------------------------------
+CTE-->common table expression
+it is type of temporary table but it is used only once and never get used again..
+
+syntax
+;with cte_name
+as
+(
+logic  like select * from emp;
+)
+
+creation and accession should be together otherwise cte will not work.
+
+===============================================================================================================
+merge-->
+it is like synchronize
+
+staged-->online
+souce-->target
+
+whenever we have to apply combination of dml queries we can use merge like insert,update,delete
+
+merge  tablename as target                // target tabel
+using  tablename as source                // source table
+on target.id = product.id                 // common join condition on both table
+
+when not matched by target then           //updating data which is not presemt in target
+INSERT(cloumn names,cooma separated)
+values(source.columnnames , comma seperated)
+
+when matched then
+update
+set
+target.columnname = source.columnname,
+target.columnname2 = source.columnname2,
+  
+when not matched by source                //deleting extra values in target
+delete;
+================================================================================================================
+UPDATE top (5) store_details set sales = 100;   // it will update  top 5 of table
+------------------------
+converting int to string-->
+cast(1 as varchar(20))    // converting 1 to string
+------------------------------------------------------------------------------------------------------------
+sql backup database-->
+BACKUP DATABASE databasename
+TO DISK = 'filepath';     // path where we want to do backup.
+
+
+DIFFERENTIAL Statement
+A differential back up only backs up the parts of the database that have changed since the last full database backup.
+
+Syntax
+BACKUP DATABASE databasename
+TO DISK = 'filepath'
+WITH DIFFERENTIAL;
+------------------------------------
+select user_name()  // to fetch login user
+-------------------------------------------------------------------------------------------------------------------
+decimal(a,b)---> we have to pass two parametre a is here total length second indicates it will took only b digits after decimal.
+decimal(3,2)-->
+123.23  // total 5 3 before decimal 2 after decimal always remember
+
+nvarchar---> when we are using other language like chinese we have to insert and fetch.
+nut insert with prefix (N'chinese content')  //N should be cappital
+
+varchar(max)---> it will create with max size.
+
+getdate()---> it will give current date in date time
+------------------------------------------------------------------------------------------------------------- 
+Server Substring
+SUBSTRING is a SQL Server built-in function that allows us to extract a specific substring from any given string set based on our requirements. Database developers widely use this function in queries to extract any number of substrings from an input string. Substring extracts a string of a specified length from an input string beginning at a specified position. This function's main objective is to return a particular portion of a string.
+
+Syntax for Substring
+The following is the basic syntax of substring function in SQL Server:
+
+SUBSTRING(Expression, Position, Length)  
+
+
+
+Substring function with Charindex
+If we want to find the domain names present in the email column using the substring function, we can execute the statement as follows:
+
+SELECT person_name, email,   
+    SUBSTRING(email, CHARINDEX('@', email) + 1, LEN(email)) AS DomainName  
+FROM persons;   
+It will display the below output where we can observe that DomainName is the substring column that returns the portion of the string after @ symbol:
+
+charindex('char',column name) // will give the index of char
+len(column name)               // will give length of column
+
+----------------------------------------------------------------------------------------------------------------
+
+Index in SQL Server
+An index is one of the important paths to make the performance of SQL Server database high. It makes the querying process fast by providing easy access to rows in data tables, similar to how a book's index will quickly locate information inside that book. If we do not have an index, then it is very tough to locate the specific data. We can have the CREATE INDEX, DROP INDEX, and ALTER INDEX SQL commands for creating new indexes, updating existing indexes, and deleting indexes in SQL Server. 
+
+if index is not there data will come through table anc check eveywhere and known as tablescan.
+
+indexing types-->
+Clustered
+Clustered indexes use key values for sorting and storing data rows in tables or view. They are included in the index definition. It always stores the index value in a B-tree structure where the actual data is stored in the leaf node. Since the data rows are stored in one direction, each table can only have a single clustered index.
+when we create a pk it will get automatic created.so one cluster per table only
+it will automatically sort the data.
+
+
+Non-Clustered
+The structure of non-clustered indexes is similar to the clustered index except that the actual data is not contained in the leaf nodes. A non-clustered index has the non-clustered index key values, and each key-value entry contains a reference to the actual data. Depending on how the table data is stored, it could point to a data value in the clustered index or a heap structure. If a row locator is a pointer to the row, it is a heap structure. If a row locator is the clustered index key, it is a clustered table.
+it will not sort data.
+as pk is already available for all table , if we want to add index we will use non_cluster.
+
+The main benefit of the non-clustered index is to speed up query performance. Its main disadvantage is the extra overhead needed to maintain the index during DML operations.
+
+
+Creating an Index in SQL Server
+We can create an index in the SQL Server using the following syntax:
+
+CREATE [UNIQUE | CLUSTERED | NONCLUSTERED] INDEX index_name  
+ON table_name column_name;   
+If you want to create multiple index columns, use the following syntax:
+
+CREATE INDEX index_name  
+ON table_name (column1, column2 ...);   
+
+how to check index on table-->
+exec sp_helpindex table_name.
+
+When should indexes be created?
+We can create an index in the following cases:
+
+When a column has a wide range of values
+When the column does not have a large number of null values
+When single or multiple columns used together in a where or join clause
+When should indexes be avoided?
+
+column which are used in join and where clause should be indexed..///////////$$$$$$$$$$$$$
+
+We can avoid an index in the following cases:
+
+When a table is small
+When the columns aren't used as a query condition
+When the column is constantly updated
+
+because index slow down the dml statements.
+exmaple-->
+
+CREATE INDEX index_age ON STUDENT (age);   
+
+deleting-->
+
+DROP INDEX [IF EXISTS] index_name ON table_name
+
+Disable Indexes
+We can disable the indexes in SQL Server by using the ALTER INDEX statement as follows:
+
+ALTER INDEX index_name  
+ON table_name  
+DISABLE;  
+If we want to disable all indexes of a table in the current database, we can use the following form of ALTER INDEX statement:
+
+ALTER INDEX ALL ON table_name DISABLE;  
+
+
+ALTER INDEX index_name   
+ON table_name    
+REBUILD;             // enabling the disable index
+
+
+-------------------------------------------------------------------------------------------------
+select case in sql-->
+
+SELECT tutorial_id, tutorial_name,  
+CASE tutorial_name  
+    WHEN 'SQL' THEN 'SQL is developed by IBM'  
+    WHEN 'Java' THEN 'Java Java was created at Sun Microsystems Inc.'  
+    WHEN 'MS SQL' THEN 'MS-SQL is developed by Microsoft Corporation.'  
+    ELSE 'Do not Know.'  
+END AS Description  
+FROM Tutorials;  
+
+case column_name
+cases with when and then
+END
+
+another example-->
+
+select ename,     // comma important
+case ename
+when 'smith' then 'manu'   // craete temp column with values
+end
+from emp
+
+
+CASE Statement with ORDER BY Clause
+We can also use a CASE statement with an ORDER BY clause, which is used to sort the results in ascending or descending order. The following example explains it more clearly:
+
+For student age greater than 17, student's salaries should come in descending order.
+For student age less than 17, student's salaries should come in ascending order.
+This condition can be defined by using a combination of ORDER BY and CASE statements. In the below statement, we have combined the ORDER BY and CASE statement and describe the sorting condition in CASE expression:
+
+SELECT Id, name, age, salary  
+ FROM STUDENT  
+ ORDER BY CASE  
+WHEN age>17 THEN salary End DESC,  
+CASE WHEN age<17 THEN salary    
+END  
+
+
+
+update with case-->
+UPDATE STUDENT   
+SET age = CASE age  
+ WHEN 22 THEN 23   
+ WHEN 17 THEN 18   
+ WHEN 29 THEN 30  
+ WHEN 16 THEN 15  
+ ELSE 25  
+ END  
+
+---------------------------------------------------------------------------------------------------
+temporary tables-->
+these are table which are associated with session so get deleted with session invalidation..
+
+how to check session id-->
+
+select @@spid
+
+creating temporary table--->
+
+same syntax just use # before table
+
+create table #student(
+expressions
+)
+
+we cannot acceess temporary table from other sessions.
+
+
+-----------
+sp_help emp  equivalent to desc table.
+
+or when u use schema
+
+select * FROM   INFORMATION_SCHEMA.Columns where table_name = 'Student';
+
+The following renames Employee table to Consultant table.
+
+EXEC sp_rename 'Employee', 'Consultant';
+The following renames Address column of the Employee table to TempAddress.
+
+EXEC sp_rename 'Employee.Address', 'TempAddress';
+You can specify the object type to indicate whether it is a column, index, database, etc.
+
+EXEC sp_rename 'Employee.Address', 'TempAddress', 'COLUMN';
+Note that the new column name should not prepend table name.
+
+
+example-->
+EXEC sp_rename 'manu.Student.id', 'student_id', 'COLUMN';
+
+we give schema.tableName  one time
+
+========================
+
+-------------------------------------
+if we use any keyword of sql while creating table,,we can use[] to avoid errors
+=======================================================================================================================
+
+Normalization----> it is used to reduce data redunancy...
+
+1NF-->
+we should not store multiple values in one column 
+like--> phone-->9981367458,8120193659
+ we should create another table which is a foreign key of another table.
+ 
+2NF-->
+
+
+
+----------------------
+EXEC sp_rename 'old_table_name', 'new_table_name'    //rename table
+
+==================================================================
+DCL-->DATA CONTROL LANGUAGE
+
+A database user is not the same as a login. A login provides to a user or application the ability to connect to a SQL Server instance, whereas a database user provides the login rights to access a database
+
+--creating login which request for password change in first login 
+
+CREATE LOGIN shelly
+WITH PASSWORD = 'MAnv12@3april2023' MUST_CHANGE, 
+CHECK_EXPIRATION = ON;
+
+--creating a user for the login
+
+CREATE USER manu for login shelly
+
+--The following system view sys.database_principals allows you to retrieve the list of all users created in the SQL Server database. Run the command to view that the user was created.
+
+SELECT *
+FROM sys.database_principals;
+
+Grant permissions using T-SQL
+Permissions and privileges control the access to SQL Server data and database objects. You can grant user privileges on different database objects in SQL Server.
+
+Privileges can be of two types:
+
+System privileges that allow users to create, alter or drop database objects.
+Object privileges that allow users to execute, select, insert, update, or delete data on database objects to which the privileges were assigned.
+It should be noted that only database administrators or owners of database objects can provide or revoke privileges.
+
+The GRANT statement provides access and permissions on database objects to the user. The basic syntax is as follows:
+
+GRANT privileges 
+  ON database_name.object
+TO {user_name |PUBLIC |role_name}
+[WITH GRANT OPTION]; 
+
+Argument	       Description
+
+privileges	       Permissions you want to grant. They include the SELECT, INSERT, UPDATE, DELETE, REFERENCES, ALTER, or ALL statements.
+
+database_name	   Name of the database to which the database object belongs.
+object	           Database object on which the specified privileges will be assigned.
+user_name	       Name of the user whom the privileges will be granted.
+PUBLIC	           Used to grant permissions to all users.
+role_name	       Set of privileges grouped in one category.
+WITH GRANT OPTION	Used to grant permissions to other users.
+For example, let’s grant the SELECT, INSERT, and ALTER privileges on the HumanResources.Employee table to the user Manager that we created in the previous section.
+
+GRANT SELECT, INSERT, ALTER ON HumanResources.Employee TO Manager;
+
+---------
+Now, let’s view that the list of permissions on the HumanResources.Employee table includes the permissions we assigned to the user Manager. For this, we will use the system view – fn_my_permissions – and execute the following command:
+
+EXECUTE AS USER = 'Manager';
+GO
+USE AdventureWorks2019
+GO
+SELECT * FROM fn_my_permissions('HumanResources.Employee', 'OBJECT')
+GO
+
+--------------
+
+REVOKE INSERT, ALTER ON HumanResources.Employee TO Manager;  // revoking access
+
+--------------
+DENY INSERT ON HumanResources.Employee TO Manager;
+In this case, the INSERT permission will be blocked for the Manager user.
+
+--------------
+CREATE ROLE role_name;
+GRANT SELECT, UPDATE, ALTER, INSERT, DELETE ON Person.Address TO role_name;
+
+ALTER ROLE  role_name  
+ADD MEMBER user_name;                 // adding user to role_name
+
+----------------
+steps to give access
+use DBName;
+create login a_2 with password='Aa123';
+create user a_2 for login a_2;
+grant insert to a_2;
+grant select to a_2;
+======================================================
+Cursor in SQL Server
+A cursor in SQL Server is a database object that allows us to retrieve each row at a time and manipulate its data. A cursor is nothing more than a pointer to a row. It's always used in conjunction with a SELECT statement. It is usually a collection of SQL logic that loops through a predetermined number of rows one by one. A simple illustration of the cursor is when we have an extensive database of worker's records and want to calculate each worker's salary after deducting taxes and leaves.
+
+The SQL Server cursor's purpose is to update the data row by row, change it, or perform calculations that are not possible when we retrieve all records at once. 
+
+steps for cursor-->
+1: Declare Cursor
+The first step is to declare the cursor using the below SQL statement:
+
+DECLARE cursor_name CURSOR  
+    FOR select_statement;  
+	
+2: Open Cursor
+It's a second step in which we open the cursor to store data retrieved from the result set. We can do this by using the below SQL statement:
+
+OPEN cursor_name;  
+
+3:Fetch Cursor
+It's a third step in which rows can be fetched one by one or in a block to do data manipulation like insert, update, and delete operations on the currently active row in the cursor. We can do this by using the below SQL statement:
+
+FETCH NEXT FROM cursor INTO variable_list;
+
+We can also use the @@FETCHSTATUS function in SQL Server to get the status of the most recent FETCH statement cursor that was executed against the cursor. The FETCH statement was successful when the @@FETCHSTATUS gives zero output. The WHILE statement can be used to retrieve all records from the cursor. The following code explains it more clearly:
+
+WHILE @@FETCH_STATUS = 0    
+    BEGIN  
+        FETCH NEXT FROM cursor_name;    
+    END;  
+
+4: Close Cursor
+It's a fourth step in which the cursor should be closed after we finished work with a cursor. We can do this by using the below SQL statement:
+
+CLOSE cursor_name;  
+5: Deallocate Cursor
+It is the fifth and final step in which we will erase the cursor definition and release all the system resources associated with the cursor. We can do this by using the below SQL statement:
+
+DEALLOCATE cursor_name;
+
+
+UPDATE product_table SET unit_price = 100 WHERE product_id = 105;  
+Sometimes the application needs to process the rows in a singleton fashion, i.e., on row by row basis rather than the entire result set at once. We can do this process by using cursors in SQL Server. Before using the cursor, we must know
+
+--
+Example-->
+
+declare @prof1 varchar(20),@prof2 varchar(20)
+
+declare print_proficiency cursor
+for
+select prof1,prof2 from programmer
+open print_proficiency
+while @@FETCH_STATUS=0
+BEGIN
+fetch next from print_proficiency
+into @prof1,@prof2
+PRINT @prof1+'-->'+@prof2
+END
+close print_proficiency
+deallocate print_proficiency
+
+this is the example to print language from programmers
+--
+-----------------------------------------------------------------------------------------
+ keys all , normalization ,pivot/unpivot  topic left
+==================================================================
+good query-->
+Display the name of the HIGEST paid programmer for EACH language (prof1)
+SELECT DISTINCT NAME, SALARY, PROF1 FROM PROGRAMMER WHERE (SALARY,PROF1) IN (SELECT MAX(SALARY),PROF1 FROM PROGRAMMER GROUP BY PROF1);
+
+
+Which language is known by ONLY ONE programmer?
+select prof1 from programmer group by prof1 having count(prof1)=1 and prof1 not in (select prof2 from programmer group by prof2)
+union
+select prof2 from programmer group by prof2 having count(prof2)=1 and prof2 not in (select prof1 from programmer group by prof1)
+
+//here union works as both have same fields and expression
+
+
+
+Display the Number of Packages in Each Language for which Development Cost is less than 1000.
+select count(title),developin from software  where dcost<10000 group by developin
+we can use where in group also
+
+
+
+--How many packages are developed by the most experienced programmer form BDPS.
+select sw.title,p.pname from programmer as p join studies as s on s.pname=p.pname join software as sw on sw.pname=s.pname where s.institute='BDPS' and DATEDIFF(day,convert(date,getdate()), p.doj) =(select max(DATEDIFF(day,convert(date,getdate()), doj)) from programmer)
+
+
+select sw.title,p.pname, DATEDIFF(day,convert(date,getdate()), p.doj) from programmer as p join studies as s on s.pname=p.pname join software as sw on sw.pname=s.pname where s.institute='BDPS'
+
+give total days with difference
+
+
+
+Display the number of packages, No. of Copies Sold and sales value of each programmer institute wise.
+Select studies.splace, count(software.dev_in), count(software.sold), sum(software.sold*software.scost) from software,studies where software.name=studies.name group by studies.splace; 
+
+Display the name of the HIGEST paid programmer for EACH language (prof1)
+SELECT DISTINCT NAME, SALARY, PROF1 FROM PROGRAMMER WHERE (SALARY,PROF1) IN (SELECT MAX(SALARY),PROF1 FROM PROGRAMMER GROUP BY PROF1);
+
+
+Display language used by EACH programmer to develop the HIGEST selling and LOWEST selling package.
+SELECT NAME, DEV_IN FROM SOFTWARE WHERE SOLD IN (SELECT MAX(SOLD) FROM SOFTWARE GROUP BY NAME) UNION SELECT NAME, DEV_IN FROM SOFTWARE WHERE SOLD IN (SELECT MIN(SOLD) FROM SOFTWARE GROUP BY NAME);
+
+
+--Display the total sales value of the software, institute wise.
+select s.institute ,sum(scost*sold) as sold from software as sw join studies as s on sw.pname=s.pname group by s.institute 
+
+---SELECT MAX(PROF1) FROM PROGRAMMER  // we can use max on string also
+
+--Display only odd rows from a table.
+select * from (select *, ROW_NUMBER()          // this is how we use row_number
+over (order by salary)
+as row_number
+from programmer) row_table                     //we dont use as here 
+where row_table.row_number%2=1
+
+
+--Display the first 50% records from a table
+select top 50 percent * from programmer

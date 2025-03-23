@@ -1,0 +1,11 @@
+import com.amway.lynx.core.event.ClusterAwareScriptingJobEvent;
+import java.util.List;
+List<Integer> nodeIDs = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19];// changes node ids according cluster
+def scriptURI = "model://testActivePool";
+def eventService = spring.getBean('eventService');
+eventService.publishEvent(new ClusterAwareScriptingJobEvent(nodeIDs, scriptURI));
+
+
+
+configurationService = spring.getBean("configurationService");
+configurationService.getConfiguration().setProperty("lynx.consumer.report.month.interval","-1");

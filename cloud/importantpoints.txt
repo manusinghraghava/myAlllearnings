@@ -1,0 +1,28 @@
+types of cloud?
+a)public
+b)private
+c)hybrid
+
+how aws calculate price of a service?
+three factors is important for the price calculation
+a)compute (like cpu, ram utilization)
+b)storage
+c)data transfer (iops/throughput)
+
+total regions in aws as today?
+34
+
+total avaliability zones in aws as today?
+108
+
+why multiple regions / zones?
+a)disaster recovery.
+b)country specific rules.
+
+all regions are connected through ocean wire so having high speed between regions for data transfer.
+distance between availabilty zones approx 100 km.
+
+Ec2 --> Elastic compute cloud
+
+it is not compulsory multiple account selecting avaliabilityzone like ap-south-1a will point to same availability zone , in background aws can map it to any availabilty zone otherwise it will burden only single availabilityzone.
+

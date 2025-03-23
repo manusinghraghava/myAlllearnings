@@ -1,0 +1,649 @@
+#  -------------------------------------------------------
+# # used 'header validation mode' during script generation was: import_strict
+"#% impex.setLocale( new Locale( ""en"" , """" ) );"
+#  -------------------------------------------------------
+
+# ---- Extension: core ---- Type: Link ----
+"#% impex.setTargetFile( ""Link.csv"" );"
+insert_update Link;&Item;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];language(isocode)[unique=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[forceWrite=true];qualifier;reverseSequenceNumber;sequenceNumber;source(&Item)[unique=true,allownull=true];target(&Item)[unique=true,allownull=true]
+"#% impex.exportItems( ""Link"" , false );"
+
+
+# ---- Extension: warehousing ---- Type: Warehouse2DeliveryModeRelation ----
+"#% impex.setTargetFile( ""Warehouse2DeliveryModeRelation.csv"" );"
+insert_update Warehouse2DeliveryModeRelation;&Item;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];language(isocode)[unique=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[forceWrite=true];qualifier;reverseSequenceNumber;sequenceNumber;source(&Item)[unique=true,allownull=true];target(code)[unique=true,allownull=true]
+"#% impex.exportItems( ""Warehouse2DeliveryModeRelation"" , false );"
+
+# ---- Extension: commerceservices ---- Type: BaseStore2WarehouseRel ----
+"#% impex.setTargetFile( ""BaseStore2WarehouseRel.csv"" );"
+insert_update BaseStore2WarehouseRel;&Item;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];language(isocode)[unique=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[forceWrite=true];qualifier;reverseSequenceNumber;sequenceNumber;source(uid)[unique=true,allownull=true];target(&Item)[unique=true,allownull=true]
+"#% impex.exportItems( ""BaseStore2WarehouseRel"" , false );"
+
+# ---- Extension: comments ---- Type: CommentItemRelation ----
+"#% impex.setTargetFile( ""CommentItemRelation.csv"" );"
+insert_update CommentItemRelation;&Item;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];language(isocode)[unique=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[forceWrite=true];qualifier;reverseSequenceNumber;sequenceNumber;source(code)[unique=true,allownull=true];target(&Item)[unique=true,allownull=true]
+"#% impex.exportItems( ""CommentItemRelation"" , false );"
+
+# ---- Extension: cms2 ---- Type: CMSLinksForNavNodes ----
+"#% impex.setTargetFile( ""CMSLinksForNavNodes.csv"" );"
+insert_update CMSLinksForNavNodes;&Item;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];language(isocode)[unique=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[forceWrite=true];qualifier;reverseSequenceNumber;sequenceNumber;source(catalogVersion(catalog(id),version),uid)[unique=true,allownull=true];target(catalogVersion(catalog(id),version),uid)[unique=true,allownull=true]
+"#% impex.exportItems( ""CMSLinksForNavNodes"" , false );"
+
+# ---- Extension: basecommerce ---- Type: StoresForCMSSite ----
+"#% impex.setTargetFile( ""StoresForCMSSite.csv"" );"
+insert_update StoresForCMSSite;&Item;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];language(isocode)[unique=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[forceWrite=true];qualifier;reverseSequenceNumber;sequenceNumber;source(cxConfig(code),uid)[unique=true,allownull=true];target(uid)[unique=true,allownull=true]
+"#% impex.exportItems( ""StoresForCMSSite"" , false );"
+
+
+# ---- Extension: solrfacetsearch ---- Type: SolrFacetSearchConfig2SolrValueRangeSetRelation ----
+"#% impex.setTargetFile( ""SolrFacetSearchConfig2SolrValueRangeSetRelation.csv"" );"
+insert_update SolrFacetSearchConfig2SolrValueRangeSetRelation;&Item;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];language(isocode)[unique=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[forceWrite=true];qualifier;reverseSequenceNumber;sequenceNumber;source(name)[unique=true,allownull=true];target(name)[unique=true,allownull=true]
+"#% impex.exportItems( ""SolrFacetSearchConfig2SolrValueRangeSetRelation"" , false );"
+
+
+# ---- Extension: commerceservices ---- Type: BaseStore2CurrencyRel ----
+"#% impex.setTargetFile( ""BaseStore2CurrencyRel.csv"" );"
+insert_update BaseStore2CurrencyRel;&Item;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];language(isocode)[unique=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[forceWrite=true];qualifier;reverseSequenceNumber;sequenceNumber;source(uid)[unique=true,allownull=true];target(isocode)[unique=true,allownull=true]
+"#% impex.exportItems( ""BaseStore2CurrencyRel"" , false );"
+
+
+# ---- Extension: catalog ---- Type: Product2KeywordRelation ----
+"#% impex.setTargetFile( ""Product2KeywordRelation.csv"" );"
+insert_update Product2KeywordRelation;&Item;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];language(isocode)[unique=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[forceWrite=true];qualifier;reverseSequenceNumber;sequenceNumber;source(catalogVersion(catalog(id),version),keyword,language(isocode))[unique=true,allownull=true];target(catalogVersion(catalog(id),version),code)[unique=true,allownull=true]
+"#% impex.exportItems( ""Product2KeywordRelation"" , false );"
+
+
+# ---- Extension: fabindiacore ---- Type: CategoryToProductTaggingRelation ----
+"#% impex.setTargetFile( ""CategoryToProductTaggingRelation.csv"" );"
+insert_update CategoryToProductTaggingRelation;&Item;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];language(isocode)[unique=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[forceWrite=true];qualifier;reverseSequenceNumber;sequenceNumber;source(catalogVersion(catalog(id),version),code)[unique=true,allownull=true];target(catalogVersion(catalog(id),version),code)[unique=true,allownull=true]
+"#% impex.exportItems( ""CategoryToProductTaggingRelation"" , false );"
+
+
+# ---- Extension: solrfacetsearch ---- Type: SolrIndexedProperty2SolrValueRangeSetRelation ----
+"#% impex.setTargetFile( ""SolrIndexedProperty2SolrValueRangeSetRelation.csv"" );"
+insert_update SolrIndexedProperty2SolrValueRangeSetRelation;&Item;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];language(isocode)[unique=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[forceWrite=true];qualifier;reverseSequenceNumber;sequenceNumber;source(&Item)[unique=true,allownull=true];target(name)[unique=true,allownull=true]
+"#% impex.exportItems( ""SolrIndexedProperty2SolrValueRangeSetRelation"" , false );"
+
+
+# ---- Extension: core ---- Type: PrincipalGroupRelation ----
+"#% impex.setTargetFile( ""PrincipalGroupRelation.csv"" );"
+insert_update PrincipalGroupRelation;&Item;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];language(isocode)[unique=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[forceWrite=true];qualifier;reverseSequenceNumber;sequenceNumber;source(uid)[unique=true,allownull=true];target(uid)[unique=true,allownull=true]
+"#% impex.exportItems( ""PrincipalGroupRelation"" , false );"
+
+
+# ---- Extension: catalog ---- Type: CategoryCategoryRelation ----
+"#% impex.setTargetFile( ""CategoryCategoryRelation.csv"" );"
+insert_update CategoryCategoryRelation;&Item;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];language(isocode)[unique=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[forceWrite=true];qualifier;reverseSequenceNumber;sequenceNumber;source(catalogVersion(catalog(id),version),code)[unique=true,allownull=true];target(catalogVersion(catalog(id),version),code)[unique=true,allownull=true]
+"#% impex.exportItems( ""CategoryCategoryRelation"" , false );"
+
+
+# ---- Extension: basecommerce ---- Type: ProductDeliveryModeRelation ----
+"#% impex.setTargetFile( ""ProductDeliveryModeRelation.csv"" );"
+insert_update ProductDeliveryModeRelation;&Item;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];language(isocode)[unique=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[forceWrite=true];qualifier;reverseSequenceNumber;sequenceNumber;source(catalogVersion(catalog(id),version),code)[unique=true,allownull=true];target(code)[unique=true,allownull=true]
+"#% impex.exportItems( ""ProductDeliveryModeRelation"" , false );"
+
+# ---- Extension: b2bcommerce ---- Type: FutureStockProductRelation ----
+"#% impex.setTargetFile( ""FutureStockProductRelation.csv"" );"
+insert_update FutureStockProductRelation;&Item;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];language(isocode)[unique=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[forceWrite=true];qualifier;reverseSequenceNumber;sequenceNumber;source(&Item)[unique=true,allownull=true];target(catalogVersion(catalog(id),version),code)[unique=true,allownull=true]
+"#% impex.exportItems( ""FutureStockProductRelation"" , false );"
+
+
+# ---- Extension: catalog ---- Type: Category2PrincipalRelation ----
+"#% impex.setTargetFile( ""Category2PrincipalRelation.csv"" );"
+insert_update Category2PrincipalRelation;&Item;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];language(isocode)[unique=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[forceWrite=true];qualifier;reverseSequenceNumber;sequenceNumber;source(catalogVersion(catalog(id),version),code)[unique=true,allownull=true];target(uid)[unique=true,allownull=true]
+"#% impex.exportItems( ""Category2PrincipalRelation"" , false );"
+
+
+# ---- Extension: basecommerce ---- Type: StockLevelProductRelation ----
+"#% impex.setTargetFile( ""StockLevelProductRelation.csv"" );"
+insert_update StockLevelProductRelation;&Item;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];language(isocode)[unique=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[forceWrite=true];qualifier;reverseSequenceNumber;sequenceNumber;source(&Item)[unique=true,allownull=true];target(catalogVersion(catalog(id),version),code)[unique=true,allownull=true]
+"#% impex.exportItems( ""StockLevelProductRelation"" , false );"
+
+# ---- Extension: cms2 ---- Type: CatalogsForRestriction ----
+"#% impex.setTargetFile( ""CatalogsForRestriction.csv"" );"
+insert_update CatalogsForRestriction;&Item;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];language(isocode)[unique=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[forceWrite=true];qualifier;reverseSequenceNumber;sequenceNumber;source(catalogVersion(catalog(id),version),uid)[unique=true,allownull=true];target(id)[unique=true,allownull=true]
+"#% impex.exportItems( ""CatalogsForRestriction"" , false );"
+
+# ---- Extension: b2bapprovalprocess ---- Type: B2BUnit2Approvers ----
+
+# ---- Extension: solrfacetsearch ---- Type: SolrFacetSearchConfig2CatalogVersionRelation ----
+"#% impex.setTargetFile( ""SolrFacetSearchConfig2CatalogVersionRelation.csv"" );"
+insert_update SolrFacetSearchConfig2CatalogVersionRelation;&Item;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];language(isocode)[unique=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[forceWrite=true];qualifier;reverseSequenceNumber;sequenceNumber;source(name)[unique=true,allownull=true];target(catalog(id),version)[unique=true,allownull=true]
+"#% impex.exportItems( ""SolrFacetSearchConfig2CatalogVersionRelation"" , false );"
+
+# ---- Extension: solrfacetsearch ---- Type: SolrFacetSearchConfig2CurrencyRelation ----
+"#% impex.setTargetFile( ""SolrFacetSearchConfig2CurrencyRelation.csv"" );"
+insert_update SolrFacetSearchConfig2CurrencyRelation;&Item;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];language(isocode)[unique=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[forceWrite=true];qualifier;reverseSequenceNumber;sequenceNumber;source(name)[unique=true,allownull=true];target(isocode)[unique=true,allownull=true]
+"#% impex.exportItems( ""SolrFacetSearchConfig2CurrencyRelation"" , false );"
+
+
+# ---- Extension: basecommerce ---- Type: ProductVendorRelation ----
+"#% impex.setTargetFile( ""ProductVendorRelation.csv"" );"
+insert_update ProductVendorRelation;&Item;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];language(isocode)[unique=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[forceWrite=true];qualifier;reverseSequenceNumber;sequenceNumber;source(catalogVersion(catalog(id),version),code)[unique=true,allownull=true];target(&Item)[unique=true,allownull=true]
+"#% impex.exportItems( ""ProductVendorRelation"" , false );"
+
+# ---- Extension: solrfacetsearch ---- Type: SolrFacetSearchConfig2LanguageRelation ----
+"#% impex.setTargetFile( ""SolrFacetSearchConfig2LanguageRelation.csv"" );"
+insert_update SolrFacetSearchConfig2LanguageRelation;&Item;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];language(isocode)[unique=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[forceWrite=true];qualifier;reverseSequenceNumber;sequenceNumber;source(name)[unique=true,allownull=true];target(isocode)[unique=true,allownull=true]
+"#% impex.exportItems( ""SolrFacetSearchConfig2LanguageRelation"" , false );"
+
+# ---- Extension: catalog ---- Type: CategoryProductRelation ----
+"#% impex.setTargetFile( ""CategoryProductRelation.csv"" );"
+insert_update CategoryProductRelation;&Item;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];language(isocode)[unique=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[forceWrite=true];qualifier;reverseSequenceNumber;sequenceNumber;source(catalogVersion(catalog(id),version),code)[unique=true,allownull=true];target(catalogVersion(catalog(id),version),code)[unique=true,allownull=true]
+"#% impex.exportItems( ""CategoryProductRelation"" , false );"
+
+# ---- Extension: commerceservices ---- Type: BaseStore2DeliveryModeRel ----
+"#% impex.setTargetFile( ""BaseStore2DeliveryModeRel.csv"" );"
+insert_update BaseStore2DeliveryModeRel;&Item;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];language(isocode)[unique=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[forceWrite=true];qualifier;reverseSequenceNumber;sequenceNumber;source(uid)[unique=true,allownull=true];target(code)[unique=true,allownull=true]
+"#% impex.exportItems( ""BaseStore2DeliveryModeRel"" , false );"
+
+# ---- Extension: core ---- Type: GenericItem ----
+"#% impex.setTargetFile( ""GenericItem.csv"" );"
+insert GenericItem;&Item;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[forceWrite=true]
+"#% impex.exportItems( ""GenericItem"" , false );"
+
+
+# ---- Extension: solrfacetsearch ---- Type: SolrSearchConfig ----
+"#% impex.setTargetFile( ""SolrSearchConfig.csv"" );"
+insert SolrSearchConfig;&Item;allFacetValuesInResponse;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];defaultSortOrder;description;enableHighlighting[allownull=true];groupingProperty(&Item);legacyMode;modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[forceWrite=true];pageSize[allownull=true];restrictFieldsInResponse
+"#% impex.exportItems( ""SolrSearchConfig"" , false );"
+
+# ---- Extension: fabindiacore ---- Type: SizeChartEntry ----
+"#% impex.setTargetFile( ""SizeChartEntry.csv"" );"
+insert_update SizeChartEntry;&Item;code[unique=true];creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];entries(code);modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[forceWrite=true]
+"#% impex.exportItems( ""SizeChartEntry"" , false );"
+
+
+# ---- Extension: solrfacetsearch ---- Type: SolrSearchQueryTemplate ----
+"#% impex.setTargetFile( ""SolrSearchQueryTemplate.csv"" );"
+insert_update SolrSearchQueryTemplate;&Item;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];enableHighlighting[allownull=true];ftsQueryBuilder;ftsQueryBuilderParameters();groupFacets[allownull=true];groupLimit;groupProperty(&Item);group[allownull=true];indexedType(identifier,indexName)[forceWrite=true,unique=true,allownull=true];indexedTypePOS;modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];name[unique=true,allownull=true];owner(&Item)[forceWrite=true];pageSize;restrictFieldsInResponse[allownull=true];showFacets[allownull=true]
+"#% impex.exportItems( ""SolrSearchQueryTemplate"" , false );"
+
+# ---- Extension: fabindiacore ---- Type: SizeChartValue ----
+"#% impex.setTargetFile( ""SizeChartValue.csv"" );"
+insert_update SizeChartValue;&Item;code[unique=true];creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[forceWrite=true];value
+"#% impex.exportItems( ""SizeChartValue"" , false );"
+
+# ---- Extension: cms2 ---- Type: CMSNavigationEntry ----
+"#% impex.setTargetFile( ""CMSNavigationEntry.csv"" );"
+insert_update CMSNavigationEntry;&Item;catalogVersion(catalog(id),version)[unique=true,allownull=true];category;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];item(&Item)[allownull=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];name;navigationNode(catalogVersion(catalog(id),version),uid);navigationNodePOS;owner(&Item)[forceWrite=true];synchronizationBlocked[allownull=true];uid[unique=true,allownull=true]
+"#% impex.exportItems( ""CMSNavigationEntry"" , false );"
+
+
+# ---- Extension: catalog ---- Type: ProductReference ----
+"#% impex.setTargetFile( ""ProductReference.csv"" );"
+insert_update ProductReference;&Item;active[allownull=true];creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];description[lang=en];icon(catalogVersion(catalog(id),version),code);modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[forceWrite=true];preselected[allownull=true];qualifier;quantity;referenceType(code,itemtype(code))[unique=true];source(catalogVersion(catalog(id),version),code)[forceWrite=true,unique=true,allownull=true];sourcePOS;target(catalogVersion(catalog(id),version),code)[unique=true,allownull=true]
+"#% impex.exportItems( ""ProductReference"" , false );"
+
+
+# ---- Extension: basecommerce ---- Type: Warehouse ----
+"#% impex.setTargetFile( ""Warehouse.csv"" );"
+insert Warehouse;&Item;code[allownull=true,forceWrite=true];creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];default[allownull=true,forceWrite=true];external;isAllowRestock;modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];name[lang=en];owner(&Item)[forceWrite=true];priority;sapPlantLogSysOrg(&Item);score;vendor(&Item)[allownull=true,forceWrite=true];vendorPOS;warehouseBinTransferWorkflowName
+"#% impex.exportItems( ""Warehouse"" , false );"
+
+
+# ---- Extension: fabindiacore ---- Type: FabGiftCardEntry ----
+"#% impex.setTargetFile( ""FabGiftCardEntry.csv"" );"
+insert FabGiftCardEntry;&Item;cardNumber;cardPIN;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];fabProductDesign(catalogVersion(catalog(id),version),code);fabProductPrice;modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[forceWrite=true];trackData;transactionId
+"#% impex.exportItems( ""FabGiftCardEntry"" , false );"
+
+
+# ---- Extension: solrfacetsearch ---- Type: SolrIndexerQuery ----
+"#% impex.setTargetFile( ""SolrIndexerQuery.csv"" );"
+insert_update SolrIndexerQuery;&Item;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];identifier[forceWrite=true,unique=true,allownull=true];injectCurrentDate[allownull=true];injectCurrentTime[allownull=true];injectLastIndexTime[allownull=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[forceWrite=true];parameterProvider;query[allownull=true];solrIndexedType(identifier,indexName);solrIndexedTypePOS;type(code,itemtype(code))[allownull=true,forceWrite=true];user(uid)
+"#% impex.exportItems( ""SolrIndexerQuery"" , false );"
+
+
+# ---- Extension: acceleratorservices ---- Type: SiteMapLanguageCurrency ----
+"#% impex.setTargetFile( ""SiteMapLanguageCurrency.csv"" );"
+insert SiteMapLanguageCurrency;&Item;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];currency(isocode);language(isocode);modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[forceWrite=true]
+"#% impex.exportItems( ""SiteMapLanguageCurrency"" , false );"
+
+
+# ---- Extension: fabindiacore ---- Type: SizeChart ----
+"#% impex.setTargetFile( ""SizeChart.csv"" );"
+insert_update SizeChart;&Item;code[unique=true];creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];entryMap(value(code));headings(code);image(catalogVersion(catalog(id),version),code);modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[forceWrite=true];title[lang=en]
+"#% impex.exportItems( ""SizeChart"" , false );"
+
+
+# ---- Extension: core ---- Type: Language ----
+"#% impex.setTargetFile( ""Language.csv"" );"
+insert_update Language;&Item;active[allownull=true];creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];fallbackLanguages(isocode);isocode[unique=true,allownull=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];name[lang=en];owner(&Item)[forceWrite=true];sapCode
+"#% impex.exportItems( ""Language"" , false );"
+
+
+# ---- Extension: ibmassetcore ---- Type: Pincode ----
+"#% impex.setTargetFile( ""Pincode.csv"" );"
+insert_update Pincode;&Item;area;city;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[forceWrite=true];pincode[unique=true,allownull=true];region(country(isocode),isocode)[unique=true,allownull=true]
+"#% impex.exportItems( ""Pincode"" , false );"
+
+# ---- Extension: cms2 ---- Type: CategoryPage ----
+"#% impex.setTargetFile( ""CategoryPage.csv"" );"
+insert_update CategoryPage;&Item;approvalStatus(code,itemtype(code))[allownull=true];catalogVersion(catalog(id),version)[unique=true,allownull=true];copyToCatalogsDisabled[allownull=true];creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];defaultPage[allownull=true];description[lang=en];lockedBy(uid);masterTemplate(catalogVersion(catalog(id),version),uid)[allownull=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];name;navigationNodeList(catalogVersion(catalog(id),version),uid);onlyOneRestrictionMustApply[allownull=true];originalPage(catalogVersion(catalog(id),version),uid);owner(&Item)[forceWrite=true];pageStatus(code,itemtype(code));previewImage(catalogVersion(catalog(id),version),code);robotTag(code,itemtype(code));seoPopularSearches;seoTextContent;synchronizationBlocked[allownull=true];title[lang=en];uid[unique=true,allownull=true]
+"#% impex.exportItems( ""CategoryPage"" , false );"
+
+
+# ---- Extension: basecommerce ---- Type: OrderCancelConfig ----
+"#% impex.setTargetFile( ""OrderCancelConfig.csv"" );"
+insert OrderCancelConfig;&Item;cancelAfterWarehouseAllowed[allownull=true];completeCancelAfterShippingStartedAllowed[allownull=true];creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];orderCancelAllowed[allownull=true];owner(&Item)[forceWrite=true];partialCancelAllowed[allownull=true];partialOrderEntryCancelAllowed[allownull=true];queuedOrderWaitingTime[allownull=true]
+"#% impex.exportItems( ""OrderCancelConfig"" , false );"
+
+
+# ---- Extension: ibmproductconfiguratortemplatecore ---- Type: IbmProductConfiguratorSetting ----
+"#% impex.setTargetFile( ""IbmProductConfiguratorSetting.csv"" );"
+insert IbmProductConfiguratorSetting;&Item;catalogVersion(catalog(id),version)[allownull=true,forceWrite=true];configurationCategory(catalogVersion(catalog(id),version),code)[allownull=true,forceWrite=true];configurationCategoryPOS;configuratorType(code,itemtype(code))[allownull=true,forceWrite=true];creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];defaultConfiguratorFeatureAddon(catalogVersion(catalog(id),version),code)[allownull=true];id[allownull=true,forceWrite=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];optionTypeLabel[lang=en];owner(&Item)[forceWrite=true];qualifier[allownull=true,forceWrite=true];textFieldLabel[lang=en]
+"#% impex.exportItems( ""IbmProductConfiguratorSetting"" , false );"
+
+# ---- Extension: classificationgroupsservices ---- Type: ClassFeatureGroup ----
+"#% impex.setTargetFile( ""ClassFeatureGroup.csv"" );"
+insert_update ClassFeatureGroup;&Item;classificationClass(catalogVersion(catalog(id),version),code)[unique=true,allownull=true];classificationClassPOS;code[unique=true,allownull=true];creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];name[lang=en];owner(&Item)[forceWrite=true]
+"#% impex.exportItems( ""ClassFeatureGroup"" , false );"
+
+# ---- Extension: solrfacetsearch ---- Type: SolrSynonymConfig ----
+"#% impex.setTargetFile( ""SolrSynonymConfig.csv"" );"
+insert SolrSynonymConfig;&Item;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];facetSearchConfig(name);facetSearchConfigPOS;language(isocode)[allownull=true];languagePOS;modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[forceWrite=true];synonymFrom[allownull=true];synonymTo
+"#% impex.exportItems( ""SolrSynonymConfig"" , false );"
+
+# ---- Extension: catalog ---- Type: ClassificationAttributeValue ----
+"#% impex.setTargetFile( ""ClassificationAttributeValue.csv"" );"
+insert_update ClassificationAttributeValue;&Item;category(catalogVersion(catalog(id),version),code);code[forceWrite=true,unique=true,allownull=true];cpqMedia(catalogVersion(catalog(id),version),qualifier);creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];description[lang=en];externalID;modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];name[lang=en];owner(&Item)[forceWrite=true];systemVersion(catalog(id),version)[forceWrite=true,unique=true,allownull=true]
+"#% impex.exportItems( ""ClassificationAttributeValue"" , false );"
+
+
+
+# ---- Extension: deliveryzone ---- Type: ZoneDeliveryModeValue ----
+"#% impex.setTargetFile( ""ZoneDeliveryModeValue.csv"" );"
+insert_update ZoneDeliveryModeValue;&Item;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];currency(isocode)[unique=true,allownull=true];deliveryMode(code)[forceWrite=true,unique=true,allownull=true];minimum[unique=true,allownull=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[forceWrite=true];value[allownull=true];zone(code)[unique=true,allownull=true]
+"#% impex.exportItems( ""ZoneDeliveryModeValue"" , false );"
+
+# ---- Extension: catalog ---- Type: AttributeValueAssignment ----
+"#% impex.setTargetFile( ""AttributeValueAssignment.csv"" );"
+insert_update AttributeValueAssignment;&Item;attribute(code,systemVersion(catalog(id),version))[forceWrite=true,unique=true];attributeAssignment(classificationAttribute(code,systemVersion(catalog(id),version)),classificationClass(catalogVersion(catalog(id),version),code),systemVersion(catalog(id),version))[forceWrite=true,unique=true];creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];externalID;modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[forceWrite=true];position;systemVersion(catalog(id),version)[forceWrite=true];value(code,systemVersion(catalog(id),version))[forceWrite=true,unique=true,allownull=true]
+"#% impex.exportItems( ""AttributeValueAssignment"" , false );"
+
+# ---- Extension: paymentstandard ---- Type: StandardPaymentModeValue ----
+"#% impex.setTargetFile( ""StandardPaymentModeValue.csv"" );"
+insert StandardPaymentModeValue;&Item;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];currency(isocode)[allownull=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[forceWrite=true];paymentMode(code)[allownull=true,forceWrite=true];value[allownull=true]
+"#% impex.exportItems( ""StandardPaymentModeValue"" , false );"
+
+
+# ---- Extension: basecommerce ---- Type: BaseStore ----
+"#% impex.setTargetFile( ""BaseStore.csv"" );"
+insert_update BaseStore;&Item;SAPConfiguration(core_name);captchaCheckEnabled[allownull=true];checkoutFlowGroup;createReturnProcessCode;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];customerAllowedToIgnoreSuggestions;defaultAtpFormula(code);defaultCurrency(isocode);defaultDeliveryOrigin(name);defaultLanguage(isocode);expressCheckoutEnabled[allownull=true];externalTaxEnabled[allownull=true];maxRadiusForPoSSearch;modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];name[lang=en];net[allownull=true];owner(&Item)[forceWrite=true];paymentProvider;pickupInStoreMode(code,itemtype(code));productIndexType(&Item);productSearchStrategy;solrFacetSearchConfiguration(name);sourcingConfig(code);storelocatorDistanceUnit(code,itemtype(code));submitOrderProcessCode;taxEstimationEnabled[allownull=true];taxGroup(code,itemtype(code));uid[unique=true,allownull=true]
+"#% impex.exportItems( ""BaseStore"" , false );"
+
+
+# ---- Extension: orderselfserviceaddon ---- Type: CancelOrderAction ----
+"#% impex.setTargetFile( ""CancelOrderAction.csv"" );"
+insert_update CancelOrderAction;&Item;catalogVersion(catalog(id),version)[unique=true,allownull=true];creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];name;onlyOneRestrictionMustApply[allownull=true];owner(&Item)[forceWrite=true];styleClasses;synchronizationBlocked[allownull=true];uid[unique=true,allownull=true];url;visible[allownull=true]
+"#% impex.exportItems( ""CancelOrderAction"" , false );"
+
+# ---- Extension: solrfacetsearch ---- Type: SolrIndex ----
+"#% impex.setTargetFile( ""SolrIndex.csv"" );"
+insert SolrIndex;&Item;active[allownull=true];creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];facetSearchConfig(name)[allownull=true,forceWrite=true];indexedType(identifier,indexName)[allownull=true,forceWrite=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[forceWrite=true];qualifier[allownull=true,forceWrite=true]
+"#% impex.exportItems( ""SolrIndex"" , false );"
+
+# ---- Extension: classificationgroupsservices ---- Type: ClassFeatureGroupAssignment ----
+"#% impex.setTargetFile( ""ClassFeatureGroupAssignment.csv"" );"
+insert_update ClassFeatureGroupAssignment;&Item;classAttributeAssignment(classificationAttribute(code,systemVersion(catalog(id),version)),classificationClass(catalogVersion(catalog(id),version),code),systemVersion(catalog(id),version))[unique=true,allownull=true];classFeatureGroup(classificationClass(catalogVersion(catalog(id),version),code),code);classFeatureGroupPOS;classificationClass(catalogVersion(catalog(id),version),code)[unique=true,allownull=true];creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];fullQualifier;modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[forceWrite=true]
+"#% impex.exportItems( ""ClassFeatureGroupAssignment"" , false );"
+
+# ---- Extension: catalog ---- Type: ClassAttributeAssignment ----
+"#% impex.setTargetFile( ""ClassAttributeAssignment.csv"" );"
+insert_update ClassAttributeAssignment;&Item;attributeType(code,itemtype(code));attributeValues(code,systemVersion(catalog(id),version));classificationAttribute(code,systemVersion(catalog(id),version))[forceWrite=true,unique=true,allownull=true];classificationClass(catalogVersion(catalog(id),version),code)[unique=true,allownull=true];comparable[allownull=true];creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];description[lang=en];enableWysiwygEditor;externalID;formatDefinition;listable[allownull=true];localized[allownull=true];mandatory[allownull=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];multiValued[allownull=true];owner(&Item)[forceWrite=true];position;range[allownull=true];referenceIncludesSubTypes;referenceType(code);sapCpiAssignmentUnitCode;searchable[allownull=true];systemVersion(catalog(id),version)[forceWrite=true,unique=true];unit(code,systemVersion(catalog(id),version),unitType);visibility(code,itemtype(code))
+"#% impex.exportItems( ""ClassAttributeAssignment"" , false );"
+
+
+# ---- Extension: fabindiacore ---- Type: CmsSiteCurrencyRestriction ----
+"#% impex.setTargetFile( ""CmsSiteCurrencyRestriction.csv"" );"
+insert_update CmsSiteCurrencyRestriction;&Item;catalogVersion(catalog(id),version)[unique=true,allownull=true];creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];currency(isocode)[allownull=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];name;owner(&Item)[forceWrite=true];synchronizationBlocked[allownull=true];uid[unique=true,allownull=true]
+"#% impex.exportItems( ""CmsSiteCurrencyRestriction"" , false );"
+
+# ---- Extension: solrfacetsearch ---- Type: SolrSearchQueryProperty ----
+"#% impex.setTargetFile( ""SolrSearchQueryProperty.csv"" );"
+insert_update SolrSearchQueryProperty;&Item;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];facetDisplayNameProvider;facetSortProvider;facetTopValuesProvider;facetType(code,itemtype(code))[allownull=true];facet[allownull=true];ftsFuzzyQueryBoost;ftsFuzzyQueryFuzziness;ftsFuzzyQueryMinTermLength;ftsFuzzyQuery[allownull=true];ftsPhraseQueryBoost;ftsPhraseQuerySlop;ftsPhraseQuery[allownull=true];ftsQueryBoost;ftsQueryMinTermLength;ftsQuery[allownull=true];ftsWildcardQueryBoost;ftsWildcardQueryMinTermLength;ftsWildcardQueryType(code,itemtype(code))[allownull=true];ftsWildcardQuery[allownull=true];includeInResponse[allownull=true];indexedProperty(&Item)[forceWrite=true,unique=true,allownull=true];indexedPropertyPOS;modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[forceWrite=true];priority[allownull=true];searchQueryTemplate(indexedType(identifier,indexName),name)[forceWrite=true,unique=true,allownull=true];searchQueryTemplatePOS;useForHighlighting[allownull=true]
+"#% impex.exportItems( ""SolrSearchQueryProperty"" , false );"
+
+# ---- Extension: core ---- Type: Discount ----
+"#% impex.setTargetFile( ""Discount.csv"" );"
+insert_update Discount;&Item;code[unique=true,allownull=true];creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];currency(isocode);global[allownull=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];name[lang=en];owner(&Item)[forceWrite=true];priority[allownull=true];value
+"#% impex.exportItems( ""Discount"" , false );"
+
+
+# ---- Extension: solrfacetsearch ---- Type: SolrFacetSearchConfig ----
+"#% impex.setTargetFile( ""SolrFacetSearchConfig.csv"" );"
+insert_update SolrFacetSearchConfig;&Item;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];description;document(catalogVersion(catalog(id),version),code);enabledLanguageFallbackMechanism[allownull=true];indexNamePrefix;languageKeywordRedirectMapping(&Item)[lang=en];languageStopWordMapping(&Item)[lang=en];languageSynonymMapping(&Item)[lang=en];listeners;modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];name[forceWrite=true,unique=true,allownull=true];owner(&Item)[forceWrite=true];solrIndexConfig(name);solrSearchConfig(&Item)[allownull=true];solrServerConfig(name)
+"#% impex.exportItems( ""SolrFacetSearchConfig"" , false );"
+
+# ---- Extension: warehousing ---- Type: SourcingConfig ----
+"#% impex.setTargetFile( ""SourcingConfig.csv"" );"
+insert_update SourcingConfig;&Item;allocationWeightFactor[allownull=true];code[unique=true,allownull=true];creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];distanceWeightFactor[allownull=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[forceWrite=true];priorityWeightFactor[allownull=true];scoreWeightFactor[allownull=true]
+"#% impex.exportItems( ""SourcingConfig"" , false );"
+
+
+# ---- Extension: basecommerce ---- Type: Vendor ----
+"#% impex.setTargetFile( ""Vendor.csv"" );"
+insert Vendor;&Item;code[allownull=true,forceWrite=true];creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];name[lang=en];owner(&Item)[forceWrite=true]
+"#% impex.exportItems( ""Vendor"" , false );"
+
+
+# ---- Extension: solrfacetsearch ---- Type: SolrIndexedType ----
+"#% impex.setTargetFile( ""SolrIndexedType.csv"" );"
+insert_update SolrIndexedType;&Item;additionalParameters();configSet;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];defaultFieldValueProvider;ftsQueryBuilder;ftsQueryBuilderParameters();groupFacets[allownull=true];groupFieldName;groupLimit;group[allownull=true];identifier[forceWrite=true,unique=true,allownull=true];identityProvider;indexName[unique=true];listeners;modelLoader;modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[forceWrite=true];solrFacetSearchConfig(name);solrFacetSearchConfigPOS;solrResultConverter;type(code)[allownull=true];valuesProvider;variant[allownull=true]
+"#% impex.exportItems( ""SolrIndexedType"" , false );"
+
+
+# ---- Extension: commons ---- Type: RendererTemplate ----
+"#% impex.setTargetFile( ""RendererTemplate.csv"" );"
+insert_update RendererTemplate;&Item;code[unique=true,allownull=true];content(catalogVersion(catalog(id),version),code)[lang=en];contextClass;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];defaultContent(catalogVersion(catalog(id),version),code);defaultTemplateScript;description[lang=en];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];outputMimeType;owner(&Item)[forceWrite=true];rendererType(code,itemtype(code))[allownull=true];templateScript[lang=en]
+"#% impex.exportItems( ""RendererTemplate"" , false );"
+
+
+# ---- Extension: ibmsmsasset ---- Type: IbmSmsRendererTemplate ----
+"#% impex.setTargetFile( ""IbmSmsRendererTemplate.csv"" );"
+insert_update IbmSmsRendererTemplate;&Item;code[unique=true,allownull=true];content(catalogVersion(catalog(id),version),code)[lang=en];contextClass;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];defaultContent(catalogVersion(catalog(id),version),code);defaultTemplateScript;description[lang=en];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];outputMimeType;owner(&Item)[forceWrite=true];rendererType(code,itemtype(code))[allownull=true];sender;templateScript[lang=en]
+"#% impex.exportItems( ""IbmSmsRendererTemplate"" , false );"
+
+
+# ---- Extension: catalog ---- Type: ClassificationAttribute ----
+"#% impex.setTargetFile( ""ClassificationAttribute.csv"" );"
+insert_update ClassificationAttribute;&Item;appendValuesFromAttribute;category(catalogVersion(catalog(id),version),code);code[forceWrite=true,unique=true,allownull=true];cpqMedia(catalogVersion(catalog(id),version),qualifier);creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];defaultAttributeValues(code,systemVersion(catalog(id),version));description[lang=en];externalID;modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];name[lang=en];owner(&Item)[forceWrite=true];priority;sapERPCharacteristicLongText[lang=en];systemVersion(catalog(id),version)[unique=true,allownull=true];url;valuesSeparator;visible
+"#% impex.exportItems( ""ClassificationAttribute"" , false );"
+
+# ---- Extension: catalog ---- Type: Keyword ----
+"#% impex.setTargetFile( ""Keyword.csv"" );"
+insert_update Keyword;&Item;catalog(id)[allownull=true];catalogVersion(catalog(id),version)[unique=true,allownull=true];creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];keyword[unique=true,allownull=true];language(isocode)[forceWrite=true,unique=true,allownull=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[forceWrite=true]
+"#% impex.exportItems( ""Keyword"" , false );"
+
+# ---- Extension: catalog ---- Type: ClassificationKeyword ----
+"#% impex.setTargetFile( ""ClassificationKeyword.csv"" );"
+insert_update ClassificationKeyword;&Item;catalog(id)[allownull=true];catalogVersion(catalog(id),version)[unique=true,allownull=true];creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];externalID;keyword[unique=true,allownull=true];language(isocode)[forceWrite=true,unique=true,allownull=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[forceWrite=true]
+"#% impex.exportItems( ""ClassificationKeyword"" , false );"
+
+
+# ---- Extension: catalog ---- Type: Category ----
+"#% impex.setTargetFile( ""Category.csv"" );"
+insert_update Category;&Item;canonicalUrl;catalog(id)[allownull=true];catalogVersion(catalog(id),version)[unique=true,allownull=true];code[unique=true,allownull=true];creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];data_sheet(catalogVersion(catalog(id),version),code);description[lang=en];detail(catalogVersion(catalog(id),version),code);ecomVisible;googleCategoryCode;headerName;includeInSiteMap;logo(catalogVersion(catalog(id),version),code);metaDescription;metaKeywords;metaTitle;modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];name[lang=en];newArrival;newArrivalCategory;normal(catalogVersion(catalog(id),version),code);order;others(catalogVersion(catalog(id),version),code);owner(&Item)[forceWrite=true];pdpVisible;picture(catalogVersion(catalog(id),version),code);plpTextContent[lang=en];popularSearches[lang=en];productCount[allownull=true];resourcePathName;sale;saleCategory;sapCode;sizeChart(code);stockLevelThreshold;thumbnail(catalogVersion(catalog(id),version),code);thumbnails(catalogVersion(catalog(id),version),code)
+"#% impex.exportItems( ""Category"" , false );"
+
+# ---- Extension: catalog ---- Type: ClassificationClass ----
+"#% impex.setTargetFile( ""ClassificationClass.csv"" );"
+insert_update ClassificationClass;&Item;canonicalUrl;catalog(id)[allownull=true];catalogVersion(catalog(id),version)[forceWrite=true,unique=true,allownull=true];code[unique=true,allownull=true];creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];data_sheet(catalogVersion(catalog(id),version),code);declaredClassificationAttributeAssignments(classificationAttribute(code,systemVersion(catalog(id),version)),classificationClass(catalogVersion(catalog(id),version),code),systemVersion(catalog(id),version));description[lang=en];detail(catalogVersion(catalog(id),version),code);ecomVisible;externalID;googleCategoryCode;headerName;hmcXML;includeInSiteMap;logo(catalogVersion(catalog(id),version),code);metaDescription;metaKeywords;metaTitle;modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];name[lang=en];newArrival;newArrivalCategory;normal(catalogVersion(catalog(id),version),code);order;others(catalogVersion(catalog(id),version),code);owner(&Item)[forceWrite=true];pdpVisible;picture(catalogVersion(catalog(id),version),code);plpTextContent[lang=en];popularSearches[lang=en];productCount[allownull=true];resourcePathName;revision;sale;saleCategory;sapCode;showEmptyAttributes[allownull=true];sizeChart(code);stockLevelThreshold;thumbnail(catalogVersion(catalog(id),version),code);thumbnails(catalogVersion(catalog(id),version),code)
+"#% impex.exportItems( ""ClassificationClass"" , false );"
+
+# ---- Extension: catalog ---- Type: ConfigurationCategory ----
+"#% impex.setTargetFile( ""ConfigurationCategory.csv"" );"
+insert_update ConfigurationCategory;&Item;canonicalUrl;catalog(id)[allownull=true];catalogVersion(catalog(id),version)[unique=true,allownull=true];code[unique=true,allownull=true];creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];data_sheet(catalogVersion(catalog(id),version),code);description[lang=en];detail(catalogVersion(catalog(id),version),code);ecomVisible;googleCategoryCode;headerName;includeInSiteMap;logo(catalogVersion(catalog(id),version),code);metaDescription;metaKeywords;metaTitle;modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];name[lang=en];newArrival;newArrivalCategory;normal(catalogVersion(catalog(id),version),code);order;others(catalogVersion(catalog(id),version),code);owner(&Item)[forceWrite=true];pdpVisible;picture(catalogVersion(catalog(id),version),code);plpTextContent[lang=en];popularSearches[lang=en];productCount[allownull=true];resourcePathName;sale;saleCategory;sapCode;sizeChart(code);stockLevelThreshold;thumbnail(catalogVersion(catalog(id),version),code);thumbnails(catalogVersion(catalog(id),version),code)
+"#% impex.exportItems( ""ConfigurationCategory"" , false );"
+
+# ---- Extension: basecommerce ---- Type: VariantCategory ----
+"#% impex.setTargetFile( ""VariantCategory.csv"" );"
+insert_update VariantCategory;&Item;canonicalUrl;catalog(id)[allownull=true];catalogVersion(catalog(id),version)[unique=true,allownull=true];code[unique=true,allownull=true];creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];data_sheet(catalogVersion(catalog(id),version),code);description[lang=en];detail(catalogVersion(catalog(id),version),code);ecomVisible;googleCategoryCode;hasImage[allownull=true];headerName;includeInSiteMap;logo(catalogVersion(catalog(id),version),code);metaDescription;metaKeywords;metaTitle;modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];name[lang=en];newArrival;newArrivalCategory;normal(catalogVersion(catalog(id),version),code);order;others(catalogVersion(catalog(id),version),code);owner(&Item)[forceWrite=true];pdpVisible;picture(catalogVersion(catalog(id),version),code);plpTextContent[lang=en];popularSearches[lang=en];productCount[allownull=true];resourcePathName;sale;saleCategory;sapCode;sequenceId[allownull=true];sizeChart(code);stockLevelThreshold;thumbnail(catalogVersion(catalog(id),version),code);thumbnails(catalogVersion(catalog(id),version),code)
+"#% impex.exportItems( ""VariantCategory"" , false );"
+
+# ---- Extension: basecommerce ---- Type: VariantValueCategory ----
+"#% impex.setTargetFile( ""VariantValueCategory.csv"" );"
+insert_update VariantValueCategory;&Item;canonicalUrl;catalog(id)[allownull=true];catalogVersion(catalog(id),version)[unique=true,allownull=true];code[unique=true,allownull=true];creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];data_sheet(catalogVersion(catalog(id),version),code);description[lang=en];detail(catalogVersion(catalog(id),version),code);ecomVisible;googleCategoryCode;headerName;includeInSiteMap;logo(catalogVersion(catalog(id),version),code);metaDescription;metaKeywords;metaTitle;modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];name[lang=en];newArrival;newArrivalCategory;normal(catalogVersion(catalog(id),version),code);order;others(catalogVersion(catalog(id),version),code);owner(&Item)[forceWrite=true];pdpVisible;picture(catalogVersion(catalog(id),version),code);plpTextContent[lang=en];popularSearches[lang=en];productCount[allownull=true];resourcePathName;sale;saleCategory;sapCode;sequence;sizeChart(code);stockLevelThreshold;thumbnail(catalogVersion(catalog(id),version),code);thumbnails(catalogVersion(catalog(id),version),code)
+"#% impex.exportItems( ""VariantValueCategory"" , false );"
+
+# ---- Extension: processing ---- Type: BusinessProcessParameter ----
+"#% impex.setTargetFile( ""BusinessProcessParameter.csv"" );"
+insert BusinessProcessParameter;&Item;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];name[allownull=true];owner(&Item)[forceWrite=true];process(code)[allownull=true];value[allownull=true]
+"#% impex.exportItems( ""BusinessProcessParameter"" , false );"
+
+# ---- Extension: ibmassetcore ---- Type: IbmReason ----
+"#% impex.setTargetFile( ""IbmReason.csv"" );"
+insert_update IbmReason;&Item;code[unique=true];creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];externalSystemCode;modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];name[lang=en];owner(&Item)[forceWrite=true];parent(code);priority;type(code,itemtype(code))
+"#% impex.exportItems( ""IbmReason"" , false );"
+
+# ---- Extension: orderselfserviceaddon ---- Type: CancelReturnAction ----
+"#% impex.setTargetFile( ""CancelReturnAction.csv"" );"
+insert_update CancelReturnAction;&Item;catalogVersion(catalog(id),version)[unique=true,allownull=true];creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];name;onlyOneRestrictionMustApply[allownull=true];owner(&Item)[forceWrite=true];styleClasses;synchronizationBlocked[allownull=true];uid[unique=true,allownull=true];url;visible[allownull=true]
+"#% impex.exportItems( ""CancelReturnAction"" , false );"
+
+
+# ---- Extension: core ---- Type: Region ----
+"#% impex.setTargetFile( ""Region.csv"" );"
+insert_update Region;&Item;active[allownull=true];country(isocode)[unique=true,allownull=true];creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];externalIsoCode;isocodeShort;isocode[unique=true,allownull=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];name[lang=en];owner(&Item)[forceWrite=true]
+"#% impex.exportItems( ""Region"" , false );"
+
+
+# ---- Extension: processing ---- Type: DynamicProcessDefinition ----
+"#% impex.setTargetFile( ""DynamicProcessDefinition.csv"" );"
+insert DynamicProcessDefinition;&Item;active[allownull=true,forceWrite=true];checksum;code[allownull=true,forceWrite=true];content[allownull=true];creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[forceWrite=true];version[allownull=true]
+"#% impex.exportItems( ""DynamicProcessDefinition"" , false );"
+
+
+# ---- Extension: catalog ---- Type: ClassificationSystemVersion ----
+"#% impex.setTargetFile( ""ClassificationSystemVersion.csv"" );"
+insert_update ClassificationSystemVersion;&Item;active[allownull=true];catalog(id)[forceWrite=true,unique=true,allownull=true];categorySystemDescription[lang=en];categorySystemID;categorySystemName[lang=en];creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];defaultCurrency(isocode);generationDate[dateformat=dd.MM.yyyy hh:mm:ss];generatorInfo;inclAssurance[allownull=true];inclDuty[allownull=true];inclFreight[allownull=true];inclPacking[allownull=true];languages(isocode);mimeRootDirectory;modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[forceWrite=true];previousUpdateVersion;rootCategories(catalogVersion(catalog(id),version),code);territories(isocode);version[unique=true,allownull=true]
+"#% impex.exportItems( ""ClassificationSystemVersion"" , false );"
+
+
+# ---- Extension: acceleratorservices ---- Type: SiteMapConfig ----
+"#% impex.setTargetFile( ""SiteMapConfig.csv"" );"
+insert SiteMapConfig;&Item;configId;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];customUrls;modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[forceWrite=true];siteMapLanguageCurrencies(&Item);siteMapPages(&Item);siteMapTemplate(code)
+"#% impex.exportItems( ""SiteMapConfig"" , false );"
+
+
+# ---- Extension: core ---- Type: Currency ----
+"#% impex.setTargetFile( ""Currency.csv"" );"
+insert_update Currency;&Item;active[allownull=true];base[allownull=true];conversion[allownull=true];creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];digits[allownull=true];isocode[unique=true,allownull=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];name[lang=en];owner(&Item)[forceWrite=true];sapCode;symbol[allownull=true]
+"#% impex.exportItems( ""Currency"" , false );"
+
+
+
+
+# ---- Extension: catalog ---- Type: CategoryCatalogVersionDifference ----
+"#% impex.setTargetFile( ""CategoryCatalogVersionDifference.csv"" );"
+insert_update CategoryCatalogVersionDifference;&Item;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];cronJob(code,maxPriceTolerance,sourceVersion(catalog(id),version),targetVersion(catalog(id),version))[forceWrite=true,unique=true,allownull=true];differenceText;differenceValue;mode(code,itemtype(code))[forceWrite=true,unique=true,allownull=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[forceWrite=true];sourceCategory(catalogVersion(catalog(id),version),code)[forceWrite=true,unique=true];sourceVersion(catalog(id),version)[forceWrite=true,unique=true,allownull=true];targetCategory(catalogVersion(catalog(id),version),code)[forceWrite=true,unique=true];targetVersion(catalog(id),version)[forceWrite=true,unique=true,allownull=true]
+"#% impex.exportItems( ""CategoryCatalogVersionDifference"" , false );"
+
+
+# ---- Extension: deliveryzone ---- Type: Zone ----
+"#% impex.setTargetFile( ""Zone.csv"" );"
+insert_update Zone;&Item;code[unique=true,allownull=true];creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[forceWrite=true]
+"#% impex.exportItems( ""Zone"" , false );"
+
+
+# ---- Extension: fabindiacore ---- Type: SizeChartValueEntry ----
+"#% impex.setTargetFile( ""SizeChartValueEntry.csv"" );"
+insert_update SizeChartValueEntry;&Item;code[unique=true];creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];entries(code);modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[forceWrite=true]
+"#% impex.exportItems( ""SizeChartValueEntry"" , false );"
+
+
+# ---- Extension: cms2 ---- Type: CMSLinkComponent ----
+"#% impex.setTargetFile( ""CMSLinkComponent.csv"" );"
+insert_update CMSLinkComponent;&Item;catalogVersion(catalog(id),version)[unique=true,allownull=true];category(catalogVersion(catalog(id),version),code);categoryPOS;contentPage(catalogVersion(catalog(id),version),uid);contentPagePOS;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];external[allownull=true];fabLineOneSuggestion(catalogVersion(catalog(id),version),uid);fabLineThreeSuggestion(catalogVersion(catalog(id),version),uid);fabLineTwoSuggestion(catalogVersion(catalog(id),version),uid);linkName[lang=en];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];name;onlyOneRestrictionMustApply[allownull=true];owner(&Item)[forceWrite=true];product(catalogVersion(catalog(id),version),code);productPOS;styleAttributes;styleClasses;synchronizationBlocked[allownull=true];target(code,itemtype(code))[allownull=true];uid[unique=true,allownull=true];url;visible[allownull=true]
+"#% impex.exportItems( ""CMSLinkComponent"" , false );"
+
+# ---- Extension: fabindiacore ---- Type: FabCMSLinkComponent ----
+"#% impex.setTargetFile( ""FabCMSLinkComponent.csv"" );"
+insert_update FabCMSLinkComponent;&Item;catalogVersion(catalog(id),version)[unique=true,allownull=true];category(catalogVersion(catalog(id),version),code);categoryPOS;color;contentPage(catalogVersion(catalog(id),version),uid);contentPagePOS;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];external[allownull=true];fabLineOneSuggestion(catalogVersion(catalog(id),version),uid);fabLineThreeSuggestion(catalogVersion(catalog(id),version),uid);fabLineTwoSuggestion(catalogVersion(catalog(id),version),uid);fontColor;linkName[lang=en];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];name;onlyOneRestrictionMustApply[allownull=true];owner(&Item)[forceWrite=true];product(catalogVersion(catalog(id),version),code);productPOS;shape;styleAttributes;styleClasses;synchronizationBlocked[allownull=true];target(code,itemtype(code))[allownull=true];uid[unique=true,allownull=true];url;visible[allownull=true]
+"#% impex.exportItems( ""FabCMSLinkComponent"" , false );"
+
+
+# ---- Extension: basecommerce ---- Type: PointOfService ----
+"#% impex.setTargetFile( ""PointOfService.csv"" );"
+insert_update PointOfService;&Item;address(&Item);asmReport(&Item);baseStore(uid);businessCategory;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];description;displayName;geocodeTimestamp[dateformat=dd.MM.yyyy hh:mm:ss];latitude;longitude;mapIcon(catalogVersion(catalog(id),version),code);mapLink;modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];name[forceWrite=true,unique=true,allownull=true];nearbyStoreRadius;openingSchedule(code);owner(&Item)[forceWrite=true];sapoaa_cacShippingPoint;storeContent[lang=en];storeImage(catalogVersion(catalog(id),version),qualifier);type(code,itemtype(code))[allownull=true]
+"#% impex.exportItems( ""PointOfService"" , false );"
+
+# ---- Extension: ibmproductconfiguratortemplatecore ---- Type: IbmProductConfiguredProductInfo ----
+"#% impex.setTargetFile( ""IbmProductConfiguredProductInfo.csv"" );"
+insert IbmProductConfiguredProductInfo;&Item;configuratorType(code,itemtype(code))[allownull=true,forceWrite=true];configuredFeatureAddon(catalogVersion(catalog(id),version),code);configuredFeatureAddonPrice;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];orderEntry(entryNumber)[allownull=true,forceWrite=true];orderEntryPOS;owner(&Item)[forceWrite=true];productInfoStatus(code,itemtype(code))[allownull=true]
+"#% impex.exportItems( ""IbmProductConfiguredProductInfo"" , false );"
+
+
+# ---- Extension: apiregistryservices ---- Type: BasicCredential ----
+"#% impex.setTargetFile( ""BasicCredential.csv"" );"
+insert_update BasicCredential;&Item;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];id[unique=true,allownull=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[allownull=true,forceWrite=true];password[allownull=true];username[allownull=true]
+"#% impex.exportItems( ""BasicCredential"" , false );"
+
+# ---- Extension: ibmassetcore ---- Type: IbmBasicCredential ----
+"#% impex.setTargetFile( ""IbmBasicCredential.csv"" );"
+insert_update IbmBasicCredential;&Item;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];id[unique=true,allownull=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[allownull=true,forceWrite=true];password[allownull=true];username[allownull=true]
+"#% impex.exportItems( ""IbmBasicCredential"" , false );"
+
+# ---- Extension: ibmqwikcilverassetcore ---- Type: IbmQwikcilverBasicCredential ----
+"#% impex.setTargetFile( ""IbmQwikcilverBasicCredential.csv"" );"
+insert_update IbmQwikcilverBasicCredential;&Item;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];forwardingEntityId;forwardingEntityPassword;id[unique=true,allownull=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[allownull=true,forceWrite=true];password[allownull=true];terminalId;username[allownull=true]
+"#% impex.exportItems( ""IbmQwikcilverBasicCredential"" , false );"
+
+
+# ---- Extension: fabindiacore ---- Type: ProductCurrencyBasedDetails ----
+"#% impex.setTargetFile( ""ProductCurrencyBasedDetails.csv"" );"
+insert_update ProductCurrencyBasedDetails;&Item;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];currency(isocode)[unique=true];estimatedDelivery;modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[allownull=true,forceWrite=true];productCode[unique=true]
+"#% impex.exportItems( ""ProductCurrencyBasedDetails"" , false );"
+
+
+# ---- Extension: core ---- Type: Country ----
+"#% impex.setTargetFile( ""Country.csv"" );"
+insert_update Country;&Item;active[allownull=true];creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];isocode[unique=true,allownull=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];name[lang=en];owner(&Item)[allownull=true,forceWrite=true];sapCode
+"#% impex.exportItems( ""Country"" , false );"
+
+
+# ---- Extension: apiregistryservices ---- Type: ConsumedDestination ----
+"#% impex.setTargetFile( ""ConsumedDestination.csv"" );"
+insert_update ConsumedDestination;&Item;active[allownull=true];additionalProperties();creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];credential(id);destinationTarget(id)[forceWrite=true,unique=true,allownull=true];endpoint(id,version);id[forceWrite=true,unique=true,allownull=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[allownull=true,forceWrite=true];url[allownull=true]
+"#% impex.exportItems( ""ConsumedDestination"" , false );"
+
+# ---- Extension: ibmassetcore ---- Type: IbmConsumedDestination ----
+"#% impex.setTargetFile( ""IbmConsumedDestination.csv"" );"
+insert_update IbmConsumedDestination;&Item;active[allownull=true];additionalProperties();creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];credential(id);customUri;destinationTarget(id)[forceWrite=true,unique=true,allownull=true];endpoint(id,version);id[forceWrite=true,unique=true,allownull=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[allownull=true,forceWrite=true];url[allownull=true]
+"#% impex.exportItems( ""IbmConsumedDestination"" , false );"
+
+# ---- Extension: warehousing ---- Type: AtpFormula ----
+"#% impex.setTargetFile( ""AtpFormula.csv"" );"
+insert_update AtpFormula;&Item;allocation;availability;cancellation;code[unique=true,allownull=true];creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];external;increase;modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[allownull=true,forceWrite=true];reserved;returned;shrinkage;wastage
+"#% impex.exportItems( ""AtpFormula"" , false );"
+
+
+# ---- Extension: catalog ---- Type: ProductFeature ----
+"#% impex.setTargetFile( ""ProductFeature.csv"" );"
+insert_update ProductFeature;&Item;author;booleanValue;classificationAttributeAssignment(classificationAttribute(code,systemVersion(catalog(id),version)),classificationClass(catalogVersion(catalog(id),version),code),systemVersion(catalog(id),version))[forceWrite=true];creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];description;featurePosition;language(isocode)[forceWrite=true,unique=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];numberValue;owner(&Item)[allownull=true,forceWrite=true];product(catalogVersion(catalog(id),version),code)[forceWrite=true,unique=true,allownull=true];productPOS;qualifier[forceWrite=true,unique=true,allownull=true];rawValue;stringValue;unit(code,systemVersion(catalog(id),version),unitType)[unique=true];valueDetails;valuePosition[unique=true];valueType;value[allownull=true]
+"#% impex.exportItems( ""ProductFeature"" , false );"
+
+
+
+# ---- Extension: consignmenttrackingservices ---- Type: Carrier ----
+"#% impex.setTargetFile( ""Carrier.csv"" );"
+insert_update Carrier;&Item;code[unique=true,allownull=true];creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];name[lang=en];owner(&Item)[allownull=true,forceWrite=true];trackingUrl
+"#% impex.exportItems( ""Carrier"" , false );"
+
+
+
+# ---- Extension: core ---- Type: Product ----
+"#% impex.setTargetFile( ""Product.csv"" );"
+insert_update Product;&Item;Europe1PriceFactory_PDG(code,itemtype(code));Europe1PriceFactory_PPG(code,itemtype(code));Europe1PriceFactory_PTG(code,itemtype(code));additionalDetails[lang=en];ageGroup;approvalDate[dateformat=dd.MM.yyyy hh:mm:ss];approvalStatus(code,itemtype(code))[allownull=true];articleStatus[lang=en];assembled;brandId;buyerIDS(key(code,itemtype(code)));careInstructions[lang=en];catalog(id)[allownull=true];catalogVersion(catalog(id),version)[unique=true,allownull=true];code[unique=true,allownull=true];collection;colorFilter;commercialName;configuratorSetting(&Item);contentUnit(code);countryOfOrigin;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];currencyBasedDetails(currency(isocode),productCode);data_sheet(catalogVersion(catalog(id),version),code);default;deliveryTime;description[lang=en];detail(catalogVersion(catalog(id),version),code);dimensions;discountable;domesticOnly;eComSapCategoryCode;ean;ecomName[lang=en];endLineNumber;erpGroupBuyer;erpGroupSupplier;europe1Discounts(&Item);europe1Prices(&Item);europe1Taxes(&Item);galleryImages(catalogVersion(catalog(id),version),qualifier);gender;giftByOccassion;indexingDisabled;logo(catalogVersion(catalog(id),version),code);manufacturerAID;manufacturerAddress;manufacturerName;manufacturerTypeDescription[lang=en];marketedBy;maxOrderQuantity;minOrderQuantity;modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];name[lang=en];nonReturnable;normal(catalogVersion(catalog(id),version),code);numberContentUnits;offlineDate[dateformat=dd.MM.yyyy hh:mm:ss];onlineDate[dateformat=dd.MM.yyyy hh:mm:ss];optionId;order;orderQuantityInterval;others(catalogVersion(catalog(id),version),code);owner(&Item)[allownull=true,forceWrite=true];packagedBy;picture(catalogVersion(catalog(id),version),code);priceQuantity;productCountBestSeller;productOrderLimit(&Item);productSwatchColor(code);remarks[lang=en];returnable;reviewCount;reviewRating;sapArticleNumber;sapBaseUnitConversion;sapBlocked;sapBlockedDate[dateformat=dd.MM.yyyy hh:mm:ss];sapConfigurable;sapEAN;sapPlant(&Item);segment[lang=en];sequenceId;shelflife;sizeChart(code);soldIndividually;specialTreatmentClasses();startLineNumber;structuredArticleType(code,itemtype(code));subscriptionTerm(id);summary[lang=en];supplierAlternativeAID;tagName;thumbnail(catalogVersion(catalog(id),version),code);thumbnails(catalogVersion(catalog(id),version),code);unit(code);untypedFeatures(language(isocode),product(catalogVersion(catalog(id),version),code),qualifier,unit(code,systemVersion(catalog(id),version),unitType),valuePosition);variantType(code);xmlcontent
+"#% impex.exportItems( ""Product"" , false );"
+
+
+# ---- Extension: basecommerce ---- Type: GenericVariantProduct ----
+"#% impex.setTargetFile( ""GenericVariantProduct.csv"" );"
+insert_update GenericVariantProduct;&Item;Europe1PriceFactory_PDG(code,itemtype(code));Europe1PriceFactory_PPG(code,itemtype(code));Europe1PriceFactory_PTG(code,itemtype(code));additionalDetails[lang=en];ageGroup;approvalDate[dateformat=dd.MM.yyyy hh:mm:ss];approvalStatus(code,itemtype(code))[allownull=true];articleStatus[lang=en];assembled;baseProduct(catalogVersion(catalog(id),version),code)[allownull=true];brandId;buyerIDS(key(code,itemtype(code)));careInstructions[lang=en];catalog(id)[allownull=true];catalogVersion(catalog(id),version)[unique=true,allownull=true];code[unique=true,allownull=true];collection;colorFilter;commercialName;configuratorSetting(&Item);contentUnit(code);countryOfOrigin;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];currencyBasedDetails(currency(isocode),productCode);data_sheet(catalogVersion(catalog(id),version),code);default;deliveryTime;description[lang=en];detail(catalogVersion(catalog(id),version),code);dimensions;discountable;domesticOnly;eComSapCategoryCode;ean;ecomName[lang=en];endLineNumber;erpGroupBuyer;erpGroupSupplier;europe1Discounts(&Item);europe1Prices(&Item);europe1Taxes(&Item);galleryImages(catalogVersion(catalog(id),version),qualifier);gender;giftByOccassion;indexingDisabled;logo(catalogVersion(catalog(id),version),code);manufacturerAID;manufacturerAddress;manufacturerName;manufacturerTypeDescription[lang=en];marketedBy;maxOrderQuantity;minOrderQuantity;modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];name[lang=en];nonReturnable;normal(catalogVersion(catalog(id),version),code);numberContentUnits;offlineDate[dateformat=dd.MM.yyyy hh:mm:ss];onlineDate[dateformat=dd.MM.yyyy hh:mm:ss];optionId;order;orderQuantityInterval;others(catalogVersion(catalog(id),version),code);owner(&Item)[allownull=true,forceWrite=true];packagedBy;picture(catalogVersion(catalog(id),version),code);priceQuantity;productCountBestSeller;productOrderLimit(&Item);productSwatchColor(code);remarks[lang=en];returnable;reviewCount;reviewRating;sapArticleNumber;sapBaseUnitConversion;sapBlocked;sapBlockedDate[dateformat=dd.MM.yyyy hh:mm:ss];sapConfigurable;sapEAN;sapPlant(&Item);segment[lang=en];sequenceId;shelflife;sizeChart(code);soldIndividually;specialTreatmentClasses();startLineNumber;structuredArticleType(code,itemtype(code));subscriptionTerm(id);summary[lang=en];supplierAlternativeAID;tagName;thumbnail(catalogVersion(catalog(id),version),code);thumbnails(catalogVersion(catalog(id),version),code);unit(code);untypedFeatures(language(isocode),product(catalogVersion(catalog(id),version),code),qualifier,unit(code,systemVersion(catalog(id),version),unitType),valuePosition);variantType(code);xmlcontent
+"#% impex.exportItems( ""GenericVariantProduct"" , false );"
+
+
+# ---- Extension: core ---- Type: DeliveryMode ----
+"#% impex.setTargetFile( ""DeliveryMode.csv"" );"
+insert_update DeliveryMode;&Item;active[allownull=true];code[unique=true,allownull=true];creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];description[lang=en];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];name[lang=en];owner(&Item)[allownull=true,forceWrite=true];supportedPaymentModes(code);supportedPaymentModesInternal
+"#% impex.exportItems( ""DeliveryMode"" , false );"
+
+# ---- Extension: commerceservices ---- Type: PickUpDeliveryMode ----
+"#% impex.setTargetFile( ""PickUpDeliveryMode.csv"" );"
+insert_update PickUpDeliveryMode;&Item;active[allownull=true];code[unique=true,allownull=true];creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];description[lang=en];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];name[lang=en];owner(&Item)[allownull=true,forceWrite=true];supportedMode(code,itemtype(code));supportedPaymentModes(code);supportedPaymentModesInternal
+"#% impex.exportItems( ""PickUpDeliveryMode"" , false );"
+
+# ---- Extension: deliveryzone ---- Type: ZoneDeliveryMode ----
+"#% impex.setTargetFile( ""ZoneDeliveryMode.csv"" );"
+insert_update ZoneDeliveryMode;&Item;active[allownull=true];code[unique=true,allownull=true];creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];description[lang=en];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];name[lang=en];net[allownull=true];owner(&Item)[allownull=true,forceWrite=true];propertyName[allownull=true];supportedPaymentModes(code);supportedPaymentModesInternal
+"#% impex.exportItems( ""ZoneDeliveryMode"" , false );"
+
+
+# ---- Extension: catalog ---- Type: ClassificationAttributeUnit ----
+"#% impex.setTargetFile( ""ClassificationAttributeUnit.csv"" );"
+insert_update ClassificationAttributeUnit;&Item;code[unique=true,allownull=true];conversionFactor;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];externalID;modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];name[lang=en];owner(&Item)[allownull=true,forceWrite=true];sapCode;symbol[allownull=true];systemVersion(catalog(id),version)[forceWrite=true,unique=true,allownull=true];unitType[unique=true]
+"#% impex.exportItems( ""ClassificationAttributeUnit"" , false );"
+
+# ---- Extension: cms2 ---- Type: CMSNavigationNode ----
+"#% impex.setTargetFile( ""CMSNavigationNode.csv"" );"
+insert_update CMSNavigationNode;&Item;catalogVersion(catalog(id),version)[unique=true,allownull=true];creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];name;onlyOneRestrictionMustApply;owner(&Item)[allownull=true,forceWrite=true];parent(catalogVersion(catalog(id),version),uid);parentPOS;synchronizationBlocked[allownull=true];title[lang=en];uid[unique=true,allownull=true];visible[allownull=true]
+"#% impex.exportItems( ""CMSNavigationNode"" , false );"
+
+
+# ---- Extension: acceleratorcms ---- Type: ProductVariantSelectorComponent ----
+"#% impex.setTargetFile( ""ProductVariantSelectorComponent.csv"" );"
+insert_update ProductVariantSelectorComponent;&Item;catalogVersion(catalog(id),version)[unique=true,allownull=true];creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];name;onlyOneRestrictionMustApply[allownull=true];owner(&Item)[allownull=true,forceWrite=true];styleClasses;synchronizationBlocked[allownull=true];uid[unique=true,allownull=true];visible[allownull=true]
+"#% impex.exportItems( ""ProductVariantSelectorComponent"" , false );"
+
+
+# ---- Extension: core ---- Type: Unit ----
+"#% impex.setTargetFile( ""Unit.csv"" );"
+insert_update Unit;&Item;code[unique=true,allownull=true];conversion;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];name[lang=en];owner(&Item)[allownull=true,forceWrite=true];sapCode;unitType[allownull=true]
+"#% impex.exportItems( ""Unit"" , false );"
+
+
+# ---- Extension: core ---- Type: PaymentMode ----
+"#% impex.setTargetFile( ""PaymentMode.csv"" );"
+insert_update PaymentMode;&Item;active[allownull=true];code[unique=true,allownull=true];creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];description[lang=en];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];name[lang=en];owner(&Item)[allownull=true,forceWrite=true];paymentInfoType(code)[allownull=true]
+"#% impex.exportItems( ""PaymentMode"" , false );"
+
+# ---- Extension: paymentstandard ---- Type: StandardPaymentMode ----
+"#% impex.setTargetFile( ""StandardPaymentMode.csv"" );"
+insert_update StandardPaymentMode;&Item;active[allownull=true];code[unique=true,allownull=true];creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];description[lang=en];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];name[lang=en];net[allownull=true];owner(&Item)[allownull=true,forceWrite=true];paymentInfoType(code)[allownull=true]
+"#% impex.exportItems( ""StandardPaymentMode"" , false );"
+
+
+# ---- Extension: catalog ---- Type: ClassificationSystem ----
+"#% impex.setTargetFile( ""ClassificationSystem.csv"" );"
+insert_update ClassificationSystem;&Item;activeCatalogVersion(catalog(id),version);buyer(uid);creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];defaultCatalog[allownull=true];id[unique=true,allownull=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];name[lang=en];owner(&Item)[allownull=true,forceWrite=true];previewURLTemplate;supplier(uid);urlPatterns
+"#% impex.exportItems( ""ClassificationSystem"" , false );"
+
+
+# ---- Extension: europe1 ---- Type: PriceRow ----
+"#% impex.setTargetFile( ""PriceRow.csv"" );"
+insert PriceRow;&Item;catalogVersion(catalog(id),version);channel(code,itemtype(code));creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];currency(isocode)[allownull=true];dateRange[dateformat=dd.MM.yyyy hh:mm:ss];endTime[dateformat=dd.MM.yyyy hh:mm:ss];giveAwayPrice[allownull=true];matchValue;minqtd[allownull=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];net[allownull=true];owner(&Item)[allownull=true,forceWrite=true];pg(code,itemtype(code))[forceWrite=true];price[allownull=true];product(catalogVersion(catalog(id),version),code)[forceWrite=true];productId[forceWrite=true];productMatchQualifier;sapConditionId;sequenceId;startTime[dateformat=dd.MM.yyyy hh:mm:ss];ug(code,itemtype(code));unit(code)[allownull=true];unitFactor[allownull=true];user(uid);userMatchQualifier
+"#% impex.exportItems( ""PriceRow"" , false );"
+
+
+# ---- Extension: basecommerce ---- Type: StockLevel ----
+"#% impex.setTargetFile( ""StockLevel.csv"" );"
+insert StockLevel;&Item;asnEntry(&Item);available[allownull=true];bin;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];disableUpdate;inStockStatus(code,itemtype(code));maxPreOrder[allownull=true];maxStockLevelHistoryCount[allownull=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];nextDeliveryTime[dateformat=dd.MM.yyyy hh:mm:ss];overSelling[allownull=true];owner(&Item)[allownull=true,forceWrite=true];preOrder[allownull=true];product(catalogVersion(catalog(id),version),code);productCode[allownull=true];releaseDate[dateformat=dd.MM.yyyy hh:mm:ss];reserved[allownull=true];sapoaa_roughStockIndicator;sapoaa_roughStockIndicator_availabilityDate[dateformat=dd.MM.yyyy hh:mm:ss];treatNegativeAsZero[allownull=true];warehouse(&Item)[allownull=true,forceWrite=true]
+"#% impex.exportItems( ""StockLevel"" , false );"
+
+# ---- Extension: catalog ---- Type: ProductCatalogVersionDifference ----
+"#% impex.setTargetFile( ""ProductCatalogVersionDifference.csv"" );"
+insert_update ProductCatalogVersionDifference;&Item;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];cronJob(code,maxPriceTolerance,sourceVersion(catalog(id),version),targetVersion(catalog(id),version))[forceWrite=true,unique=true,allownull=true];differenceText;differenceValue;mode(code,itemtype(code))[forceWrite=true,unique=true,allownull=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];owner(&Item)[allownull=true,forceWrite=true];sourceProduct(catalogVersion(catalog(id),version),code)[forceWrite=true,unique=true];sourceVersion(catalog(id),version)[forceWrite=true,unique=true,allownull=true];targetProduct(catalogVersion(catalog(id),version),code)[forceWrite=true,unique=true];targetVersion(catalog(id),version)[forceWrite=true,unique=true,allownull=true]
+"#% impex.exportItems( ""ProductCatalogVersionDifference"" , false );"
+
+
+# ---- Extension: apiregistryservices ---- Type: ConsumedOAuthCredential ----
+"#% impex.setTargetFile( ""ConsumedOAuthCredential.csv"" );"
+insert_update ConsumedOAuthCredential;&Item;clientId[allownull=true];clientSecret;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];id[unique=true,allownull=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];oAuthUrl;owner(&Item)[allownull=true,forceWrite=true]
+"#% impex.exportItems( ""ConsumedOAuthCredential"" , false );"
+
+# ---- Extension: ibmassetcore ---- Type: IbmConsumedOAuthCredential ----
+"#% impex.setTargetFile( ""IbmConsumedOAuthCredential.csv"" );"
+insert_update IbmConsumedOAuthCredential;&Item;clientAuthToken;clientId[allownull=true];clientSecret;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];id[unique=true,allownull=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];oAuthUrl;owner(&Item)[allownull=true,forceWrite=true]
+"#% impex.exportItems( ""IbmConsumedOAuthCredential"" , false );"
+
+# ---- Extension: ibmgravityassetcore ---- Type: IbmGravityConsumedOAuthCredential ----
+"#% impex.setTargetFile( ""IbmGravityConsumedOAuthCredential.csv"" );"
+insert_update IbmGravityConsumedOAuthCredential;&Item;clientAuthToken;clientId[allownull=true];clientSecret;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];id[unique=true,allownull=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];oAuthUrl;owner(&Item)[allownull=true,forceWrite=true]
+"#% impex.exportItems( ""IbmGravityConsumedOAuthCredential"" , false );"
+
+# ---- Extension: ibmshiprocketassetcore ---- Type: IbmShipRocketConsumedOAuthCredential ----
+"#% impex.setTargetFile( ""IbmShipRocketConsumedOAuthCredential.csv"" );"
+insert_update IbmShipRocketConsumedOAuthCredential;&Item;clientAuthToken;clientId[allownull=true];clientSecret;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];id[unique=true,allownull=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];oAuthUrl;owner(&Item)[allownull=true,forceWrite=true]
+"#% impex.exportItems( ""IbmShipRocketConsumedOAuthCredential"" , false );"
+
+# ---- Extension: ibmvaluefirstassetcore ---- Type: IbmValueFirstConsumedOAuthCredential ----
+"#% impex.setTargetFile( ""IbmValueFirstConsumedOAuthCredential.csv"" );"
+insert_update IbmValueFirstConsumedOAuthCredential;&Item;clientAuthToken;clientId[allownull=true];clientSecret;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];id[unique=true,allownull=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];oAuthUrl;owner(&Item)[allownull=true,forceWrite=true]
+"#% impex.exportItems( ""IbmValueFirstConsumedOAuthCredential"" , false );"
+
+# ---- Extension: ibmqwikcilverassetcore ---- Type: IbmQwikcilverConsumedOAuthCredential ----
+"#% impex.setTargetFile( ""IbmQwikcilverConsumedOAuthCredential.csv"" );"
+insert_update IbmQwikcilverConsumedOAuthCredential;&Item;batchId;clientAuthToken;clientId[allownull=true];clientSecret;creationtime[forceWrite=true,dateformat=dd.MM.yyyy hh:mm:ss];id[unique=true,allownull=true];modifiedtime[dateformat=dd.MM.yyyy hh:mm:ss];oAuthUrl;owner(&Item)[allownull=true,forceWrite=true]
+"#% impex.exportItems( ""IbmQwikcilverConsumedOAuthCredential"" , false );"
+

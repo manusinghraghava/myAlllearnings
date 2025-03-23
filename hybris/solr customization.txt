@@ -1,0 +1,662 @@
+So first we understand the logic of solr ?
+
+Introduction:- Solr in Hybris  is used to Store the data in Indexed or meaningful or arranged way, in solr data stores in the form of json so searching makes easy. It helps to make the searching faster and efficient so that our application can reduce it's time, because it holds the arranged or indexed data so while searching the products it helps to reduce the CPU time..
+
+Here Some Importent Questions are given,which are listed below:-
+
+Q1) Why we are using Provider/Resolver?
+
+ans:- We are fetching data from Hybris Database and inserting it to the Solr, if we want to do some modification on data in between fetching from Hybris Database and inserting into solr. So for this we are using Provider/Resolver Otherwise there is no need of using it.
+
+Q2 When to use Provider and when to use Resolver?
+
+ans:- ValueProveder is now depricated from Hybris version 5.5 onwards, so it is recommanded to create own class and extend AbstractValueResolver class and and Override addFieldValues() method.
+
+ 
+
+For index or arrange the data in solr, we have to do indexing of the product.
+
+In Solr three types of Indexing are there which are listed below:
+
+(I) Full Indexing
+
+(II)Update Indexing
+
+(III)Delete Indexing
+
+(I) Full Indexing :- In this strategy of indexing firstly it deletes all the Indexed documents and after that it will  do freshly indexing from the scratch. In Full Indexing 2 modes are there....
+
+Direct Mode :- While using this mode of Full Indexing if error occurs and indexing fails than  lastly committed data will be available.
+
+Two Phase Mode :- While using this mode of Full Indexing if error occurs and indexing fails than data will be rolled back to it's initial stage.
+
+
+(II) Update Indexing :- In this strategy of indexing only new or modified documents will come under indexing.. It consumes less time compare than Full Indexing.
+
+(III) Delete Indexing :- In this strategy of indexing it used to remove indexed data.....It is used to maintain the consistency of indexed data as we might have Unwanted Indexed Data in solr from a long time.
+
+-----------------------------------------
+
+There are three ways to set up a Solr integration with Hybris CX, depending on the version.
+
+Embedded - It means Solr will execute as an external process inside the same JVM that runs SAP Hybris CX process. this mode is suitable for development, it's not recommended for Production environments, Because It could be crashes or fatal or both and would be difficult to setup, monitor and scale individually.
+
+Standalone - Standalone mode is the commonly recommended setup for Production. Solr is executed in its own JVM which makes it much easier to monitor reliability and scalability. Production environment should always use a Solr cluster, which runs multiple Solr instances running in standalone mode.
+
+Solr Cloud - For SAP Hybris Cloud on public infrastructure, Solr Cloud is the default. Support for Solr Cloud was introduced in SAP Commerce v6.2 as a new way to set up Solr. It complements the standalone cluster mode for production use for scalability and availability. Solr Cloud leverages Apache Zookeeper, index sharding and replicas to manage large index scalability with ease.
+
+
+
+--------------------------------------------
+Hybris OOTB Solr configuration-->
+Hybris OOTB, you can find solr setup at hybris/bin/ext-commerce/solrserver/resources/solr/.
+
+The default configuration is as follows:
+
+solrserver.instances.default.autostart=true
+
+solrserver.instances.default.mode=standalone
+
+solrserver.instances.default.hostname=localhost
+
+solrserver.instances.default.port=8983
+
+solrserver.instances.default.memory=512m
+
+Here, we can see autostart=true which tell Solr server to start and stop together with the Hybris platform.
+
+----------------------
+Cloud Solr Server setup-->
+you have to disable the autostart in the project.properties
+
+
+solrserver.instances.default.autostart=false
+
+solrserver.instances.cloud.autostart=true
+
+you can override the following default configuration included in the local.properties file to make it suitable to your needs:
+
+# disables the autostart for the default Solr instance
+
+
+solrserver.instances.cloud.mode=cloud
+
+solrserver.instances.cloud.hostname=localhost
+
+solrserver.instances.cloud.port=8983
+
+solrserver.instances.cloud.memory=512m
+
+solrserver.instances.cloud.zk.host=
+
+solrserver.instances.cloud.zk.upconfig=true
+
+---------------------------------------------------
+An index consists of documents which are essentially a collection of fields. If we compare data model to relational database, we found the following similarities:
+
+An index is roughly the same as a database table.
+
+A document is similar to the a row of a database table.
+
+A field means the same as a column of a database table.
+
+
+Solr index can accept data from many different sources, including XML files, comma-separated value (CSV) files, data extracted from tables in a database etc. In Hybris, Indexing process starts with exporting data from SAP Hybris [CX] database to Solr. Solr requires some time for the index operations. Once completed, the index is then replicated to the registered Solr replicas. 
+
+
+===================================================
+-------------------------------------------------
+Now let's understand the solr Configuration -->
+
+solr.impex
+solr.impex file contains the configuration of Solr server, indexing types , facets etc. It is exist on below path 
+
+/import/coredata/stores/hybris/solr.impex
+
+-------
+Create Solr server configuration
+SolrServerConfig table is used to manage for solr server configuration name and mode of the server to indicate whether it’s embedded or standalone server. we will insert data in table based of mode of server.
+
+$serverConfigName=expertshybrisSolrServerConfig
+
+//embedded 
+
+INSERT_UPDATE SolrServerConfig;name[unique=true];mode(code);embeddedMaster
+;$serverConfigName;embedded;true
+
+//standalone
+;$serverConfigName;standalone ;false
+
+For standalone solr server configuration , we need insert data to SolrEndpointUrl table .It means actual URL on which solr is running. 
+INSERT_UPDATE SolrEndpointUrl;solrServerConfig(name)[unique=true];url[unique=true]; master[unique=true,default=false]
+
+;$serverConfigName;standalone;http://localhost:8983/solr;true
+------------------------------------------------------------
+
+Create Solr indexer configuration
+$indexConfigName=expertshybrisSolrIndexConfig
+INSERT_UPDATE SolrIndexConfig;name[unique=true];batchSize;numberOfThreads;indexMode(code);
+;$indexConfigName;100;1;TWO_PHASE;
+
+Here we have decided phase of indexing.
+
+------------------------------------------------------------
+Create the faceted search configuration
+$searchConfigName=expertshybrisPageSize
+INSERT_UPDATE SolrSearchConfig;description[unique=true];pageSize
+;$searchConfigName;20
+
+this is search configuration for facets.
+-------------------------------------------------------------
+
+Declare the indexed type Product
+
+Below impex is used for define the hybris item types to be indexed in the SolrIndexedType  
+$solrIndexedType=expertshybrisProductType
+INSERT_UPDATE SolrIndexedType;identifier[unique=true];type(code);variant;sorts(&sortRefID)
+;$solrIndexedType;Product;false;sortRef3,sortRef4,sortRef5,sortRef6
+
+--------------------------------------------------------------
+
+Define Facet Search Config
+ Faceting is the arrangement of search results into categories based on indexed terms. We need to define below impex for SolrFacetSearchConfig which is associate to solrServerConfig, solrSearchConfig, solrIndexConfig, solrIndexedTypes & Product catalog etc.
+
+$facetSearchConfigName=expertshybrisIndex
+$facetSearchConfigDescription=Experts Hybris Index
+$searchIndexNamePrefix=expertshybris
+$indexBaseSite=expertshybris
+$indexLanguages=en
+$indexCurrencies=USD
+$serverConfigName=expertshybrisSolrServerConfig
+$indexConfigName=expertshybrisSolrIndexConfig
+$solrIndexedType=expertshybrisProductType
+$productCatalog=expertshybrisProductCatalog
+$catalogVersions=catalogVersions(catalog(id),version);
+
+INSERT_UPDATE SolrFacetSearchConfig;name[unique=true];description;indexNamePrefix;languages(isocode);currencies(isocode);solrServerConfig(name);solrSearchConfig(description);solrIndexConfig(name);solrIndexedTypes(identifier);enabledLanguageFallbackMechanism;$catalogVersions
+
+;$facetSearchConfigName;$facetSearchConfigDescription;$searchIndexNamePrefix;$indexLanguages;$indexCurrencies;$serverConfigName;$searchConfigName;$indexConfigName;$solrIndexedType;true;$productCatalog:Online,$productCatalog:Staged
+
+-----------------------------------------------------------------------------------------------
+
+Associate solr to website
+Below impex is used for link to website 
+
+$indexBaseSite=expertshybris
+$facetSearchConfigName=expertshybrisIndex
+UPDATE BaseSite;uid[unique=true];solrFacetSearchConfiguration(name)
+;$indexBaseSite;$facetSearchConfigName
+
+---------------------------------------------------------------------------------------------------
+Defining the range value set
+you have seen in commerce website where price range facet which help to search product based on price range. which can create with help to solr range value set. Below impex is used to define value range set. We will insert value in SolrValueRangeSet & SolrValueRange table. Both impex is associated with each other.
+
+
+=====================================================
+Defining the range value set
+you have seen in commerce website where price range facet which help to search product based on price range. which can create with help to solr range value set. Below impex is used to define value range set. We will insert value in SolrValueRangeSet & SolrValueRange table. Both impex is associated with each other.
+
+INSERT_UPDATE SolrValueRangeSet;name[unique=true];qualifier;type;solrValueRanges(&rangeValueRefID)
+;expertshybrisPriceRangeUSD;USD;double;rangeRefUSD1,rangeRefUSD,rangeRefUSD,rangeRefUSD4,rangeRefUSD5,rangeRefUSD6
+# Define price ranges
+
+INSERT_UPDATE SolrValueRange;&rangeValueRefID;solrValueRangeSet(name)[unique=true]; name[unique=true]; from;to
+;rangeRefUSD1;expertshybrisPriceRangeUSD;    $0-$49.99;              0;   49.99
+;rangeRefUSD2;expertshybrisPriceRangeUSD;    $50-$199.99;          50;  199.99
+;rangeRefUSD3;expertshybrisPriceRangeUSD;    $200-$499.99;        200; 499.99
+;rangeRefUSD4;expertshybrisPriceRangeUSD;    $500-$999.99;        500; 999.99
+;rangeRefUSD5;expertshybrisPriceRangeUSD;    $1,000-$99,999.99;1000; 99999.99
+;rangeRefUSD6;expertshybrisPriceRangeUSD;    $100,000-more;     100000;
+
+--------------------------------------------------------------------
+Define the non-facet indexed
+Non-Facet is the arrangement of search based indexed properties but not part of facet. When we make many property value searchable then we have required to index properties in solr. which make fast search on website. We need to define different features for each property on how it should be indexed, We also need to define the Value provider for some of the attributes whose value cannot be understood by Solr directly. Value provide has help to provide value as per solr required.
+
+$solrIndexedType=expertshybrisProductType
+
+INSERT_UPDATE SolrIndexedProperty;solrIndexedType(identifier)[unique=true];name[unique=true]; type(code); sortableType(code);currency[default=false];localized[default=false];multiValue[default=false];useForSpellchecking[default=false];useForAutocomplete[default=false];fieldValueProvider;valueProviderParameter;ftsPhraseQuery[default=false];ftsPhraseQueryBoost;ftsQuery[default=false];ftsQueryBoost;ftsFuzzyQuery[default=false];ftsFuzzyQueryBoost;ftsWildcardQuery[default=false];ftsWildcardQueryType(code)[default=POSTFIX]; ftsWildcardQueryBoost;ftsWildcardQueryMinTermLength
+
+;$solrIndexedType; itemtype ;string ;  ;    ;    ;    ;    ;    ;    ;  ;    ;   ;    ;   ;    ;  ;    ;   ;  ;
+;$solrIndexedType; code ;string ; ;  ; ; ;true;true;springELValueProvider  ;code; ; ;true;90 ;  ;  ;true;POSTFIX;45;3
+;$solrIndexedType; name ;text   ;sortabletext;    ;true;  ;true;true;springELValueProvider ;getName(#lang); true;100; true;50;true;25;    ;   ;  ;
+;$solrIndexedType; priceValue;double ; ;true; ; ;  ; ;volumeAwareProductPriceValueProvider ; ; ; ;  ;   ;    ;  ;    ;   ;  ;
+
+----------------------------------------
+Define the Facet indexed 
+Facet is the arrangement of search results into categories based on indexed terms. Facet properties are generally displayed at the top or side of the site where we can select those facet fields to get the filter products accordingly. we have to defined facet[default=true] to indicate that the field is facet type 
+
+INSERT_UPDATE SolrIndexedProperty;solrIndexedType(identifier)[unique=true];name[unique=true]; type(code); sortableType(code);currency[default=false];localized[default=false];multiValue[default=false];facet[default=true];facetType(code);facetSort(code);priority;visible;useForSpellchecking[default=false];useForAutocomplete[default=false];fieldValueProvider;facetDisplayNameProvider;customFacetSortProvider;topValuesProvider;rangeSets(name)
+
+;$solrIndexedType; price ;double ; ;true;;; ;MultiSelectOr ;Alpha ; 4000;true;; ;volumeAwareProductPriceValueProvider ;; ;defaultTopValuesProvider ;priceRangeUSD
+
+
+----------------------------------------------------
+Defining the Sort
+
+We need to insert the sort references into SolrSort table which we will be using while inserting values for SolrIndexedType to define the sorts for the indexed item type
+
+INSERT_UPDATE SolrSort;&sortRefID;indexedType(identifier)[unique=true];code[unique=true];useBoost
+;sortRef1;$solrIndexedType;relevance;true
+;sortRef2;$solrIndexedType;topRated;false
+;sortRef3;$solrIndexedType;name-asc;false
+;sortRef4;$solrIndexedType;name-desc;false
+;sortRef5;$solrIndexedType;price-asc;false
+;sortRef6;$solrIndexedType;price-desc;false
+we have given these references while inserting data into SolrIndexedType table above.
+
+Define the Solr sort fields
+We need to insert the sorting fields into SolrSortField table which will be linked to the sort reference codes defined above
+
+INSERT_UPDATE SolrSortField;sort(indexedType(identifier),code)[unique=true];fieldName[unique=true];ascending[unique=true]
+;$solrIndexedType:relevance;inStockFlag;false
+;$solrIndexedType:relevance;score;false
+;$solrIndexedType:topRated;inStockFlag;false
+;$solrIndexedType:topRated;reviewAvgRating;false
+;$solrIndexedType:name-asc;name;true
+;$solrIndexedType:name-desc;name;false
+;$solrIndexedType:price-asc;priceValue;true
+;$solrIndexedType:price-desc;priceValue;false
+
+
+We have defined 5 sort fields as below
+inStockFlag field can be sorted based on relevance and Top rating in descending order.
+score field can be sorted based on relevance only in descending order
+reviewAvgRating field can be sorted based on Top rating only in descending order
+name field can be sorted based on both ascending & descending order
+price field can be sorted based on both ascending & descending order
+
+
+
+
+------------
+solr_en.impex 
+This impex file is used for localization of solr indexed fields in English language as below 
+
+/import/coredata/stores/hybris/solr_en.impex
+Similarly for other languages we will have corresponding solr localization files in the appropriate localization folders. 
+$lang=en
+UPDATE SolrIndexedProperty;solrIndexedType(identifier)[unique=true];name[unique=true]; displayName[lang=$lang]
+;$solrIndexedType;Colour of product;"Colour"
+
+solrtrigger.impex
+
+This impex file is used to schedule the cron jobs for Solr indexing. 
+import/coredata/stores/hybris/solrtrigger.impex 
+In general terms , We scheduleded full indexing job in once a day and update indexing is scheduled to run every 2 hrs. 
+
+INSERT_UPDATE Trigger ; cronJob(code)[unique=true] ; second ; minute ; hour ; day ; month ; year ; relative ; active ; maxAcceptableDelay 
+# Run the full-expertshybrisIndex-cronJob at 4:05 AM every day
+; full-expertshybrisIndex-cronJob    ; 0      ; 5      ; 4    ; -1  ; -1    ; -1   ; false    ; false  ; -1                                  
+# Run the update-expertshybrisIndex-cronJob every 2 hours
+; update-expertshybrisIndex-cronJob  ; 0      ; 0     ; 2    ; -1  ; -1    ; -1   ; true     ; false  ; -1      
+
+-------------------------------------------------
+INSERT_UPDATE SolrSearchQueryTemplate; name[unique = true]; indexedType(identifier)[unique = true]; ftsQueryBuilder             ; group[default = false]; groupProperty(name); enableHighlighting[default = false]
+                                     ; DEFAULT            ; $solrIndexedType                      ; defaultFreeTextQueryBuilder ;                       ;                    ;
+
+# Non-facet search query properties
+INSERT_UPDATE SolrSearchQueryProperty; indexedProperty(name, solrIndexedType(identifier))[unique = true]; searchQueryTemplate(name, indexedType(identifier))[unique = true][default = DEFAULT:$solrIndexedType]; facet; ftsPhraseQuery[default = false]; ftsPhraseQueryBoost; ftsQuery[default = true]; ftsQueryBoost; ftsFuzzyQuery[default = false]; ftsFuzzyQueryFuzziness; ftsFuzzyQueryBoost; ftsWildcardQuery[default = false]; ftsWildcardQueryType(code)[default = POSTFIX]; ftsWildcardQueryBoost; ftsWildcardQueryMinTermLength; includeInResponse[default = true]; useForHighlighting[default = false]
+                                     ; itemtype:$solrIndexedType                                        ;                                                                                                      ;      ;                                ;                    ;                         ;              ;                               ;                       ;                   ;                                  ;                                              ;                      ;                              ;                                  ;
+                                     ; uid:$solrIndexedType                                             ;                                                                                                      ;      ;                                ;                    ;                         ;              ;                               ;                       ;                   ;                                  ;                                              ;                      ;                              ;                                  ;
+
+
+so this is the template we will use for search query.
+we will use defaultFreeTextQueryBuilder to create query for searchinng.
+query property here are the properties on which we will allow searching.
+priority attribute in query property used to arrange facets on left side in an order.
+
+solr search query property is the main we do operations for searching / facets etc .
+in facets like what we need for result like refine / multiselect or / and.
+refine to select one value at a time other for multiselect.
+we can also give facettopvalueprovider here and customize it if we want results according to us.
+
+--------------------------------------------------
+Now we understand basic configuration for solr , now we will understand some attributes in indexed property?
+
+multivalue -->
+79
+
+A multivalued field is useful when there are more than one value present for the field. An easy example would be tags, there can be multiple tags that need to be indexed. so if we have tags field as multivalued then solr response will return a list instead of a string value. One point to note is that you need to submit multiple lines for each value of the tags like:
+
+Once you have all the values index you can search or filter results by any value, e,g. you can find all documents with tag1 using query like
+
+q=tags:tag1
+or use the tags to filter out results like
+
+q=query&fq=tags:tag1
+
+----------------------------------------------------
+below 4 properties are available as well as on search query property and indexed property as well .In search facade we will take query template first if it is present and if not it will take from indexed property . 
+----------------------------------------------------
+Free Text Query
+This an exact match search. Only when the exact keyword is found in the solr index, you will get a result. Do note that this does not mean it has to match the entire value. In the case of real test solr considers real and test separate keywords. If you would search for multiple keywords, for example on "real test" solr would search for the keyword "real" and the keyword "test"
+
+Solr Query
+
+(manufactureName_text : test)
+
+Result
+
+test
+real test
+
+---------------------------------------------
+
+Free Text Wildcard Query
+As the name states, this is a wildcard search. Meaning that you can enter a part of your search term. With the wildcard type you can determine where the wildcard will be placed in the search. Do you want a full wildcard, or only at the end.
+
+Solr query with postFix query type
+
+(manufactureName_text : test*)
+Result
+
+test
+testing
+real test
+
+----------------------------------------------
+
+Free Text Fuzzy Query
+Fuzzy queries are used when you allow for mistakes in your searches. This means that you will also match search keywords that have a few wrong characters. The fuzzyness factor determines how much can be wrong for the result to show up. Note that the fuzzy search does not have wildcards. It behaves more like an exact match
+
+Solr Query with 1 character wrong
+
+(manufactureName_text : tast∼)
+Result
+
+test
+real test
+
+-----------------------------------------------
+
+
+Free Text Phrase Query
+Last we have a Text Phrase Search. With a phrase search, we also take the spaces into account, not just the keywords. With phrase search, you have the possibility to enter a slop factor. Sloppiness defines the maximum number of positions that characters can be moved to still find a match. This is to still find results if the search differs a bit from the results. with a slop factor of 2, test real would give a match with real test, because with 1 position switch, we can find the result.
+
+Solr Query
+
+(manufactureName_text:"real test")
+Result
+
+real test
+Combining
+If you activate multiple search styles, all of these solr query parts are appended with an OR. With the boost rules, and calculations in solr, the most matching items will be shown at the top of the result list. Basically you decide what type of searches you allow, and how they should affect the results that are returned
+
+Example query with Free Text Query and Free Text Phrase query active
+
+(manufactureName_text : real) OR (manufactureName_text : test) OR (manufactureName_text:"real test")
+
+Result
+
+real test
+test
+--------------------------------------------------
+Now we will see the providers and resolvers in details-->
+
+We are fetching data from Hybris Database and inserting it to the Solr, if we want to do some modification on data in between fetching from Hybris Database and inserting into solr. So for this we are using Provider/Resolver Otherwise there is no need of using it.
+
+for atomic types we have by default springELValueProvider which automatically indexed the values for custom type we have to create providers/resolvers.
+
+lets go with providers (they are legacy now a days ) -->
+but lets understand the logic -->
+
+a) create the class extends AbstractPropertyFieldValueProvider implements FieldValueProvider
+b) associate property   //private FieldNameProvider fieldNameProvider; this will fetch the name of index property where we will set the value.
+c) override method
+
+@Override
+	public Collection<FieldValue> getFieldValues(final IndexConfig indexConfig, final IndexedProperty indexedProperty,
+			final Object model) throws FieldValueProviderException
+	{
+	      if (model instanceof ProductModel)
+		{
+			final ProductModel product = (ProductModel) model;
+
+			final Collection<FieldValue> fieldValues = new ArrayList<FieldValue>();
+			if (indexedProperty.isMultiValue())
+			{
+				fieldValues.addAll(createFieldValues(product, indexConfig, indexedProperty));
+			}
+			else
+			{
+				fieldValues.addAll(createFieldValue(product, indexConfig, indexedProperty));
+			}
+			return fieldValues;
+			
+	    }
+	}
+
+in this method we are returning the collection of fieldValue for that index property.	
+we can see we are calling a method createFieldValues from inside it which is responsible for creating fieldValue pair.
+
+protected List<FieldValue> createFieldValue(final ProductModel product, final IndexConfig indexConfig,
+			final IndexedProperty indexedProperty)
+	{
+	addFieldValues(fieldValues, indexedProperty, null, someValue);
+	//break ;  // if we have single value we can call and set it one time 
+	// if it is multivalue we can run a loop and set multiple values into it. $$$$$$$$$$$$$$********###########
+	}
+
+so internally it is calling one more method which is a major call.
+
+
+protected void addFieldValues(final List<FieldValue> fieldValues, final IndexedProperty indexedProperty,
+			final LanguageModel language, final Object value)
+	{
+		final Collection<String> fieldNames = getFieldNameProvider().getFieldNames(indexedProperty,
+				language == null ? null : language.getIsocode());
+		for (final String fieldName : fieldNames)
+		{
+			fieldValues.add(new FieldValue(fieldName, value));
+		}
+	}
+
+here we have call fieldNameProvider which will set the display value inside facet at left side and map the value with it on selection.
+Remember it is seeting display value of the values inside a facet not the name of facet itself .
+For facet itself we can implement using displayNameValueProvider. 
+---------------------------------------------------------------------------------
+
+Noe let's see Value Resolver.
+
+It is doing the same work but it will group the indexproperties which are using different providers to enhance performance so only on a single db call
+we can index multiple properties.
+
+
+public class PointOfServiceStockValueResolverWithLoadDataWithoutAggregation extends AbstractBugFixValueResolver<ProductModel, Map<String, StockAvailabilityData>, Map<String, StockAvailabilityData>>
+
+so here 
+======================================================================================================
+making wishlist indexed using solr -->
+we have a wishlist attribute in customer which has the list of fav products.
+so our task is to index the wishlist and get it from solr
+need--> to index customer type-->
+
+a)create custom extension using yempty template.
+
+b)now we need to create a new facet search config for customer type as usually we dont index customer.
+things required to solr facet seacrch config for customer-->
+1)solr server config--> which have all details like url and username/password, which we can use existing product type
+2)solr search config--> which have details of page size and all, which we can use existing product type
+3)solr index type   --> which is of our customer
+4)solr index config -->index mode // two phase or not
+5)solr index property----> all the property we want to index for customer.
+we also create two custom properties to store product pks and ids for wishlist...
+6)SolrSearchQueryTemplate ---> to do fulltext query and wild query on attributes. and sort of facets if required
+7)solr indexer query ---> for full,update,delete
+8)SolrSearchQueryProperty   ---> use to do searching,boosting etc.
+
+
+
+sample impex-->
+
+$productCatalog = buildersProductCatalog
+$catalogVersions = catalogVersions(catalog(id), version);
+$solarServerConfig=buildersSolrServerConfigProduct
+$serverConfigName = buildersSolrServerConfigCustomer
+$indexConfigName = buildersSolrIndexConfigCustomer
+$searchConfigName = buildersPageSizeProduct
+$facetSearchConfigName = buildersCustomerIndex
+$facetSearchConfigDescription = builders Customer Solr Index
+$searchIndexNamePrefix = buildersCustomer
+$solrIndexedType = buildersCustomerType
+$indexLanguages = en
+$indexCurrencies = ZAR
+
+#
+# Setup the Solr server, indexer, and search configs
+#
+#Changing Index config to TWO_PHASE
+INSERT_UPDATE SolrIndexConfig; name[unique = true]; indexMode(code)
+                             ; $indexConfigName           ; TWO_PHASE
+
+# Declare the indexed type Customer
+INSERT_UPDATE SolrIndexedType; identifier[unique = true]; type(code); variant; sorts(&sortRefID)
+                             ; $solrIndexedType         ; Customer  ; false  ;
+
+#creating solr facet search config for customer
+INSERT_UPDATE SolrFacetSearchConfig; name[unique = true]    ; description                   ; indexNamePrefix        ; languages(isocode); currencies(isocode); solrServerConfig(name); solrSearchConfig(description); solrIndexConfig(name); solrIndexedTypes(identifier); enabledLanguageFallbackMechanism; requestType(code); $catalogVersions
+                                   ; $facetSearchConfigName ; $facetSearchConfigDescription ; $searchIndexNamePrefix ; $indexLanguages   ; $indexCurrencies   ; $solarServerConfig               ; $searchConfigName                      ; $indexConfigName              ; $solrIndexedType            ; true                            ; CUSTOMER         ; $productCatalog:Online
+
+UPDATE SolrFacetSearchConfig; name[unique = true]
+                            ; $facetSearchConfigName
+
+#indexing properties
+INSERT_UPDATE SolrIndexedProperty; solrIndexedType(identifier)[unique = true]; name[unique = true]; type(code); fieldValueProvider         ; valueProviderParameter; sortableType(code); currency[default = false]; localized[default = false]; multiValue[default = false]; useForSpellchecking[default = false]; useForAutocomplete[default = false]; ftsPhraseQuery[default = false]; ftsPhraseQueryBoost; ftsQuery[default = false]; ftsQueryBoost; ftsFuzzyQuery[default = false]; ftsFuzzyQueryBoost; ftsWildcardQuery[default = false]; ftsWildcardQueryType(code)[default = POSTFIX]; ftsWildcardQueryBoost; ftsWildcardQueryMinTermLength; includeInResponse[default = true]
+                                 ; $solrIndexedType                          ; itemtype           ; string    ;                            ;                       ;                   ;                          ;                           ;                            ;                                     ;                                    ;                                ;                    ;                          ;              ;                               ;                   ;                                  ;                                              ;                      ;                              ;
+                                 ; $solrIndexedType                          ; uid                ; string    ;                            ;                       ;                   ;                          ;                           ;                            ;                                     ;                                    ;                                ;                    ;                          ;              ;                               ;                   ;                                  ;                                              ;                      ;                              ;
+                                 ; $solrIndexedType                          ; wishlistProductIds ; string    ; wishlistProductIdsResolver ;                       ;                   ;                          ;                           ; true                       ;                                     ;                                    ;                                ;                    ;                          ;              ;                               ;                   ;                                  ;                                              ;                      ;                              ;
+                                 ; $solrIndexedType                          ; wishlistProducts   ; long      ; wishlistProductsResolver   ;                       ;                   ;                          ;                           ; true                       ;                                     ;                                    ;                                ;                    ;                          ;              ;                               ;                   ;                                  ;                                              ;                      ;                              ;
+
+# Search query template
+INSERT_UPDATE SolrSearchQueryTemplate; name[unique = true]; indexedType(identifier)[unique = true]; ftsQueryBuilder             ; group[default = false]; groupProperty(name); enableHighlighting[default = false]
+                                     ; DEFAULT            ; $solrIndexedType                      ; defaultFreeTextQueryBuilder ;                       ;                    ;
+
+# Create the queries that will be used to extract data for Solr
+INSERT_UPDATE SolrIndexerQuery; solrIndexedType(identifier)[unique = true]; identifier[unique = true]        ; type(code); injectCurrentDate[default = true]; injectCurrentTime[default = true]; injectLastIndexTime[default = true]; query                                                       ; user(uid)
+                              ; $solrIndexedType                          ; $searchIndexNamePrefix-fullQuery ; full      ;                                  ;                                  ; false                              ; "select {pk} from {Customer} where {lastLogin} is not null" ; admin
+
+# Non-facet search query properties
+INSERT_UPDATE SolrSearchQueryProperty; indexedProperty(name, solrIndexedType(identifier))[unique = true]; searchQueryTemplate(name, indexedType(identifier))[unique = true][default = DEFAULT:$solrIndexedType]; facet; ftsPhraseQuery[default = false]; ftsPhraseQueryBoost; ftsQuery[default = true]; ftsQueryBoost; ftsFuzzyQuery[default = false]; ftsFuzzyQueryFuzziness; ftsFuzzyQueryBoost; ftsWildcardQuery[default = false]; ftsWildcardQueryType(code)[default = POSTFIX]; ftsWildcardQueryBoost; ftsWildcardQueryMinTermLength; includeInResponse[default = true]; useForHighlighting[default = false]
+                                     ; itemtype:$solrIndexedType                                        ;                                                                                                      ;      ;                                ;                    ;                         ;              ;                               ;                       ;                   ;                                  ;                                              ;                      ;                              ;                                  ;
+                                     ; uid:$solrIndexedType                                             ;                                                                                                      ;      ;                                ;                    ;                         ;              ;                               ;                       ;                   ;                                  ;                                              ;                      ;                              ;                                  ;
+
+
+
+
+
+Value resolver for both ids-->
+
+i)first create a abstract wishlist resolver
+
+package co.za.builders.solr.resolver;
+
+import de.hybris.platform.core.model.user.CustomerModel;
+import de.hybris.platform.solrfacetsearch.config.IndexedProperty;
+import de.hybris.platform.solrfacetsearch.indexer.IndexerBatchContext;
+import de.hybris.platform.solrfacetsearch.provider.impl.AbstractValueResolver;
+import org.apache.commons.collections4.CollectionUtils;
+import za.co.builders.core.model.CustomerProductListEntryModel;
+import za.co.builders.core.model.CustomerProductListModel;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+
+public abstract class AbstractCustomerWishlistValueResolver extends AbstractValueResolver<CustomerModel, List<CustomerProductListEntryModel>, Object>
+{
+
+    @Override
+    protected List<CustomerProductListEntryModel> loadData(final IndexerBatchContext batchContext, final Collection<IndexedProperty> indexedProperties,
+                                                 final CustomerModel model)
+    {
+        CustomerProductListModel wishlistModel = model.getWishlist();
+        List<CustomerProductListEntryModel> entries = Objects.nonNull(wishlistModel) ? wishlistModel.getEntries() : Collections.emptyList();
+        return CollectionUtils.isNotEmpty(entries) ? entries : Collections.emptyList();
+    }
+}
+
+here we are loading data from customer and saving it in context
+
+package co.za.builders.solr.resolver;
+
+import de.hybris.platform.core.model.user.CustomerModel;
+import de.hybris.platform.solrfacetsearch.config.IndexedProperty;
+import de.hybris.platform.solrfacetsearch.config.exceptions.FieldValueProviderException;
+import de.hybris.platform.solrfacetsearch.indexer.IndexerBatchContext;
+import de.hybris.platform.solrfacetsearch.indexer.spi.InputDocument;
+import org.apache.commons.collections4.CollectionUtils;
+import za.co.builders.core.model.CustomerProductListEntryModel;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+public class BuilderWishlistProductsValueResolver extends AbstractCustomerWishlistValueResolver
+{
+    @Override
+    protected void addFieldValues(InputDocument document, IndexerBatchContext context, IndexedProperty indexedProperty,
+                                  CustomerModel model, ValueResolverContext<List<CustomerProductListEntryModel>, Object> resolverContext) throws FieldValueProviderException
+    {
+        final List<Long> productPks = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(resolverContext.getData())) {
+            for(CustomerProductListEntryModel entry : resolverContext.getData()) {
+                if(Objects.nonNull(entry.getProduct())) {
+                    productPks.add(entry.getProduct().getPk().getLong());
+                }
+            }
+        }
+        document.addField(indexedProperty, productPks, resolverContext.getFieldQualifier());  //saving it in index property.
+    }
+}
+
+now indexing done .....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+===========================
+learn hybris with
+https://www.expertshybris.com/hybris-integration/payment-integration
+https://www.youtube.com/watch?v=J9yMb9Cjg6s
+
+
+
+
+
+
+============
+https://www.stackextend.com/hybris/index-a-custom-product-property-with-solr-in-hybris/
+https://www.youtube.com/watch?v=6S3GpVlnMI4
+https://saphybris.areko.consulting/sap_hybris_commerce/search/how_to_add_a_localized_property_to_the_solr_index
+https://community.sap.com/t5/technology-blogs-by-members/optimizing-solr-indexing-and-handling-interruptions-in-sap-ccv2-best/ba-p/13796273
+https://community.sap.com/t5/crm-and-cx-q-a/interview-question-on-solr/qaq-p/12112765
+https://community.sap.com/t5/crm-and-cx-q-a/how-to-search-for-more-than-one-value-in-multi-value-solr-indexed-property/qaq-p/12137988
+https://community.sap.com/t5/crm-and-cx-q-a/solr-search-multivalued-attribute/qaq-p/11982580
+https://help.sap.com/doc/02d5152884b34821a06408495ba0b771/1905/en-US/de/hybris/platform/commerceservices/search/solrfacetsearch/querybuilder/impl/DefaultFreeTextQueryBuilder.html

@@ -1,0 +1,425 @@
+$catalog-id = fabindia-b2cProductCatalog
+$catalog-version = Staged
+$catalogVersion = catalogversion(catalog(id[default=$catalog-id]), version[default=$catalog-version])[unique=true, default=$catalog-id:$catalog-version]
+$supercategories = supercategories(code, catalogversion(catalog(id[default=$catalog-id]), version[default=$catalog-version]))
+$vendor = apparello
+$storeUid = fabindiab2c
+
+$productCatalog = $catalog-id
+$media = @media[translator=de.hybris.platform.impex.jalo.media.MediaDataTranslator]
+$siteResource = jar:com.fabindia.initialdata.setup.InitialDataSystemSetup&/fabindiainitialdata/import/sampledata/productCatalogs/$productCatalog
+$thumbnail = thumbnail(code, $catalogVersion)
+$picture = picture(code, $catalogVersion)
+$thumbnails = thumbnails(code, $catalogVersion)
+$detail = detail(code, $catalogVersion)
+$normal = normal(code, $catalogVersion)
+$others = others(code, $catalogVersion)
+$medias = medias(code, $catalogVersion)
+$galleryImages = galleryImages(qualifier, $catalogVersion)
+
+$defaultPromoGrp = fabindiab2cPromoGrp
+$promotionsModule = "promotions-module"
+$previewModule = "promotions-preview-module"
+$ruleImportProcessor = processor=de.hybris.platform.ruleengineservices.impex.impl.ConditionalImportProcessor, condition=de.hybris.platform.ruleengineservices.impex.impl.RuleImportCondition
+$classCatalogVersion = catalogversion(catalog(id[default='ERP_CLASSIFICATION_026']), version[default='ERP_IMPORT'])[unique=true, default='ERP_CLASSIFICATION_026:ERP_IMPORT']
+$classSystemVersion = systemVersion(catalog(id[default='ERP_CLASSIFICATION_026']), version[default='ERP_IMPORT'])[unique=true]
+$class = classificationClass(ClassificationClass.code, $classCatalogVersion)[unique=true]
+#$supercategories=source(code, $classCatalogVersion)[unique=true]
+$categories = target(code, $catalogVersion)[unique=true]
+$classificationCatalog = ERP_CLASSIFICATION_026
+$classificationVersion = ERP_IMPORT
+$attribute = classificationAttribute(code, $classSystemVersion)[unique=true]
+$classificationSystemVersion = systemVersion(catalog(id[default='$classificationCatalog']), version[default='ERP_IMPORT'])[unique=true, default='$classificationCatalog:ERP_IMPORT'];
+$valuesForAssignment = defaultAttributeValues(code, $classificationSystemVersion)
+$clAttrModifiersVariants = system='$classificationCatalog', version='$classificationVersion', translator=de.hybris.platform.catalog.jalo.classification.impex.ClassificationAttributeTranslator;
+$clAttrModifiersVariants = system='$classificationCatalog', version='$classificationVersion', translator=de.hybris.platform.catalog.jalo.classification.impex.ClassificationAttributeTranslator;
+$featureMode1 = @FIT_F[$clAttrModifiersVariants];
+$featureMode2 = @PLACKET[$clAttrModifiersVariants];
+$featureMode3 = @SIZE_F[$clAttrModifiersVariants];
+
+
+
+############# Variant products ############
+################
+
+INSERT_UPDATE Category; code[unique = true]; $catalogVersion; supercategories(code, $catalogVersion); allowedPrincipals(uid)[default = 'customergroup']
+                      ; categories         ;                ;
+                      ; collections        ;                ;
+                      ; clothes            ;                ; categories
+                      ; shirts             ;                ; clothes,collections
+                      ; tshirts            ;                ; clothes,collections
+                      ; sunglasses         ;                ; clothes,collections
+                      ; goggles            ;                ; clothes,collections
+                      ; shoes              ;                ; clothes,collections
+
+insert_update VariantCategory; code[unique = true]; name[lang = en]; $catalogVersion; allowedPrincipals(uid)[default = 'customergroup']
+                             ; MEN-SHOE-COLOR     ; MEN SHOE COLOR ;
+                             ; MEN-SIZE-FULL      ; Men Size Full  ;
+
+
+insert_update VariantValueCategory; code[unique = true]   ; name[lang = en]; $supercategories; sequence; $catalogVersion
+                                  ; MEN-SIZE-FULL_7       ; 7              ; MEN-SIZE-FULL   ; 1
+                                  ; MEN-SIZE-FULL_8       ; 8              ; MEN-SIZE-FULL   ; 2
+                                  ; MEN-SIZE-FULL_9       ; 9              ; MEN-SIZE-FULL   ; 3
+                                  ; MEN-SIZE-FULL_10      ; 10             ; MEN-SIZE-FULL   ; 4
+                                  ; MEN-SIZE-FULL_11      ; 11             ; MEN-SIZE-FULL   ; 5
+                                  ; MEN-SIZE-FULL_12      ; 12             ; MEN-SIZE-FULL   ; 6
+                                  ; MEN-SIZE-FULL_13      ; 13             ; MEN-SIZE-FULL   ; 7
+                                  ; MEN-SHOE-COLOR_RED    ; RED            ; MEN-SHOE-COLOR  ; 1
+                                  ; MEN-SHOE-COLOR_YELLOW ; YELLOW         ; MEN-SHOE-COLOR  ; 2
+                                  ; MEN-SHOE-COLOR_GREEN  ; GREEN          ; MEN-SHOE-COLOR  ; 3
+
+
+
+
+insert_update Product; code[unique = true]; name[lang = en]            ; approvalStatus(code); $supercategories                        ; variantType(code); $catalogVersion; unit(code)[default = 'pieces']
+                     ; FI000005           ; Brown Coach Kasual Shoe    ; approved            ; MEN-SHOE-COLOR,MEN-SIZE-FULL,shoes      ; GenericVariantProduct
+                     ; FI000006           ; Brown Coach Kasual Shirts  ; approved            ; MEN-SHOE-COLOR,MEN-SIZE-FULL,shirts     ; GenericVariantProduct
+                     ; FI000007           ; Brown Coach Kasual Tshirts ; approved            ; MEN-SHOE-COLOR,MEN-SIZE-FULL,tshirts    ; GenericVariantProduct
+                     ; FI000008           ; Brown Coach Kasual Glasses ; approved            ; MEN-SHOE-COLOR,MEN-SIZE-FULL,sunglasses ; GenericVariantProduct
+                     ; FI000009           ; Brown Coach Kasual Goggles ; approved            ; MEN-SHOE-COLOR,MEN-SIZE-FULL,goggles    ; GenericVariantProduct
+                     ; FI0000010          ; Brown Coach Kasual Shoe    ; approved            ; MEN-SHOE-COLOR,MEN-SIZE-FULL,shoes      ; GenericVariantProduct
+                     ; FI0000011          ; Brown Coach Kasual Shirts  ; approved            ; MEN-SHOE-COLOR,MEN-SIZE-FULL,shirts     ; GenericVariantProduct
+                     ; FI0000012          ; Brown Coach Kasual Tshirts ; approved            ; MEN-SHOE-COLOR,MEN-SIZE-FULL,tshirts    ; GenericVariantProduct
+                     ; FI0000013          ; Brown Coach Kasual Glasses ; approved            ; MEN-SHOE-COLOR,MEN-SIZE-FULL,sunglasses ; GenericVariantProduct
+                     ; FI0000014          ; Brown Coach Kasual Goggles ; approved            ; MEN-SHOE-COLOR,MEN-SIZE-FULL,goggles    ; GenericVariantProduct
+
+
+
+insert_update GenericVariantProduct; code[unique = true]; name[lang = en]             ; approvalStatus(code); baseProduct(code, $catalogVersion); $supercategories                          ; $catalogVersion; unit(code)[default = 'pieces']
+                                   ; FI000005001        ; RED Coach Kasual    Shoe    ; approved            ; FI000005                          ; MEN-SHOE-COLOR_RED       ,MEN-SIZE-FULL_7 ;
+                                   ; FI000005002        ; YELLOW Coach Kasual Shoe    ; approved            ; FI000005                          ; MEN-SHOE-COLOR_YELLOW    ,MEN-SIZE-FULL_7 ;
+                                   ; FI000006001        ; YELLOW Coach Kasual Shirts  ; approved            ; FI000006                          ; MEN-SHOE-COLOR_YELLOW    ,MEN-SIZE-FULL_7 ;
+                                   ; FI000006002        ; GREEN  Coach Kasual Shirts  ; approved            ; FI000006                          ; MEN-SHOE-COLOR_GREEN     ,MEN-SIZE-FULL_7 ;
+                                   ; FI000007001        ; YELLOW Coach Kasual Tshirts ; approved            ; FI000007                          ; MEN-SHOE-COLOR_YELLOW    ,MEN-SIZE-FULL_7 ;
+                                   ; FI000007002        ; GREEN  Coach Kasual Tshirts ; approved            ; FI000007                          ; MEN-SHOE-COLOR_GREEN     ,MEN-SIZE-FULL_7 ;
+                                   ; FI000008001        ; YELLOW Coach Kasual Glasses ; approved            ; FI000008                          ; MEN-SHOE-COLOR_YELLOW    ,MEN-SIZE-FULL_7 ;
+                                   ; FI000008002        ; GREEN  Coach Kasual Glasses ; approved            ; FI000008                          ; MEN-SHOE-COLOR_GREEN     ,MEN-SIZE-FULL_7 ;
+                                   ; FI000009001        ; YELLOW Coach Kasual Goggles ; approved            ; FI000009                          ; MEN-SHOE-COLOR_YELLOW    ,MEN-SIZE-FULL_7 ;
+                                   ; FI000009002        ; GREEN  Coach Kasual Goggles ; approved            ; FI000009                          ; MEN-SHOE-COLOR_GREEN     ,MEN-SIZE-FULL_7 ;
+
+
+INSERT_UPDATE PriceRow; productId[unique = true]; unit(code[unique = true, default = pieces]); currency(isocode)[unique = true]; price ; minqtd; unitFactor; net
+
+                      ; FI000005001             ; pieces                                     ; INR                             ; 8,46  ; 1     ; 1         ; false
+                      ; FI000005002             ; pieces                                     ; INR                             ; 9,27  ; 1     ; 1         ; false
+                      ; FI000006001             ; pieces                                     ; INR                             ; 8,46  ; 1     ; 1         ; false
+                      ; FI000006002             ; pieces                                     ; INR                             ; 9,27  ; 1     ; 1         ; false
+                      ; FI000007001             ; pieces                                     ; INR                             ; 8,46  ; 1     ; 1         ; false
+                      ; FI000007002             ; pieces                                     ; INR                             ; 9,27  ; 1     ; 1         ; false
+                      ; FI000008001             ; pieces                                     ; INR                             ; 8,46  ; 1     ; 1         ; false
+                      ; FI000008002             ; pieces                                     ; INR                             ; 9,27  ; 1     ; 1         ; false
+                      ; FI000009001             ; pieces                                     ; INR                             ; 8,46  ; 1     ; 1         ; false
+                      ; FI000009002             ; pieces                                     ; INR                             ; 9,27  ; 1     ; 1         ; false
+                      ; FI0000010               ; pieces                                     ; INR                             ; 22,27 ; 1     ; 1         ; false
+                      ; FI0000011               ; pieces                                     ; INR                             ; 14,27 ; 1     ; 1         ; false
+                      ; FI0000012               ; pieces                                     ; INR                             ; 43,27 ; 1     ; 1         ; false
+                      ; FI0000013               ; pieces                                     ; INR                             ; 23,27 ; 1     ; 1         ; false
+                      ; FI0000014               ; pieces                                     ; INR                             ; 12,27 ; 1     ; 1         ; false
+
+                      ; FI000005001             ; pieces                                     ; USD                             ; 8,46  ; 1     ; 1         ; false
+                      ; FI000005002             ; pieces                                     ; USD                             ; 9,27  ; 1     ; 1         ; false
+                      ; FI000006001             ; pieces                                     ; USD                             ; 8,46  ; 1     ; 1         ; false
+                      ; FI000006002             ; pieces                                     ; USD                             ; 9,27  ; 1     ; 1         ; false
+                      ; FI000007001             ; pieces                                     ; USD                             ; 8,46  ; 1     ; 1         ; false
+                      ; FI000007002             ; pieces                                     ; USD                             ; 9,27  ; 1     ; 1         ; false
+                      ; FI000008001             ; pieces                                     ; USD                             ; 8,46  ; 1     ; 1         ; false
+                      ; FI000008002             ; pieces                                     ; USD                             ; 9,27  ; 1     ; 1         ; false
+                      ; FI000009001             ; pieces                                     ; USD                             ; 8,46  ; 1     ; 1         ; false
+                      ; FI000009002             ; pieces                                     ; USD                             ; 9,27  ; 1     ; 1         ; false
+                      ; FI0000010               ; pieces                                     ; USD                             ; 22,27 ; 1     ; 1         ; false
+                      ; FI0000011               ; pieces                                     ; USD                             ; 14,27 ; 1     ; 1         ; false
+                      ; FI0000012               ; pieces                                     ; USD                             ; 43,27 ; 1     ; 1         ; false
+                      ; FI0000013               ; pieces                                     ; USD                             ; 23,27 ; 1     ; 1         ; false
+                      ; FI0000014               ; pieces                                     ; USD                             ; 12,27 ; 1     ; 1         ; false
+
+
+INSERT_UPDATE Media; mediaFormat(qualifier); code[unique = true]          ; $media                                           ; mime[default = 'image/jpeg']; $catalogVersion; folder(qualifier)
+                   ; 1200Wx1200H           ; /1200Wx1200H/300022356_1.jpg ; $siteResource/images/1200Wx1200H/300022356_1.jpg ;                             ;                ; images
+                   ; 515Wx515H             ; /515Wx515H/300022356_1.jpg   ; $siteResource/images/515Wx515H/300022356_1.jpg   ;                             ;                ; images
+                   ; 300Wx300H             ; /300Wx300H/300022356_1.jpg   ; $siteResource/images/300Wx300H/300022356_1.jpg   ;                             ;                ; images
+                   ; 96Wx96H               ; /96Wx96H/300022356_1.jpg     ; $siteResource/images/96Wx96H/300022356_1.jpg     ;                             ;                ; images
+                   ; 65Wx65H               ; /65Wx65H/300022356_1.jpg     ; $siteResource/images/65Wx65H/300022356_1.jpg     ;                             ;                ; images
+                   ; 30Wx30H               ; /30Wx30H/300022356_1.jpg     ; $siteResource/images/30Wx30H/300022356_1.jpg     ;                             ;                ; images
+                   ; 1200Wx1200H           ; /1200Wx1200H/300022356_2.jpg ; $siteResource/images/1200Wx1200H/300022356_1.jpg ;                             ;                ; images
+                   ; 515Wx515H             ; /515Wx515H/300022356_2.jpg   ; $siteResource/images/515Wx515H/300022356_1.jpg   ;                             ;                ; images
+                   ; 300Wx300H             ; /300Wx300H/300022356_2.jpg   ; $siteResource/images/300Wx300H/300022356_1.jpg   ;                             ;                ; images
+                   ; 96Wx96H               ; /96Wx96H/300022356_2.jpg     ; $siteResource/images/96Wx96H/300022356_1.jpg     ;                             ;                ; images
+                   ; 65Wx65H               ; /65Wx65H/300022356_2.jpg     ; $siteResource/images/65Wx65H/300022356_1.jpg     ;                             ;                ; images
+                   ; 30Wx30H               ; /30Wx30H/300022356_2.jpg     ; $siteResource/images/30Wx30H/300022356_1.jpg     ;                             ;                ; images
+                   ; 1200Wx1200H           ; /1200Wx1200H/300022356_3.jpg ; $siteResource/images/1200Wx1200H/300022356_1.jpg ;                             ;                ; images
+                   ; 515Wx515H             ; /515Wx515H/300022356_3.jpg   ; $siteResource/images/515Wx515H/300022356_1.jpg   ;                             ;                ; images
+                   ; 300Wx300H             ; /300Wx300H/300022356_3.jpg   ; $siteResource/images/300Wx300H/300022356_1.jpg   ;                             ;                ; images
+                   ; 96Wx96H               ; /96Wx96H/300022356_3.jpg     ; $siteResource/images/96Wx96H/300022356_1.jpg     ;                             ;                ; images
+                   ; 65Wx65H               ; /65Wx65H/300022356_3.jpg     ; $siteResource/images/65Wx65H/300022356_1.jpg     ;                             ;                ; images
+                   ; 30Wx30H               ; /30Wx30H/300022356_3.jpg     ; $siteResource/images/30Wx30H/300022356_1.jpg     ;                             ;                ; images
+                   ; 1200Wx1200H           ; /1200Wx1200H/300022356_4.jpg ; $siteResource/images/1200Wx1200H/300022356_1.jpg ;                             ;                ; images
+                   ; 515Wx515H             ; /515Wx515H/300022356_4.jpg   ; $siteResource/images/515Wx515H/300022356_1.jpg   ;                             ;                ; images
+                   ; 300Wx300H             ; /300Wx300H/300022356_4.jpg   ; $siteResource/images/300Wx300H/300022356_1.jpg   ;                             ;                ; images
+                   ; 96Wx96H               ; /96Wx96H/300022356_4.jpg     ; $siteResource/images/96Wx96H/300022356_1.jpg     ;                             ;                ; images
+                   ; 65Wx65H               ; /65Wx65H/300022356_4.jpg     ; $siteResource/images/65Wx65H/300022356_1.jpg     ;                             ;                ; images
+                   ; 30Wx30H               ; /30Wx30H/300022356_4.jpg     ; $siteResource/images/30Wx30H/300022356_1.jpg     ;                             ;                ; images
+
+
+
+INSERT_UPDATE MediaContainer; qualifier[unique = true]; $medias                                                                                                                                                       ; $catalogVersion
+                            ; 300022356_1             ; /1200Wx1200H/300022356_1.jpg,/515Wx515H/300022356_1.jpg,/300Wx300H/300022356_1.jpg,/96Wx96H/300022356_1.jpg,/65Wx65H/300022356_1.jpg,/30Wx30H/300022356_1.jpg ;
+                            ; 300022356_2             ; /1200Wx1200H/300022356_2.jpg,/515Wx515H/300022356_2.jpg,/300Wx300H/300022356_2.jpg,/96Wx96H/300022356_2.jpg,/65Wx65H/300022356_2.jpg,/30Wx30H/300022356_2.jpg ;
+                            ; 300022356_3             ; /1200Wx1200H/300022356_3.jpg,/515Wx515H/300022356_3.jpg,/300Wx300H/300022356_3.jpg,/96Wx96H/300022356_3.jpg,/65Wx65H/300022356_3.jpg,/30Wx30H/300022356_3.jpg ;
+                            ; 300022356_4             ; /1200Wx1200H/300022356_4.jpg,/515Wx515H/300022356_4.jpg,/300Wx300H/300022356_4.jpg,/96Wx96H/300022356_4.jpg,/65Wx65H/300022356_4.jpg,/30Wx30H/300022356_4.jpg ;
+
+
+UPDATE GenericVariantProduct; code[unique = true]; $picture                   ; $thumbnail               ; $others                                                                                                                                                       ; $normal                    ; $thumbnails              ; $catalogVersion; $galleryImages
+                            ; FI000005001        ; /300Wx300H/300022356_1.jpg ; /96Wx96H/300022356_1.jpg ; /1200Wx1200H/300022356_1.jpg,/515Wx515H/300022356_1.jpg,/300Wx300H/300022356_1.jpg,/96Wx96H/300022356_1.jpg,/65Wx65H/300022356_1.jpg,/30Wx30H/300022356_1.jpg ; /300Wx300H/300022356_1.jpg ; /96Wx96H/300022356_1.jpg ;                ; 300022356_1,300022356_2,300022356_3,300022356_4
+                            ; FI000005002        ; /300Wx300H/300022356_2.jpg ; /96Wx96H/300022356_1.jpg ; /1200Wx1200H/300022356_1.jpg,/515Wx515H/300022356_1.jpg,/300Wx300H/300022356_1.jpg,/96Wx96H/300022356_1.jpg,/65Wx65H/300022356_1.jpg,/30Wx30H/300022356_1.jpg ; /300Wx300H/300022356_1.jpg ; /96Wx96H/300022356_1.jpg ;                ; 300022356_1,300022356_2,300022356_3,300022356_4
+                            ; FI000006001        ; /300Wx300H/300022356_1.jpg ; /96Wx96H/300022356_1.jpg ; /1200Wx1200H/300022356_1.jpg,/515Wx515H/300022356_1.jpg,/300Wx300H/300022356_1.jpg,/96Wx96H/300022356_1.jpg,/65Wx65H/300022356_1.jpg,/30Wx30H/300022356_1.jpg ; /300Wx300H/300022356_1.jpg ; /96Wx96H/300022356_1.jpg ;                ; 300022356_1,300022356_2,300022356_3,300022356_4
+                            ; FI000006002        ; /300Wx300H/300022356_1.jpg ; /96Wx96H/300022356_1.jpg ; /1200Wx1200H/300022356_1.jpg,/515Wx515H/300022356_1.jpg,/300Wx300H/300022356_1.jpg,/96Wx96H/300022356_1.jpg,/65Wx65H/300022356_1.jpg,/30Wx30H/300022356_1.jpg ; /300Wx300H/300022356_1.jpg ; /96Wx96H/300022356_1.jpg ;                ; 300022356_1,300022356_2,300022356_3,300022356_4
+                            ; FI000008001        ; /300Wx300H/300022356_1.jpg ; /96Wx96H/300022356_1.jpg ; /1200Wx1200H/300022356_1.jpg,/515Wx515H/300022356_1.jpg,/300Wx300H/300022356_1.jpg,/96Wx96H/300022356_1.jpg,/65Wx65H/300022356_1.jpg,/30Wx30H/300022356_1.jpg ; /300Wx300H/300022356_1.jpg ; /96Wx96H/300022356_1.jpg ;                ; 300022356_1,300022356_2,300022356_3,300022356_4
+                            ; FI000008002        ; /300Wx300H/300022356_1.jpg ; /96Wx96H/300022356_1.jpg ; /1200Wx1200H/300022356_1.jpg,/515Wx515H/300022356_1.jpg,/300Wx300H/300022356_1.jpg,/96Wx96H/300022356_1.jpg,/65Wx65H/300022356_1.jpg,/30Wx30H/300022356_1.jpg ; /300Wx300H/300022356_1.jpg ; /96Wx96H/300022356_1.jpg ;                ; 300022356_1,300022356_2,300022356_3,300022356_4
+                            ; FI000009001        ; /300Wx300H/300022356_1.jpg ; /96Wx96H/300022356_1.jpg ; /1200Wx1200H/300022356_1.jpg,/515Wx515H/300022356_1.jpg,/300Wx300H/300022356_1.jpg,/96Wx96H/300022356_1.jpg,/65Wx65H/300022356_1.jpg,/30Wx30H/300022356_1.jpg ; /300Wx300H/300022356_1.jpg ; /96Wx96H/300022356_1.jpg ;                ; 300022356_1,300022356_2,300022356_3,300022356_4
+                            ; FI000009002        ; /300Wx300H/300022356_1.jpg ; /96Wx96H/300022356_1.jpg ; /1200Wx1200H/300022356_1.jpg,/515Wx515H/300022356_1.jpg,/300Wx300H/300022356_1.jpg,/96Wx96H/300022356_1.jpg,/65Wx65H/300022356_1.jpg,/30Wx30H/300022356_1.jpg ; /300Wx300H/300022356_1.jpg ; /96Wx96H/300022356_1.jpg ;                ; 300022356_1,300022356_2,300022356_3,300022356_4
+
+
+INSERT_UPDATE Warehouse; name[lang = en]   ; code[unique = true]; default; vendor(code);
+                       ; Default Warehouse ; ap_warehouse_s     ; true   ; $vendor     ;
+
+INSERT_UPDATE PointOfService; name[unique = true]; displayName     ; warehouses(code); address(&addrID); latitude ; longitude; geocodeTimestamp[dateformat = dd.MM.yyyy]; type(code)[default = WAREHOUSE]
+                            ; ap_warehouse_s     ; Warehouse South ; ap_warehouse_s  ; ap_warehouse_s  ; 48,15149 ; 11,61823 ; 29.05.2025
+
+INSERT_UPDATE Address; &addrID        ; streetnumber[unique = true]; streetname; town    ; country(isocode); postalcode[unique = true]; phone1          ; owner(PointOfService.name)[unique = true]
+                     ; ap_warehouse_s ; Arabellastraße 3           ;           ; München ; IN              ; 81925                    ; +49 1941 143241 ; ap_warehouse_s
+
+INSERT_UPDATE BaseStore2WarehouseRel; source(uid)[unique = true]; target(code)[unique = true]
+                                    ; $storeUid                 ; ap_warehouse_s
+
+
+INSERT_UPDATE Warehouse2DeliveryModeRelation; source(code)[unique = true]; target(code)[unique = true]
+                                            ; ap_warehouse_s             ; premium-net
+                                            ; ap_warehouse_s             ; standard-net
+                                            ; ap_warehouse_s             ; premium-gross
+                                            ; ap_warehouse_s             ; standard-gross
+                                            ; ap_warehouse_s             ; pickup
+                                            ; ap_warehouse_s             ; free-standard-shipping
+
+INSERT_UPDATE StockLevel; available[unique = true]; warehouse(code)[unique = true]; inStockStatus(code); maxPreOrder; maxStockLevelHistoryCount; overSelling; preOrder; productCode[unique = true]; reserved
+                        ; 1000                    ; ap_warehouse_s                ; forceInStock       ; 1          ; 0                        ; 0          ; 0       ; FI000005001               ; 0
+                        ; 1000                    ; ap_warehouse_s                ; forceInStock       ; 1          ; 0                        ; 0          ; 0       ; FI000006001               ; 0
+                        ; 1000                    ; ap_warehouse_s                ; forceInStock       ; 1          ; 0                        ; 0          ; 0       ; FI000007001               ; 0
+                        ; 1000                    ; ap_warehouse_s                ; forceInStock       ; 1          ; 0                        ; 0          ; 0       ; FI000008001               ; 0
+                        ; 1000                    ; ap_warehouse_s                ; forceInStock       ; 1          ; 0                        ; 0          ; 0       ; FI000009001               ; 0
+                        ; 1000                    ; ap_warehouse_s                ; forceInStock       ; 1          ; 0                        ; 0          ; 0       ; FI000005002               ; 0
+                        ; 1000                    ; ap_warehouse_s                ; forceInStock       ; 1          ; 0                        ; 0          ; 0       ; FI000006002               ; 0
+                        ; 1000                    ; ap_warehouse_s                ; forceInStock       ; 1          ; 0                        ; 0          ; 0       ; FI000007002               ; 0
+                        ; 1000                    ; ap_warehouse_s                ; forceInStock       ; 1          ; 0                        ; 0          ; 0       ; FI000008002               ; 0
+                        ; 1000                    ; ap_warehouse_s                ; forceInStock       ; 1          ; 0                        ; 0          ; 0       ; FI000009002               ; 0
+                        ; 1000                    ; ap_warehouse_s                ; forceInStock       ; 1          ; 0                        ; 0          ; 0       ; FI0000011                 ; 0
+                        ; 1000                    ; ap_warehouse_s                ; forceInStock       ; 1          ; 0                        ; 0          ; 0       ; FI0000012                 ; 0
+                        ; 1000                    ; ap_warehouse_s                ; forceInStock       ; 1          ; 0                        ; 0          ; 0       ; FI0000013                 ; 0
+                        ; 1000                    ; ap_warehouse_s                ; forceInStock       ; 1          ; 0                        ; 0          ; 0       ; FI0000014                 ; 0
+                        ; 1000                    ; ap_warehouse_s                ; forceInStock       ; 1          ; 0                        ; 0          ; 0       ; FI0000010                 ; 0
+
+INSERT_UPDATE CatalogVersionToRuleEngineContextMapping; context(name)[unique = true]; catalogVersion(catalog(id), version)[unique = true]
+                                                      ; promotions-context          ; fabindia-b2cProductCatalog:Online
+                                                      ; promotions-preview-context  ; fabindia-b2cProductCatalog:Staged
+
+INSERT_UPDATE PromotionSourceRule[$ruleImportProcessor]; code[unique = true]                         ; priority; maxAllowedRuns; ruleGroup(code)           ; conditions                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      ; actions; website(Identifier)[default = $defaultPromoGrp]; excludeFromStorefrontDisplay[default = false]; status(code)[unique = true, default = UNPUBLISHED]
+                                                       ; fab_product_10_percentage_discount_qnty_one ; 75      ; 1             ; productPromotionRuleGroup ; "[{""definitionId"":""y_qualifying_products"",""parameters"":{""catalog"":{""uuid"":""2f2530b8-d941-4145-8d9e-80db0409acdb"",""type"":""ItemType(Catalog)"",""value"":""fabindia-b2cProductCatalog""},""products_operator"":{""uuid"":""9b07a7d7-8481-412f-94a2-79c7e823566c"",""type"":""Enum(de.hybris.platform.ruledefinitions.CollectionOperator)"",""value"":""CONTAINS_ANY""},""quantity"":{""uuid"":""c7ac47a7-d285-479f-989c-40e461246602"",""type"":""java.lang.Integer"",""value"":1},""operator"":{""uuid"":""99df04b6-fd29-4fc0-8e78-3a83c6eb4ec9"",""type"":""Enum(de.hybris.platform.ruledefinitions.AmountOperator)"",""value"":""GREATER_THAN_OR_EQUAL""},""products"":{""uuid"":""0164259c-8014-4cf4-a315-83cf050b0b4a"",""type"":""List(ItemType(Product))"",""value"":[""FI0000010""]}},""children"":[]}]"   ; "[{""definitionId"":""y_order_entry_percentage_discount"",""parameters"":{""value"":{""uuid"":""a1a5d598-c351-43a4-92bf-eb63d877496a"",""type"":""java.math.BigDecimal"",""value"":10}}}]" ; ;
+                                                       ; fab_product_15_percentage_discount_qnty_two ; 75      ; 1             ; productPromotionRuleGroup ; "[{""definitionId"":""y_qualifying_products"",""parameters"":{""catalog"":{""uuid"":""2f2530b8-d941-4145-8d9e-80db0409acdb"",""type"":""ItemType(Catalog)"",""value"":""fabindia-b2cProductCatalog""},""products_operator"":{""uuid"":""9b07a7d7-8481-412f-94a2-79c7e823566c"",""type"":""Enum(de.hybris.platform.ruledefinitions.CollectionOperator)"",""value"":""CONTAINS_ANY""},""quantity"":{""uuid"":""c7ac47a7-d285-479f-989c-40e461246602"",""type"":""java.lang.Integer"",""value"":2},""operator"":{""uuid"":""99df04b6-fd29-4fc0-8e78-3a83c6eb4ec9"",""type"":""Enum(de.hybris.platform.ruledefinitions.AmountOperator)"",""value"":""GREATER_THAN_OR_EQUAL""},""products"":{""uuid"":""0164259c-8014-4cf4-a315-83cf050b0b4a"",""type"":""List(ItemType(Product))"",""value"":[""FI0000010""]}},""children"":[]}]"   ; "[{""definitionId"":""y_order_entry_percentage_discount"",""parameters"":{""value"":{""uuid"":""a1a5d598-c351-43a4-92bf-eb63d877496a"",""type"":""java.math.BigDecimal"",""value"":15}}}]" ; ;
+                                                       ; fab_product_free_gift                       ; 75      ; 1             ; productPromotionRuleGroup ; "[{""definitionId"":""y_qualifying_products"",""parameters"":{""catalog"":{""uuid"":""2f2530b8-d941-4145-8d9e-80db0409acdb"",""type"":""ItemType(Catalog)"",""value"":""fabindia-b2cProductCatalog""},""products_operator"":{""uuid"":""9b07a7d7-8481-412f-94a2-79c7e823566c"",""type"":""Enum(de.hybris.platform.ruledefinitions.CollectionOperator)"",""value"":""CONTAINS_ANY""},""quantity"":{""uuid"":""c7ac47a7-d285-479f-989c-40e461246602"",""type"":""java.lang.Integer"",""value"":2},""operator"":{""uuid"":""99df04b6-fd29-4fc0-8e78-3a83c6eb4ec9"",""type"":""Enum(de.hybris.platform.ruledefinitions.AmountOperator)"",""value"":""GREATER_THAN_OR_EQUAL""},""products"":{""uuid"":""0164259c-8014-4cf4-a315-83cf050b0b4a"",""type"":""List(ItemType(Product))"",""value"":[""FI0000011""]}},""children"":[]}]"   ; "[{""definitionId"":""y_order_entry_percentage_discount"",""parameters"":{""value"":{""uuid"":""a1a5d598-c351-43a4-92bf-eb63d877496a"",""type"":""java.math.BigDecimal"",""value"":100}}}]" ; ;
+                                                       ; fab_product_20_percentage_discount_qnty_one ; 75      ; 1             ; productPromotionRuleGroup ; "[{""definitionId"":""y_qualifying_products"",""parameters"":{""catalog"":{""uuid"":""2f2530b8-d941-4145-8d9e-80db0409acdb"",""type"":""ItemType(Catalog)"",""value"":""fabindia-b2cProductCatalog""},""products_operator"":{""uuid"":""9b07a7d7-8481-412f-94a2-79c7e823566c"",""type"":""Enum(de.hybris.platform.ruledefinitions.CollectionOperator)"",""value"":""CONTAINS_ANY""},""quantity"":{""uuid"":""c7ac47a7-d285-479f-989c-40e461246602"",""type"":""java.lang.Integer"",""value"":1},""operator"":{""uuid"":""99df04b6-fd29-4fc0-8e78-3a83c6eb4ec9"",""type"":""Enum(de.hybris.platform.ruledefinitions.AmountOperator)"",""value"":""GREATER_THAN_OR_EQUAL""},""products"":{""uuid"":""0164259c-8014-4cf4-a315-83cf050b0b4a"",""type"":""List(ItemType(Product))"",""value"":[""FI000009002""]}},""children"":[]}]" ; "[{""definitionId"":""y_order_entry_percentage_discount"",""parameters"":{""value"":{""uuid"":""a1a5d598-c351-43a4-92bf-eb63d877496a"",""type"":""java.math.BigDecimal"",""value"":10}}}]" ; ;
+                                                       ; fab_product_30_percentage_discount_qnty_two ; 75      ; 1             ; productPromotionRuleGroup ; "[{""definitionId"":""y_qualifying_products"",""parameters"":{""catalog"":{""uuid"":""2f2530b8-d941-4145-8d9e-80db0409acdb"",""type"":""ItemType(Catalog)"",""value"":""fabindia-b2cProductCatalog""},""products_operator"":{""uuid"":""9b07a7d7-8481-412f-94a2-79c7e823566c"",""type"":""Enum(de.hybris.platform.ruledefinitions.CollectionOperator)"",""value"":""CONTAINS_ANY""},""quantity"":{""uuid"":""c7ac47a7-d285-479f-989c-40e461246602"",""type"":""java.lang.Integer"",""value"":2},""operator"":{""uuid"":""99df04b6-fd29-4fc0-8e78-3a83c6eb4ec9"",""type"":""Enum(de.hybris.platform.ruledefinitions.AmountOperator)"",""value"":""GREATER_THAN_OR_EQUAL""},""products"":{""uuid"":""0164259c-8014-4cf4-a315-83cf050b0b4a"",""type"":""List(ItemType(Product))"",""value"":[""FI000009002""]}},""children"":[]}]" ; "[{""definitionId"":""y_order_entry_percentage_discount"",""parameters"":{""value"":{""uuid"":""a1a5d598-c351-43a4-92bf-eb63d877496a"",""type"":""java.math.BigDecimal"",""value"":15}}}]" ; ;
+                                                       ; fab_product_order_percentage_discount       ; 75      ; 1             ; productPromotionRuleGroup ; "[{""definitionId"":""y_qualifying_products"",""parameters"":{""catalog"":{""uuid"":""2f2530b8-d941-4145-8d9e-80db0409acdb"",""type"":""ItemType(Catalog)"",""value"":""fabindia-b2cProductCatalog""},""products_operator"":{""uuid"":""9b07a7d7-8481-412f-94a2-79c7e823566c"",""type"":""Enum(de.hybris.platform.ruledefinitions.CollectionOperator)"",""value"":""CONTAINS_ANY""},""quantity"":{""uuid"":""c7ac47a7-d285-479f-989c-40e461246602"",""type"":""java.lang.Integer"",""value"":2},""operator"":{""uuid"":""99df04b6-fd29-4fc0-8e78-3a83c6eb4ec9"",""type"":""Enum(de.hybris.platform.ruledefinitions.AmountOperator)"",""value"":""GREATER_THAN_OR_EQUAL""},""products"":{""uuid"":""0164259c-8014-4cf4-a315-83cf050b0b4a"",""type"":""List(ItemType(Product))"",""value"":[""FI000009001""]}},""children"":[]}]" ; "[{""definitionId"":""y_order_percentage_discount"",""parameters"":{""value"":{""uuid"":""f2de1179-37b3-4646-8c2a-d4f77d5e64b5"",""type"":""java.math.BigDecimal"",""value"":10}}}]" ; ;
+                                                       ; fab_product_potential_promotion_massage     ; 75      ; 1             ; productPromotionRuleGroup ; "[{""definitionId"":""y_qualifying_products"",""parameters"":{""catalog"":{""uuid"":""2f2530b8-d941-4145-8d9e-80db0409acdb"",""type"":""ItemType(Catalog)"",""value"":""fabindia-b2cProductCatalog""},""products_operator"":{""uuid"":""9b07a7d7-8481-412f-94a2-79c7e823566c"",""type"":""Enum(de.hybris.platform.ruledefinitions.CollectionOperator)"",""value"":""CONTAINS_ANY""},""quantity"":{""uuid"":""c7ac47a7-d285-479f-989c-40e461246602"",""type"":""java.lang.Integer"",""value"":1},""operator"":{""uuid"":""99df04b6-fd29-4fc0-8e78-3a83c6eb4ec9"",""type"":""Enum(de.hybris.platform.ruledefinitions.AmountOperator)"",""value"":""GREATER_THAN_OR_EQUAL""},""products"":{""uuid"":""0164259c-8014-4cf4-a315-83cf050b0b4a"",""type"":""List(ItemType(Product))"",""value"":[""FI0000010""]}},""children"":[]}]"   ; "[{""definitionId"":""y_trigger_message"",""parameters"":{}}]" ; ;
+
+
+
+
+
+INSERT_UPDATE PromotionSourceRule[$ruleImportProcessor]; code[unique = true]                         ; status(code)[unique = true, default = UNPUBLISHED]
+                                                       ; fab_product_10_percentage_discount_qnty_one ;
+                                                       ; fab_product_15_percentage_discount_qnty_two ;
+                                                       ; fab_product_20_percentage_discount_qnty_one ;
+                                                       ; fab_product_30_percentage_discount_qnty_two ;
+                                                       ; fab_product_free_gift                       ;
+                                                       ; fab_product_order_percentage_discount       ;
+
+INSERT_UPDATE PromotionSourceRule[$ruleImportProcessor]; code[unique = true]
+                                                       ; fab_product_potential_promotion_massage
+
+INSERT_UPDATE Discount; code[unique = true]         ; priority; value; currency(isocode)
+                      ; 000000000001000279_discount ; 1       ; 10   ; USD
+
+INSERT_UPDATE DiscountRow; discount(code)[unique = true]; product(code, catalogVersion(catalog(id), version))[unique = true]; value; currency(isocode); absolute; asTargetPrice; dateRange[dateformat = dd.MM.yyyy hh:mm:ss, allownull = true]
+                         ; 000000000001000279_discount  ; FI0000010:$productCatalog:Staged                                  ; 100  ; INR              ; false   ; true         ;
+                         ; 000000000001000279_discount  ; FI000009002:$productCatalog:Staged                                ; 50   ; INR              ; false   ; true         ;
+################# Variant Products Closes#########
+################
+
+#### Classification products
+#######################
+
+
+
+insert_update VariantCategory; code[unique = true]; name[lang = en]; $catalogVersion
+                             ; SIZE_F             ; SIZE_F         ;
+                             ; COLOR_F            ; COLOR_F        ;
+
+
+insert_update VariantValueCategory; code[unique = true]; name[lang = en]; $supercategories; sequence; $catalogVersion
+                                  ; SIZE_F_S           ; S              ; SIZE_F          ; 1
+                                  ; SIZE_F_M           ; M              ; SIZE_F          ; 2
+                                  ; SIZE_F_L           ; L              ; SIZE_F          ; 3
+                                  ; SIZE_F_XL          ; XL             ; SIZE_F          ; 4
+                                  ; SIZE_F_XXL         ; XXL            ; SIZE_F          ; 5
+                                  ; SIZE_F_XS          ; XS             ; SIZE_F          ; 6
+
+
+insert_update VariantValueCategory; code[unique = true]; name[lang = en]; $supercategories; sequence; $catalogVersion
+                                  ; COLOR_F_RED        ; RED            ; COLOR_F         ; 1
+                                  ; COLOR_F_GREEN      ; GREEN          ; COLOR_F         ; 2
+                                  ; COLOR_F_BLACK      ; BLACK          ; COLOR_F         ; 3
+                                  ; COLOR_F_BLUE       ; BLUE           ; COLOR_F         ; 4
+                                  ; COLOR_F_WHITE      ; WHITE          ; COLOR_F         ; 5
+                                  ; COLOR_F_YELLOW     ; YELLOW         ; COLOR_F         ; 6
+
+insert_update Product; code[unique = true]; name[lang = en]; approvalStatus(code); $supercategories; variantType(code); $catalogVersion; unit(code)[default = 'pieces']
+                     ; 000000000001000384 ; Fab Shirt      ; approved            ; SIZE_F,COLOR_F  ; GenericVariantProduct
+
+
+insert_update GenericVariantProduct; code[unique = true]; name[lang = en]; approvalStatus(code); baseProduct(code, $catalogVersion); $supercategories        ; $catalogVersion; unit(code)[default = 'pieces']
+                                   ; 000000001000384001 ; RED L Shirt    ; approved            ; 000000000001000384                ; SIZE_F_L,COLOR_F_RED    ;
+                                   ; 000000001000384002 ; RED M Shirt    ; approved            ; 000000000001000384                ; SIZE_F_M,COLOR_F_RED    ;
+                                   ; 000000001000384003 ; RED XL Shirt   ; approved            ; 000000000001000384                ; SIZE_F_XL,COLOR_F_RED   ;
+                                   ; 000000001000384004 ; GREEN L Shirt  ; approved            ; 000000000001000384                ; SIZE_F_L,COLOR_F_GREEN  ;
+                                   ; 000000001000384005 ; GREEN M Shirt  ; approved            ; 000000000001000384                ; SIZE_F_M,COLOR_F_GREEN  ;
+                                   ; 000000001000384006 ; GREEN XL Shirt ; approved            ; 000000000001000384                ; SIZE_F_XL,COLOR_F_GREEN ;
+
+UPDATE GenericVariantProduct; code[unique = true]; $picture                   ; $thumbnail               ; $others                                                                                                                                                       ; $normal                    ; $thumbnails              ; $catalogVersion; $galleryImages
+                            ; 000000001000384001 ; /300Wx300H/300022356_1.jpg ; /96Wx96H/300022356_1.jpg ; /1200Wx1200H/300022356_1.jpg,/515Wx515H/300022356_1.jpg,/300Wx300H/300022356_1.jpg,/96Wx96H/300022356_1.jpg,/65Wx65H/300022356_1.jpg,/30Wx30H/300022356_1.jpg ; /300Wx300H/300022356_1.jpg ; /96Wx96H/300022356_1.jpg ;                ; 300022356_1,300022356_2,300022356_3,300022356_4
+                            ; 000000001000384002 ; /300Wx300H/300022356_2.jpg ; /96Wx96H/300022356_1.jpg ; /1200Wx1200H/300022356_1.jpg,/515Wx515H/300022356_1.jpg,/300Wx300H/300022356_1.jpg,/96Wx96H/300022356_1.jpg,/65Wx65H/300022356_1.jpg,/30Wx30H/300022356_1.jpg ; /300Wx300H/300022356_1.jpg ; /96Wx96H/300022356_1.jpg ;                ; 300022356_1,300022356_2,300022356_3,300022356_4
+                            ; 000000001000384003 ; /300Wx300H/300022356_1.jpg ; /96Wx96H/300022356_1.jpg ; /1200Wx1200H/300022356_1.jpg,/515Wx515H/300022356_1.jpg,/300Wx300H/300022356_1.jpg,/96Wx96H/300022356_1.jpg,/65Wx65H/300022356_1.jpg,/30Wx30H/300022356_1.jpg ; /300Wx300H/300022356_1.jpg ; /96Wx96H/300022356_1.jpg ;                ; 300022356_1,300022356_2,300022356_3,300022356_4
+
+
+INSERT_UPDATE Warehouse; name[lang = en]    ; code[unique = true]; default; vendor(code);
+                       ; New Delhi, GK1 N14 ; 1001               ; true   ; $vendor     ;
+
+INSERT_UPDATE PointOfService; name[unique = true]; displayName        ; warehouses(code); address(&addrID); latitude ; longitude; geocodeTimestamp[dateformat = dd.MM.yyyy]; type(code)[default = WAREHOUSE]
+                            ; 1001               ; New Delhi, GK1 N14 ; 1001            ; 1001            ; 48,15149 ; 11,61823 ; 29.05.2025
+
+INSERT_UPDATE Address; &addrID; streetnumber[unique = true]; streetname; town    ; country(isocode); postalcode[unique = true]; phone1          ; owner(PointOfService.name)[unique = true]
+                     ; 1001   ; Arabellastraße 5           ;           ; München ; IN              ; 81925                    ; +49 1941 143241 ; ap_warehouse_s
+
+INSERT_UPDATE BaseStore; uid[unique = true]; defaultDeliveryOrigin(name)
+                       ; $storeUid         ; 1001
+
+INSERT_UPDATE BaseStore2WarehouseRel; source(uid)[unique = true]; target(code)[unique = true]
+                                    ; $storeUid                 ; 1001
+
+
+INSERT_UPDATE Warehouse2DeliveryModeRelation; source(code)[unique = true]; target(code)[unique = true]
+                                            ; 1001                       ; premium-net
+                                            ; 1001                       ; standard-net
+                                            ; 1001                       ; premium-gross
+                                            ; 1001                       ; standard-gross
+                                            ; 1001                       ; pickup
+                                            ; 1001                       ; free-standard-shipping
+
+INSERT_UPDATE PoS2WarehouseRel; source(name)[unique = true]; target(code)[unique = true]
+                              ; 1001                       ; 1001 ;
+
+INSERT_UPDATE BaseStore2WarehouseRel; source(uid)[unique = true]; target(code)[unique = true]
+                                    ; $storeUid                 ; 1001
+
+INSERT_UPDATE PriceRow; productId[unique = true]; unit(code[unique = true, default = pieces]); currency(isocode)[unique = true]; price; minqtd; unitFactor; net
+                      ; 000000001000384001      ; pieces                                     ; INR                             ; 8,46 ; 1     ; 1         ; false
+                      ; 000000001000384002      ; pieces                                     ; INR                             ; 8,46 ; 1     ; 1         ; false
+                      ; 000000001000384003      ; pieces                                     ; INR                             ; 8,46 ; 1     ; 1         ; false
+                      ; 000000001000384001      ; pieces                                     ; USD                             ; 8,46 ; 1     ; 1         ; false
+                      ; 000000001000384002      ; pieces                                     ; USD                             ; 8,46 ; 1     ; 1         ; false
+                      ; 000000001000384003      ; pieces                                     ; USD                             ; 8,46 ; 1     ; 1         ; false
+                      ; 000000001000384004      ; pieces                                     ; INR                             ; 8,46 ; 1     ; 1         ; false
+                      ; 000000001000384005      ; pieces                                     ; INR                             ; 8,46 ; 1     ; 1         ; false
+                      ; 000000001000384006      ; pieces                                     ; INR                             ; 8,46 ; 1     ; 1         ; false
+                      ; 000000001000384004      ; pieces                                     ; USD                             ; 8,46 ; 1     ; 1         ; false
+                      ; 000000001000384005      ; pieces                                     ; USD                             ; 8,46 ; 1     ; 1         ; false
+                      ; 000000001000384006      ; pieces                                     ; USD                             ; 8,46 ; 1     ; 1         ; false
+
+
+INSERT_UPDATE StockLevel; available[unique = true]; warehouse(code)[unique = true]; inStockStatus(code); maxPreOrder; maxStockLevelHistoryCount; overSelling; preOrder; productCode[unique = true]; reserved
+                        ; 1000                    ; 1001                          ; forceInStock       ; 1          ; 0                        ; 0          ; 0       ; 000000001000384001        ; 0
+                        ; 1000                    ; 1001                          ; forceInStock       ; 1          ; 0                        ; 0          ; 0       ; 000000001000384002        ; 0
+                        ; 1000                    ; 1001                          ; forceInStock       ; 1          ; 0                        ; 0          ; 0       ; 000000001000384003        ; 0
+                        ; 1000                    ; 1001                          ; forceInStock       ; 1          ; 0                        ; 0          ; 0       ; 000000001000384004        ; 0
+                        ; 1000                    ; 1001                          ; forceInStock       ; 1          ; 0                        ; 0          ; 0       ; 000000001000384005        ; 0
+                        ; 1000                    ; 1001                          ; forceInStock       ; 1          ; 0                        ; 0          ; 0       ; 000000001000384006        ; 0
+
+
+INSERT_UPDATE ClassificationSystem; id[unique = true]
+                                  ; $classificationCatalog
+
+INSERT_UPDATE ClassificationSystemVersion; catalog(id)[unique = true]; version[unique = true] ; active; inclPacking[virtual = true, default = true]; inclDuty[virtual = true, default = true]; inclFreight[virtual = true, default = true]; inclAssurance[virtual = true, default = true]
+                                         ; $classificationCatalog    ; $classificationVersion ; true
+
+UPDATE BaseStore; uid[unique = true]; catalogs(id)[mode = append]
+                ; $storeUid         ; $classificationCatalog
+
+INSERT_UPDATE ClassificationClass; code[unique = true]; name    ; $classCatalogVersion                ; allowedPrincipals(uid)[default = 'customergroup']
+                                 ; MC0000001          ; Apparel ; ERP_CLASSIFICATION_026 : ERP_IMPORT ;
+
+INSERT_UPDATE ClassificationClass; code[unique = true]; name          ; $classCatalogVersion                ; allowedPrincipals(uid)[default = 'customergroup']
+                                 ; ZFASHION_F         ; fab india C/S ; ERP_CLASSIFICATION_026 : ERP_IMPORT ;
+
+update Product; code[unique = true]; $supercategories; $catalogVersion
+              ; 000000000001000384 ; SIZE_F,COLOR_F  ;
+
+update Product; code[unique = true]; supercategories(code, catalogversion(catalog(id[default = ERP_CLASSIFICATION_026]), version[default = ERP_IMPORT]))[mode = append]; $catalogVersion
+              ; 000000000001000384 ; ZFASHION_F                                                                                                                        ;
+
+
+
+#INSERT_UPDATE CategoryCategoryRelation;$categories;$supercategories
+#;ZFASHION_F;MC0000001
+
+INSERT_UPDATE ClassificationAttributeValue; code[unique = true]    ; $classificationSystemVersion        ;
+                                          ; FIT_F_SLIM             ; ERP_CLASSIFICATION_026 : ERP_IMPORT ;
+                                          ; FIT_F_SKINNY           ; ERP_CLASSIFICATION_026 : ERP_IMPORT ;
+                                          ; FIT_F_REGULAR          ; ERP_CLASSIFICATION_026 : ERP_IMPORT ;
+                                          ; FIT_F_LEISURE          ; ERP_CLASSIFICATION_026 : ERP_IMPORT ;
+                                          ; FIT_F_COMFORT          ; ERP_CLASSIFICATION_026 : ERP_IMPORT ;
+                                          ; PLACKET_V PLACKET      ; ERP_CLASSIFICATION_026 : ERP_IMPORT ;
+                                          ; PLACKET_SQUARE PLACKET ; ERP_CLASSIFICATION_026 : ERP_IMPORT ;
+                                          ; PLACKET_SLIM PLACKET   ; ERP_CLASSIFICATION_026 : ERP_IMPORT ;
+                                          ; SIZE_F_XXL             ; ERP_CLASSIFICATION_026 : ERP_IMPORT ;
+                                          ; SIZE_F_XL              ; ERP_CLASSIFICATION_026 : ERP_IMPORT ;
+                                          ; SIZE_F_L               ; ERP_CLASSIFICATION_026 : ERP_IMPORT ;
+                                          ; SIZE_F_M               ; ERP_CLASSIFICATION_026 : ERP_IMPORT ;
+                                          ; SIZE_F_S               ; ERP_CLASSIFICATION_026 : ERP_IMPORT ;
+
+INSERT_UPDATE ClassificationAttribute; code[unique = true]; name    ; $classSystemVersion                 ; $valuesForAssignment
+                                     ; FIT_F              ; FIT     ; ERP_CLASSIFICATION_026 : ERP_IMPORT ; FIT_F_SLIM,FIT_F_SKINNY,FIT_F_REGULAR,FIT_F_LEISURE,FIT_F_COMFORT
+                                     ; PLACKET            ; Placket ; ERP_CLASSIFICATION_026 : ERP_IMPORT ; PLACKET_V PLACKET,PLACKET_SQUARE PLACKET,PLACKET_SLIM PLACKET
+                                     ; SIZE_F             ; SIZE_F  ; ERP_CLASSIFICATION_026 : ERP_IMPORT ; SIZE_F_XXL,SIZE_F_XL,SIZE_F_L,SIZE_F_M,SIZE_F_S
+
+
+INSERT_UPDATE ClassAttributeAssignment; $class     ; $attribute; position; attributeType(code[default = enum]); multiValued[default = true]; range[default = false]; localized[default = false]
+                                      ; ZFASHION_F ; FIT_F     ; 1       ;                                    ; true                       ; true                  ;
+                                      ; ZFASHION_F ; PLACKET   ; 1       ;                                    ; true                       ; true                  ;
+                                      ; ZFASHION_F ; SIZE_F    ; 1       ;                                    ; true                       ; true                  ;
+
+
+INSERT_UPDATE Product; code[unique = true]; $catalogVersion
+                     ; 000000000001000384 ;
+                     ; 000000001000384001 ;
+                     ; 000000001000384002 ;
+                     ; 000000001000384003 ;
+                     ; 000000001000384004 ;
+                     ; 000000001000384005 ;
+                     ; 000000001000384006 ;
+
+INSERT_UPDATE Product; code[unique = true]; $catalogVersion
+                     ; 000000001000384001 ;
+                     ; 000000001000384002 ;
+                     ; 000000001000384003 ;
+
+############### Classifications Closed
+########################

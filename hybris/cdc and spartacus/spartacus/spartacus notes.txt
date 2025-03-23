@@ -1,0 +1,730 @@
+installing spartacus-->
+1)https://sap.github.io/spartacus-docs/installing-sap-commerce-cloud-2105/
+
+learn some angular concepts-->
+
+npm install -g @angular/cli  ----> to install angular globally
+
+ng new projectName   ---> to create project.
+
+structure(project)-->
+
+1)e2e--->it is used for end to end testing.
+2)node modules--->store third party libraries .
+3)src--->actual source code having module and components.
+i)assets--->to store image/icon
+ii)env------>where we store configuration files for different env.
+iii)index.html ---->main file from where we call app component.
+iiii)main.ts------>starting point of our application.it is like main method of java.where we import main modules.
+v)pollyfills.ts--->where we can put browser support if we needed.
+
+Now outside src folder-->
+
+4)angular-cli.json--->pre configured cli file.if we want to change paths and all for css,bootstrap we will use it.here we describe our main file.
+5)editor-config------>if we have many developers in team they should have same setting.
+6)karma.conf.js------>The karma. conf. js file is a partial Karma configuration file. The CLI constructs the full runtime configuration in memory, based on application structure specified in the angular.
+7)package.json----->all the libraries we add in our project discribed here.
+
+
+
+now inside component-->
+1)creating component
+
+all components go inside src folder inside app folder.
+
+what does create component do...create a component and register in module...by default in module.ts.
+
+while declariing component whatever we give in selector...it will work as name of that component in html tag <selectorName>.
+
+
+ng generate component name
+ng g c name
+
+it will update everything in app.module.ts
+
+..
+every components has its ts,html,css file and spec.ts for testing purpose.
+-------------------------------------
+data binding in angular-->
+
+three types -->
+
+1)string interploation..
+
+example -->
+
+export class TrainingComponentComponent implements OnInit {
+
+  myName : string = "Manvendra"     //defining string here
+  
+}
+
+calling in html-->
+
+<h1>My name is {{ myName}}</h1>
+
+
+
+2)Property Binding-->it is very simple we can bind any data with any property of tags but we need square bracket.
+
+ myData : string = "want to know";
+ 
+ <p [innerText]='myData'></p>     //by using square bracket we can directly bind not need {{}}.
+ 
+ 
+ now we have to send data from html to ts.
+ 
+ 
+3)Event binding--->we cand bind using event object and send into function.
+
+remember in new html for ts to bind events we can  use ()  instead of  ...
+(click)=     instead of     onclick=
+
+
+<input type="text" (input)="traceInput($event)">     on input we are sending event object to function traceInput.
+
+traceInput(e)
+  {
+    console.log(e.target.value);
+  }
+  
+  
+4)Two way Binding--->
+
+for this we use ng-model to bind html value with class attribute.
+
+to use this we have to include  form module into app.module.ts.
+
+ imports: [
+    BrowserModule,
+    FormsModule,
+  ],
+
+
+<input type="text" [(ngModel)]="myName">    //will bind with myName attribute in ts file.
+
+
+----------------------------------------------------------
+
+Directives in Angular-->
+
+a)Structural directives--->which modifies the dom.
+
+most common -->ngif,ngFor,ngSwitch.  we use * with structural directive---> example *ngIf
+
+
+example--->
+
+<p *ngFor="let number of numbers"> {{number}} </p>   //where numbers is an array...
+
+
+
+
+
+b)Attribute Directives  --->they modify the property of dom.
+
+ngClass,ngStyle
+
+
+
+some other directive --->
+
+ng-content----->when we want to send some content to child from parent.
+
+Example--->
+
+<app-child *ngIf="showChild">
+<h1>HI I am content from Parent</h1>    ////sending content.
+</app-child>
+
+
+<p>child !</p>
+<ng-content></ng-content>                 ///use inside child component.known as content projection.
+
+
+
+-------------------------------------
+https://www.youtube.com/watch?v=_OtYT8IHDHM&list=PLoC8Q0moRTSj9621k87pLtAc2MFn8XcLn&index=9
+communication between components-->
+1)if we puuting some value intwo way binding in parent component using [(ngModel)] and we want that value into another component
+which we r using as a child of parent component.
+
+we have to use @Input() on the property of the child component to accessible from parent for binding.
+
+
+Example-->
+
+@Input()   ////dont forget this
+name : string ="";
+
+
+<input type="text" [(ngModel)]="myName">
+<app-child [childProperty..name ]=  "myName" >  </<app-child>  //binding it with above property.
+                                                               // here we do didnt need {data} to pass data..
+															   
+															   ***remember only html need {{}} to render data...
+
+
+2)in above scenerio we have passed data from parent to child... what in case of child to parent?
+
+we will do it through event binding and emitter.
+
+it is like we will emit the data from child component and catch it in parent component.
+
+a)we will create a method to pass input data...
+
+<input type="text" (input)=passToParent($event)>
+
+
+b)now we have to catch the data and emit it in event...
+
+ @Output()                        ///dont forgot to use this
+  sendMessageEmitter = new EventEmitter();   //we will use it of angular/core to emit our data in event.variable name here is eventName
+  constructor() { }
+
+  passToParent(e)
+{
+this.sendMessageEmitter.emit(e.target.value);    //emitting our data.
+}
+
+
+c)now we have to catch data in parent where we r using child component.
+
+<app-child  (sendMessageEmitter)="captureChildValue($event)"></app-child>    //calling event of child on parent method...
+
+d)catch the value in parent...
+
+ captureChildValue(msg)
+  {
+    console.log(msg);   //here we have to use value direct because it is a variable event.
+  }
+  
+----------------------------------------------------
+Services and dependency--->
+
+it is bit different than component work as service like javva.....simple class to give service..and need to be injected using @injectable.
+
+1)creating service
+
+ng g s serviceName
+
+follwing classs will be created...
+
+import { Injectable } from '@angular/core';
+
+@Injectable({
+  providedIn: 'root'     ///it means it is injectable in root module...
+})
+export class MakeUpperCaseService {
+
+  constructor() { }
+}
+
+
+we can also declare it in providers[] in app.module.ts.
+
+lets do uppercase string operation in service....
+
+ makeStringUpperCase(str): string      ///returning string afterUppercase.
+  {
+  return str.toUpperCase();
+  }
+  
+  
+now wherever we want to use it just inject it in constructor...
+
+constructor(private uppserCaseService : MakeUpperCaseService) { }   ///injecting here
+
+captureChildValue(msg)
+  {
+    console.log(this.uppserCaseService.makeStringUpperCase(msg));   //calling service
+  }
+  
+--------------------------------------
+
+template referrence variable--->
+
+when we pass a dom elemement to type script we use template referrence...for this we can use # with a name in the tag and just pass to method.
+
+Example--->
+
+<input type="text"  #myText>    ////passing referrence of elements here using #
+<p #myPara>Hello</p>
+<button (click)="muRfVariable(myText,myPara)"></button>      /////on click event passing refference
+
+Now reading elements in method
+
+
+muRfVariable(input,para): void
+  {
+    console.log(input.value);
+    console.log(para.innerText);    ///using dom elements...
+  }
+------------------------------
+life cycle hooks-->
+
+All component and directives in angular have its lifecycle hooks-->
+
+❑ ngOnChanges − When the value of a data bound property changes,then this method is called. it is called once before onit and every time when property changes(data bound.). means when something comes through @inputnot recommended for text input event....call every tiime
+
+ ngOnChanges(changes: SimpleChanges): void {   //simplechanges is used for old values.
+    console.log("parent OnCHANGES called");
+  }
+
+❑ ngOnInit − This is called whenever the initialization of the
+directive/component.once after first ngOnChanges.it is called every time when component is loaded after destroying.
+❑ ngDoCheck − This is for the detection and to act on changes that
+Angular can't or won't detect on its own.its run every time when a change is done in component....it is also expensive ...use wisely.....
+avoid to use both in same component...
+it is called just after ngOnChanges.
+
+
+❑ ngAfterContentInit − This is called in response after Angular
+projects external content into the component's view.  when we inject content into child from parent.
+
+
+❑ ngAfterContentChecked − This is called in response after Angular
+checks the content projected into the component.and called after every ngdoCheck..
+
+
+❑ ngAfterViewInit − This is called in response after Angular initializes
+the component's views and child views.it is called once after view is loaded..
+
+❑ ngAfterViewChecked − This is called in response after Angular
+checks the component's views and child views.after every ng doChweck and afterContent checked as view is changing.
+
+
+❑ ngOnDestroy − This is the cleanup phase just before Angular
+destroys the directive/component.it is called every time when component is destroyed after loaded.we can clear acitivities here.
+
+
+Example--->
+
+counter:number=1;  
+interval:any;
+
+ ngOnInit(): void {
+    console.log("child init called");
+   this.interval= setInterval(()=>{
+    this.counter++;
+    console.log("counter = "+this.counter)},1000);  //it is type recursive method which will run every 1 sec.
+  }
+
+  ngOnDestroy(): void {
+    console.log("child destroy called");
+    clearInterval(this.interval);                ///clearing here.
+  } 
+
+
+-------------------------------------------------------
+Routing--->navigation between pages-->
+
+used to build single page application with diffrent views and navigation between views.
+
+we have to open new component or specific component on uri..
+
+example--->/about  we have to show about component.
+
+to acheive this---> go to app-routing.module.ts....and add config..
+
+example-->
+
+like this-->
+
+const routes: Routes = [
+  {
+    path : 'home' , component : TrainingComponentComponent
+  },
+  {
+    path : 'about' , component:ChildComponent                   ////adding our component in path
+  },
+  {
+    path : '**' , component:pageNotFoundComponent                   ////adding our 404 component in not found path
+  },
+  {
+    product/:id : 'about' , component:ProductComponent                   ////adding our component in path and sending id....
+  },
+];
+
+and we have to inform angular to use routing....
+go in main app.component.html-->
+
+
+delete all and put -->
+
+
+<router-outlet/>                //telling angular to do routing..
+
+
+
+if we r using link to redirect to other component we will not use <href> or anchor tag because it will reload the page...
+we will use a directive...
+
+<a routerLink ="/home">Home</a>  ......////it will not reload the page.
+
+if we want to navigate in a service or ts file...
+we will use router service to navigate and use its navigate() method.
+
+
+now if we want to acceess param from routes...
+
+we will use a service called ActivatedRoute...///////////***
+
+
+and we will use this.route.snapshot.params['id'].........////to get current value..
+-------------------------------------
+ng-template-->
+
+Like the name indicates, the ng-template directive represents an Angular template: this means that the content of this tag will contain part of a template, that can be then be composed together with other templates in order to form the final component template.
+
+Angular is already using ng-template under the hood in many of the structural directives that we use all the time: ngIf, ngFor and ngSwitch
+
+
+----------------------
+Observable in Angular-->
+
+=============
+pipes and guards-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+==================================
+++++++++++++++++++++++++
+=================================
+
+
+
+
+
+
+
+
+Now spartacus--->everything related to spartacus here...
+
+here we will learn how to customize spartacus...
+
+1)how to replace/add content before/after layout in spartacus......?
+
+inspect the page ...choose whatever layout u want to replace...in cx-page-layout choose the name of attribute ng-reflect-section...
+
+example--><cx-page-layout section="header" ng-reflect-section="header" class="header">  //here we will select header. if we want to replace header.
+
+than we will use ng-template and a spartacus attribute cxOutletRef to replace our data.....
+
+
+<ng-template cxOutletRef="header">   //replace all the data with our data.
+    <p>India lost the match...</p>
+</ng-template>
+
+
+now if we want to add above/below in layout....we will use another attribute cxOutletPos
+
+<ng-template cxOutletRef="header" cxOutletPos="before">  //this will adjust content position.
+    <p>India lost the match...</p>
+</ng-template>
+
+what to do in case of slots...we want to remove/replace/update slot in layout?
+just same as above but use *position* instead of &&section in case of slot...
+
+
+
+
+----------------------------------
+how to we know what content is going to render?
+
+an api-->https://spartacus-demo.eastus.cloudapp.azure.com:8443/occ/v2/electronics-spa/cms/pages?lang=en&curr=USD
+
+
+================================================================================================================================
+
+
+is there any other way to render layout instead of using tags?can we insert our component...
+yes.
+steps-->
+1)create your own component....write your code in html...
+2)now in app.component.ts....inject two service...componenntFactoryResolver and outletService...
+3)now in on init() or in any hooks u wish will render first...write this code.....
+
+const factory = this.componenntFactoryResolver.resolveComponentFactory(yourComponent)   //inserting our component
+this.outletService.add('cx-storefront', factory, OutletPosition.BEFORE)                 // replacing or adding here..
+
+we can do above things like this also-->
+
+this.outletService.add('header', factory, OutletPosition.BEFORE)    //////it is like we use cxOutletRef....we can do it on section and layout.
+ 
+-------------------------------
+Outlet Context
+Whenever an outlet is created, the given context of  the UI is injected into the outlet template. The context can be conveniently used in the template by using the let-[var] syntax. The following is an example:
+
+<ng-template cxOutletRef="header" let-model>      
+    The context is directly available in the custom UI: 
+</ng-template>
+
+
+The following example demonstrates how to use the context to get the list of components within a slot:
+
+<ng-template cxOutletRef="Section1" let-model>      ////we can put anything let-{variable}
+  "Section1" position
+  <pre>{{ model.components$ | async | json }}</pre>    
+</ng-template>
+
+
+
+some basic points to remember in context....
+
+Page Template:
+templateName$: Name of the template. (Observable)
+slots$: Slots in the template. (Observable)
+sections$: Sections in the template. (Observable)
+
+Slot
+components$: List of components in the slot. (Observable)
+
+Component
+component: The component data as returned by the backend.
+
+
+=====================================================================================================
+
+Cms Components--->till now we have learn how to work with layout and slots...now we learn to use cms components...
+
+remember cms components   is different than angular components.
+
+now if we want to replace any existing cmscomponent with our component we just have to declare in module. ts inside imports using config..
+
+@NgModule({
+  declarations: [
+    ChildComponent
+  ],
+  imports: [
+    BrowserModule,
+    ConfigModule.withConfig({
+      cmsComponents: {
+        MiniCartComponent: {                   ////this is the cms component we want to replace
+          component: ChildComponent            ///  this is our angular component who will replace this.
+        } 
+      } 
+    })
+    
+  ],
+  providers: [],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+
+
+
+
+every cms component has a typecode/flexType attribute from there u can check which cmscomponent has to replace--->
+
+{
+    "uid": "ElectronicsHompageSplashBannerComponent",
+    "typeCode": "SimpleResponsiveBannerComponent",    //////this u can check in network tab..
+    "flexType": "SimpleResponsiveBannerComponent"     //////we have to use use it if both are available.
+  },
+  
+  
+-------------------------
+is there any other thing to remember while overriding cmscomponent...yes there are-->
+
+lets take example-->In PDP Display Change price from $XX to USD $ XX...
+
+now in this first we have to find the respective cms component...now we have to override this how can we do...we have to use the details of cart..
+
+so in our customcomponent.ts which will extend our ProductSummaryComponent....
+
+export class ChildComponent extends ProductSummaryComponent 
+{
+
+}
+
+now we can use parent class attributes in html like {{product.price}}
+
+
+-------------------------------------------------------------------------------------------------
+
+is order is preserved for slots in spartacus?
+yes we have a file layout-config.ts in repo in which we have all order in which slot is defined for every layout...
+
+can we customize it ?
+yes 
+we have to copy that file in our project...than copy into our main module...
+now we have to tell angular that u have to use this config know...we will go in module.ts
+
+we will use again 
+
+
+ConfigModule.withConfig(layoutConfig)            ////as it takes only object
+
+in imports
+
+
+now in our layout-config.ts we can change order and filter everything...
+
+---------------------------------------------------------------------------------------------------------
+
+Configuration in spartacus--->
+
+TYpes of configuration in spartacus-->
+
+configModule.config()---->configuration on module only...///above we have many examples of it...
+
+ii)now go to spartacus-configuration.module.ts--->
+
+here u can see diffrent configs...
+
+a)provideConfig(<OccConfig>{
+    backend: {
+      occ: {
+        baseUrl: 'https://spartacus-demo.eastus.cloudapp.azure.com:8443/',
+      }
+    },
+	
+	///provide config we use to define configuration globally....here we are declaring occConfig globally for all modules...
+	it is used in providers in module.ts
+	
+	
+we have also many small config-->
+a)layoutConfig----> we use it for orders regarding slots and components...
+b)provideConfig(<OccConfig>{
+    backend: {
+      occ: {
+        baseUrl: 'https://spartacus-demo.eastus.cloudapp.azure.com:8443/',
+      }
+    },//for occ configuration...
+	
+c)provideConfig(<SiteContextConfig>{
+    context: {
+      currency: ['USD'],
+      language: ['en'],   ///languages and currency regarding site should be declared here.also we can add UrlParametres here.
+    },
+	///regarding site context we have these configurations..
+	
+d)provideConfig(<I18nConfig>{
+    i18n: {
+      resources: translations,
+      chunks: translationChunksConfig,
+      fallbackLang: 'en'
+    },
+	///localeModule
+=========================================================================================================================
+Routing in spartacus--->
+
+default-routing-config--> this is the file where all the routes for the hybris cloud apllication is mentioned.
+
+example -->
+
+// pdp routes
+  product: {
+    paths: ['product/:productCode/:name'],
+    paramsMapping: { productCode: 'code' },                         ///this is the mapping productCode should be treated as code...
+  },
+
+
+
+we can modify all this routes accoring to ours...
+
+
+ConfigModule.withConfig({ routing: {
+ routes: {
+ product: {
+ paths: [ 'product/:manufacturer/:categoryt/:productCode/:name'],
+ paramsMapping :[productCode:'code']        //to map Product.code to productCode   ////diffrent name than properties
+ } } } as RouteConfig) 
+ 
+ 
+we can also attach our custom component on routes ...but we have to attach it with some page and guard otherwise it will not work as spartacus way.
+
+inside routing.module.ts..
+
+ 
+const routes: Routes = [
+{
+component: ComponentName,
+path: 'pathname',
+data: {pageLabel: 'somePagelabelname'},    ////this is cmsPage
+canActivate: guardName           ///this will check the response is correct or not..
+}
+]
+
+example-->
+
+const routes: Routes = [{
+component: ChildComponent,
+path: 'child',
+data: {pageLabel: '/homepage'},
+canActivate: [CmsPageGuard]
+}];
+
+
+======================================================
+PLP-->
+
+here ngrx work which is associated with solr search query...
+
+watch the video day 7..
+
+ngrx is type of cache thing but it work for all not associated with session.
+
+when we hit a api with component--->a ction happens which  will have a effect (data ) or may not be but action  reduced the data into store.
+
+when effects happen reduce comes into picture it takes the data and save it into ngrx store.
+
+when we do same api ....selector interacts with ngrx store and populate data from store.
+
+every component has its own selector.
+
+
+
+======================================================
+changing endpoints--->
+
+can we change occ endpoint urls ourselves?
+yes-->
+
+just go to any occ-config.ts in repo...
+
+lets go to default-occ-product-config.ts-->look into data..here u can see api configurations..
+
+if we want to override ...just create a const and pass it in our configModule...
+
+ConfigModule.withConfig({
+backend: {
+occ: {
+endpoints: {
+product: {
+default:
+'products/${productCode}?fields=DEFAULT,averageRating,images(FULL),classificatio
+ns,manufacturer,numberOfReviews,categories(FULL),baseOptions,baseProduct,variantOptions,vari
+antType’,
+},
+},
+},
+})
+
+
+we can create a const for above json also and can pass it inside....
+
+====================================================================================
+
+=====================
+
+extra things--->>
+
+
+@media(min-width:786px) {                                  ////use it in scss to mobile
+    header:not(.is-expanded) cx-page-layout.navigation {
+        display: block; 
+    }  
+}

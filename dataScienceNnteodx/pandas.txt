@@ -1,0 +1,1345 @@
+Pandas-->package/lib in python
+it is open tool to analyze data and manipulate...
+series ---1d
+dataframe--2d
+It has functions for analyzing, cleaning, exploring, and manipulating data.
+pandas is like hibernate of java
+python only support .csv and json...
+
+we can use kaggle.com to download dataset
+
+Why Use Pandas?
+Pandas allows us to analyze big data and make conclusions based on statistical theories.
+
+Pandas can clean messy data sets, and make them readable and relevant.
+
+Relevant data is very important in data science.
+
+if u have data less than 50k go for numpy...
+for large data go to pandas...
+
+1)pip install pandas    // to install pandas in system
+
+2)trying to read csv file. by method read_csv
+
+example-->
+
+What Can Pandas Do?
+Pandas gives you answers about the data. Like:
+
+Is there a correlation between two or more columns?
+What is average value?
+Max value?
+Min value?
+Pandas are also able to delete rows that are not relevant, or contains wrong values, like empty or NULL values. This is called cleaning the data
+
+
+What is a Series?
+A Pandas Series is like a column in a table.
+
+It is a one-dimensional array holding data of any type.///series in column
+
+
+Example:
+Create a simple Pandas Series from a list:
+
+import pandas as pd
+
+a = [1, 7, 2]
+
+myvar = pd.Series(a)
+
+print(myvar)
+0    1                                 ..converting into columns
+1    7
+2    2
+dtype: int64
+
+
+Labels
+If nothing else is specified, the values are labeled with their index number. First value has index 0, second value has index 1 etc.
+
+This label can be used to access a specified value. 0,1,2 are labels.
+
+Example
+Return the first value of the Series:
+
+print(myvar[0])    //1
+
+head and tail also work for series.
+
+print first 5 elments of series..
+series[:5]
+series[:-5]   // for last 5 elemetnts
+series[-1:]  // for last element : important
+
+use drop() to delete in series.
+--------------------------------------
+Create Labels
+With the index argument, you can name your own labels also known as custom indexing.
+
+Example
+Create your own labels:
+
+import pandas as pd
+
+a = [1, 7, 2]
+
+myvar = pd.Series(a, index = ["x", "y", "z"])
+
+print(myvar)
+
+
+x    1
+y    7
+z    2
+dtype: int64
+
+-------------------------------------------
+Key/Value Objects as Series
+You can also use a key/value object, like a dictionary, when creating a Series.
+
+Example
+Create a simple Pandas Series from a dictionary:
+
+import pandas as pd
+
+calories = {"day1": 420, "day2": 380, "day3": 390}
+
+myvar = pd.Series(calories)
+
+print(myvar)
+
+day1    420
+day2    380
+day3    390
+dtype: int64
+
+
+Note: The keys of the dictionary become the labels.
+
+To select only some of the items in the dictionary, use the index argument and specify only the items you want to include in the Series.
+
+Example
+Create a Series using only data from "day1" and "day2":
+
+import pandas as pd
+
+calories = {"day1": 420, "day2": 380, "day3": 390}
+
+myvar = pd.Series(calories, index = ["day1", "day2"])
+
+print(myvar)
+
+
+//we cannot create series from ordered data type like set
+--------------------------------------------------
+DataFrames
+Data sets in Pandas are usually multi-dimensional tables, called DataFrames.
+
+Series is like a column, a DataFrame is the whole table. similiar to excel sheet
+
+Example
+Create a DataFrame from two Series:##################
+
+import pandas as pd
+
+data = {
+  "calories": [420, 380, 390],                      columnname:columnvalues
+  "duration": [50, 40, 45]
+}
+
+df = pd.DataFrame(data)  // here Capital remember
+
+print(df)    
+
+   calories  duration
+0       420        50
+1       380        40
+2       390        45
+
+df.shape                                     //rows and column      so 3*2  labels not included
+df.size                                      // no of elemnts       so 6            
+df.info ()                                     //all details 
+df.describe()                                // this is the most powerful function show count,min,max,average etc
+df.count()                                   // will give count of all columns excluding na//per column
+df.['column_name'].value_counts()            // give count of per values present
+df.mean()                                    // give mean per columns 
+df.sum()                                    // give sum per columns 
+df.min()                                     // give min per columns
+df.max()                                     // give max per columns
+df.median()                                  // give median per columns
+df.nunique()                                 // will give all distinct values.
+df.duplicated()                              // will give boolean value per rows
+print(df.duplicated().sum())                 // will give sum of duplicated values
+df.isnull()                                  // check per element and print true/false
+
+---------------------------------------------------------
+import pandas as pd
+
+data = {
+  "calories": 123,
+  "duration": [50, 40, 45]
+}
+
+df = pd.DataFrame(data)
+
+print(df)
+
+   calories  duration
+0       123        50
+1       123        40
+2       123        45                //same value will append
+------------------------------------------------------------
+let see how dataframe run on 1d array and check result
+
+import numpy as np
+import pandas as pd
+
+varl = pd.DataFrame(np.array([1,2,3,4,5,6]))
+print(varl)
+
+   0                //0 is column which u cannnot find in series
+0  1
+1  2
+2  3
+3  4
+4  5
+5  6
+-----------------------------------------------------------
+import numpy as np
+import pandas as pd
+
+varl = pd.DataFrame(np.array([1,2,3,4,5,6]),index=['a','b','c','d','e','f'],columns=['testing'])   //naming 
+print(varl)
+
+   testing
+a        1
+b        2
+c        3
+d        4
+e        5
+f        6
+
+we can also rename column after that
+
+import numpy as np
+import pandas as pd
+
+varl = pd.DataFrame(np.array([1,2,3,4,5,6]),index=['a','b','c','d','e','f'],columns=['testing'])
+print(varl)
+abc=varl.rename(columns={"testing":'hitetstyud'})   // this will create new dataset with modification
+varl.columns=['ninja']                              //but it will change the existing one
+
+
+------------------------------------------------------------
+Merge-->merge and join combines data set into new columns.
+
+import pandas as pd
+
+leftFrame=pd.DataFrame({'name':['A','B','C'],'age':[1,2,3]},index=['a','b','c'])
+#print(leftFrame)
+
+rightFrame=pd.DataFrame({'name':['D','E','F'],'age':[4,5,6]},index=['d','e','f'])
+#print(rightFrame)
+
+abc=pd.merge(leftFrame,rightFrame,on='name')
+print(abc)
+
+here we can see for merging we dont have any common keys so on merging it will not give any result.
+but we can see column names..
+
+Columns: [name, age_x, age_y]    // both the columns has come // 
+
+
+now if we use common names where merge can happern.
+
+import pandas as pd
+
+leftFrame=pd.DataFrame({'name':['A','B','C'],'age':[1,2,3]},index=['a','b','c'])
+#print(leftFrame)
+
+rightFrame=pd.DataFrame({'name':['A','B','C'],'age':[4,5,6]},index=['d','e','f'])
+#print(rightFrame)
+
+abc=pd.merge(leftFrame,rightFrame,on='name')
+print(abc)
+
+
+  name  age_x  age_y
+0    A      1      4
+1    B      2      5
+2    C      3      6
+
+see we have result now.   
+
+
+import pandas as pd
+
+leftFrame=pd.DataFrame({'name':['A','B','C'],'age':[1,2,3]},index=['a','b','c'])
+#print(leftFrame)
+
+rightFrame=pd.DataFrame({'name':['A','B','K'],'age':[4,5,6]},index=['d','e','f'])
+#print(rightFrame)
+
+abc=pd.merge(leftFrame,rightFrame,on='name')
+print(abc)
+
+here only we can see common values only.
+
+  name  age_x  age_y
+0    A      1      4
+1    B      2      5
+
+
+---------------------------------------------------------------
+now join-->
+
+it will do simple join on common index and fetch values from another table and create extra column
+
+import pandas as pd
+
+leftFrame=pd.DataFrame({'name':['A','B','C'],'age':[1,2,3]},index=['a','b','c'])
+#print(leftFrame)
+
+rightFrame=pd.DataFrame({'name':['A','D','E','F'],'number':[11,4,5,6]},index=['a','d','e','f'])
+#print(rightFrame)
+
+abc=leftFrame.join(rightFrame,lsuffix='_left_frame',rsuffix='_right_frame')   //mandatory to specify suffix
+print(abc)
+
+  name_left_frame  age name_right_frame  number
+a               A    1                A    11.0
+b               B    2              NaN     NaN
+c               C    3              NaN     NaN
+
+remember index should also be same....
+
+
+now if we dont put index..
+
+leftFrame=pd.DataFrame({'name':['A','B','C'],'age':[1,2,3]})
+#print(leftFrame)
+
+rightFrame=pd.DataFrame({'name':['D','E','F'],'number':[4,5,6]})
+#print(rightFrame)
+
+abc=leftFrame.join(rightFrame,lsuffix='_left_frame',rsuffix='_right_frame')
+print(abc)
+
+  name_left_frame  age name_right_frame  number
+0               A    1                D       4
+1               B    2                E       5
+2               C    3                F       6
+
+all values get joined on same level index.
+------------------------------------------------------------
+concatenating two datframe
+
+pd.concat([array of data frame],axis=0)  // whatever u need
+
+if u r concatenanting on row level with different columns it will add values in coumns also with na where value is not available.
+
+
+import pandas as pd
+
+leftFrame=pd.DataFrame({'name':['A','B','C'],'age':[1,2,3]})
+#print(leftFrame)
+
+rightFrame=pd.DataFrame({'name':['D','E','F'],'number':[4,5,6]})
+#print(rightFrame)
+
+abc=pd.concat([leftFrame,rightFrame])
+print(abc)
+
+  name  age  number
+0    A  1.0     NaN
+1    B  2.0     NaN
+2    C  3.0     NaN
+0    D  NaN     4.0
+1    E  NaN     5.0
+2    F  NaN     6.0
+
+it will add all values and make a join.
+
+doesn't matter if value are same.
+
+import pandas as pd
+
+leftFrame=pd.DataFrame({'name':['A','B','C'],'age':[1,2,3]})
+#print(leftFrame)
+
+rightFrame=pd.DataFrame({'name':['A','B','C'],'number':[4,5,6]})
+#print(rightFrame)
+
+abc=pd.concat([leftFrame,rightFrame])
+print(abc)
+
+  name  age  number
+0    A  1.0     NaN
+1    B  2.0     NaN
+2    C  3.0     NaN
+0    A  NaN     4.0
+1    B  NaN     5.0
+2    C  NaN     6.0
+
+
+if u pass axis =1 it will create extra column.
+
+import pandas as pd
+
+leftFrame=pd.DataFrame({'name':['A','B','C'],'age':[1,2,3]})
+#print(leftFrame)
+
+rightFrame=pd.DataFrame({'name':['A','B','C','E'],'number':[4,5,6,7]})
+#print(rightFrame)
+
+abc=pd.concat([leftFrame,rightFrame],axis=1)
+print(abc)
+
+  name  age name  number
+0    A  1.0    A       4
+1    B  2.0    B       5
+2    C  3.0    C       6
+3  NaN  NaN    E       7
+
+------------------------------------------------------------
+Locate Row
+As you can see from the result above, the DataFrame is like a table with rows and columns.
+
+Pandas use the loc attribute to return one or more specified row(s)
+
+#refer to the row index:
+print(df.loc[0])    //
+
+calories    420
+duration     50
+
+
+we have two methods -->
+iloc   --> when we are using python based indexing it is same as 2d array indexing iloc[start:end,start:end]
+loc    --> when we are using custom indexing     it is different will take column name like below
+
+print(df.loc[0:2,'Maxpulse':])                same syntax just column names in string.
+
+
+if we want to use specific row and columns in dataframe we cannot use above slicing concept as it is  continous.
+
+
+
+Return row 0 and 1:
+
+#use a list of indexes:
+print(df.loc[[0, 1]])    //passing list of indexes
+
+Note: When using [], the result is a Pandas DataFrame.
+
+example we neeed row 2,5 and column gender and id from data frame 
+
+df.loc[[list of rows] , [list of columns]]
+df.loc[[2,5],['gender','id']]
+or
+we can also use this
+print(df.Maxpulse[[0,2]])    // fetching 0 and second value from maxpulse column 
+print(df.Maxpulse[0:2])      // fetching continous
+
+remmember:
+when we need continous []
+when we need specific [[]]   
+
+we need all coulmns for row 3 and 8
+df.loc[[3,8],:] 
+--------------------------------------
+in data frame we can also name index
+
+Example
+Add a list of names to give each row a name:
+
+import pandas as pd
+
+data = {
+  "calories": [420, 380, 390],
+  "duration": [50, 40, 45]
+}
+
+df = pd.DataFrame(data, index = ["day1", "day2", "day3"])
+
+print(df) 
+
+      calories  duration
+  day1       420        50
+  day2       380        40
+  day3       390        45
+  
+------------------------------------------------------------------
+
+pandas read csv
+
+Load the CSV into a DataFrame:
+import pandas as pd
+
+df = pd.read_csv(r"C:\Users\002M2W744\Downloads\data.csv")
+
+print(df.to_string()) 
+print(df.shape)              //(162,4)   // 162 rows and column
+print(numpy.array(df)[20:30,2:4])   //converting into numpy array 
+
+Tip: use to_string() to print the entire DataFrame.
+
+If you have a large DataFrame with many rows, Pandas will only return the first 5 rows, and the last 5 rows
+
+pd.options.display.max_rows = 9999  //use this property if u want more returns in simple print
+
+----------------------------------------------------------------------
+Adding/deleting rows and column in dataframe--->
+
+df['new_column_name']=new_value                       // remeber if we dont assign value it will give error
+
+print(df)
+df['manu']=120    //adding new column
+print(df.manu or df['manu'])
+del df['Pulse']   // deleting column
+print(df)
+
+or we can use drop
+
+# Delete a single named column from the DataFrame
+data = data.drop(columns="cases")
+# Delete multiple named columns from the DataFrame
+data = data.drop(columns=["cases", "cases_per_million"])
+
+or we can also delete by column number
+data = data.drop(columns=data.columns[3])    // here is number not index
+
+if u want to insert at any specific position we can use insert function
+df.insert(loc=3,column='manu',value=23)   /// it will insert at 3 index the new column with new value
+if we want to add multiple columns use list always
+------------------------------
+deleting rows-->
+
+# delete a single row by index value 0
+data = data.drop(labels=0, axis=0)
+# delete a few specified rows at index values 0, 15, 20.
+# Note that the index values do not always align to row numbers.
+data = data.drop(labels=[1,15,20], axis=0)
+
+
+-----------------
+# Delete column numbers 1, 2 and 5 from the DataFrame
+# Create a list of all column numbers to keep
+columns_to_keep = [x for x in range(data.shape[1]) if x not in [1,2,5]]
+# Delete columns by column number using iloc selection
+data = data.iloc[:, columns_to_keep]
+data.shape
+--> (238, 8)
+
+shape[1]  ///// will give cloumn count as shape gives tuple with (rows,column)
+------------------------------------------------------------------------
+changing values in a column 
+import pandas as pd
+
+df = pd.read_csv(r"C:\Users\002M2W744\Downloads\data.csv")
+
+print(df)
+df.Duration = 100  or df['Duration']=100   // changing value of all rows for column Duration
+print(df)
+
+
+changing specific and range
+
+df.Duration[[4]]=29                                      //[[]]
+df.Duration[0:2]=23
+print(df)
+
+changing with condition
+
+df.Duration[Duration%2==0]=29                          // will change specific ones as we are passing boolean value per element
+or use replace
+df.Duration=df.Duration.replace(100,0)                             // will replace 100 with 0 where duration==100
+----------------------------------------------------------------------
+sorting--->
+
+df.sort_values(by='column_name')
+df.sort_values(by='manu')                    //sorting  default is asc
+df.sort_values(by='manu',ascending=False)    
+
+
+df.sort_values(by=['manu','shelly'],ascending=False) 
+
+now it will sort manu column first than for that points it will sort shelly.
+example manu has 1,2,3,4  and shelly has also 1,2,3,4 for every manu rows
+it will sort manu 1 to 4 now for 1 whatever common for shelly it will sort. by grouping
+
+--------------------------------------------------------------------
+logical conditions[filter]-->
+
+df.Name.str.startswith('ma')    // it will give boolean if values starts with ma.
+
+
+we can pass these conditions in df also
+df[df.Name.str.startswith('ma') ]   // will fetch only equivalent records
+
+we can also give and /or conditions
+
+print(df[(df.Pulse>130) | (df.Calories>400)])    // dont forgot to put ()
+---------------------------------------------------------------------
+Changing Data types for columns
+
+DataFrame.astype() method is used to cast pandas object to a specified dtype. This function also provides the capability to convert any suitable existing column to a categorical type.
+
+df = pd.DataFrame({
+    'A': [1, 2, 3, 4, 5],
+    'B': ['a', 'b', 'c', 'd', 'e'],
+    'C': [1.1, '1.0', '1.3', 2, 5]})
+ 
+# converting all columns to string type
+df = df.astype(str)
+print(df.dtypes)
+
+-----
+
+we can use dictionary also to change multiple columns type
+
+# importing pandas as pd
+import pandas as pd
+ 
+# sample dataframe
+df = pd.DataFrame({
+    'A': [1, 2, 3, 4, 5],
+    'B': ['a', 'b', 'c', 'd', 'e'],
+    'C': [1.1, '1.0', '1.3', 2, 5]})
+ 
+# using dictionary to convert specific columns
+convert_dict = {'A': int,
+                'C': float
+                }
+ 
+df = df.astype(convert_dict)
+print(df.dtypes)
+
+---------
+
+We can pass pandas.to_numeric, pandas.to_datetime, and pandas.to_timedelta as arguments to apply the apply() function to change the data type of one or more columns to numeric, DateTime, and time delta respectively. 
+
+# importing pandas as pd
+import pandas as pd
+ 
+# sample dataframe
+df = pd.DataFrame({
+    'A': [1, 2, 3, '4', '5'],
+    'B': ['a', 'b', 'c', 'd', 'e'],
+    'C': [1.1, '2.1', 3.0, '4.1', '5.1']})
+ 
+# using apply method
+df[['A', 'C']] = df[['A', 'C']].apply(pd.to_numeric)
+print(df.dtypes)
+
+
+
+-----------------------------------------------------------------------
+pandas read json-->
+
+Read JSON
+Big data sets are often stored, or extracted as JSON.
+
+JSON is plain text, but has the format of an object, and is well known in the world of programming, including Pandas.
+
+In our examples we will be using a JSON file called 'data.json'.
+
+Load the JSON file into a DataFrame:
+
+import pandas as pd
+
+df = pd.read_json('data.json')
+
+print(df.to_string()) 
+
+---------------------------------------------------------------------------
+JSON = Python Dictionary
+
+JSON objects have the same format as Python dictionaries.
+
+If your JSON code is not in a file, but in a Python Dictionary, you can load it into a DataFrame directly:
+
+Example
+Load a Python Dictionary into a DataFrame:
+
+import pandas as pd
+
+data = {
+  "Duration":{
+    "0":60,
+    "1":60,
+    "2":60,
+    "3":45,
+    "4":45,
+    "5":60
+  },
+  "Pulse":{
+    "0":110,
+    "1":117,
+    "2":103,
+    "3":109,
+    "4":117,
+    "5":102
+  },
+  "Maxpulse":{
+    "0":130,
+    "1":145,
+    "2":135,
+    "3":175,
+    "4":148,
+    "5":127
+  },
+  "Calories":{
+    "0":409,
+    "1":479,
+    "2":340,
+    "3":282,
+    "4":406,
+    "5":300
+  }
+}
+
+df = pd.DataFrame(data)
+
+print(df) 
+print(df[[calories,maxpulse]])   //fetching multiple columns
+-----------------------------
+Viewing the Data
+One of the most used method for getting a quick overview of the DataFrame, is the head() method.
+
+The head() method returns the headers and a specified number of rows, starting from the top.
+
+import pandas as pd
+
+df = pd.read_csv('data.csv')
+
+print(df.head(10))   //give the first 10 rows with header..
+
+--------------------------------
+vice versa is tail method...
+---------------------------------
+Info About the Data
+The DataFrames object has a method called info(), that gives you more information about the data set.
+
+Example
+Print information about the data:
+
+print(df.info())    //total columns and row//
+
+#   Column    Non-Null Count  Dtype  
+  ---  ------    --------------  -----  
+   0   Duration  169 non-null    int64  
+   1   Pulse     169 non-null    int64  
+   2   Maxpulse  169 non-null    int64  
+   3   Calories  164 non-null    float64
+   
+   The info() method also tells us how many Non-Null values there are present in each column, and in our data set it seems like there are 164 of 169 Non-Null values in the "Calories" column.
+
+Which means that there are 5 rows with no value at all, in the "Calories" column, for whatever reason.
+
+------------------------------------
+Data Cleaning
+Data cleaning means fixing bad data in your data set.
+
+Bad data could be:
+
+Empty cells
+Data in wrong format
+Wrong data
+Duplicates
+
+Remove Rows
+One way to deal with empty cells is to remove rows that contain empty cells.
+
+This is usually OK, since data sets can be very big, and removing a few rows will not have a big impact on the result.
+
+
+Return a new Data Frame with no empty cells:
+
+import pandas as pd
+
+df = pd.read_csv('data.csv')   // check describe and info for count of missing values
+
+new_df = df.dropna()
+
+print(new_df.to_string())
+
+Note: By default, the dropna() method returns a new DataFrame, and will not change the original.
+
+If you want to change the original DataFrame, use the inplace = True argument:
+
+Example
+Remove all rows with NULL values:
+
+import pandas as pd
+
+df = pd.read_csv('data.csv')
+
+df.dropna(inplace = True)
+
+print(df.to_string())
+
+df.drop(columns=[list of column names])    /// to drop specific columns
+----------------------------------------------
+Replace Empty Values
+Another way of dealing with empty cells is to insert a new value instead.
+
+This way you do not have to delete entire rows just because of some empty cells.
+
+The fillna() method allows us to replace empty cells with a value:
+
+Replace NULL values with the number 130:
+
+import pandas as pd
+
+df = pd.read_csv('data.csv')
+
+df.fillna(130, inplace = True)
+
+
+Replace Only For Specified Columns
+The example above replaces all empty cells in the whole Data Frame.
+
+To only replace empty values for one column, specify the column name for the DataFrame:
+
+Example
+Replace NULL values in the "Calories" columns with the number 130:
+
+import pandas as pd
+
+df = pd.read_csv('data.csv')
+
+df["Calories"].fillna(130, inplace = True)
+
+
+-------------------------------------------------------------
+Mean is the arithmetic average of a data set. This is found by adding the numbers in a data set and dividing by the number of observations in the data set. mean is the best predictor.
+
+The median is the middle number in a data set when the numbers are listed in either ascending or descending order. 
+
+The mode is the value that occurs the most often in a data set and the range is the difference between the highest and lowest values in a data set.
+
+
+Replace Using Mean, Median, or Mode
+A common way to replace empty cells, is to calculate the mean, median or mode value of the column.
+
+Pandas uses the mean() median() and mode() methods to calculate the respective values for a specified column:
+
+Example
+Calculate the MEAN, and replace any empty values with it:
+
+import pandas as pd
+
+df = pd.read_csv('data.csv')
+
+x = df["Calories"].mean()
+
+df["Calories"].fillna(x, inplace = True)   // never assign back otherwise it will replace
+
+
+-------------------------
+Calculate the MEDIAN, and replace any empty values with it:
+
+import pandas as pd
+
+df = pd.read_csv('data.csv')
+
+x = df["Calories"].median()
+
+df["Calories"].fillna(x, inplace = True)
+
+------------------------------
+import pandas as pd
+
+df = pd.read_csv('data.csv')
+
+x = df["Calories"].mode()[0]
+
+df["Calories"].fillna(x, inplace = True)
+
+--------------------------------
+
+=====================================
+Convert to date:
+
+import pandas as pd
+
+df = pd.read_csv('data.csv')
+
+df['Date'] = pd.to_datetime(df['Date'])
+
+print(df.to_string())
+
+Remove rows with a NULL value in the "Date" column:
+
+df.dropna(subset=['Date'], inplace = True)
+
+========================================
+
+Wrong Data
+"Wrong data" does not have to be "empty cells" or "wrong format", it can just be wrong, like if someone registered "199" instead of "1.99".
+
+Sometimes you can spot wrong data by looking at the data set, because you have an expectation of what it should be.
+
+If you take a look at our data set, you can see that in row 7, the duration is 450, but for all the other rows the duration is between 30 and 60.
+
+One way to fix wrong values is to replace them with something else.
+
+In our example, it is most likely a typo, and the value should be "45" instead of "450", and we could just insert "45" in row 7:
+
+Example
+Set "Duration" = 45 in row 7:
+
+df.loc[7, 'Duration'] = 45
+
+-----------
+Example
+Loop through all values in the "Duration" column.
+
+If the value is higher than 120, set it to 120:
+
+for x in df.index:                                        //like length
+  if df.loc[x, "Duration"] > 120:
+    df.loc[x, "Duration"] = 120
+
+----------------
+Removing Rows
+Another way of handling wrong data is to remove the rows that contains wrong data.
+
+This way you do not have to find out what to replace them with, and there is a good chance you do not need them to do your analyses.
+
+Example
+Delete rows where "Duration" is higher than 120:
+
+for x in df.index:
+  if df.loc[x, "Duration"] > 120:
+    df.drop(x, inplace = True)                 //here x is label
+
+
+-------------------
+
+By taking a look at our test data set, we can assume that row 11 and 12 are duplicates.
+
+To discover duplicates, we can use the duplicated() method.
+
+The duplicated() method returns a Boolean values for each row:
+
+Example
+Returns True for every row that is a duplicate, othwerwise False:
+
+print(df.duplicated())
+
+Removing Duplicates
+To remove duplicates, use the drop_duplicates() method.
+
+Example
+Remove all duplicates:
+
+df.drop_duplicates(inplace = True)
+
+----------------------------
+Finding Relationships
+A great aspect of the Pandas module is the corr() method.
+
+The corr() method calculates the relationship between each column in your data set.
+
+Show the relationship between the columns:
+
+df.corr()
+
+           Duration     Pulse  Maxpulse  Calories
+  Duration  1.000000 -0.155408  0.009403  0.922721
+  Pulse    -0.155408  1.000000  0.786535  0.025120
+  Maxpulse  0.009403  0.786535  1.000000  0.203814
+  Calories  0.922721  0.025120  0.203814  1.000000
+
+Perfect Correlation:
+We can see that "Duration" and "Duration" got the number 1.000000, which makes sense, each column always has a perfect relationship with itself.
+
+Good Correlation:
+"Duration" and "Calories" got a 0.922721 correlation, which is a very good correlation, and we can predict that the longer you work out, the more calories you burn, and the other way around: if you burned a lot of calories, you probably had a long work out.
+
+Bad Correlation:
+"Duration" and "Maxpulse" got a 0.009403 correlation, which is a very bad correlation, meaning that we can not predict the max pulse by just looking at the duration of the work out, and vice versa.
+
+
+1 means that there is a 1 to 1 relationship (a perfect correlation), and for this data set, each time a value went up in the first column, the other one went up as well.
+
+0.9 is also a good relationship, and if you increase one value, the other will probably increase as well.
+
+-0.9 would be just as good relationship as 0.9, but if you increase one value, the other will probably go down.
+
+0.2 means NOT a good relationship, meaning that if one value goes up does not mean that the other will.
+
+What is a good correlation? It depends on the use, but I think it is safe to say you have to have at least 0.6 (or -0.6) to call it a good correlation.  
+
+
+
+import pandas as pd
+
+data=pd.read_csv(r"C:\Users\002M2W744\Downloads\pandas\housing.csv")
+#print(data.head(2).to_string())
+print(data.corr(numeric_only = True)['sqft_living'])   //only numeric
+============================================================
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Write a Pandas program to convert a Panda module Series to Python list and it’s type.
+
+Sample Solution :
+
+import pandas as pd
+ds = pd.Series([2, 4, 6, 8, 10])
+print("Pandas Series and type")
+print(ds)
+print(type(ds))
+print("Convert Pandas Series to Python list")
+print(ds.tolist())
+
+-----------------------------------------------------------------------
+Write a Pandas program to add, subtract, multiple and divide two Pandas Series.
+
+Sample Series: [2, 4, 6, 8, 10], [1, 3, 5, 7, 9]
+
+Sample Solution :
+
+Python Code :
+
+import pandas as pd
+ds1 = pd.Series([2, 4, 6, 8, 10])
+ds2 = pd.Series([1, 3, 5, 7, 9])
+ds = ds1 + ds2
+print("Add two Series:")
+print(ds)
+print("Subtract two Series:")
+ds = ds1 - ds2
+print(ds)
+print("Multiply two Series:")
+ds = ds1 * ds2
+print(ds)
+print("Divide Series1 by Series2:")
+ds = ds1 / ds2
+
+print("Compare the elements of the said Series:")
+print("Equals:")
+print(ds1 == ds2)
+print("Greater than:")
+print(ds1 > ds2)
+print("Less than:")
+print(ds1 < ds2)
+
+------------------------------------------------------------------------
+Write a Pandas program to change the data type of given a column or a Series.
+
+Sample Series:
+Original Data Series:
+0 100
+1 200
+2 python
+3 300.12
+4 400
+dtype: object
+Change the said data type to numeric:
+0 100.00
+1 200.00
+2 NaN
+3 300.12
+4 400.00
+dtype: float64
+
+Sample Solution :
+
+Python Code :
+
+import pandas as pd
+s1 = pd.Series(['100', '200', 'python', '300.12', '400'])
+print("Original Data Series:")
+print(s1)
+print("Change the said data type to numeric:")
+s2 = pd.to_numeric(s1, errors='coerce')
+print(s2)
+
+-------------------------------------------------------------------------------------------
+
+Write a Pandas program to convert a given Series to an array.
+
+Sample Solution :
+
+Python Code :
+
+import pandas as pd
+import numpy as np
+s1 = pd.Series(['100', '200', 'python', '300.12', '400'])
+print("Original Data Series:")
+print(s1)
+print("Series to an array")
+a = s1.values
+print(a)
+print(type(a))
+Sample Output:
+
+Original Data Series:
+0       100
+1       200
+2    python
+3    300.12
+4       400
+dtype: object
+Series to an array
+['100' '200' 'python' '300.12' '400']
+<class 'numpy.ndarray'>        
+
+-------------------------------------------------------------------------
+Write a Pandas program to convert Series of lists to one Series.
+
+Sample Solution :
+
+Python Code :
+
+import pandas as pd
+s = pd.Series([
+    ['Red', 'Green', 'White'],
+    ['Red', 'Black'],
+    ['Yellow']])
+print("Original Series of list")
+print(s)
+s = s.apply(pd.Series).stack().reset_index(drop=True)
+print("One Series")
+print(s)
+Sample Output:
+
+Original Series of list
+0    [Red, Green, White]
+1           [Red, Black]
+2               [Yellow]
+dtype: object
+One Series
+0       Red
+1     Green
+2     White
+3       Red
+4     Black
+5    Yellow
+dtype: object                      
+Explanation:
+
+s = pd.Series([ ['Red', 'Green', 'White'], ['Red', 'Black'], ['Yellow']]) : This line creates a Pandas Series object 's' containing a sequence of three lists of strings.
+
+s = s.apply(pd.Series).stack().reset_index(drop=True)
+
+In the above code:
+
+s.apply(pd.Series): Applies the pd.Series() constructor to each element of the Pandas Series object 's' using the .apply() method. This converts each list element into a separate Pandas Series object with one row per element.
+
+Output:
+        0      1      2
+0     Red  Green  White
+1     Red  Black    NaN
+2  Yellow    NaN    NaN
+
+s.apply(pd.Series).stack(): The .stack() method is then applied to the resulting object. The resulting object will have a hierarchical index with the original index and a secondary index for each element of the original lists.
+Output:
+0  0       Red
+   1     Green
+   2     White
+1  0       Red
+   1     Black
+2  0    Yellow
+dtype: object
+
+s.apply(pd.Series).stack().reset_index(drop=True): Finally the .reset_index() method with the 'drop' parameter set to True is then applied to reset the index of the Series object 's' and drop the old index.
+Output:
+0       Red
+1     Green
+2     White
+3       Red
+4     Black
+5    Yellow
+dtype: object
+
+-----------------------------------------------------------------------------------
+Write a Pandas program to change the order of index of a given series.
+
+Sample Solution :
+
+Python Code :
+
+import pandas as pd
+s = pd.Series(data = [1,2,3,4,5], index = ['A', 'B', 'C','D','E'])
+print("Original Data Series:")
+print(s)
+s = s.reindex(index = ['B','A','C','D','E'])
+print("Data Series after changing the order of index:")
+print(s)
+
+-------------------------------------------------------------------------------------
+Write a Pandas program to get the items which are not common of two given series.
+
+Sample Solution :
+
+Python Code :
+
+import pandas as pd
+import numpy as np
+sr1 = pd.Series([1, 2, 3, 4, 5])
+sr2 = pd.Series([2, 4, 6, 8, 10])
+print("Original Series:")
+print("sr1:")
+print(sr1)
+print("sr2:")
+print(sr2)
+print("\nItems of a given series not present in another given series:")
+sr11 = pd.Series(np.union1d(sr1, sr2))
+sr22 = pd.Series(np.intersect1d(sr1, sr2))
+result = sr11[~sr11.isin(sr22)]
+print(result)
+
+----------------------------------------------------------------------------------------
+df.columns or df.keys() will give column names. as dataframe is dictionary
+
+=============================================================================================
+counting after condition
+
+import pandas as pd
+
+df=pd.read_csv(r"C:\Users\002M2W744\Downloads\pandas\housing.csv")
+asd=(df.waterfront[df.waterfront>0])
+print(len(asd))
+
+
+=============================================================================================
+fetching value on other condition
+
+Remove spaces at the beginning and at the end of the string:strip()
+
+highest_price=df['price'].max()
+abc=df[df['price'] == highest_price]['zipcode'].to_string(index=False).strip()
+print(abc)
+
+
+to_string(index=False) will not print index with output.
+============================================================================================
+counting total null values.
+
+print(df.isnull().sum().sum())   first sum will give per column ,,, second will give total
+
+==============================================================================================
+checking duplicate on a subset///means all three vallues
+
+print(df.duplicated(subset=['id','zipcode','grade'])) 
+
+=============================================================================================
+fetching data on condition using loc.
+
+print(data.loc[(data["yr_built"] < 1980) & (data['floors'] > 2) & (data['bedrooms'] > 2)])
+
+==================================================
+
+
+import pandas as pd
+
+sample_list = [['Carl', 22], ['Martha', 25], ['Calvin', 12], ['Stuart', 15] ]
+print(pd.DataFrame(sample_list, columns=['Name', 'Age'])) ///2d array converting into data frame.
+
+
+=================================================================
+
+
+import pandas as pd
+
+sample_dict = {'Cristiano': ['Ronaldo', 'Man U', 801], 'Lionel': ['Messi', 'PSG', 758],
+               'Luis': ['Suarez', 'Atletico Madrid', 509], 'Robert': ['Lewandowski', 'Bayern Munich', 527],
+               'Zlatan': ['Ibrahimovic', 'AC Milan', 553]}
+
+print(pd.DataFrame(sample_dict))
+
+it will print it like
+
+  Cristiano Lionel             Luis         Robert       Zlatan
+0   Ronaldo  Messi           Suarez    Lewandowski  Ibrahimovic
+1     Man U    PSG  Atletico Madrid  Bayern Munich     AC Milan
+2       801    758              509            527          553
+
+
+
+
+
+
+import pandas as pd
+
+sample_dict = {'Cristiano': ['Ronaldo', 'Man U', 801], 'Lionel': ['Messi', 'PSG', 758],
+               'Luis': ['Suarez', 'Atletico Madrid', 509], 'Robert': ['Lewandowski', 'Bayern Munich', 527],
+               'Zlatan': ['Ibrahimovic', 'AC Milan', 553]}
+df1 = pd.DataFrame(sample_dict)
+df1 = df1.transpose()
+df1.reset_index(inplace = True)
+df1.columns = ['First Name','Last Name', 'Club', 'Goals']
+
+print(df1)
+
+  First Name    Last Name             Club Goals
+0  Cristiano      Ronaldo            Man U   801
+1     Lionel        Messi              PSG   758
+2       Luis       Suarez  Atletico Madrid   509
+3     Robert  Lewandowski    Bayern Munich   527
+4     Zlatan  Ibrahimovic         AC Milan   553
+
+
+
+
+
+
+housing[(housing["bedrooms"]==2) & (housing["view"]==3) & (housing["waterfront"]==1)]
+
+================================================================================================
+concating two series :
+pd.concat([series1,series2],ignore_index=true)  /// it will not take series indexes create its own.
+================================================================================================
+
+Pandas.apply allow the users to pass a function and apply it on every single value of the Pandas series. It comes as a huge improvement for the pandas library as this function helps to segregate data according to the conditions required due to which it is efficiently used in data science and machine learning.
+
+s.apply(func_name, convert_dtype=True, args=())
+
+a)
+# defining function to check price
+def fun(num):
+ 
+    if num<200:
+        return "Low"
+ 
+    elif num>= 200 and num<400:
+        return "Normal"
+ 
+    else:
+        return "High"
+ 
+# passing function to apply and storing returned series in new
+new = s.apply(fun)
+
+b)
+import pandas as pd
+s = pd.read_csv("stock.csv", squeeze = True)
+ 
+# adding 5 to each value
+new = s.apply(lambda num : num + 5)
+ 
+ 
+ **The squeeze=True will convert a DataFrame of one column into a Series.
+ 
+ ==================================
+ Square DataFrame with homogeneous dtype
+
+d1 = {'col1': [1, 2], 'col2': [3, 4]}
+df1 = pd.DataFrame(data=d1)
+df1
+   col1  col2
+0     1     3
+1     2     4
+df1_transposed = df1.T  # or df1.transpose()
+df1_transposed
+      0  1
+col1  1  2
+col2  3  4
+
+transposing...
+======================================

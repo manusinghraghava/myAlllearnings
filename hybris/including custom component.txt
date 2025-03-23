@@ -1,0 +1,143 @@
+Que-Introduce new component with five attribute and these attributes should be editable in cmscockpit.
+Include this component on Homepage
+
+sol--
+
+A cms component consists of three elements interact with one another : Model, JSP and Controller.
+
+Model : identify the component with a uid, name, catalog version and also holds the inputs to be sent to the JSP.
+JSP : is the template of the component, describe the look and feel of it.
+Controller : is the mediator between the Model and the JSP, inputs are sent from the Model to the JSP with the help of it.
+
+Let’s try to create a new component, in Hybris there is no Out-of-the-Box component allows to display an embed video, so let’s try it ??
+
+This script needs five inputs, they are the inputs for our component as we r using iframe
+
+width : video  frame width (700).
+height : video frame height (400).
+autoplay : play or not the video automatically (1 or 0).
+controls : display or not Player controls (1 or 0).
+videoId : the id of the video (xcJtL7QggTI).
+
+1)as we have to create a custom component so we have to create a item type for new component which extends SimpleCmsComponent  in items.xml
+
+<itemtype code="YoutubeVideoComponent"
+		  extends="SimpleCMSComponent"
+		  jaloclass="com.stackextend.training.jalo.components.YoutubeVideoComponent">
+
+	<attributes>
+		<attribute qualifier="width" type="java.lang.Integer">
+			<modifiers/>
+			<persistence type="property"/>
+		</attribute>
+
+		<attribute qualifier="height" type="java.lang.Integer">
+			<modifiers/>
+			<persistence type="property"/>
+		</attribute>
+
+		<attribute qualifier="videoId" type="java.lang.String">
+			<modifiers/>
+			<persistence type="property"/>
+		</attribute>
+
+		<attribute qualifier="autoPlay" type="java.lang.Boolean">
+			<modifiers/>
+			<persistence type="property"/>
+		</attribute>
+
+		<attribute qualifier="showControls" type="java.lang.Boolean">
+			<modifiers/>
+			<persistence type="property"/>
+		</attribute>
+	</attributes>
+</itemtype>
+
+
+Remember=> i we have to use photo than we have to create attribute with type=media
+
+and than we have to pass uid or code of that media record in impex
+
+and for link of offers like this
+
+ <attribute type="CustomOfferLinksList" qualifier="offerImageLink">
+                        <persistence type="property" />
+                        <description>List of CMS Link Component</description>
+                        <modifiers read="true" write="true" />
+                    </attribute>
+
+and than create a collection for this
+
+<collectiontype code="CustomOfferLinksList" elementtype="CMSLinkComponent" autocreate="true" generate="true" type="list" />
+
+
+2)model has created now time for view 
+
+The JSP is where we will put YouTube’s script, the JSP file should have the same name as the Model youtubevideocomponent.jsp.
+
+path=>  storefront/**/web/webroot/WEB-INF/views/desktop/cms/youtubevideocomponent.jsp
+
+code=>
+<%@ page trimDirectiveWhitespaces="true" %>
+
+<iframe
+        width="${width}"
+        height="${height}"
+        src="https://www.youtube.com/embed/${videoId}?autoplay=${autoPlay}&controls=${showControls}">
+</iframe>
+
+3) now model and view has generated now time for controller to complete mvc
+
+It’s a basic Spring MVC controller extends the AbstractCMSComponentController and implements fillModel(...).
+
+role of  fillModel(...).=> it is type of populator and convertor which fetch value from ourcustommodel and put into the model which we pass to view
+
+
+    path=> storefront/**/storefront/**/controllers/cms
+ code=>
+
+@Scope("tenant")
+@Controller("YoutubeVideoComponentController")
+@RequestMapping("/view/YoutubeVideoComponentController")
+public class YoutubeVideoComponentController
+	extends AbstractCMSComponentController<YoutubeVideoComponentModel>
+{
+	@Override
+	protected void fillModel(HttpServletRequest request, Model model, YoutubeVideoComponentModel component) {
+
+		model.addAttribute("width", component.getWidth());
+        model.addAttribute("height", component.getHeight());
+        model.addAttribute("videoId", component.getVideoId());
+
+        model.addAttribute("autoPlay", BooleanUtils.toBoolean(component.getAutoPlay()) ? 1 : 0);
+        model.addAttribute("showControls", BooleanUtils.toBoolean(component.getShowControls()) ? 1 : 0);
+	}
+}
+
+now every thing is fine now create our impex to put values and attach with home page
+
+INSERT_UPDATE YoutubeVideoComponent;$contentCV[unique=true];uid[unique=true];name;width;height;videoId;&componentRef;autoPlay;showControls;
+;;you_tube_video_component;Youtube Video Component;700;400;"xcJtL7QggTI";YoutubeVideoComponent;true;true
+
+=> defining content slot for Name to view it in cms cockpit
+
+INSERT_UPDATE ContentSlotName;name[unique=true];template(uid,$contentCV)[unique=true][default='LandingPage2Template'];validComponentTypes(code);compTypeGroup(code)
+;YoutubeVideoSlotName;;YoutubeVideoComponent =>valid component type is the name of component we create
+
+=> defining content slot for it
+
+INSERT_UPDATE ContentSlot;$contentCV[unique=true];uid[unique=true];name;active;cmsComponents(&componentRef)
+;;YoutubevideoContentSlot;Youtube video slot;true;YoutubeVideoComponent
+
+
+=>now attatch it to page 
+INSERT_UPDATE ContentSlotForPage;$contentCV[unique=true];uid[unique=true];position[unique=true];page(uid,$contentCV)[unique=true][default='homepage'];contentSlot(uid,$contentCV)[unique=true]
+;;YoutubevideoContentSlotforpage-Homepage;YoutubeVideoSlotName;;YoutubevideoContentSlot
+
+now add position on home page(template)
+
+as well as in respective vm to see in cmscockpit
+
+to check respective vm=> search templatename with in impex there you can find vm file in velocitytemplate attribute
+
+Dont forget to synchronize your content or product catalogue whatever u used 

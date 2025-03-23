@@ -1,0 +1,110 @@
+import de.hybris.platform.core.Registry;
+import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.orderprocessing.model.OrderProcessModel;
+import de.hybris.platform.core.model.order.OrderModel;
+import de.hybris.platform.processengine.enums.ProcessState;
+import de.hybris.platform.servicelayer.search.FlexibleSearchQuery;
+import de.hybris.platform.core.enums.OrderStatus;
+import de.hybris.platform.core.model.order.*;
+import com.amway.core.model.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Arrays;
+import de.hybris.platform.core.Registry;
+import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.servicelayer.search.FlexibleSearchQuery;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Arrays;
+import java.util.*;
+import org.apache.commons.collections4.CollectionUtils;
+import de.hybris.platform.servicelayer.search.SearchResult;
+import de.hybris.platform.servicelayer.model.ModelService;
+import com.amway.indcore.loyalty.service.IndCalculateLoyaltyPointsService;
+import de.hybris.platform.commerceservices.search.pagedata.PageableData;
+import de.hybris.platform.commerceservices.search.pagedata.SearchPageData;
+import de.hybris.platform.core.model.order.OrderModel;
+import com.amway.eventstream.model.AmwayEventStagingEntryModel;
+import com.amway.eventstream.enums.AmwayEventSyncState;
+import de.hybris.platform.servicelayer.i18n.CommonI18NService;
+import de.hybris.platform.store.BaseStoreModel;
+import de.hybris.platform.store.services.BaseStoreService;
+
+import org.apache.commons.collections4.CollectionUtils;
+import de.hybris.platform.servicelayer.search.SearchResult;
+import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.processengine.BusinessProcessService;
+
+import de.hybris.platform.core.model.order.AbstractOrderModel;
+import de.hybris.platform.core.model.order.OrderModel;
+import de.hybris.platform.core.model.user.AddressModel;
+import de.hybris.platform.core.model.user.CustomerModel;
+import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.servicelayer.search.FlexibleSearchService;
+import de.hybris.platform.servicelayer.search.SearchResult;
+import de.hybris.platform.servicelayer.event.EventService;
+
+import de.hybris.platform.order.events.SubmitOrderEvent;
+
+import de.hybris.platform.store.BaseStoreModel;
+import java.lang.System;
+import de.hybris.platform.orderprocessing.model.OrderProcessModel;
+import de.hybris.platform.processengine.BusinessProcessService;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import com.amway.core.model.AmwayAccountModel;
+
+import de.hybris.platform.core.model.LynxPromotionApplicationRecordModel;
+import java.util.*;
+import java.util.logging.Logger;
+import java.text.SimpleDateFormat;  
+
+import de.hybris.platform.processengine.model.BusinessProcessModel;
+
+Logger LOG = Logger.getLogger("")
+Date currentDate = new Date();
+Calendar cal = Calendar.getInstance();
+cal.setTime(currentDate);
+//change this for fetching order on different time
+cal.add(Calendar.DATE, -7);
+Date previouDay = cal.getTime();
+SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+String strDate= formatter.format(previouDay);
+
+try
+		{
+			String query = "SELECT {pk} FROM {IndMobileOtpSmsVerification} WHERE {modifiedtime} <= TIMESTAMP ('"+strDate+"', 'YYYY-MM-DD HH24:MI:SS') ORDER BY {modifiedtime} DESC";
+			
+			println query;
+			
+			
+		final PageableData pageableData = new PageableData();
+
+pageableData.setCurrentPage(0);
+
+pageableData.setPageSize(500);
+
+SearchPageData<IndMobileOtpSmsVerificationModel> searchResult = Registry.getApplicationContext().getBean("pagedFlexibleSearchService").search(query.toString(), null, pageableData);
+
+final List<IndMobileOtpSmsVerificationModel> results = searchResult.getResults();
+
+if(CollectionUtils.isNotEmpty(results))
+
+{
+      for(IndMobileOtpSmsVerificationModel otp:results)
+        {
+		 modelService.refresh(otp);
+		 modelService.remove(otp);
+		}
+}
+		}
+		catch (final Exception e)
+		{
+			e.printStackTrace();
+		}

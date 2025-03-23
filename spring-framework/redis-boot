@@ -1,0 +1,595 @@
+Redis-->
+
+Redis is an open source, advanced key-value store not like mongodb(document) and an apt solution for building highperformance, scalable web applications.
+
+Redis has three main peculiarities that sets it apart.
+
+Redis holds its database entirely in the memory, using the disk only for persistence.
+
+Redis has a relatively rich set of data types when compared to many key-value data stores.
+
+Redis can replicate data to any number of slaves.
+
+ Redis is very fast and can perform about 110000 SETs per second, about 81000 GETs per second.
+ 
+Operations are atomic − All Redis operations are atomic, which ensures that if two clients concurrently access, Redis server will receive the updated value.
+
+No indexing, but u can do aditinally.
+
+No query.
+
+session management,caching we can use redis.
+
+simply download and run server.
+
+Redis DataTypes-->
+
+1)Strings-here everythig work on key-value pair,and we use simple get/set to fetch and insert data.
+
+set key value.
+get key.
+
+if we want to update key just again use set command.
+
+example set student manu
+
+get student.  // will give u manu
+
+if we have multiple words--> use ""
+
+set student "manvendra singh".
+
+if we have multiple students we will provide a id.
+
+set student:1 "manu raghava"    here ///:1 is key
+
+now while fetching we will use  get student:1.
+
+
+now to fetch all keys use keys *.
+
+key stu*   ///it will fetch all keys with stu name.
+
+
+we can also set expiration time of a key.
+
+set student:1 "manu raghava" ex 25    //it will delete key after 25 sec.
+
+ttl student:1 "manu raghava"         //it will show how much time is remain before deletion.
+
+
+we can also st key if aleady exist or not exist.
+
+XX--->it will set when already exist.
+NX---> if not already exist.  
+
+set student:1 "manu raghava" ex 25 XX // it will set when it is already exist.
+
+we can also check if key already exists or not.
+
+exists student:1  // return ok if exists.
+
+
+we can also append value in already existing string key/value.
+
+append student:1 "don"
+get student:1                //manu raghavadon
+
+we can check length of string value.
+
+strlen student:1   // give length
+
+incr/incrby/decr/decrby we can use for integer values to increase and decrease value.
+all comnds work on values. incr/decr use for +1/-1 and other two for a particular point.
+
+setrange is here like replace in other command.
+
+setrange student:1 5 "abcde"   //it will add the value after 5 position and replace existing one
+
+"manu abcdevadon"              //here ragha is replaced by abcde.
+
+getrange here is like substring.
+
+getrange student:1 5 8         // will fetch value between 5 and 8 position
+"abcd"
+
+
+for setting multiple key/value at same time.we use mset/mget command.
+
+mset key1 value1 key2 value2           //just space seperated
+mget key1 key2                         // gives value1,value2
+
+
+==========================
+list -->here it is linked list
+
+here everything starts from l.
+
+lpush key value1 value2 value3    //it will create list and push the elements from left side.
+rpush key value4                  // it will append at right side.
+
+llen key                          //will give length of list
+lrange key index endindex         //will iterarte list on position and give u element
+
+lset key 2 value                  // to set value on specific index.
+
+lpop/rpop key                     //remove first/last element
+
+ltrim key startindex EndIndex     // remove all elements except this range.
+
+List Indexing is same as java.
+
+delete key                        //delete list
+
+========================================================================================================
+
+Set--->unordered collection with unique values
+
+all start with s here.
+
+sadd key value1 value2 value3        //create set and add values
+
+smembers key                         // show all value.
+
+sdiff key1 key2                      // will give different members from set1 which are not present in set2.
+
+sunion key1 key2                     // will merge both sets with unique values
+
+sintersection key1 key2              // will give unique keys from both set2.
+
+spop key                             // remove random member from set.
+
+srem key value                       // to remove specific value.
+
+
+==============================================================================================================
+Hash --->it is same as map.
+
+hset student name manu                 // student is map and other two are keys here.
+hget student name                      // give value manu.
+
+to put multiple keys and value.
+use hmget/hmset
+
+hmset student name manu gender male     //multiple value in map
+
+hmget student name gender               // manu male
+
+hgetall student                         // will give all key and their values
+
+hexist student name                     // check it contains this key
+
+hkeys  student                          // give all keys
+
+hvals  student                          // give all values
+
+hdel student grade                      // delete this pair
+
+hlen student                            // length of map.
+
+
+=====================================================================================================================
+
+as it is in memory databse,what we have to store data.
+
+1)RDB(Redis Databse File)-->make a snapshot of database on specific intervals.
+
+in this a childprocess start which begin to write dataset on temporary RDB file.when it finished replace the old one.
+
+in redis.config u can declare this(redis.windows.conf)
+
+or execute
+
+--SAVE
+--BGSAVE  ---it is recommeneded as it does not block client and run in bckground.
+
+
+in this we have a disadvantage that we can lost data at lst snapshot.and creating child everytime is time consuming.
+
+
+2)AOF(Append Only File)
+
+it logs each write operation .that will pe played again on server startup.store the dataset.
+
+so good in saving data but too expensive operation and aof file is bigger than RDB.
+
+just we have change in config -->append only yes.
+
+
+3)Hybrid Approach-->combination of both
+
+
+=================================================================================================
+BackUP and restore redis database.
+
+1)save command--> after enter dump.rdb file created in redis directory.
+for restore db just copy that file in destination.
+
+==================================================================================================
+Redis sentinel-->
+
+it is designed to help redis instance.
+
+it does three tasks-->
+
+a)Monitoring       --->check master and slave instances working properly.
+
+b)Notification     --->notify other systems on redis failure via api.
+
+c)Automatic failover ->when masters fail automatic change to slave for operations.
+
+it also act as authority of clients.
+
+it is recommended to have three sentinal nodes.
+
+we have redis.sentinal.conf   for sentinal configuration.
+
+for slave configuration go to redis.conf
+
+1)change the port no.
+2)uncomment the command slave on.
+3)give the master ip. slaveof 127.0.0.1.6348  like this save it as another name.
+
+
+
+for sentinal change redis.sentinal.conf 
+
+sentinal down-after-milliseconds mymaster 10000 ///it will check for failure every 10 sec.
+and change the port for every file and save it and rename it.for master and slave accordingly.
+
+
+dont forget to start server with new conf file of master and salve.
+
+and sentinal also with redis-sentinal command. and conf location.
+
+
+example-->
+
+ Create two Redis slave nodes
+1.Clone the redis.windows.conf. Rename it to redis.windows6380.conf and modify the content
+#Specify the port
+port 6380
+#Set for persistence
+save 900 1 
+save 300 10 
+save 60 10000
+dbfilename "dump-6380.rdb"
+dir "C:\\Redis"
+slaveof 127.0.0.1 6379
+
+Launch the slave from the command line. The master will use full resync to sync the slave at the first time.
+
+redis-server redis.windows6380.conf
+
+Check the information of the master node. The connected_slaves changes to 1
+
+
+
+b)Create the sentinel nodes
+Create the sentinel26379.conf for node 1. Do the same thing for the node 2 ~ 3 with different files name. (ex. sentinel26380.conf, sentinel26381.conf)
+The suggested value for the quorum is half number of sentinels plus one
+
+
+#listen port 26379
+port 26379
+#monitor <master IP> <master port> <quorum number>
+sentinel monitor master 127.0.0.1 6379 2
+#down-after-milliseconds for the Redis master
+sentinel down-after-milliseconds master 10000
+sentinel failover-timeout master 18000
+sentinel config-epoch master 5246
+
+
+launch every sentinal-->
+
+redis-server sentinel26380.conf --sentinel
+
+
+Make sure that sentinels have monitor the Redis nodes. sentinels will send info to check the latest leader follower structure. They will also send ping to make sure that Redis nodes are alive.
+
+sentinel masters   ////this will show details of master port.
+
+sentinal slaves master     // it will show the details of slaves.
+
+
+Validate the fail-over
+Turn off the Redis master (6379) from services
+Check the master. It was switched to the node 2(6380)
+The role of the node 1 (6379) was changed to the slave
+
+
+useful commands-->
+
+# list the redis master
+sentinel masters
+# list all slaves of the master, explore-master is the master name
+sentinel slaves master
+# list all sentinels
+sentinel sentinels master
+# force a failover as if the master was not reachable. 
+sentinel failover master
+
+
+==============================================================================================================================
+Redis-cluster-->
+
+It is a data sharding solution with automatic management and failover.
+
+data sharding  -- it is a process to break big database into many smaller parts on smaller machines which manage load balancing and availability.
+
+Scalability is the property of a system to handle a growing amount of work by adding resources to the system.
+
+
+===========================================================================================================
+Transactions-->it will allow set of commands in a single go.either they will all execute or all fail.(Atomic)
+
+1)multi ------> this command will open a stream.
+
+/////////now write queries and hit enter it will show queued.
+
+2)exec--------> it will run all queued command.
+
+3)discard-----> if u want to delete transaction.
+
+4)watch key ---->it will not allow to change key in transaction if some other client change the key.
+
+==================================================================================================
+publish subcribe in redis-->
+
+if we have different clients it is very easy.
+
+subscribe channelName  //////where u want to listen.
+
+publish channelName  "data u have to pass"//when we hit enter automatic client with channel nme who subscribed will get value.
+
+======================================================================================================================================
+redis authentication-->
+to secure database we can put password in config file 
+
+or through cli.
+
+=>config set requirepass "password"
+
+
+when ti use db first put
+
+auth "password"    //now u r authorized.
+
+===========================================================================================================================
+
+Reids java clients--->
+
+jedis client --->which we use to connect between java and redis.but it is not thread safe.we use jedis pool for thread safety.
+
+redistemplate is class we used here.by this we can communicate to redis instance.
+
+redistemplate it takes two value at time of instantiation...type of redis key and value.
+
+
+redis with boot-->
+
+first add starters and add this config in appliaction.properties-->
+
+redis.host=localhost
+redis.port=6379
+redis.password=
+redis.jedis.pool.max-total=16               // total connection
+redis.jedis.pool.max-idle=8                 // max connection ready to connect at time
+redis.jedis.pool.min-idle=4
+
+if we have many requests we can increase these values.
+
+
+2)now we have to do three steps-->
+
+a)create jedis client with configuration.
+
+b)create jedis connection factory.
+
+c)create redis template.
+
+
+
+
+@Configuration
+public class SpringConf {
+
+	@Value("${redis.host}")
+	private String host;
+	@Value("${redis.password}")
+	private String password;
+	@Value("${redis.port}")
+	private int port;
+
+	@Value("${redis.jedis.pool.max-total}")
+	private int maxTotal;
+	@Value("${redis.jedis.pool.max-idle}")
+	private int maxIdle;
+	@Value("${redis.jedis.pool.min-idle}")
+	private int minIdle;
+
+	@Bean //creating jedis client
+	public JedisClientConfiguration getJedisClientConfiguration() {
+		JedisClientConfiguration.JedisPoolingClientConfigurationBuilder JedisPoolingClientConfigurationBuilder = (JedisClientConfiguration.JedisPoolingClientConfigurationBuilder) JedisClientConfiguration
+				.builder();
+		GenericObjectPoolConfig GenericObjectPoolConfig = new GenericObjectPoolConfig();
+		GenericObjectPoolConfig.setMaxTotal(maxTotal);
+		GenericObjectPoolConfig.setMaxIdle(maxIdle);
+		GenericObjectPoolConfig.setMinIdle(minIdle);
+		return JedisPoolingClientConfigurationBuilder.poolConfig(GenericObjectPoolConfig).build();
+		// https://commons.apache.org/proper/commons-pool/apidocs/org/apache/commons/pool2/impl/GenericObjectPool.html
+	}
+
+	@Bean  //creating factory.
+	public JedisConnectionFactory getJedisConnectionFactory() {
+		RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
+		redisStandaloneConfiguration.setHostName(host);
+		if (!StringUtils.isEmpty(password)) {
+			redisStandaloneConfiguration.setPassword(RedisPassword.of(password));
+		}
+		redisStandaloneConfiguration.setPort(port);
+		return new JedisConnectionFactory(redisStandaloneConfiguration, getJedisClientConfiguration()); //using client here
+	}
+
+	@Bean
+	public RedisTemplate redisTemplate() {
+		RedisTemplate<String, Object> redisTemplate = new RedisTemplate<String, Object>();
+		redisTemplate.setConnectionFactory(getJedisConnectionFactory());  //creating template on factory.
+		redisTemplate.setKeySerializer(new StringRedisSerializer());
+//   	 redisTemplate.setKeySerializer(new StringRedisSerializer());     //when we serialize key as string.
+//   	 redisTemplate.setValueSerializer(new JdkSerializationRedisSerializer());   //default
+//        redisTemplate.setHashKeySerializer(new StringRedisSerializer());
+//        redisTemplate.setHashValueSerializer(new StringRedisSerializer()));
+		return redisTemplate;
+	}
+
+	@Bean
+	@Qualifier("listOperations")      //to save list in db good programming
+	public ListOperations<String, Programmer> listOperations(RedisTemplate<String, Programmer> redisTemplate) {
+		return redisTemplate.opsForList();
+	}
+
+	@Bean
+	@Qualifier("setOperations")
+	public SetOperations<String, Programmer> SetOperations(RedisTemplate<String, Programmer> redisTemplate) {
+		return redisTemplate.opsForSet();
+	}
+	
+    @Bean
+    public HashOperations<String, Integer, Programmer> hashOps(RedisTemplate<String, Object>  redisTemplate) {
+        return redisTemplate.opsForHash();
+    }
+    
+	
+
+}
+
+
+
+now we will discuss other operations.
+
+
+1)create a pojo which implements serializable because we have to serialize before saving it.
+
+2)create a repository to get and save it.
+
+
+public static final String REDIS_LIST_KEY = "ProgrammerList";
+	public static final String REDIS_SET_KEY  = "ProgrammerSET";
+	public static final String REDIS_HASH_KEY = "ProgrammerHash";
+
+	@Autowired
+	private RedisTemplate<String, Object> redisTemplate;   //here we are using it to save and get
+
+	@Autowired
+	@Qualifier("listOperations")
+	private ListOperations<String, Programmer> ListOps;
+	
+	@Autowired
+	@Qualifier("setOperations")
+	 private SetOperations<String, Programmer> setOps;	
+	
+	@Autowired
+	HashOperations<String, Integer, Programmer> hashOps;
+	
+	
+	//// ********** String *************
+
+	@Override   //to save.
+	public void setProgrammerAsString(String idKey, String programmer) {
+		redisTemplate.opsForValue().set(idKey, programmer);
+		redisTemplate.expire(idKey, 10, TimeUnit.SECONDS);   /setting value
+
+	}
+
+	@Override
+	public String getProgrammerAsString(String idKey) {
+		return (String) redisTemplate.opsForValue().get(idKey);    //getting value.
+	}
+
+	//// ********** List *************
+	@Override
+	public void AddToProgrammersList(Programmer programmer) {
+		 ListOps.leftPush(REDIS_LIST_KEY, programmer);   //using list
+	}
+
+	@Override
+	public List<Programmer> getProgrammersListMembers() {
+		// TODO Auto-generated method stub
+		return ListOps.range(REDIS_LIST_KEY, 0, -1);    //fetching list.
+	}
+
+	@Override
+	public Long getProgrammersListCount() {
+		// TODO Auto-generated method stub
+		return ListOps.size(REDIS_LIST_KEY);
+	}
+	
+	//********** Set *************
+
+	@Override
+	public void AddToProgrammersSet(Programmer... programmers) {
+		setOps.add(REDIS_SET_KEY, programmers);
+		
+	}
+
+	@Override
+	public Set<Programmer> getProgrammersSetMembers() {
+		// TODO Auto-generated method stub
+		return setOps.members(REDIS_SET_KEY);
+	}
+
+	@Override
+	public boolean isSetMember(Programmer programmer) {
+		// TODO Auto-generated method stub
+		return setOps.isMember(REDIS_SET_KEY,programmer);
+	}
+
+	 //********** Hash *************
+	
+	@Override
+	public void saveHash(Programmer programmer) {
+		hashOps.put(REDIS_HASH_KEY, programmer.getId(), programmer);
+		
+	}
+
+	@Override
+	public void updateHash(Programmer programmer) {
+		hashOps.put(REDIS_HASH_KEY, programmer.getId(), programmer);
+		
+	}
+
+	@Override
+	public Map<Integer, Programmer> findAllHash() {
+		// TODO Auto-generated method stub
+		return hashOps.entries(REDIS_HASH_KEY);
+	}
+
+	@Override
+	public Programmer findInHash(int id) {
+		return hashOps.get(REDIS_HASH_KEY, id);
+	}
+
+	@Override
+	public void deleteHash(int id) {
+		hashOps.delete(REDIS_HASH_KEY, id);
+		
+	}
+	
+	
+
+}
+
+
+
+
+start the server.
+
+monitor    //this command we use to see what happening in database.
+
+https://nagarro.udemy.com/course/learn-redis-and-utilize-jedis-with-spring-data-redis/learn/lecture/10700362#overview
+
+====================================================================================================================================
+https://www.youtube.com/watch?v=GpoKboWbX40&list=PLO0KWyajXMh6HbVTnf7YqwbEeZU6kuKJa&index=10   //si with redis
+
+like jdbc use int:redis

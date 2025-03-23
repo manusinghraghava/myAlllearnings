@@ -1,0 +1,7 @@
+Java Thread priority==>1(low) to 10(max)
+
+what will happen if we increase priority to 100?
+Exception in thread "main" java.lang.IllegalArgumentException
+	at java.base/java.lang.Thread.setPriority(Thread.java:1141)
+	at Threadteew.main(Threadteew.java:6)    //Runtime Exception.
+

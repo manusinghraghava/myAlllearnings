@@ -1,0 +1,118 @@
+{
+  "aboNum": 0,
+  "clientIpAddress": "10.10.123.124",
+  "clientApplicationId": "3109193",
+  "clientChannelCd": "HybrisWebsite",
+  "processTypeCd": "QuickRegistration",
+  "registrationTypeCd": "SocialCustomer",
+  "cntryCd": "IN",
+  "accountSubTypeCd": "Customer",
+  "accountTypeCd": "AmwayBusiness",
+  "subCategoryCd": "SocialCustomer",
+  "authorizeEmail": false,
+  "languageCd": "en",
+  "sponsor": {
+    "acctSponsorAffCd": "430",
+    "acctSponsorAboNum": "1",
+    "acctIntlSponsorCntryCd": "",
+    "acctIntlSponsorAboNum": "",
+    "intlPrimaryBusFlg": false,
+    "sponsorListFlag": true,
+    "multiBusValidationOverRideFlg": false
+  },
+  "primaryPartyIndex": 1,
+  "contractAcceptFlg": false,
+  "partyList": [
+    {
+      "partyIndex": 1,
+      "partyMst": {
+        "partyTypeCd": "",
+        "genderCd": "male",
+        "birthDate": "Jan 2, 1971 4:04:04 AM",
+        "roleCd": "",
+        "birthCountryCd": "IN",
+        "ethnicCd": "",
+        "relationShipToPrimaryCd": "",
+        "userPasswd": "",
+        "userPin": "",
+        "tzOffset": "",
+        "languageCd": "en",
+        "partyIsMinorFlg": false,
+        "natlCntryCd": "IN",
+        "czshpCntryCd": "IN"
+      },
+      "nameList": [
+        {
+          "personNameTypeCd": "Legal",
+          "localeName": {
+            "givenName": "manu",
+            "familyName": "raghava"
+          },
+          "latinName": {
+            "givenName": "manu",
+            "familyName": "raghava"
+          },
+          "languageCd": "en"
+        }
+      ],
+      "addressList": [
+        {
+          "usageList": [
+            {
+              "contactPointPurposeCd": "Registration",
+              "careOf": ""
+            }
+          ],
+          "addrStreet": "Rajiv Chowk Plot No. 84",
+          "addrLineTwo": "Institutional Area,Sector 32",
+          "addrLineThree": "",
+          "addrLineFour": "",
+          "contactPointTypeCd": "HomeAddress",
+          "cityName": "Gurugram",
+          "cntryCd": "IN",
+          "addrDeliveryTypeCd": "MailingAddress",
+          "postalCd": "122001",
+          "stateCd": "HAR",
+          "languageCd": "en",
+          "validationResultOverRideFlg": "N",
+          "validationResultCd": "notValidated"
+        }
+      ],
+      "phoneList": [
+        {
+          "contactPointTypeCd": "HomePhone",
+          "phoneLocalNum": "4576249733",
+          "phoneAreaCd": "011",
+          "cntryCd": "IN",
+          "usageList": [
+            {
+              "contactPointPurposeCd": "GeneralPurpose",
+              "careOf": "",
+              "primaryFlag": true
+            }
+          ],
+          "smsCapableFlag": "false",
+          "phoneExtNum": "123",
+          "dayFlag": "false",
+          "eveningFlag": "false"
+        }
+      ],
+      "ecommList": [
+        {
+          "contactPointTypeCd": "PersonalEmail",
+          "usageList": [
+            {
+              "contactPointPurposeCd": "GeneralPurpose",
+              "careOf": "",
+              "primaryFlag": true
+            }
+          ],
+          "ecommAddr": "abc.corpsgs112@gmail.com",
+          "allowForLogIn": "false",
+          "ecommName": "Email",
+          "ecommTypeCd": "Email"
+        }
+      ]
+    }
+  ]
+}

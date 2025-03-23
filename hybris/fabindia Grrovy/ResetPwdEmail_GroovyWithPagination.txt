@@ -1,0 +1,98 @@
+import de.hybris.platform.servicelayer.search.FlexibleSearchService;
+import de.hybris.platform.store.services.BaseStoreService;
+import de.hybris.platform.site.BaseSiteService;
+import de.hybris.platform.servicelayer.event.EventService;
+import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.commerceservices.security.SecureToken;
+import de.hybris.platform.commerceservices.security.SecureTokenService;
+import de.hybris.platform.servicelayer.i18n.CommonI18NService;
+import de.hybris.platform.commerceservices.event.ForgottenPwdEvent;
+import de.hybris.platform.core.model.user.CustomerModel;
+import de.hybris.platform.basecommerce.model.site.BaseSiteModel;
+import de.hybris.platform.core.model.c2l.CurrencyModel;
+import de.hybris.platform.core.model.c2l.LanguageModel;
+import de.hybris.platform.store.BaseStoreModel;
+import de.hybris.platform.commerceservices.event.AbstractCommerceUserEvent;
+import de.hybris.platform.core.servicelayer.data.*;
+import de.hybris.platform.servicelayer.search.paginated.*;
+import de.hybris.platform.servicelayer.search.FlexibleSearchQuery;
+import de.hybris.platform.servicelayer.search.paginated.PaginatedFlexibleSearchParameter;
+import de.hybris.platform.servicelayer.search.paginated.PaginatedFlexibleSearchService;
+import org.apache.commons.lang3.*;
+import java.util.*;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.*;
+
+flexibleSearchService = spring.getBean("paginatedFlexibleSearchService");
+baseStoreService = spring.getBean("baseStoreService");
+baseSiteService = spring.getBean("baseSiteService");
+eventService = spring.getBean("eventService");
+modelService = spring.getBean("modelService");
+secureTokenService = spring.getBean("secureTokenService");
+commonI18NService = spring.getBean("commonI18NService");
+
+PaginationData buildDefaultPaginationData(int pageNum, final int pageSize)
+{
+		PaginationData result = new PaginationData();
+		result.setCurrentPage(pageNum);
+		result.setPageSize(pageSize);
+		result.setNeedsTotal(true);
+		return result;
+}
+	
+SearchPageData<CustomerModel> fetchPagedCustomer( final int pageNum,
+			final int pageSize)
+{
+		SearchPageData<CustomerModel> searchPageData = new SearchPageData<>();
+		searchPageData.setPagination(this.buildDefaultPaginationData(pageNum, pageSize));
+		searchPageData.setSorts(Collections.emptyList());
+
+		final PaginatedFlexibleSearchParameter parameter = new PaginatedFlexibleSearchParameter();
+		parameter.setSearchPageData(searchPageData);
+        String query2 = "select {pk} from {Customer} where {loginDisabled}=?val"
+		final Map params = new HashMap(); 
+		params.put("val", false);
+		final FlexibleSearchQuery query = new FlexibleSearchQuery(query2);
+		query.addQueryParameters(params);
+		parameter.setFlexibleSearchQuery(query);
+
+		return flexibleSearchService.search(parameter);
+}
+	
+SearchPageData<CustomerModel> searchAndEmail( int pageNum, int pageSize)
+{
+SearchPageData<CustomerModel> searchPageData = fetchPagedCustomer( pageNum, pageSize);
+if (CollectionUtils.isNotEmpty(searchPageData.getResults()))
+{
+for(customerModel in searchPageData.getResults()) {
+
+	final SecureToken data = new SecureToken(customerModel.getUid(), new Date().getTime());
+	final String token = secureTokenService.encryptData(data);
+	customerModel.setToken(token);
+    customerModel.setEmailSent(true);
+	modelService.save(customerModel);
+	modelService.refresh(customerModel);
+	eventService.publishEvent(initializeEvent(new ForgottenPwdEvent(token), customerModel));
+}
+}
+
+return searchPageData;
+}
+
+def searchPageData = searchAndEmail(0,10);
+
+for (int i = 0; searchPageData != null && searchPageData.getPagination() != null
+				&& BooleanUtils.isTrue(searchPageData.getPagination().getHasNext()); i++)
+{
+			searchPageData = searchAndEmail(i,10);
+}
+
+def AbstractCommerceUserEvent initializeEvent(final AbstractCommerceUserEvent event, final CustomerModel customerModel)
+{
+		event.setCustomer(customerModel);
+		event.setSite(baseSiteService.getBaseSiteForUID("fabindiab2c"));
+		event.setBaseStore(baseStoreService.getBaseStoreForUid("fabindiab2c"));
+		event.setLanguage(null != customerModel.getSessionLanguage() ? customerModel.getSessionLanguage() : commonI18NService.getLanguage("en"));
+		event.setCurrency(null != customerModel.getSessionCurrency() ? customerModel.getSessionCurrency() : commonI18NService.getCurrency("INR"));
+		return event;
+}

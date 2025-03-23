@@ -1,0 +1,367 @@
+Revision  + Study Material 2023.
+
+recursion -->
+
+1)nth power of two...
+
+static int poweroftwo(int n){
+    int power =1;
+    for(int i=0;i<n;i++)
+    {
+        power = power *2;
+    }
+    return power;
+}
+
+recursive solution -->
+
+static int poweroftwo(int n){
+    if (n==0)
+	{
+	return 1;
+	}
+	else
+	{
+	int power = 2*poweroftwo(n-1);
+    return power;
+	}
+}
+
+in many cases iteration works better than recusrion due to space and time complexity due to push and pop operations.
+
+avoid recursion in above cases.
+==========================================
+
+2)sum of digits via recursion-->
+
+    static int sumOfDigits(int n){
+    if (n<=0)
+	{
+	return 0;
+	}
+	else
+	{
+	return (n%10) + sumOfDigits(n/10);
+    }
+}
+============================================
+
+3)GCD of a number using recursion-->
+
+For Gcd of two number one way is to prime factor both number and take common elements.
+
+Another way is Euclidean algorithm
+
+in this we divide the two number and find the remainder and than divide small number with remainder.
+
+now short and remainder will again other two member for Gcd.
+
+Example-->
+
+GCD of (18,48)---> 48/18 remainder will be 12 and power will be 2
+
+now (18,12)----> 1 power and remainder 6
+
+now (12,6)---->power 2 and remainder will be 0...
+
+now when remainder will be 0 the last divident will be gcd which is 6.
+
+we have to divide till remainder will be 0;
+
+so algo will be
+
+gcg(a,0)===a
+else
+gcd(a,b)== gcd (a,a mod b)
+
+and a<b
+
+
+ static int gcd(int a,int b){
+    if (b==0)
+	{
+	return a;
+	}
+	else
+	{
+	    
+	    if(a<b)
+	    {
+	        return gcd(a,b%a);
+	    }
+	    else
+	    {
+	      return gcd(b,a%b); 
+	    }
+    }
+}
+
+===========================================================
+
+4) Convert Decimal to binary using recursion--->
+
+so psudo code--->
+
+a)divide the number by 2.
+b)get the integer for next iteration.
+c)get the remainder for binary digit.
+d)repeat till quotient(power) become 0.
+
+
+static int numberToDecimal(int n){
+    if (n==0)
+	{
+	return 0;
+	}
+	else
+	{
+	    return n%2 + 10*numberToDecimal(n/2);
+    }
+}
+
+
+example-->
+n=10
+---->10%2 + 10*numberToDecimal(5)
+         -----------> 5%2 + 10*numberToDecimal(2)
+               -------------->2%2 + 10*numberToDecimal(1)	
+                            -------------->1%2 + 10*numberToDecimal(0)				   
+
+now we get the base condition so it will go back...
+
+-->1 + 10*0 ==1
+-->2%2 + 10*numberToDecimal(1) === 0 + 10 ==10
+-->5%2 + 10*numberToDecimal(2) === 1 + 100==101
+-->10%2 + 10*numberToDecimal(5)=== 0 + 1010==1010   // got the binary conversion
+
+===============================================================================
+
+
+Tower of Hanoi-->
+
+Tower of Hanoi is a mathematical puzzle where we have three rods (A, B, and C) and N disks. Initially, all the disks are stacked in decreasing value of diameter i.e., the smallest disk is placed on the top and they are on rod A. The objective of the puzzle is to move the entire stack to another rod (here considered C), obeying the following simple rules: 
+
+Only one disk can be moved at a time.
+Each move consists of taking the upper disk from one of the stacks and placing it on top of another stack i.e. a disk can only be moved if it is the uppermost disk on a stack.
+No disk may be placed on top of a smaller disk.
+
+
+The idea is to use the helper node to reach the destination using recursion. Below is the pattern for this problem:
+
+Shift ‘N-1’ disks from ‘A’ to ‘B’, using C.
+Shift last disk from ‘A’ to ‘C’.
+Shift ‘N-1’ disks from ‘B’ to ‘C’, using A.
+
+
+static void towerOfHanoi(int n, char A, char C, char B)   shifting rod from A to C via B 
+    {
+        if (n == 0) {
+            return;
+        }
+        towerOfHanoi(n - 1, A, B, C);    shifting n-1 rod to A to B via C
+        System.out.println("Move disk " + n + " from rod "
+                           + A + " to rod "
+                           + C);
+        towerOfHanoi(n - 1, B, C, A);    shifting back B to C via A.
+    }
+	
+	
+Create a function towerOfHanoi where pass the N (current number of disk), from_rod, to_rod, aux_rod.
+Make a function call for N – 1 th disk.
+Then print the current the disk along with from_rod and to_rod
+Again make a function call for N – 1 th disk.
+
+so now see calling stacks-->
+
+a)towerOfHanoi(n - 1, A, B, C);    shifting n-1 rod to A to B via C this will call till n==0 and will return...
+----> now it will return to n ==1 and move one disc to A to C
+
+b)now it will continue remaining code ---> again calling towerOfHanoi(n - 1, B, C, A);    shifting back B to C via A.
+---> but it will return with nothing as n==0
+
+c)now n==2 run and print 1 disc and again method call ///same goes for n==3.
+
+==================================================================================================
+
+Write a function called power which accepts a base and an exponent. The function should return the power of the base to the exponent. This function should mimic the functionality of math.pow() - do not worry about negative bases and exponents.
+
+public int power(int base, int exponent) {
+        if(exponent < 0)
+        {
+            return -1;
+        } if(exponent == 0)
+        {
+            return 1;
+        }
+        return base * power(base,exponent-1);
+    }
+	
+============================================================================
+
+Write a function called productOfArray which takes in an array of numbers and returns the product of them all.
+
+Examples
+
+int arr[] = { 1, 2, 3, 4, 5 }; 
+productofArray(arr, arr.length); #120
+
+public int productofArray(int A[], int N) 
+    { 
+    if(N<=0)
+    return 1;
+    else
+    return A[N-1] * productofArray(A,N-1);
+    } 
+A[N-1]  // due to length
+========================================================
+
+Write a recursive function called fib which accepts a number and returns the nth number in the Fibonacci sequence. Recall that the Fibonacci sequence is the sequence of whole numbers 0,1, 1, 2, 3, 5, 8, ... which starts with 0 and 1, and where every number thereafter is equal to the sum of the previous two numbers.
+
+fib(4) # 3
+fib(10) # 55
+fib(28) # 317811
+fib(35) # 9227465
+
+public int fib(int n) {
+    if (n<0) {
+      return -1;
+    }
+    if (n==0 || n==1) {
+      return n;
+    }
+    return fib(n-1) + fib(n-2);
+  }	
+====================================	
+
+Reverse A String Using Recursion--->
+
+public String reverse(String str)
+    {
+        if (str.isEmpty())
+            return str;
+        //Calling Function Recursively
+        return reverse(str.substring(1)) + str.charAt(0);
+    }
+	
+	
+=========================
+
+String is palindrome or not.
+
+static String reverse(String str)
+    {
+        if (str.isEmpty())
+            return str;
+        //Calling Function Recursively
+        return reverse(str.substring(1)) + str.charAt(0);
+    }
+    public  boolean isPalindrome(String s)
+    {   
+       if(s.equals(reverse(s)))
+       return true;
+       else
+       return false;
+    }
+	
+	
+	----other solution---
+	
+	public  boolean isPalindrome(String s)
+        {   // if length is 0 or 1 then String is palindrome
+            if(s.length() == 0 || s.length() == 1)
+                return true; 
+            if(s.charAt(0) == s.charAt(s.length()-1))
+            return isPalindrome(s.substring(1, s.length()-1));
+            return false;
+        }
+		
+=========================================================================================================
+
+is array haiving any odd value by recursion-->
+
+public boolean someRecursive(int[] arr, OddFunction odd) {
+    if (arr.length == 0 ) {
+      return false;
+    } else if (odd.run(arr[0]) == false) {
+      return someRecursive(Arrays.copyOfRange(arr, 1, arr.length), odd);  // use to copy array and create new.
+    } else {
+      return true;
+    }
+  }
+  
+  public class OddFunction {
+     boolean run(int num) {
+         if (num % 2 == 0) { 
+             return false; }
+        else {
+            return true;
+        }
+     }
+   }
+=======================================================================================
+to find the first Uppercase in Word
+
+public static char first(String str) {
+    if(str.isEmpty()) {
+        return ' ';
+    }
+    if (Character.isUpperCase(str.charAt(0))) {
+        return str.charAt(0);
+    }else {
+        return first(str.substring(1, str.length()));
+    }
+}
+
+===================================================
+
+Implement a function that capitalizes each word in String.
+
+Example
+
+input: i love java
+output : I Love Java
+
+public static String capitalizeWord(String str) {
+ 
+    if(str.isEmpty()) {
+        return str;
+    }
+    char chr = str.charAt(str.length()-1);
+    if(str.length()==1) {                                      //this is for first character in recursion.
+        return Character.toString(Character.toUpperCase(chr));
+    }
+    if((str.substring(str.length()-2, str.length()-1).equals(" "))) { // if the there is space before character
+        chr = Character.toUpperCase(chr);
+    }
+    return capitalizeWord(str.substring(0,str.length()-1))+ Character.toString(chr);
+}
+
+its Stack call-->
+
+a) we will call this method capitalizeWord(str.substring(0,str.length()-1)) till length ==1
+b)now before calling every stack we are doing some operations on last character...
+c) if it is last aur it is having some space before it make it capital...also
+d)we are separting last character so on recursion it will start from 1 st character and append the result.
+
+===========================================================================
+
+find all the count of characters in a string and higest count
+
+ public static void CountCharacter(String str) {
+    char[] abc = str.toCharArray();
+    Map<Character,Integer> countMap = new HashMap<>();
+    for(int i=0;i<abc.length;i++)
+    {
+        if(countMap.containsKey(abc[i]))
+        {
+            countMap.put(abc[i],countMap.get(abc[i])+1);
+        }
+        else
+        {
+            countMap.put(abc[i],1);
+        }
+    }
+    System.out.println(countMap);
+    Character Highest =  Collections.max(countMap.entrySet(), Comparator.comparingInt(Map.Entry::getValue)).getKey();
+    System.out.println(Highest);
+    }

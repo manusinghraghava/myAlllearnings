@@ -1,0 +1,35 @@
+import org.apache.commons.lang3.StringUtils;
+import de.hybris.platform.core.Registry;
+import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.servicelayer.search.FlexibleSearchQuery;
+import de.hybris.platform.servicelayer.search.FlexibleSearchService;
+import org.apache.commons.collections4.CollectionUtils;
+import de.hybris.platform.servicelayer.search.SearchResult;
+import de.hybris.platform.core.model.Region.*;
+import de.hybris.platform.europe1.model.*;
+import de.hybris.platform.catalog.enums.*;
+import de.hybris.platform.core.model.c2l.*;
+import java.util.*;
+
+String query = "select {pk} from {Region}";
+
+			
+		final SearchResult<RegionModel> searchResult = ((FlexibleSearchService) Registry.getApplicationContext().getBean("flexibleSearchService")).search(query);
+final ModelService modelService = (ModelService) Registry.getApplicationContext().getBean("modelService"); 
+final List<String> results = searchResult.getResult();
+println results.size();
+if(CollectionUtils.isNotEmpty(results))
+{
+for(RegionModel region :results)
+{
+if (StringUtils.isBlank(region.getName()))
+{
+modelService.remove(region);
+}
+}
+}
+
+def regionSet = new HashSet<>();
+
+results.stream().filter{p->p.getCountry().getIsocode().equalsIgnoreCase('IN');}.filter{s->!regionSet.add(s.getName())}.forEach{s2->modelService.remove(s2);};
+

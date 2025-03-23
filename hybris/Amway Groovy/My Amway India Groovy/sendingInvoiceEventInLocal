@@ -1,0 +1,103 @@
+import de.hybris.platform.core.Registry;
+import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.orderprocessing.model.OrderProcessModel;
+import de.hybris.platform.core.model.order.OrderModel;
+import de.hybris.platform.processengine.enums.ProcessState;
+import de.hybris.platform.servicelayer.search.FlexibleSearchQuery;
+import de.hybris.platform.core.enums.OrderStatus;
+import de.hybris.platform.basecommerce.enums.*;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Arrays;
+
+import org.apache.commons.collections4.CollectionUtils;
+import de.hybris.platform.servicelayer.search.SearchResult;
+import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.processengine.BusinessProcessService;
+
+import de.hybris.platform.core.model.order.AbstractOrderModel;
+import de.hybris.platform.core.model.order.OrderModel;
+import de.hybris.platform.core.model.user.AddressModel;
+import de.hybris.platform.core.model.user.CustomerModel;
+import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.servicelayer.search.FlexibleSearchService;
+import de.hybris.platform.servicelayer.search.SearchResult;
+import de.hybris.platform.servicelayer.event.EventService;
+
+import de.hybris.platform.order.events.SubmitOrderEvent;
+
+import de.hybris.platform.store.BaseStoreModel;
+import java.lang.System;
+import de.hybris.platform.orderprocessing.model.OrderProcessModel;
+import de.hybris.platform.processengine.BusinessProcessService;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import com.amway.core.model.AmwayAccountModel;
+import com.amway.indcore.util.service.IndSiteConfigurationService;
+import com.amway.indfacades.order.payload.IndOrderPayloadData;
+import de.hybris.platform.basecommerce.model.site.BaseSiteModel;
+import de.hybris.platform.catalog.CatalogVersionService;
+import de.hybris.platform.catalog.model.CatalogVersionModel;
+import de.hybris.platform.core.enums.OrderStatus;
+import de.hybris.platform.core.model.order.OrderModel;
+import de.hybris.platform.orderprocessing.model.OrderProcessModel;
+import de.hybris.platform.processengine.action.AbstractSimpleDecisionAction;
+import de.hybris.platform.servicelayer.session.SessionService;
+import de.hybris.platform.servicelayer.user.UserService;
+import de.hybris.platform.ordersplitting.model.*;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.amway.eventstream.dto.AmwayEventData;
+import com.amway.eventstream.enums.EventName;
+import com.amway.eventstream.exception.AmwayEventRetryException;
+import com.amway.eventstream.service.AmwayEventQueueService;
+import com.amway.indcore.builder.factory.IndPushBusinessEventBuilderFactory;
+import com.amway.indfacades.builder.order.IndOrderPushBusinessEventBuilder;
+import com.amway.lynxcore.site.LynxBaseSiteService;
+
+import java.util.Arrays;
+
+import de.hybris.platform.processengine.model.BusinessProcessModel;
+
+	LynxBaseSiteService siteService = spring.getBean("baseSiteService");
+	
+	 CatalogVersionService catalogVersionService = spring.getBean("catalogVersionService");
+	
+	 IndSiteConfigurationService indSiteConfigurationService= spring.getBean("defaultSiteConfigurationService");
+	
+	SessionService sessionService= spring.getBean("sessionService");
+
+	
+	 IndPushBusinessEventBuilderFactory builderFactory= spring.getBean("indPushBusinessEventBuilderFactory");
+	
+	 AmwayEventQueueService amwayEventQueueService= spring.getBean("amwayEventQueueService");
+	
+	 UserService userService= spring.getBean("userService");
+
+	final String CURRENT_SITE = "currentSite";
+	final String INDSITE = "indsite";
+	String  IND_INCORRECT_ORDER = "ind.incorrectOrder.nok.return";
+
+
+		final ModelService modelService = (ModelService) 	Registry.getApplicationContext().getBean("modelService");
+		final EventService eventService = (EventService) Registry.getApplicationContext().getBean("eventService");
+		final BusinessProcessService businessProcessService   = (BusinessProcessService) Registry.getApplicationContext().getBean("businessProcessService");
+		
+		String query ="Select {o.pk} from {order as o}  where {o.code} in ('700002701')";
+		
+		final SearchResult<OrderModel> searchResult = ((FlexibleSearchService) Registry.getApplicationContext().getBean("flexibleSearchService")).search(query);
+		
+		final String INVOICED_SHIPPED = "indGenerateCreateInvoicedAndDropEventAction";
+		final OrderModel order = searchResult.getResult().stream().findAny().get();
+		
+        order.getOrderProcess().stream().filter{process -> process.getCode().startsWith(order.getStore().getSubmitOrderProcessCode())}.forEach{orderProcess -> businessProcessService.restartProcess(orderProcess,INVOICED_SHIPPED)};

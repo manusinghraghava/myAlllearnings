@@ -1,0 +1,180 @@
+import de.hybris.platform.payment.model.PaymentTransactionEntryModel
+import de.hybris.platform.payment.enums.PaymentTransactionType
+import de.hybris.platform.payment.model.PaymentTransactionModel
+import de.hybris.platform.core.model.order.AbstractOrderModel;
+import de.hybris.platform.servicelayer.i18n.CommonI18NService;
+import de.hybris.platform.servicelayer.search.SearchResult;
+import de.hybris.platform.commerceservices.search.pagedata.SearchPageData;
+import de.hybris.platform.core.model.order.OrderModel;
+import de.hybris.platform.commercefacades.product.PriceDataFactory;
+import de.hybris.platform.cms2.model.site.CMSSiteModel;
+import de.hybris.platform.servicelayer.search.FlexibleSearchService;
+import de.hybris.platform.servicelayer.i18n.CommonI18NService;
+import de.hybris.platform.store.BaseStoreModel;
+import de.hybris.platform.store.services.BaseStoreService;
+import de.hybris.platform.site.BaseSiteService;
+import com.amway.indcore.order.strategies.IndOrderProcessingStrategy;
+import de.hybris.platform.core.enums.PaymentStatus;
+import de.hybris.platform.core.enums.OrderStatus;
+import de.hybris.platform.core.Registry;
+import de.hybris.platform.servicelayer.model.ModelService;
+import com.amway.indpayment.facade.impl.IndDefaultRefundFacade;
+import com.amway.indpayment.populator.impl.IndPaymentCallbackResponsePopulator;
+import com.amway.indpayment.dto.IndPaymentConfirmationResponse;
+import com.amway.indpayment.service.IndPaymentService;
+import com.amway.indpayment.data.IndHOPPaymentRequestData;
+import com.amway.indpayment.data.IndPaymentTxnData;
+import com.amway.core.enums.IndPaymentConfirmationType;
+import com.amway.indpayment.constants.IndPaymentConstants;
+import org.apache.commons.collections4.CollectionUtils;
+import com.amway.indpayment.service.IndOrderPaymentService;
+import com.amway.core.constants.IndCoreConstants;
+import de.hybris.platform.servicelayer.exceptions.BusinessException;
+import groovy.time.TimeCategory
+import java.text.SimpleDateFormat;
+import org.apache.commons.collections4.*;
+import com.amway.indpayment.constants.*;
+import com.amway.indpayment.data.*;
+
+import org.apache.commons.lang3.StringUtils;
+
+Date currentDate = new Date();
+Calendar cal = Calendar.getInstance();
+cal.setTime(currentDate);
+//change this for fetching order on different time
+Date todayDate=cal.getTime();
+cal.add(Calendar.HOUR, -1);
+Date previouDay = cal.getTime();
+SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+String prvDate= formatter.format(previouDay);
+String tdDate = formatter.format(todayDate);
+
+final CommonI18NService commonI18NService = (CommonI18NService) Registry.getApplicationContext().getBean(
+ "commonI18NService");
+final BaseStoreService baseStoreService = spring.getBean("baseStoreService");
+final BaseSiteService baseSiteService = spring.getBean("baseSiteService");
+final ModelService modelService = (ModelService) Registry.getApplicationContext().getBean("modelService");
+String query1 = "select {pk} from {CMSSite as o} where {o.pk} ='" + 8796093056040 + "'";
+final SearchResult < CMSSiteModel > searchResult1 = ((FlexibleSearchService) Registry.getApplicationContext().getBean("flexibleSearchService")).search(query1);
+final List < CMSSiteModel > results1 = searchResult1.getResult();
+CMSSiteModel cmsSiteModel = results1.stream().findFirst().get();
+def baseSiteModel = baseSiteService.getCurrentBaseSite();
+baseSiteService.setCurrentBaseSite(cmsSiteModel, true);
+
+void addColumn(FileWriter fileWriter,String entry)
+	{
+		try
+		{
+			if(StringUtils.isNotBlank(entry) && entry.contains(",")){
+				entry = entry.replace(",", StringUtils.EMPTY);
+			}
+			fileWriter.append(entry);
+			fileWriter.append(",");
+		}
+		catch(Exception e)
+{
+e.printStackTrace();
+}
+
+
+}
+try{
+
+String fileName ="/opt/hybris/data/amway/reports/events/paymentConfirmation_"+tdDate+".csv";
+
+FileWriter fileWriter = new FileWriter(fileName);
+
+			fileWriter.append("Order Code , Transaction ID , PAYMENT STATUS AT PG , PAYMENT STATUS AT HYBRIS , PAYMENT DATE , ORDER DATE , PAYMENT MODE , PAYMENT PROVIDER");
+
+			fileWriter.append("\n");
+			
+
+final IndOrderPaymentService orderPaymentService = Registry.getApplicationContext().getBean("indOrderPaymentService");
+final IndPaymentService indPaymentService = Registry.getApplicationContext().getBean("indPaymentService");
+
+String query ="SELECT {o.pk} from {Order as o JOIN OrderStatus as os on {os.pk} = {o.status} JOIN SalesApplication as sa ON {o.salesApplication} = {sa.pk}} where {o.creationTime} <= '" + tdDate + "' and {o.creationTime} >= '" + prvDate + "' and {os.code} = 'PAYMENT_FAILED' and {sa.code} = 'Web' and ({o.lynxGroupNumber} is null or {o.lynxGroupNumber}={o.code})";
+
+println query;
+
+def orders =flexibleSearchService.search(query).getResult();
+
+orders.each {
+ AbstractOrderModel order = it;
+ if (null != order) {
+ if(CollectionUtils.isNotEmpty(order.getPaymentTransactions())){
+ for (PaymentTransactionModel paymentTransactionModel: order.getPaymentTransactions()) {
+  try{
+ 
+ if (IndPaymentConstants.PAYMENT_GATEWAY_BILLDESK.equalsIgnoreCase(paymentTransactionModel.getPaymentProvider()) || IndPaymentConstants.PAYMENT_GATEWAY_CCAVENUE.equalsIgnoreCase(paymentTransactionModel.getPaymentProvider())) {
+ 
+
+	
+ IndHOPPaymentRequestData indHOPPaymentRequestData = new IndHOPPaymentRequestData();
+					indHOPPaymentRequestData.setPaymentMode(
+							null != paymentTransactionModel.getPaymentMode() ? paymentTransactionModel.getPaymentMode().getCode()
+									: order.getPaymentMode().getCode());
+					indHOPPaymentRequestData.setPaymentProvider(paymentTransactionModel.getPaymentProvider());
+					indHOPPaymentRequestData.setOrderNumber(order.getCode());
+					
+					for (final PaymentTransactionEntryModel entry : paymentTransactionModel.getEntries())
+					{
+						if (PaymentTransactionType.CAPTURE.equals(entry.getType())
+								&& IndPaymentConfirmationType.ONLINE.equals(entry.getIndPaymentConfirmationType()))
+						{
+							final BigDecimal amountInBD = entry.getAmount(); // the value you get
+							final double amountInDouble = amountInBD.doubleValue(); //
+							indHOPPaymentRequestData.setOrderAmount(amountInDouble);
+
+							indHOPPaymentRequestData.setTransactionID(entry.getTransactionId());
+							indHOPPaymentRequestData.setWebReferenceNumber(entry.getCode());
+							IndPaymentTxnData serverTxnData = new IndPaymentTxnData();
+							
+							
+							serverTxnData = indPaymentService.checkPaymentStatus(paymentTransactionModel,
+											indHOPPaymentRequestData);
+							
+							addColumn(fileWriter,order.getCode());
+							addColumn(fileWriter,serverTxnData.getPpTxnID());
+							addColumn(fileWriter,serverTxnData.getPpStatus());
+							addColumn(fileWriter,order.getPaymentStatus().getCode());
+							addColumn(fileWriter,serverTxnData.getPpTxnDate().toString());
+							addColumn(fileWriter,order.getDate().toString());
+							addColumn(fileWriter,order.getPaymentMode().getName());
+							addColumn(fileWriter,paymentTransactionModel.getPaymentProvider());
+							fileWriter.append("\n");
+							
+							}
+							
+							}
+							}
+							}
+							catch(Exception e)
+							{
+							e.printStackTrace();
+							fileWriter.append("\n");
+							continue;
+							}
+							}
+							
+ }
+ }
+ }
+fileWriter.flush();
+}
+catch(Exception e)
+{
+e.printStackTrace();
+}
+finally {
+			try {
+				if(fileWriter != null) {
+	   				fileWriter.close();
+				}
+			} 
+catch(Exception e)
+{
+e.printStackTrace();
+}
+}
+
+

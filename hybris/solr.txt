@@ -1,0 +1,939 @@
+Solr is an open source software developed by Apache software foundation.
+
+It is a search server which uses the Apache Lucene in the backend and provides a Rest API which can be called from any language or the platform to get the indexed data or the search results.
+
+Apache Lucene is the java library which provides indexing and search functionality.
+
+Solr and Lucene both are managed by Apache.
+
+What is Indexing?
+Indexing is the process of arranging the data in a more systematic and efficient way to locate the information in a document in a much faster way.
+
+-------------------------------------------------------------------
+
+What is Solr Core ?
+
+A Solr core is basically an index of the text and fields found in documents that we publish to Solr.
+
+A single Solr instance can contain multiple cores, which are separate from each other based on local criteria.
+
+In my project, If i have 2 databases and I may decide to use separate core for each database.
+
+Each core will have its own configuration and indexed data storage location.
+
+When the Solr server runs in a standalone mode, this configuration is called Core
+
+When the solr server runs in a Cloud mode, this configuration is called Collection
+
+This core folder will contain all the configurations and indexed data.
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+Every core needs to have 4 important files listed below
+1)solr.xml
+2)solrconfig.xml
+3)schema.xml
+4)core.properties
+
+1)solr.xml
+This file will be in the same place where our new MyCore folder is located.
+This file should be used to configure the Solr Cores.
+
+2)solrconfig.xml
+This file will be automatically created when we run Solr Create command and available inside MyCore/conf directory.
+
+This file is used to configure the Solr server in a high level
+
+For example, we can change the location of data directory in this file and Lucene details are added in this file.
+
+At the end of this file before < /config > tag add the below line
+
+
+<schemaFactory class="ClassicIndexSchemaFactory"/>
+This enables to use Schema mode where we can use schema.xml for manually editing the schema xml file for defining our own field types description.
+
+3)schema.xml
+The file will be generated as managed-schema.xml when we create a new core as by default Solr uses Schemaless mode.
+Managed-schema.xml is available inside MyCore/conf directory.
+
+
+ 
+Rename this file to schema.xml as we have done the configuration change in solrconfig.xml to use Schema mode
+.
+Managed-schema.xml should be used if we are using schemaless mode which is by default enabled in Solr.
+
+This file contains the description of the fields that we pass to solr for indexing.
+
+4)core.properties
+This file will be automatically created when we run Solr Create command and available inside MyCore directory.
+
+This file is used to define the properties used by our Core like Core Name,solr config,schema file etc
+
+If we don’t add any values inside this core.properties ,default values will be taken automatically.
+
+----------------------------------------------------------------------------------------------------------------------------------------------
+Hybris point of view==>
+
+Whenever user access any data in the storefront, it can come from either hybris DB or from Solr based on whether that data is indexed or not.
+
+If data is indexed ,it will be stored separately in Solr and can be accessed from there.
+
+If data is not indexed, it will be anyway available in Hybris DB and can be accessed from there.
+
+Communication between Solr and Hybris DB is one way because Solr only gets the data from Hybris DB but it will not write anything back to Hybris DB.
+
+Hybris calls the Cron job for indexing, then Solr gets the source data from Hybris DB and then it does the indexing and save the indexed data within it.
+
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+Solr in hybris supports 3 types of indexing strategies
+
+1)Full indexing
+
+2)Update indexing
+
+3)Delete indexing
+
+1) Full indexing:
+In this strategy, all the existing indexed documents will be deleted first and then fresh indexing will be done from the scratch.
+It takes considerable amount of time, so not advised to do it frequently.
+
+Full indexing supports 2 modes of commit
+
+a)Direct mode
+In this mode,if indexing fails then previously committed documents will be available.
+
+b)Two phase mode
+In this mode, if indexing fails, everything will be rolled back to initial state.
+
+In this mode,Solr creates one extra core as a temporary core only for indexing, once indexing is success then it will be swapped with original core.
+So original core will be safe in case of failure in indexing.
+
+It is called Two phase mode mainly because it has 2 Solr cores involved while indexing.
+The initial core is kept as a backup and other one is created as a copy
+Indexing will be performed on this copy which will be later swapped with original core if indexing gets success.
+
+2) Update indexing:
+In this strategy, only those documents which have been modified within some given time will be indexed and other indexed documents remains as it is.
+This operation can be done frequently if needed as it consumes less time compared to Full indexing strategy
+
+3) Delete indexing:
+This strategy is used to completely remove the indexed documents.
+This should be done periodically to maintain the consistency of indexed data as we might have unwanted indexed data in Solr from a long time.
+
+What can be indexed in Hybris ?
+We can index any hybris item type using either Backoffice or Impex.
+
+
+ 
+As we all know doing through impex is the best way as it lasts long and reusable in all the environments(DEV,TEST,PROD)
+We just need to define the Solr configuration in the impex file accordingly.
+
+Indexing for Product item type is already done by Hybris out of the box.
+So if we add any new attributes to Product item type and we want those new attributes to be indexed then we need to add those new attributes in the solr impex file.
+
+We can define the queries in solr impex file to get the data from hybris DB for indexing and we also need to define the fields descriptions in the Solr impex file.
+
+Good part with Hybris is that, it has already provided cron jobs for performing full indexing,update indexing and delete indexing.
+
+-------------------------------------------------------------------------========================-------------------------------------------
+Configuration ==>
+
+In Hybris, we have to configure the Solr in impex files
+
+Lets see the impex files used for the same in detail
+
+1)solr.impex
+/import/coredata/stores/hybris/solr.impex
+2)solr_en.impex
+/import/coredata/stores/hybris/solr_en.impex
+3)solrtrigger.impex
+import/coredata/stores/hybris/solrtrigger.impex
+----------------------------------------------------------------
+solr.impex
+This file contains all the configuration of Solr including Solr server,indexing types,facets etc.
+
+Solr server configuration
+We need to insert the data to SolrServerConfig table with solr server configuration name and mode of the server to indicate whether it’s embedded or standalone server.
+Below impex line will do this
+
+
+INSERT_UPDATE SolrServerConfig;name[unique=true];mode(code);embeddedMaster
+;$serverConfigName;embedded;true
+We have configured solr server to be embedded.
+
+If we want to make solr server as standalone then we have to insert below data to SolrServerConfig table
+
+
+INSERT_UPDATE SolrServerConfig;name[unique=true];mode(code);embeddedMaster
+;$serverConfigName;standalone;false;
+For standalone solr server configuration , we must insert data to SolrEndpointUrl table as well to indicate the actual url where solr is running.
+
+
+#% impex.info(" Creating master Solr endpoint url for standalone mode")
+INSERT_UPDATE SolrEndpointUrl; url[unique = true]; master; solrServerConfig(name)[unique = true];
+; $solrMasterEndpointUrl ; true ; $serverConfigName
+
+
+INSERT_UPDATE SolrServerConfig; name[unique = true]; mode(code); embeddedMaster;username; password; indexingUsername; indexingPassword;useMasterNodeExclusivelyForIndexing
+; $serverConfigName ; standalone ;false; $solrServerConfigUsername ; $solrServerConfigPassword ; $solrServerConfigIndexingUsername ; $solrServerConfigIndexingPassword;$serverConfigUseMasterNodeExclusively
+
+#% if: !"$solrSlave1EndpointUrl".isEmpty() && !"$solrSlave1EndpointUrl".contains("config-lx.solr.endpoint.slave1")
+#% impex.info(" Creating slave #1 Solr endpoint url for standalone mode")
+INSERT_UPDATE SolrEndpointUrl; url[unique = true]; master; solrServerConfig(name)[unique = true];
+; $solrSlave1EndpointUrl ; false ; $serverConfigName
+#% endif:
+
+
+----------------------------------
+
+solr indexer configuration
+we need to insert the data to SolrIndexConfig table with index configuration name,batch size of indexing,number of threads to run and the index mode
+
+
+INSERT_UPDATE SolrIndexConfig;name[unique=true];batchSize;numberOfThreads;indexMode(code);
+;$indexConfigName;100;1;TWO_PHASE;
+
+We have defined the batch size to be 100
+1 thread for processing index and
+TWO_PHASE as the indexing strategy.
+
+
+
+----------------------------------------------------------------------------------------------------------
+we need to insert the data to SolrSearchConfig table with page size and description
+
+Copy this code
+INSERT_UPDATE SolrSearchConfig;description[unique=true];pageSize
+;$searchConfigName;20
+
+We have given the page size as 20, so 20 pages of results will be retrieved by Solr.
+
+
+-------------------------------------------------------------------------------------------------------------
+
+We need to define the hybris item types to be indexed in the SolrIndexedType table
+
+
+INSERT_UPDATE SolrIndexedType;identifier[unique=true];type(code);variant;sorts(&sortRefID)
+;$solrIndexedType;Product;false;sortRef1,sortRef2,sortRef3,sortRef4,sortRef5,sortRef6
+
+We have defined only one hybris item type to be indexed which is Product Type and defined some of the sorting references which we will define in the subsequent impex below.
+
+-------------------------------------------------------------------------------------------------------------------
+Solr Facet Search Config
+
+We need to insert the data to SolrFacetSearchConfig table to define index name prefix,supporting languages,currencies and also link the solrServerConfig, solrSearchConfig, solrIndexConfig, solrIndexedTypes defined above.
+
+We also need to define the fallback language and catalog version
+
+
+INSERT_UPDATE SolrFacetSearchConfig;name[unique=true];description;indexNamePrefix;languages(isocode);currencies(isocode);solrServerConfig(name);solrSearchConfig(description);solrIndexConfig(name);solrIndexedTypes(identifier);enabledLanguageFallbackMechanism;$catalogVersions
+;$facetSearchConfigName;$facetSearchConfigDescription;$searchIndexNamePrefix;$indexLanguages;$indexCurrencies;$serverConfigName;$searchConfigName;$indexConfigName;$solrIndexedType;true;$productCatalog:Online,$productCatalog:Staged
+
+-------------------------------------------------------------------------------------------------------------------------
+
+We need to link the solr configuration to the site by providing solrFacetSearchConfiguration to the Base site as below
+
+UPDATE BaseSite;uid[unique=true];solrFacetSearchConfiguration(name)
+;$indexBaseSite;$facetSearchConfigName
+
+----------------------------------------------------------------------------------------------------------------------------
+
+Defining the range value set
+We need to insert the data to SolrValueRangeSet table for defining the Solr value range references which we will define in the next impex.
+
+
+INSERT_UPDATE SolrValueRangeSet;name[unique=true];qualifier;type;solrValueRanges(&rangeValueRefID)
+;priceRangeGBP;GBP;double;rangeRefGBP1,rangeRefGBP2,rangeRefGBP3,rangeRefGBP4,rangeRefGBP5
+
+We have defined 5 ranges for priceRangeGBP and we will define the values for the same in the below impex
+
+We need to insert the data for SolrValueRange table to define the actual range values for each range reference as below
+
+
+INSERT_UPDATE SolrValueRange;&rangeValueRefID;solrValueRangeSet(name)[unique=true];name[unique=true];from;to
+;rangeRefGBP1 ;priceRangeGBP;£0-£19.99;   0; 19.99
+;rangeRefGBP2 ;priceRangeGBP;£20-£49.99;  20; 49.99
+;rangeRefGBP3 ;priceRangeGBP;£50-£99.99;  50; 99.99
+;rangeRefGBP4 ;priceRangeGBP;£100-£199.99; 100;199.99
+;rangeRefGBP5 ;priceRangeGBP;£200-£299.99; 200;299.99
+
+we will use priceRangeGBP to provide range for the indexed property while defining indexed property.
+
+---------------------------------------------------------------------------------------------------------------------------------
+
+Defining the non-facet indexed properties
+
+We need to insert the data into SolrIndexedProperty table for defining the properties of item types to be indexed.
+
+We need to define different features for each property on how it should be indexed, whether it has to be multivalued,used for autocomplete etc.
+
+INSERT_UPDATE SolrIndexedProperty;solrIndexedType(identifier)[unique=true];name[unique=true];type(code);sortableType(code);currency[default=false];localized[default=false];multiValue[default=false];useForSpellchecking[default=false];useForAutocomplete[default=false];fieldValueProvider;valueProviderParameter
+;$solrIndexedType; name                   ;text   ;sortabletext;    ;true;    ;true;true;
+;$solrIndexedType; priceValue             ;double ;            ;true;    ;    ;    ;    ;productPriceValueProvider;
+
+
+We also need to define the Value provider for some of the attributes whose value cannot be understood by Solr directly.
+We will see how value providers works in a separate article
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+Defining the Facet indexed properties
+Facet properties are generally displayed at the sidebar of the site where we can select those facet fields to get the list of products accordingly.
+
+
+INSERT_UPDATE SolrIndexedProperty;solrIndexedType(identifier)[unique=true];name[unique=true];type(code);sortableType(code);currency[default=false];localized[default=false];multiValue[default=false];facet[default=true];facetType(code);facetSort(code);priority;visible;useForSpellchecking[default=false];useForAutocomplete[default=false];fieldValueProvider;facetDisplayNameProvider;customFacetSortProvider;topValuesProvider;rangeSets(name)
+;$solrIndexedType; price            ;double ; ;true ;    ;    ; ;MultiSelectOr ;Alpha ; 4000;true;    ;    ;productPriceValueProvider              ;                                             ;                             ;defaultTopValuesProvider ;priceRangeGBP
+
+We have defined price field as facet field and it can be selected to filter the products based on that field.
+and here we have use our price ranges for facet search on price.
+
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------
+
+Define the indexed queries
+We need to define the indexed queries for full index and update index so that solr picks up the corresponding source data from hybris for indexing.
+
+
+INSERT_UPDATE SolrIndexerQuery;solrIndexedType(identifier)[unique=true];identifier[unique=true];type(code);injectCurrentDate[default=true];injectCurrentTime[default=true];injectLastIndexTime[default=true];query;user(uid)
+;$solrIndexedType;$solrIndexedType-fullQuery;full;;;false;"SELECT {PK} FROM {Product}";anonymous
+;$solrIndexedType;$solrIndexedType-updateQuery;update;;;;"SELECT {p:PK} FROM {Product AS p} WHERE ({p:modifiedtime} >= ?lastIndexTime";anonymous
+
+We have defined the 2 queries that Solr uses for full indexing and update indexing.
+
+Full indexing query gets all the data without any condition
+
+Update indexing query gets the data which has been modified from the last indexed time, so it won’t fetch entire data for indexing and hence it’s faster too.
+
+we have defined facet[default=true] to indcate that the field is facet type
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------------
+
+Defining the Sort
+
+We need to insert the sort references into SolrSort table which we will be using while inserting values for SolrIndexedType to define the sorts for the indexed item type
+
+
+INSERT_UPDATE SolrSort;&sortRefID;indexedType(identifier)[unique=true];code[unique=true];useBoost
+;sortRef1;$solrIndexedType;relevance;true
+;sortRef2;$solrIndexedType;topRated;false
+;sortRef3;$solrIndexedType;name-asc;false
+;sortRef4;$solrIndexedType;name-desc;false
+;sortRef5;$solrIndexedType;price-asc;false
+;sortRef6;$solrIndexedType;price-desc;false
+
+we have given these references while inserting data into SolrIndexedType table above.
+
+
+Define the Solr sort fields
+
+We need to insert the sorting fields into SolrSortField table which will be linked to the sort reference codes defined above
+
+
+INSERT_UPDATE SolrSortField;sort(indexedType(identifier),code)[unique=true];fieldName[unique=true];ascending[unique=true]
+;$solrIndexedType:relevance;inStockFlag;false
+;$solrIndexedType:relevance;score;false
+;$solrIndexedType:topRated;inStockFlag;false
+;$solrIndexedType:topRated;reviewAvgRating;false
+;$solrIndexedType:name-asc;name;true
+;$solrIndexedType:name-desc;name;false
+;$solrIndexedType:price-asc;priceValue;true
+;$solrIndexedType:price-desc;priceValue;false
+
+
+We have defined 5 sort fields as below
+
+inStockFlag field can be sorted based on relevance and Top rating in descending order.
+
+score field can be sorted based on relevance only in descending order
+
+reviewAvgRating field can be sorted based on Top rating only in descending order
+
+name field can be sorted based on both ascending & descending order
+
+price field can be sorted based on both ascending & descending order
+
+
+----------------------------------------------------------------------------------------------------------------------------------
+
+2)solr_en.impex
+
+import/coredata/stores/apparel-uk/solr_en.impex
+
+This impex file is used for localization of solr indexed fields in English language as below
+
+
+UPDATE SolrIndexedProperty;solrIndexedType(identifier)[unique=true];name[unique=true];displayName[lang=$lang]
+ ;$solrIndexedType;allPromotions;"Promotions"
+UPDATE SolrSort;indexedType(identifier)[unique=true];code[unique=true];name[lang=$lang]
+ ;$solrIndexedType;name-asc;"Name (ascending)"
+ 
+Similarly for other languages we will have corresponding solr localization files in the appropriate localization folders.
+
+-------------------------------------------------------------------------------------------------------------------------------------
+
+3)solrtrigger.impex
+
+/import/coredata/stores/apparel-uk/solrtrigger.impex
+
+This impex file is used to schedule the cron jobs for Solr indexing.
+
+
+INSERT_UPDATE Trigger;
+cronJob(code)[unique=true];second;minute;hour;day;month;year;relative;active;maxAcceptableDelay
+# Run the full index cronJob at 3:05 AM every day
+;full-index-cronJob;0;5;3;-1;-1;-1;false;false;-1
+
+# Run the update index cronJob every 1 minutes
+;update-index-cronJob;0;1;-1;-1;-1;-1;true;false;-1
+We have defined cron job scheduling time through Trigger table for both full and update indexing.
+
+We can observe that full indexing job is scheduled only once a day and update indexing is scheduled to run every 1 minute.
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------
+
+There are 3 instances of Solr server configured by Hybris automatically.
+
+1) Default solr server instance
+2) Standalone solr server instance
+3) Cloud solr server instance
+
+Let’s see how to configure Solr server in standalone mode
+
+Step 1
+Add below extension in localextensions.xml
+
+Copy this code
+<extension name=”solrserver”/>
+
+solrserver extension is provided by hybris which includes a standalone Solr server which can be automatically
+configured, started and stopped together with the platform.
+
+By default Solr server is configured as below in the project.properties of solrserver extension
+
+
+solrserver.instances.default.autostart=true
+solrserver.instances.standalone.autostart=false
+solrserver.instances.cloud.autostart=false
+
+if autostart = false, we need to explicitly start and stop the Solr server
+if autostart = true, Solr server will be started and stopped together with the Hybris server
+
+Another important attribute to set is mode
+
+It has 2 values
+
+1) Standalone
+2) Cloud
+
+We need to set it accordingly
+
+For standalone mode it should be set as below
+
+**)solrserver.instances.standalone.mode=standalone
+
+
+Step 2
+Do ant all and start Hybris server
+
+Because autostart is enabled for the default Solr server instance, the Solr server will be started and stopped together with the platform
+
+
+
+ 
+Step 3
+Start the solr server
+
+As explained above, if autostart = true then solr server will be started automatically when Hybris server starts
+
+If autostart = false then we need to start it explicitly
+
+To start the solr server explicitly, Open command prompt and switch to below path
+
+hybris/bin/ext-commerce/solrserver/resources/solr/bin
+
+Use the following command
+
+solr.cmd start -p 8983
+
+
+Step 4
+Stopping the Solr server
+
+As explained above, if autostart = true then solr server will be stopped automatically when Hybris server stops
+
+If autostart = false then we need to stop it explicitly
+
+To stop the solr server explicitly, Open command prompt and switch to below path
+
+hybris/bin/ext-commerce/solrserver/resources/solr/bin
+
+Use the following command
+
+solr.cmd stop -p 8983
+
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+Example===>
+
+Step 1
+
+Add a new attribute called alias to the Product model
+
+We know that in Hybris we need to define the attributes inside *items.xml
+
+Let’s define alias attribute inside trainingcore-items.xml(hybris\bin\custom\training\trainingcore\resources) as below
+
+Copy this code
+<itemtype code="Product" autocreate="false" generate="false">
+                <attributes>
+                    <attribute autocreate="true" qualifier="alias" type="java.lang.String"
+                        generate="true">
+                        <persistence type="property" />
+                        <modifiers read="true" write="true" search="true"
+                            initial="true" optional="true" unique="false" />      //initial like final
+                    </attribute>
+                </attributes>
+            </itemtype>
+
+
+Step 2
+
+Build and update the system
+
+Do ant all and update system by selecting trainingcore only ,so that newly added attribute will be available in Model class as well as DB.
+
+
+Step 3
+
+Add the new attribute alias in the solr.impex file for indexing as below
+
+Copy this code
+# impex for indexing alias attribute
+INSERT_UPDATE SolrIndexedProperty;solrIndexedType(identifier)[unique=true];name[unique=true];type(code);sortableType(code);currency[default=false];localized[default=false];multiValue[default=false];useForSpellchecking[default=false];useForAutocomplete[default=false];fieldValueProvider;valueProviderParameter
+;$solrIndexedType; alias                  ;string ;            ;    ;;    ;true;true;                 ;
+We have added alias as the indexed property.
+
+Since this attribute is of basic String type, we don’t need to provide value provider for the same.
+
+We have also made useForSpellchecking & useForAutocomplete as true so that they sit in the Solr spellcheck and autocomplete dictionaries.
+
+Note:
+If you are indexing any localizing property then you need to add that field inside each localized solr impex file.
+
+do indexing and check...
+
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------
+
+Value providers are used to provide the information to the Solr about how to index the given field/property.
+
+
+In Hybris , we will have 2 set of data which we send for indexing.
+
+One set of data will be sent as it is to solr for indexing
+
+Another set of data will not be sent to solr as it is directly, instead we will write some custom logic on that data and send it to Solr for indexing.
+
+Hybris provides an interface called **FieldValueProvider** which has the method called getFieldValues() with appropriate parameters.
+
+Every value provider we write must implement this interface and override the getFieldValues() method as per our requirement.
+
+We can also extend AbstractPropertyFieldValueProvider abstract class for our custom value provider.
+
+
+//Just a method signature
+public Collection<FieldValue> getFieldValues(final IndexConfig indexConfig, final IndexedProperty indexedProperty,
+            final Object model) throws FieldValueProviderException
+The above method has a parameter called model which is used to get the property values based on the indexed property.
+
+This method also uses FieldNameProvider to create the Name Value pair for the indexing property.
+
+Name:
+
+The field names are created by getFieldNames() method inside DefaultFieldNameProvider class.
+
+The field names are created in a way that Solr can understand it.
+
+The field names created by FieldNameProvider should match the field names defined inside schema.xml file inside solrfacetsearch extension and good part is that it is already taken care by getFieldNames() method
+
+Value:
+It is the value that we have retrieved from the model with some custom logic as per our requirement.
+
+When we should go for Value Provider?
+
+We should go for value providers when we don’t want the exact value from DB to be indexed.
+
+In some cases it’s required that we have to modify the value after getting from DB and send the modified value to Solr so that modified value can be queried later to Solr.
+
+
+Example==> http://javainsimpleway.com/value-provider-in-solr-with-example/    refer this.
+   or===> https://www.stackextend.com/hybris/index-a-custom-product-property-with-solr-in-hybris/
+
+In Hybris, product list page, search page, product sorting and faceting are powered by Apache Solr.
+
+In this article, I will show you how to index a custom product attribute with Solr and display it on the product list page.
+
+We will index the unit attribute (no need to create a custom attribute) and display it on the PLP.
+
+2.Implementation
+1. First of all, create a custom FieldValueProvider, to convert Unit to a sample/indexable value.
+
+package com.stackextend.training.core.search.solrfacetsearch.provider.impl;
+
+// imports...
+
+public class ProductUnitValueProvider implements FieldValueProvider, Serializable {
+
+    private FieldNameProvider fieldNameProvider;
+    private CommonI18NService commonI18NService;
+
+    @Override
+    public Collection<FieldValue> getFieldValues(final IndexConfig indexConfig, final IndexedProperty indexedProperty, final Object model) throws FieldValueProviderException
+    {
+        if (model instanceof ProductModel)
+        {
+            final ProductModel product = (ProductModel) model;
+            final Collection<FieldValue> fieldValues = new ArrayList<FieldValue>();   //always for returning fieldvalues.
+
+            // case of the indexed property is localized
+            if (indexedProperty.isLocalized())
+            {
+                // retrieve and iterate over all the configured languages
+                final Collection<LanguageModel> languages = indexConfig.getLanguages();
+                for (final LanguageModel language : languages)
+                {
+                    fieldValues.addAll(createFieldValue(product, language, indexedProperty));
+                }
+            }
+            // case of the indexed property is not localized setting null for language
+            else
+            {
+                fieldValues.addAll(createFieldValue(product, null, indexedProperty));
+            }
+            return fieldValues;
+        }
+
+        throw new FieldValueProviderException("Error: item is not a Product type !");
+    }
+
+    protected List<FieldValue> createFieldValue(final ProductModel product, final LanguageModel language, final IndexedProperty indexedProperty)
+    {
+        final List<FieldValue> fieldValues = new ArrayList<FieldValue>();
+        // get Unit name by language
+        final String unitName = getUnitName(product, language);
+        if (unitName != null)
+        {
+            // add Unit name value to the fieldValues list
+            addFieldValues(fieldValues, indexedProperty, language, unitName);
+        }
+        return fieldValues;
+    }
+
+    protected void addFieldValues(final List<FieldValue> fieldValues, final IndexedProperty indexedProperty, final LanguageModel language, final Object value)
+    {
+        // generate all Solr fields based on different qualifiers
+        final Collection<String> fieldNames = fieldNameProvider.getFieldNames(indexedProperty, language == null ? null : language.getIsocode());
+        for (final String fieldName : fieldNames)
+        {
+            fieldValues.add(new FieldValue(fieldName, value));
+        }
+    }
+
+    private String getUnitName(ProductModel product, LanguageModel language) {
+        return product.getUnit().getName(commonI18NService.getLocaleForLanguage(language));
+    }
+
+    @Required
+    public void setFieldNameProvider(final FieldNameProvider fieldNameProvider)
+    {
+        this.fieldNameProvider = fieldNameProvider;
+    }
+
+    @Required
+    public void setCommonI18NService(final CommonI18NService commonI18NService)
+    {
+        this.commonI18NService = commonI18NService;
+    }
+}
+Note that no special value provider is needed if you want just to index a basic attribute (boolean, int, String…), check this article.
+
+2. Register the ProductUnitValueProvider as a Spring bean.
+
+<!-- ...\trainingecore\resources\trainingecore-spring.xml -->
+
+<bean id="productUnitValueProvider"
+	class="com.stackextend.training.core.search.solrfacetsearch.provider.impl.ProductUnitValueProvider" >
+	<property name="fieldNameProvider" ref="solrFieldNameProvider"/>
+	<property name="commonI18NService" ref="commonI18NService"/>
+</bean>
+3. Create a SolrIndexedProperty instance called unit and attach productUnitValueProvider bean to it, using an impex.
+
+# .../traininginitialdata/import/coredata/stores/hybris/solr.impex
+
+$solrIndexedType=...
+
+INSERT_UPDATE SolrIndexedProperty	;solrIndexedType(identifier)[unique=true]	;name[unique=true]	;type(code)	;localized[default=false]	;fieldValueProvider
+									;$solrIndexedType							;unit              	;string		;true						;productUnitValueProvider
+4. Add unit attribute to ProductData and run ant all to generate it.
+
+<!-- ...\trainingfacades\resources\trainingfacades-beans.xml -->
+
+<bean class="de.hybris.platform.commercefacades.product.data.ProductData">
+	<property name="unit" type="String"/>
+</bean>
+5. Override SearchResultVariantProductPopulator, to populate unit values retrieved by Solr search.
+
+package com.stackextend.training.facades.populators.CustomSearchResultVariantProductPopulator;
+
+// imports...
+
+public class CustomSearchResultVariantProductPopulator extends SearchResultVariantProductPopulator {
+
+    @Override
+    public void populate(SearchResultValueData source, ProductData target) {
+
+        super.populate(source, target);
+
+        // populate unit property values
+        target.setUnit(this.<String> getValue(source, "unit"));
+    }
+}
+6. Register the CustomSearchResultVariantProductPopulator as a Spring bean, with commerceSearchResultProductPopulator as an alias.
+
+<!-- ...\trainingfacades\resources\trainingfacades-spring.xml -->
+
+<alias name="customSearchResultProductPopulator" alias="commerceSearchResultProductPopulator"/>
+<bean id="customSearchResultProductPopulator"
+	  class="com.stackextend.training.facades.populators.CustomSearchResultVariantProductPopulator"
+	  parent="variantCommerceSearchResultProductPopulator">
+</bean>
+7. Display the unit value where ever you want inside productListerItem.tag.
+
+<!-- ...\trainingstorefront\web\webroot\WEB-INF\tags\desktop\product\productListerItem.tag -->
+
+...
+
+${product.unit}
+
+...
+8. Finally, run a full indexation to force Solr to index the unit attribute of all existing products.
+Navigate to HMC -> System -> Facet Search -> Indexer operation wizard.
+
+
+Create a new class by extending SearchResultProductPopulator and Override the populate() method to set this new attribute in the ProductData...
+
+we use it to show on plp...
+
+//Adding online days to product data
+target.setOnlineDays(this.<Integer> getValue(source, "onlineDays").intValue());
+
+
+getValue() method takes 2 parameters                            ///main method while populating for search.
+1)SearchResultValueData : Search result obtained from Solr
+2)String: property name specified in solr.impex file
+
+
+
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------
+Sometimes in complex project requirement, we might come across a requirement of restricting some of the products on Product List Page and Search List Page. Maybe we want to offer some more personalization to end users by showing them products which are only applicable to them.
+
+Well in the above situation we may restrict the Product Details Page view to the customer by using Hybris OOTB Restrictions but what about results which we get from Solr on Product List Page & Search List Page. So, below mentioned solution talks about this situation.
+
+
+Example==>
+On Hybris OOTB Electronic storefront we want to show Sony Brand Product only to logged in user with email domain (@sony.com) and Canon Brand Product only to logged in user with email domain (@canon.com). Whereas for anonymous user all the brands should be visible.
+
+
+**)Now, achieving the above showcased use case requires some customization in Search Query which Hybris is making to the Solr Server. 
+
+1)Step 1:
+Create a custom popular by overriding  SearchSolrQueryPopulator.java. This custom populator will have a business logic to populate filter query on some business rules. Sample code regarding the same is showcased below.
+
+
+public class CustomCommerceSearchSolrQueryPopulator<INDEXED_PROPERTY_TYPE, INDEXED_TYPE_SORT_TYPE>  extends SearchSolrQueryPopulator<INDEXED_PROPERTY_TYPE, INDEXED_TYPE_SORT_TYPE>  {
+
+private static final Logger LOG = Logger.getLogger(CustomCommerceSearchSolrQueryPopulator.class);
+private static final String SONY_EMAIL_DOMAIN = "@sony.com";
+private static final String CANON_EMAIL_DOMAIN = "@canon.com";
+private static final String SOLR_MARUFACTURE_NAME_PARAM = "manufacturerName_text";
+
+private UserService userService;
+
+
+    @Override
+    public void populate(final SearchQueryPageableData<SolrSearchQueryData> source,
+                         final SolrSearchRequest<FacetSearchConfig, IndexedType, INDEXED_PROPERTY_TYPE, SearchQuery, INDEXED_TYPE_SORT_TYPE> target){
+        super.populate(source, target);
+        UserModel currentUserModel = userService.getCurrentUser();
+        if(null != currentUserModel && !userService.isAnonymousUser(currentUserModel)) {
+
+            CustomerModel customerModel = (CustomerModel) currentUserModel;
+            if(customerModel.getContactEmail().endsWith(SONY_EMAIL_DOMAIN)) {
+                target.getSearchQuery().addFilterQuery(SOLR_MARUFACTURE_NAME_PARAM, "Sony");
+                LOG.info("Modified the Solr Search Query to fetch only Sony Brand Products");
+            } else if(customerModel.getContactEmail().endsWith(CANON_EMAIL_DOMAIN)) {
+                target.getSearchQuery().addFilterQuery(SOLR_MARUFACTURE_NAME_PARAM, "Canon");
+                LOG.info("Modified the Solr Search Query to fetch only Canon Brand Products");
+            }
+        }
+
+    }
+
+    @Required
+    public void setUserService(UserService userService) {
+        this.userService = userService;
+    }
+}
+
+
+2)Modify the bean definition to include CustomCommerceSearchSolrQueryPopulator
+
+   <alias name="customCommerceSearchSolrQueryPopulator" alias="commerceSearchSolrQueryPopulator" />
+    <bean id="customCommerceSearchSolrQueryPopulator" class="com.techhybris.custom.search.populators.CustomCommerceSearchSolrQueryPopulator" parent="defaultCommerceSearchSolrQueryPopulator">
+        <property name="userService" ref="userService" />
+    </bean>\
+	
+	
+3)Make sure legacy mode is switched off for Search Configuration present under Facet Search Config option in SAP Hybris Backoffice. 
+
+
+=================================================================================================================================================
+Solr query-->
+
+Adding debug=query to your request will allow you to see how Solr is parsing your query.
+
+http://localhost:8983/solr/query?debug=query&q=hello
+
+2)A “term” query is a single word query in a single field that must match exactly.
+In this example text is the field name, and hello is the word we are going to match in that field.
+
+text:hello
+
+3)Proximity Query (aka Sloppy Phrase Query)
+A proximity query, is like a phrase query with a tilda (~) followed by a slop that specifies the number of term position moves (edits) allowed.
+
+text:"solr analytics"~1
+This query will match text containing solr analytics, solr faceted analytics (edit distance 1), and analytics solr (edit distance 1). It will not match solr super faceted analytics or analytics faceted solr since those would both require an edit distance of 2 to get the terms into the matching positions.
+
+
+4)Boolean Query
+A boolean query contains multiple clauses. A clause may be optional, mandatory, or prohibited.
+
+solr search
+The default operator is “OR”, meaning that clauses are optional. When there are no mandatory clauses, at least one of the optional clauses in a query must match for the full query to match. The example query above will thus match documents containing solr or search (or both) in the default search field.
+
+Boolean query examples:
+
++solr +search facet -highlight     			/* uses + for mandatory and - for prohibited */
+solr AND search OR facet NOT highlight  	/* this is equivalent to the first query */
+Semantics: solr and search must both match, highlight must not match. facet may or may not match but will contribute to the query score if it does (i.e. the presence of the facet only affects scores of matching documents, not which documents match.)
+
++text:solr text:facet text:analytics
+text:(+solr facet analytics)  /* This is equivalent to the first query *?
+The query above just demonstrates an optional syntax for specifying multiple clauses with the same field.
+
+(+title:solr +title:(analytics faceting)) OR (+body:solr +body:(analytics faceting)) 
+The query above uses parenthesis for precedence. Both solr and either analytics or faceting must match in the title field or in the body field.
+
+
+
+5)Boosted Query
+Any query clause can be boosted with the ^ operator. The boost is multiplied into the normal score for the clause and will affect its importance relative to other clauses.
+
+Boosted Query Examples:
+
+text:solr^10 text:rocks
+text:(solr^10 rocks)
+(inStock:true AND text:solr)^123.45 text:hi
+
+
+6)Range Query
+A range query selects documents with values between a specified lower and upper bound. Range queries work on numeric fields, date fields, and even string and text fields.
+
+Range Query Examples:
+
+  age:[18 TO 30]       // matches age 18-30 inclusive (endpoints 18 and 30 are included)
+  age:[18 TO 30}       // matches age>=18 and age<30
+  age:[65 TO *]        // "open ended" range matches age>65
+  
+7)Filter Query
+(Since Solr 5.4)
+A filter query retrieves a set of documents matching a query from the filter cache. Since scores are not cached, all documents that match the filter produce the same score (0 by default). Cached filters will be extremely fast when they are used again in another query.
+
+Filter Query Example:
+
+description:HDTV OR filter(+promotion:tv +promotion_date:[NOW/DAY-7DAYS TO NOW/DAY+1DAY])
+The power of the filter() syntax is that it may be used anywhere within a lucene/solr query syntax. Normal fq support is limited to top-level conjunctions. However when normal top-level fq filter caching can be used, that form is preferred.
+
+we use fq in hybris.
+
+http://localhost:8983/solr/demo/select?
+   q=cars
+   &fq=color:black
+   &fq=model:Lamborghini
+   &fq=year:[2014 TO *]
+By default, Solr resolves all of the filters before the main query. Each filter query is looked up individually in Solr’s filterCache (which is pretty advanced itself, supporting concurrent lookups, different eviction policies such as LRU or LFU, and auto-warming). Caching each filter query separately accelerates Solr’s query throughput by greatly improving cache hit rates since many types of filters tend to be reused across different requests.
+
+
+If you want to get last week publications you can do somehting like:
+
+&fq=published_date:[NOW-7DAY/DAY TO NOW]
+But if you want a concrete date you must do it in the SOLR date format:
+
+&fq=published_date:[2013-07-17T00:00:00Z TO NOW]
+	
+--------------------------------------------------------------------------------------------------------------------------------------------------
+How to implement FacetSearchListener to add dynamic Solr filters in hybris?
+
+
+I am working on a project where I need to apply dynamic filter in the implementation of FacetSearchListener, before Solr query is executed, based on the request. How will I be able to distinguish the request in the listener class so that if else condition can be applied?
+
+Answer==>
+
+By implementing YOURSearchListenerClass
+
+import de.hybris.platform.solrfacetsearch.search.context.FacetSearchListener;
+
+public class YOURSearchListenerClass implements FacetSearchListener {
+    @Override
+    public void beforeSearch(FacetSearchContext facetSearchContext) {
+        facetSearchContext.getSearchQuery().addFilterRawQuery("YOURQuery");
+    }
+
+    @Override
+    public void afterSearch(FacetSearchContext facetSearchContext) {}
+
+    @Override
+    public void afterSearchError(FacetSearchContext facetSearchContext) {}
+}
+And registering YOURSearchListener
+
+<bean id="YOURSearchListener" class="YOURSearchListenerClass" />
+And mapping YOURSearchListenerDefinition
+
+<bean id="YOURSearchListenerDefinition" parent="solrListenerDefinition">
+    <property name="listener" ref="YOURSearchListener" />
+</bean>
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+public interface ContextAwareParameterProvider
+
+Generates it's own set of flexible search query parameters that can be injected to the solr indexing queries (full-index, update, delete). The parameters are index-config aware
+ 
+ 
+Map<String,Object>	createParameters(IndexConfig indexConfig, IndexedType indexedType)
+Create provider's parameter in the form of Map representing parameter-value map.
+
+
+if we want to add any parameter dynimaclly just write a class with overriding it.

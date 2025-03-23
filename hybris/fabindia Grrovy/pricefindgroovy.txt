@@ -1,0 +1,32 @@
+import de.hybris.platform.core.Registry;
+import de.hybris.platform.servicelayer.search.FlexibleSearchQuery;
+import de.hybris.platform.servicelayer.search.FlexibleSearchService;
+import org.apache.commons.collections4.CollectionUtils;
+import de.hybris.platform.servicelayer.search.SearchResult;
+import de.hybris.platform.core.model.product.*;
+import de.hybris.platform.variants.model.*;
+import de.hybris.platform.europe1.model.*;
+import de.hybris.platform.catalog.enums.*;
+import java.util.*;
+import de.hybris.platform.core.Registry;
+import de.hybris.platform.servicelayer.model.ModelService;
+
+String vpQuery = "select {pk} from {Product as vp join catalogVersion as cv on {vp.catalogVersion}={cv.pk}} where {cv.version} = 'ERP_IMPORT'";
+final ModelService modelService = (ModelService) Registry.getApplicationContext().getBean("modelService"); 
+final SearchResult<ProductModel> vpSearchResult = ((FlexibleSearchService) Registry.getApplicationContext().getBean("flexibleSearchService")).search(vpQuery);
+final List<ProductModel> vpResults = vpSearchResult.getResult();
+
+
+if(CollectionUtils.isNotEmpty(vpResults))
+{
+for(ProductModel vProduct :vpResults)
+{
+
+if(vProduct.getApprovalStatus().getCode().equalsIgnoreCase("approved"))
+{
+vProduct.setApprovalDate(vProduct.getCreationtime());
+ modelService.save(vProduct);
+}
+}
+}
+

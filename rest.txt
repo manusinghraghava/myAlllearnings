@@ -1,0 +1,484 @@
+list.stream()
+               .flatMap(Optional::stream)
+               .collect(Collectors.toList());  //removing all empty/null values
+			   
+			   or
+			   
+			   List<String> collect = list.stream()
+                   .filter(Optional::isPresent)
+                   .map(obj ->obj.get())
+                   .collect(Collectors.toList());
+
+
+@ResponseBody --> automatically convert object into respective format whatever it is json or xml...
+
+if we want to change the name of key in the output response=>
+--> just go on the pojo.
+--> Select the field which you want to change the name
+-->use @jsonProperty
+
+Example @JsonProperty("student_name")
+	private String studentName;
+
+
+
+we can also set the order of key-value pair of response
+
+-->use @JsonPropertyOrder({"studentName","roll","phone","address"}) at class level..
+
+
+if we donot want to include the property whose value is null in the response on class level
+-->use @JsonInclude(JsonInclude.Include.NotNull)
+
+and if we dont want to include some properties on class level
+-->use @jsonIgnoreProperty({"p1","p2"})
+
+
+@RequestMapping(""/asas/assded/{path}) 
+
+-->Here path is is the path variable not a requestparam client can pass any thing in it and the value Stored in @PathVariable......
+
+
+if we r using postman and we want response in a specific format
+
+--> just go on header and add a key with name *Accept* and value ="application/json"  if we want json else "application/xml"
+
+
+As our method till now supports every format whatever client is sending but if we want to put restrict on mvc to generate a particular format
+
+-->use @produces on the method level to generate response in a specific format..and put value of format whatever u want
+
+-->Example=>
+
+@RequestMapping(value="////sd//sd/sd",produces=MEDIATYPE.APPLICATION_JSON_VALUE)  or_XML if you want in this Format......
+
+-------------->
+
+Now as we r using @ResponseBody to sent response to client in a specific format it converts pojo into that format...
+
+But what if client are using PUT  OR  POST  Request in a specific Format not using request Param Or Path variable what we do...//sending data
+
+--> than @RequestBody come into Picture it just change the format send by client into specific format and just bind with pojo
+
+-==>Example
+
+->
+visisd-nhdbd(String name;@RequestBody Student student)  ///it is a annotation used inside a method parametre.. 
+
+Now if we want to only allow client to send a specific format we will use consume for requestBody
+
+@RequestMapping(value="////sd//sd/sd",consumes=MEDIATYPE.APPLICATION_JSON_VALUE)  or_XML if you want in this Format......
+
+-------------------------------------------------
+
+Now if we donot return any thing in responsebody the response status will go 200 always if it found the method...
+Whether error comes or not it will always send 200..
+
+But sometimes we donot want to send that status so ..responseEntity<T> comes in picture..
+
+if we want to to send ok on some condition
+
+return type of method should be--->responseEntity<T>
+
+and you should return new ResponseEntity<T>(HTTPSTATUS.OK);
+
+if you want to send some data into response Body
+
+than------>return new ResponseEntity<BOOLEAN>(true,HTTPSTATUS.OK);  // by default single parameter is treat as HTTPSTATUS
+
+
+/////////////////////////////////////////////Ajax////////////////////////////////////////////
+
+jQuery load() Method=>
+The jQuery load() method is a simple, but powerful AJAX method.
+
+The load() method loads data from a server and puts the returned data into the selected element.
+
+Syntax:
+
+$(selector).load(URL,data,callback);
+
+The required URL parameter specifies the URL you wish to load.
+
+The optional data parameter specifies a set of querystring key/value pairs to send along with the request.//in which key work as request parametre
+
+The optional callback parameter is the name of a function to be executed after the load() method is completed.
+
+
+Example===>
+
+$("button").click(function(){
+    $("#div1").load("demo_test.txt", function(responseTxt, statusTxt, xhr){
+        if(statusTxt == "success")
+            alert("External content loaded successfully!");
+        if(statusTxt == "error")
+            alert("Error: " + xhr.status + ": " + xhr.statusText);
+    });
+});
+
+The optional callback parameter specifies a callback function to run when the load() method is completed. 
+The callback function can have different parameters:
+
+responseTxt - contains the resulting content if the call succeeds
+statusTxt - contains the status of the call
+xhr - contains the XMLHttpRequest object
+
+
+//validation rules jqury//////////////////////////////
+
+it has two main keys which is called in validate method---->
+a)rules: these are the validation rules.
+b)message: these are the message generate on rules /error.
+
+// Wait for the DOM to be ready
+$(function() {
+  // Initialize form validation on the registration form.
+  // It has the name attribute "registration"
+  $("form[name='registration']").validate({
+    // Specify validation rules
+    rules: {
+      // The key name on the left side is the name attribute
+      // of an input field. Validation rules are defined
+      // on the right side
+      firstname: "required",               
+      lastname: "required",
+      email: {
+        required: true,
+        // Specify that email should be validated
+        // by the built-in "email" rule
+        email: true
+      },
+      password: {
+        required: true,
+        minlength: 5
+      }
+    },
+    // Specify validation error messages
+    messages: {
+      firstname: "Please enter your firstname",
+      lastname: "Please enter your lastname",
+      password: {
+        required: "Please provide a password",                                   //different message for different rules
+        minlength: "Your password must be at least 5 characters long"
+      },
+      email: "Please enter a valid email address"
+    },
+    // Make sure the form is submitted to the destination defined
+    // in the "action" attribute of the form when valid
+    submitHandler: function(form) {
+      form.submit();
+    }
+  });
+});
+
+///////adding a custom method in jquery validation///////////////////////////
+
+-->Add a custom validation method. 
+It must consist of a name (must be a legal javascript identifier), a javascript based function and a default string message.
+
+Example-->Add a validation method that checks if a value greater than Zero.
+
+jQuery.validator.addMethod("greaterThanZero", function(value, element) {
+    return this.optional(element)*this is boiler code* || (parseFloat(value) > 0);   //value of the input element on which we define rule
+}, "* Amount must be greater than zero");
+
+And then applying this like so:
+
+$('validatorElement').validate({
+    rules : {
+        amount : { greaterThanZero : true }     //////checking on amount
+    }
+});
+
+
+
+//////////////////////////////ajax call on validation/////////////////////////////
+
+I only just found out that the jQuery validation plugins has a validation rule called “remote” which can be used to 
+make an ajax request instead of specifying a custom rule which has an ajax call it in. 
+This will save you heaps of time with those custom validation rules.
+
+Example: Checking if a users email is already registered.
+
+-->As you can see to pass through data you can simply use the key pair syntax 
+so the request sent below the data is “&emails=email@jquery4u.com”. 
+The return values for your backend script is either json encoded true for a validation pass or html msg for validation fail.
+
+
+//VALIDATE USER EMAIL
+
+$("#EmailAddress").rules("add", {
+    required: true,
+    remote: function () { // the function allows the creation of the data string 
+                          // outside of the remote call itself, which would not 
+                          // return a current value from the form.
+        var emailData = "{'address':'" + 
+                        $('#SignupForm :input[id$="EmailAddress"]').val() + 
+                        "'}";
+        var r = {
+            url: "foobar.aspx/IsEmailAvailable",
+            type: "post",
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            cache: false,
+            data: emailData,
+            dataFilter: function(response) {
+                this.email_run = true; //fix for race condition with next button
+                return isAvailable(data); //return true or false
+            }
+        };
+        return r;
+    },
+    messages: {
+        remote: "* Email in use"
+    }
+});
+
+
+In spring just make a function using requestmapping and responsebody and make a ajax call on this url on jquery
+
+https://www.youtube.com/watch?v=aRhDGKEtLp8
+
+head
+
+
+
+
+
+
+there are many default methods of jquery validator like equalto method....just check them
+
+
+take help sometime of this..
+////////////////////////////https://www.youtube.com/watch?v=TehnRqQtKv8&list=PL5ze0DjYv5DaAm5eC2chbTK1Y6uoTUtZ9&index=2/////////////////
+
+
+
+
+===============================================================continue further========================================================================================================
+The $.post() method requests data from the server using an HTTP POST request.
+
+Syntax:
+
+$.post(URL,data,callback);
+The required URL parameter specifies the URL you wish to request.
+
+The optional data parameter specifies some data to send along with the request.
+
+The optional callback parameter is the name of a function to be executed if the request succeeds.
+
+The following example uses the $.post() method to send some data along with the request:
+
+Example
+$("button").click(function(){
+    $.post("demo_test_post.asp",
+    {
+        name: "Donald Duck",
+        city: "Duckburg"
+    },
+    function(data, status){
+        alert("Data: " + data + "\nStatus: " + status);
+    });
+});
+The first parameter of $.post() is the URL we wish to request ("demo_test_post.asp").
+
+Then we pass in some data to send along with the request (name and city).
+
+The ASP script in "demo_test_post.asp" reads the parameters, processes them, and returns a result.
+
+The third parameter is a callback function. The first callback parameter holds the content of the page requested, and the second callback parameter holds the status of the request.
+
+Tip: Here is how the ASP file looks like ("demo_test_post.asp"):
+
+<%
+dim fname,city
+fname=Request.Form("name")///as coming from request
+city=Request.Form("city")
+Response.Write("Dear " & fname & ". ")
+Response.Write("Hope you live well in " & city & ".")
+%>
+
+
+for remote--->https://www.youtube.com/watch?v=aRhDGKEtLp8
+===========================================================================================================
+Consuming Rest Services===>
+
+Protocol==>we have to send request in http message and also get response back in http message..
+
+/a/b/c/{d}/{e}==>it make m-m relationship betwn d and e...
+
+Remember==>post is not safe method to call again and again has some effect on servers..so non-idempotent..while put is idempotence..
+
+status codes important==>
+200 ok status,201 created by post,204,delete request
+300 redirction codes,302 succeded,304 not modified,307 temporary reidrect,
+400 client side error bad request,401 unauthorized,403 forbidden,404 not found,415 unsupported media type
+500 Server side error internal server error
+
+jax-rs annotation for producing response==>
+@path("")<----->@RequestMapping("")
+@GET or .......---@RequestMapping(value = "/ex/foos", method = POST)
+@Produces(MediaType......)<------>@RequestMapping(value = "/ex/foos",method = GET,produces = application/json")//marshalling
+@Consumes===>automatic convert data into instance of post method..
+@PathParam<---->@PathVariable
+@QueryParam<---->@RequestParam
+@HeaderParam when we sent key-value pair in headers
+@CookieParam
+@Context UriInfo==>to get all the information of uri
+@Context Headers header==> to get all information of headers
+ResponseEntity<--->instead returnType rsponse in method and before sending set status.entity(data to be sent).build()
+response.crreated(new uri)===>to redirection
+
+Now Consuming rest services==> we use RestTemplate....
+
+a)Get Plain JSON
+Let’s start simple and talk about GET requests – with a quick example using the getForEntity() API:
+
+
+RestTemplate restTemplate = new RestTemplate();
+String fooResourceUrl= "http://localhost:8080/spring-rest/foos";
+ResponseEntity<String> response = restTemplate.getForEntity(fooResourceUrl + "/1", String.class);
+assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
+
+
+
+ObjectMapper mapper = new ObjectMapper();
+      String jsonString = "{\"name\":\"Mahesh\", \"age\":21}";
+      
+      //map json to student
+      try{
+         Student student = mapper.readValue(jsonString, Student.class);
+         
+         System.out.println(student);
+         
+         jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(student);   //converting back again
+         
+         System.out.println(jsonString);
+		 
+		 
+		 
+Some methods for rest template-->
+
+
+i)getForObject: Sends an HTTP GET request, returning an object mapped from a response body.
+ // Send request with GET method and default Headers.
+        String result = restTemplate.getForObject(URL_EMPLOYEES, String.class);
+		
+ii)The requests sent to the  Restful Service need to customize   Headers information to tell the 
+Restful Service about the type of data format you want to get ( JSON, XML, ...)
+
+ HttpHeaders headers = new HttpHeaders();
+ 
+        headers.setAccept(Arrays.asList(new MediaType[] { MediaType.APPLICATION_JSON }));
+        // Request to return JSON format
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("my_other_key", "my_other_value");
+ 
+        // HttpEntity<String>: To get result as String.
+        HttpEntity<String> entity = new HttpEntity<String>(headers);
+ 
+        // RestTemplate
+        RestTemplate restTemplate = new RestTemplate();
+ 
+        // Send request with GET method, and Headers.
+        ResponseEntity<String> response = restTemplate.exchange(URL_EMPLOYEES, //we use exchange if we r sending headers
+                HttpMethod.GET, entity, String.class);
+ 
+        String result = response.getBody();
+ 
+        System.out.println(result);
+
+
+iii)Data returned from RESTful Serivce in XML or JSON format can be automatically converted into a Java object.
+
+  // Send request with GET method and default Headers.
+        Employee[] list = restTemplate.getForObject(URL_EMPLOYEES, Employee[].class);
+		
+
+iv)Use exchange method also helps you to be able send a request to the  Restful Service. The result returned is   ResponseEntity object. 
+This object contains a lot of noteworthy information, for example  HttpStatus,...
+
+ // HttpEntity<Employee[]>: To get result as Employee[].
+        HttpEntity<Employee[]> entity = new HttpEntity<Employee[]>(headers);
+ 
+        // RestTemplate
+        RestTemplate restTemplate = new RestTemplate();
+ 
+        // Send request with GET method, and Headers.
+        ResponseEntity<Employee[]> response = restTemplate.exchange(URL_EMPLOYEES, //
+                HttpMethod.GET, entity, Employee[].class);
+ 
+        HttpStatus statusCode = response.getStatusCode();
+        System.out.println("Response Satus Code: " + statusCode);
+ 
+        // Status Code: 200
+        if (statusCode == HttpStatus.OK) {
+            // Response Body Data
+            Employee[] list = response.getBody();
+ 
+            if (list != null) {
+                for (Employee e : list) {
+                    System.out.println("Employee: " + e.getEmpNo() + " - " + e.getEmpName());
+                }
+            }
+        }
+ 
+    }
+	
+v)The  postForObject method is used to send a request to the  Restful Service to create a data resource and return the data resource which has just been created.
+
+ String empNo = "E11";
+ 
+      Employee newEmployee = new Employee(empNo, "Tom", "Cleck");
+ 
+      HttpHeaders headers = new HttpHeaders();
+      headers.add("Accept", MediaType.APPLICATION_XML_VALUE);
+      headers.setContentType(MediaType.APPLICATION_XML);
+ 
+      RestTemplate restTemplate = new RestTemplate();
+ 
+      // Data attached to the request.
+      HttpEntity<Employee> requestBody = new HttpEntity<>(newEmployee, headers);
+ 
+      // Send request with POST method.
+      Employee e = restTemplate.postForObject(URL_CREATE_EMPLOYEE, requestBody, Employee.class);
+ 
+      if (e != null && e.getEmpNo() != null) {
+ 
+         System.out.println("Employee created: " + e.getEmpNo());
+      } else {
+         System.out.println("Something error!");
+      }
+ 
+   }
+ 
+}
+
+
+vi)The  postForEntity method is used to send a  request to the  Restful Service to create a data resource. This method returns the  ResponseEntity object. 
+This object contains data resouce which has just been created and other noteworthy information, for example, HttpStatus, ...
+
+Employee newEmployee = new Employee("E11", "Tom", "Cleck");
+ 
+        RestTemplate restTemplate = new RestTemplate();
+ 
+        // Data attached to the request.
+        HttpEntity<Employee> requestBody = new HttpEntity<>(newEmployee);
+ 
+        // Send request with POST method.
+        ResponseEntity<Employee> result 
+             = restTemplate.postForEntity(URL_CREATE_EMPLOYEE, requestBody, Employee.class);
+ 
+        System.out.println("Status code:" + result.getStatusCode());
+ 
+        // Code = 200.
+        if (result.getStatusCode() == HttpStatus.OK) {
+            Employee e = result.getBody();
+            System.out.println("(Client Side) Employee Created: "+ e.getEmpNo());
+        }
+ 
+    }
+	
+vii)
+ 
+

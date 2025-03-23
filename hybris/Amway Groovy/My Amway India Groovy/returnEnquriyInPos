@@ -1,0 +1,204 @@
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
+
+import javax.annotation.Resource;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.Validator;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
+import com.amway.core.enums.IndSerialTypeEnum;
+import com.amway.core.exceptions.AmwayReceiptException;
+import com.amway.indcommercewebservicesaddon.order.IndOrderROCData;
+import com.amway.indfacades.data.IndOrderReportData;
+import com.amway.indfacades.data.IndOrderSearchData;
+import com.amway.indfacades.data.order.cancel.IndOrderCancelledReportData;
+import com.amway.indfacades.data.order.user.IndCancelledOrderReportData;
+import com.amway.indfacades.data.order.user.IndCancelledOrderReportWsDTO;
+import com.amway.indfacades.dto.order.OrderListData;
+import com.amway.indfacades.dto.order.OrderROCListData;
+import com.amway.indfacades.order.IndOrderCancelFacade;
+import com.amway.indfacades.order.IndOrderFacade;
+import com.amway.indfacades.order.IndOrderSearchFacade;
+import com.amway.indfacades.order.IndPosCheckoutFacade;
+import com.amway.indfacades.order.IndPosSerialNumbersFacade;
+import com.amway.indfacades.pos.data.IndPosActiveOrderData;
+import com.amway.indfacades.pos.data.IndPosActiveOrderWsDTO;
+import com.amway.indfacades.pos.data.IndPosSerialNumberData;
+import com.amway.indfacades.userrights.facade.IndUserRightsFacade;
+import com.amway.indpointofsaleoccaddon.constants.IndpointofsaleoccaddonConstants;
+import com.amway.indpointofsaleoccaddon.dto.order.IndOrderCancelledReportWsDTO;
+import com.amway.indpointofsaleoccaddon.dto.order.OrderListROCWsDTO;
+import com.amway.indpointofsaleoccaddon.dto.order.OrderListWsDTO;
+import com.amway.indpointofsaleoccaddon.dto.order.OrderReturnRecordEntryWsDTO;
+import com.amway.indpointofsaleoccaddon.enums.IndPosUserRightsEnum;
+import com.amway.indpointofsaleoccaddon.exceptions.OrderCancelDeniedException;
+import com.amway.indpointofsaleoccaddon.order.facade.IndPosCartFacade;
+import com.amway.indpointofsaleoccaddon.pos.data.CartEntryInputData;
+import com.amway.indpointofsaleoccaddon.pos.data.IndActiveOrderReportInputData;
+import com.amway.indpointofsaleoccaddon.pos.data.IndOrderCancelledReportInputData;
+import com.amway.indpointofsaleoccaddon.pos.data.IndOrderData;
+import com.amway.indpointofsaleoccaddon.pos.data.IndPosOrderCancelInputData;
+import com.amway.indpointofsaleoccaddon.pos.data.IndPosSerialNumbersInputData;
+import com.amway.indpointofsaleoccaddon.pos.dto.IndOrderWsDTO;
+import com.amway.indpointofsaleoccaddon.pos.dto.IndPosSerialNumberWsDTO;
+import com.amway.lynxpointofsaleoccaddon.LynxPosService;
+
+import com.amway.lynxpointofsaleoccaddon.order.facade.LynxPosOrderFacade;
+import com.google.common.base.Preconditions;
+
+import de.hybris.platform.basecommerce.enums.CancelReason;
+import de.hybris.platform.commercefacades.order.data.OrderData;
+import de.hybris.platform.commercewebservicescommons.dto.order.InvoiceInfoWsDTO;
+import de.hybris.platform.commercewebservicescommons.dto.order.OrderWsDTO;
+import de.hybris.platform.order.InvalidCartException;
+import de.hybris.platform.ordercancel.OrderCancelException;
+import de.hybris.platform.ordermanagementfacades.order.cancel.OrderCancelRecordEntryData;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import net.minidev.json.JSONObject;
+import de.hybris.platform.core.Registry;
+import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.orderprocessing.model.OrderProcessModel;
+import de.hybris.platform.core.model.order.OrderModel;
+import de.hybris.platform.processengine.enums.ProcessState;
+import de.hybris.platform.servicelayer.search.FlexibleSearchQuery;
+import de.hybris.platform.core.enums.OrderStatus;
+import de.hybris.platform.core.model.order.*;
+import java.util.*;
+import com.amway.core.enums.*;
+import de.hybris.platform.servicelayer.search.FlexibleSearchService;
+import com.amway.indcore.loyalty.service.IndCalculateLoyaltyPointsService;
+import de.hybris.platform.commerceservices.search.pagedata.PageableData;
+import de.hybris.platform.commerceservices.search.pagedata.SearchPageData;
+import de.hybris.platform.core.model.order.OrderModel;
+import org.apache.commons.collections4.CollectionUtils;
+import de.hybris.platform.servicelayer.search.SearchResult;
+import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.servicelayer.i18n.CommonI18NService;
+import de.hybris.platform.store.BaseStoreModel;
+import de.hybris.platform.store.services.BaseStoreService;
+import de.hybris.platform.site.BaseSiteService;
+import de.hybris.platform.cms2.model.site.CMSSiteModel;
+import com.amway.indcore.order.strategies.impl.*;
+import com.amway.indcommercewebservicesaddon.receipt.facade.*;
+import com.amway.indfacades.docgen.print.*;
+import com.amway.core.model.invoice.*;
+import com.amway.indintegration.docgen.data.*;
+import de.hybris.platform.returns.model.*;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.io.FileWriter;
+import java.io.IOException;
+import de.hybris.platform.commerceservices.enums.*;
+import org.apache.commons.lang3.StringUtils;
+import java.awt.geom.IllegalPathStateException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import javax.annotation.Resource;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.Validator;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.amway.core.constants.IndCoreConstants;
+import com.amway.core.exceptions.AmwayReceiptException;
+import com.amway.indcore.validation.service.IndValidationService;
+import com.amway.indfacades.data.IndReturnProductWiseReportData;
+import com.amway.indfacades.data.IndReturnRefundReportData;
+import com.amway.indfacades.data.IndReturnReportForEndCustomer;
+import com.amway.indfacades.orderreturn.IndOrderReturnFacade;
+import com.amway.indfacades.pos.data.returns.CORReturnRequestData;
+import com.amway.indfacades.userrights.facade.IndUserRightsFacade;
+import com.amway.indpointofsaleoccaddon.constants.IndpointofsaleoccaddonConstants;
+import com.amway.indpointofsaleoccaddon.enums.IndPosUserRightsEnum;
+import com.amway.indpointofsaleoccaddon.batch.facade.impl.IndPosBatchFacadeImpl;
+import com.amway.indpointofsaleoccaddon.pos.data.IndPosReturnsAllowInvoiceWsDTO;
+import com.amway.indpointofsaleoccaddon.pos.data.IndPosReturnsInvoiceWsDTO;
+import com.amway.indpointofsaleoccaddon.pos.dto.returns.CORReturnRequestWsDTO;
+import com.amway.indpointofsaleoccaddon.returns.facade.IndPosOmsReturnFacade;
+import com.amway.lynxpointofsaleoccaddon.batch.service.LynxPosBatchService;
+
+
+import de.hybris.platform.ordermanagementfacades.returns.data.ReturnRequestData;
+import de.hybris.platform.ordermanagementwebservices.dto.returns.ReturnRequestWsDTO;
+
+final BaseStoreService baseStoreService = spring.getBean("baseStoreService");
+final BaseSiteService baseSiteService = spring.getBean("baseSiteService");
+
+
+void createFilters(String key,String value,Map<String,String> filters) 
+	{
+			if(StringUtils.isNotEmpty(value)) 
+			{
+				filters.put(key, value);
+			}
+	}
+	
+String query1="select {pk} from {CMSSite as o} where {o.pk} ='"+8796093056040+"'";
+final SearchResult<CMSSiteModel> searchResult1 = ((FlexibleSearchService)Registry.getApplicationContext().getBean("flexibleSearchService")).search(query1);
+final List<CMSSiteModel> results1 = searchResult1.getResult();
+CMSSiteModel cmsSiteModel = results1.stream().findFirst().get();
+
+def baseSiteModel =baseSiteService.getCurrentBaseSite();
+
+
+
+baseSiteService.setCurrentBaseSite(cmsSiteModel, true);
+
+  final IndOrderReturnFacade indOrderReturnFacade=spring.getBean("indOrderReturnFacade");
+ 
+ def returnCode = "00466013";
+ def fields = "DEFAULT";
+def orderCode;
+def invoiceNo;
+def aboNumber;
+def cashierId;
+def creditNoteNo;
+def warehouse;
+def requestTypeCode;
+    
+	
+	
+
+		try{
+    List<ReturnRequestData> returnRequestDataList = indOrderReturnFacade
+			.getReturnSearchData(returnCode, orderCode, invoiceNo, aboNumber, cashierId, creditNoteNo, warehouse,requestTypeCode);
+		}
+		catch(Exception e)
+		{
+		e.printStackTrace();
+		}
+	

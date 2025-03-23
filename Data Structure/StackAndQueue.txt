@@ -1,0 +1,1700 @@
+Stack++
+
+Stack is a linear data structure which follows a particular order in which the operations are performed. 
+The order may be LIFO(Last In First Out) or FILO(First In Last Out).
+
+Insertion and deletion done on one end known as top==>
+
+Real life example=>we developer always do task which is pirior and put everything aside.
+MainOperation==>
+push
+pop
+top    default=-1
+size
+isEmpty
+isFull
+
+Implementation==>
+array
+linkedList
+
+ArrayImplementation==>
+
+public class StackUsingArray {
+	private int capacity;
+	private int top;
+	private int[] array;
+	
+	
+
+	public StackUsingArray(int capacity) {
+		super();
+		this.capacity = capacity;
+		top=-1;
+		array=new int[capacity];
+	}
+	
+	public boolean isEmpty()
+	{
+			return top==-1;
+	}
+	public boolean isFull()
+	{
+		return top==capacity-1;
+	}
+    
+	public void push(int ele)
+	{
+		if(isFull())
+			System.out.println("Stack is Full");
+		else{
+			array[++top]=ele;
+		}
+	}
+	public int pop()
+	{
+		if(isEmpty()){
+			System.out.println("Stack is Empty");
+	return 0;
+		}
+			else{
+			return array[top--];
+		}
+	}
+	
+	public void delete()
+	{
+		top=-1;
+	}
+public void traverse()
+{if(top>-1)
+	for(int i =0;i<=top;i++)
+		System.out.print(array[i]+" ");
+System.out.println();
+}
+
+==========================================================================================================================
+
+Array Implementation of queue==>
+
+A Queue is a linear structure which follows a particular order in which the operations are performed. 
+The order is First In First Out (FIFO). A good example of a queue is any queue of consumers for a resource where the consumer that came first is served first. 
+The difference between stacks and queues is in removing. In a stack we remove the item the most recently added; 
+in a queue, we remove the item the least recently added.
+
+major operations==>
+enque()==>always happen on rear
+deque()==>always happen on front..
+
+we preferred circular array for queue implementation==>
+
+why?==>
+as if we use simple array insertion done on ene end and deletion on second end..
+so some initial slots getting wasted==>
+
+so we use circular array==>
+
+So simple logic basic operations==>
+
+a)when list is Empty==>front==-1
+b)when list is Full=>(rear+1)%capacity==front
+c)when list Size===>(capacity-front+rear+1)%capacity/////it will tell is there any empty element or not
+
+public class QueueUsingArray {
+	private int front;
+	private int rear;
+	private int capacity;
+	private int[] array;
+	
+
+	public QueueUsingArray(int capacity) {
+		super();
+		this.capacity = capacity;
+		rear=-1;
+		front=-1;
+		array= new int[capacity];
+	}
+	
+	boolean isEmpty()
+	{
+		return front==-1;
+	}
+	boolean isFull()
+	{
+		return (rear+1)%capacity==front;
+	}
+    int size()
+    {
+    	return (capacity-front+rear+1)%capacity;
+    }
+    public void enque(int data)
+    {
+    	if(isFull())
+    	{
+    		System.out.println("Queue is Full cannot insert");
+    	}
+    	else
+    	{
+    	rear=(rear+1)%capacity;
+    	array[rear]=data;
+    	if(front==-1)
+    		front=rear;
+    		
+    	}
+    }
+    int deque()
+    {
+    	int data=array[front];
+    	if(front==rear)
+    		front =rear-1;
+    	else
+    		front=(front+1)%capacity;
+    	return data;
+    }
+
+===========================================================================================================================================================
+
+Some questions==>
+
+How to design queue using stack==>
+
+Logic==>Everytime we will check s1 is empty or not==>yes--just push the data in s1==>no---just pop the data from s1 and push into s2.\\ insert lateest data in s1.
+        and in last just pop the element from s2 and push back into s1...which will work for deque every time..
+
+	StackUsingArray s1;
+	StackUsingArray s2;
+	private int capacity;
+	QueueUsingStack(int capacity)
+	{
+		this.capacity=capacity;
+		s1=new StackUsingArray(capacity);
+		s2 = new StackUsingArray(capacity);
+	}
+	public void enque(int x){
+		// Move all elements from s1 to s2  
+        while (!s1.isEmpty()) 
+        {  
+            s2.push(s1.pop());  
+            //s1.pop();  
+        }  
+  
+        // Push item into s1  
+        s1.push(x);  
+  
+        // Push everything back to s1  
+        while (!s2.isEmpty())  
+        {  
+            s1.push(s2.pop());  
+            //s2.pop();  
+        }  
+		
+	}
+	
+	public int deque()
+	{
+		if (s1.isEmpty())  
+        {  
+            System.out.println("Q is Empty");  
+            System.exit(0);  
+        }  
+		return s1.pop();   //every time due to enque opertaion give fifo..
+	}
+==============================================================================================================================================================
+Create a data structure twoStacks that represents two stacks. Implementation of twoStacks should use only one array, i.e., both stacks should use the same array for storing elements. Following functions must be supported by twoStacks.
+push1(int x) –> pushes x to first stack
+push2(int x) –> pushes x to second stack
+
+pop1() –> pops an element from first stack and return the popped element
+pop2() –> pops an element from second stack and return the popped element
+
+This method efficiently utilizes the available space. It doesn’t cause an overflow if there is space available in arr[]. 
+The idea is to start two stacks from two extreme corners of arr[]. stack1 starts from the leftmost element, the first element in stack1 is pushed at index 0. 
+The stack2 starts from the rightmost corner, the first element in stack2 is pushed at index (n-1). Both stacks grow (or shrink) in opposite direction. 
+To check for overflow, all we need to check is for space between top elements of both stacks. 
+This check is highlighted in the below code.
+
+class TwoStacks 
+{ 
+    int size; 
+    int top1, top2; 
+    int arr[]; 
+  
+    // Constructor 
+    TwoStacks(int n) 
+    { 
+        arr = new int[n]; 
+        size = n; 
+        top1 = -1; 
+        top2 = size; 
+    } 
+  
+    // Method to push an element x to stack1 
+    void push1(int x) 
+    { 
+        // There is at least one empty space for 
+        // new element 
+        if (top1 < top2 - 1) 
+        { 
+            top1++; 
+            arr[top1] = x; 
+        } 
+        else
+        { 
+            System.out.println("Stack Overflow"); 
+            System.exit(1); 
+        } 
+    } 
+  
+    // Method to push an element x to stack2 
+    void push2(int x) 
+    { 
+        // There is at least one empty space for 
+        // new element 
+        if (top1 < top2 -1) 
+        { 
+            top2--; 
+            arr[top2] = x; 
+        } 
+        else
+        { 
+            System.out.println("Stack Overflow"); 
+            System.exit(1); 
+        } 
+    } 
+  
+    // Method to pop an element from first stack 
+    int pop1() 
+    { 
+        if (top1 >= 0) 
+        { 
+            int x = arr[top1]; 
+            top1--; 
+            return x; 
+        } 
+        else
+        { 
+            System.out.println("Stack Underflow"); 
+            System.exit(1); 
+        } 
+        return 0; 
+    } 
+  
+    // Method to pop an element from second stack 
+    int pop2() 
+    { 
+        if(top2 < size) 
+        { 
+            int x =arr[top2]; 
+            top2++; 
+            return x; 
+        } 
+        else
+        { 
+            System.out.println("Stack Underflow"); 
+            System.exit(1); 
+  
+        } 
+        return 0; 
+    } 
+
+======================================================================================================================================================================
+
+Implementing Stack Using Queues==>
+
+Push operation algorithm:
+
+Check whether q1 is empty or not. If q1 is empty then EnQueue the element to q2.
+Otherwise EnQueue to q1.
+
+
+The basic idea is to transfer n-1 elements (let n be the total no of elements) to other queue and delete the last one from a queue to perform the pop operation.
+
+If q1 is not empty then transfer n-1 elements from q1 to q2 and DeQueue the last element and return it.
+If q2 is not empty then transfer n-1 elements from q2 to q1 and DeQueue the last element and return it.
+
+
+=====================================================================================================================================================================
+
+How to efficiently implement k stacks in a single array?//yet to be done
+
+ (A space efficient implementation)
+The idea is to use two extra arrays for efficient implementation of k stacks in an array. This may not make much sense for integer stacks, 
+but stack items can be large for example stacks of employees, students, etc where every item is of hundreds of bytes. For such large stacks,
+ the extra space used is comparatively very less as we use two integer arrays as extra space.
+
+Following are the two extra arrays are used:
+1) top[]: This is of size k and stores indexes of top elements in all stacks.
+2) next[]: This is of size n and stores indexes of next item for the items in array arr[]. Here arr[] is actual array that stores k stacks.
+Together with k stacks, a stack of free slots in arr[] is also maintained. The top of this stack is stored in a variable ‘free’.
+
+All entries in top[] are initialized as -1 to indicate that all stacks are empty. All entries next[i] are initialized as i+1 because all slots are free initially 
+and pointing to next slot. Top of free stack, ‘free’ is initialized as 0.
+
+
+Following is implementation of the above idea.
+
+
+    // A Java class to represent k stacks in a single array of size n 
+    static class KStack  
+    { 
+        int arr[];   // Array of size n to store actual content to be stored in stacks 
+        int top[];   // Array of size k to store indexes of top elements of stacks 
+        int next[];  // Array of size n to store next entry in all stacks 
+                     // and free list 
+        int n, k; 
+        int free; // To store beginning index of free list 
+  
+        //constructor to create k stacks in an array of size n 
+        KStack(int k1, int n1)  
+        { 
+            // Initialize n and k, and allocate memory for all arrays 
+            k = k1; 
+            n = n1; 
+            arr = new int[n]; 
+            top = new int[k]; 
+            next = new int[n]; 
+  
+            // Initialize all stacks as empty 
+            for (int i = 0; i < k; i++) 
+                top[i] = -1; 
+  
+            // Initialize all spaces as free 
+            free = 0; 
+            for (int i = 0; i < n - 1; i++) 
+                next[i] = i + 1; 
+            next[n - 1] = -1; // -1 is used to indicate end of free list 
+        } 
+  
+        // A utility function to check if there is space available 
+        boolean isFull()  
+        { 
+            return (free == -1); 
+        } 
+  
+        // To push an item in stack number 'sn' where sn is from 0 to k-1 
+        void push(int item, int sn)  
+        { 
+            // Overflow check 
+            if (isFull())  
+            { 
+                System.out.println("Stack Overflow"); 
+                return; 
+            } 
+  
+            int i = free; // Store index of first free slot 
+  
+            // Update index of free slot to index of next slot in free list 
+            free = next[i]; 
+  
+            // Update next of top and then top for stack number 'sn' 
+            next[i] = top[sn]; 
+            top[sn] = i; 
+  
+            // Put the item in array 
+            arr[i] = item; 
+        } 
+  
+        // To pop an from stack number 'sn' where sn is from 0 to k-1 
+        int pop(int sn)  
+        { 
+            // Underflow check 
+            if (isEmpty(sn))  
+            { 
+                System.out.println("Stack Underflow"); 
+                return Integer.MAX_VALUE; 
+            } 
+  
+            // Find index of top item in stack number 'sn' 
+            int i = top[sn]; 
+  
+            top[sn] = next[i]; // Change top to store next of previous top 
+  
+            // Attach the previous top to the beginning of free list 
+            next[i] = free; 
+            free = i; 
+  
+            // Return the previous top item 
+            return arr[i]; 
+        } 
+=====================================================================================================================================================================
+Design a stack with operations on middle element
+How to implement a stack which will support following operations in O(1) time complexity?
+1) push() which adds an element to the top of stack.
+2) pop() which removes an element from top of stack.
+3) findMiddle() which will return middle element of the stack.
+4) deleteMiddle() which will delete the middle element.
+
+Please note that, we need to find and delete middle element. Deleting an element from middle is not O(1) for array.
+ Also, we may need to move the middle pointer up when we push an element and move down when we pop(). 
+In singly linked list, moving middle pointer in both directions is not possible.
+
+
+
+The idea is to use Doubly Linked List (DLL). We can delete middle element in O(1) time by maintaining mid pointer. 
+We can move mid pointer in both directions using previous and next pointers.
+
+lets set a middle node and initialize a counter
+
+/* Function to push an element to the stack */
+    void push(myStack ms, int new_data) 
+    { 
+  
+        /* allocate DLLNode and put in data */
+        DLLNode new_DLLNode = new DLLNode(new_data); 
+          
+  
+        /* Since we are adding at the beginning, 
+          prev is always NULL */
+        new_DLLNode.prev = null; 
+          
+         /* link the old list off the new DLLNode */
+        new_DLLNode.next = ms.head; 
+          
+        /* Increment count of items in stack */
+        ms.count += 1; 
+          
+        /* Change mid pointer in two cases 
+           1) Linked List is empty 
+           2) Number of nodes in linked list is odd */
+        if(ms.count == 1) 
+        { 
+            ms.mid=new_DLLNode; 
+        } 
+        else
+        { 
+            ms.head.prev = new_DLLNode; 
+              
+            if((ms.count % 2) != 0) // Update mid if ms->count is odd 
+                ms.mid=ms.mid.prev; 
+        } 
+          
+        /* move head to point to the new DLLNode */
+        ms.head = new_DLLNode; 
+          
+    }
+
+write pop code yourself on sundAY 
+=======================================================================================================================================================================
+
+How to create mergable stack?//clear
+Design a stack with following operations.
+
+a) push(Stack s, x): Adds an item x to stack s
+b) pop(Stack s): Removes the top item from stack s
+c) merge(Stack s1, Stack s2): Merge contents of s2 into s1.
+
+Time Complexity of all above operations should be O(1).
+
+If we use array implementation of stack, then merge is not possible to do in O(1) time as we have to do following steps.
+a) Delete old arrays
+b) Create a new array for s1 with size equal to size of old array for s1 plus size of s2.
+c) Copy old contents of s1 and s2 to new array for s1
+The above operations take O(n) time.
+
+We can use a linked list
+
+We can use a linked list with two pointers, one pointer to first node (also used as top when elements are added and removed from beginning). 
+The other pointer is needed for last node so that we can quickly link the linked list of s2 at the end of s1. Following are all operations.
+a) push(): Adds the new item at the beginning of linked list using first pointer.
+b) pop(): Removes an item from beginning using first pointer.
+c) merge(): Links the first pointer second stack as next of last pointer of first list.
+
+======================================================================================================================================================================
+Design a stack that supports getMin() in O(1) time and O(1) extra space
+Question: Design a Data Structure SpecialStack that supports all the stack operations like push(), pop(), isEmpty(), isFull() 
+and an additional operation getMin() which should return minimum element from the SpecialStack. All these operations of SpecialStack must be O(1). 
+To implement SpecialStack, you should only use standard Stack data structure and no other data structure like arrays, list, .. etc.
+
+In this article, a new approach is discussed that supports minimum with O(1) extra space. 
+We define a variable minEle that stores the current minimum element in the stack. Now the interesting part is, 
+how to handle the case when minimum element is removed. 
+To handle this, we push “2x – minEle” into the stack instead of x so that previous minimum element can be retrieved using current minEle and 
+its value stored in stack. Below are detailed steps and explanation of working.
+
+Push(x) : Inserts x at the top of stack.
+
+If stack is empty, insert x into the stack and make minEle equal to x.//always first
+If stack is not empty, compare x with minEle. Two cases arise:
+If x is greater than or equal to minEle, simply insert x.
+If x is less than minEle, insert (2*x – minEle) into the stack and make minEle equal to x. For example, 
+let previous minEle was 3. Now we want to insert 2. We update minEle as 2 and insert 2*2 – 3 = 1 into the stack.
+Pop() : Removes an element from top of stack.
+
+Remove element from top. Let the removed element be y. Two cases arise:
+If y is greater than or equal to minEle, the minimum element in the stack is still minEle.
+If y is less than minEle, the minimum element now becomes (2*minEle – y), so update (minEle = 2*minEle – y). 
+This is where we retrieve previous minimum from current minimum and its value in stack. For example, let the element to be removed be 1 and minEle be 2. 
+We remove 1 and update minEle as 2*2 – 1 = 3.
+
+Important Points:
+
+Stack doesn’t hold actual value of an element if it is minimum so far.
+Actual minimum element is always stored in minEle
+
+======================================================================================================================================================================
+Implement a stack using single queue==>
+
+// x is the element to be pushed and s is stack
+push(s, x) 
+  1) Let size of q be s. 
+  1) Enqueue x to q
+  2) One by one Dequeue s items from queue and enqueue them.//the last added element come into front and it will pop first
+  
+// Removes an item from stack
+pop(s)
+  1) Dequeue an item from q
+
+ // Push operation 
+    void push(int val)  
+    { 
+        // get previous size of queue 
+        int size = q.size(); 
+          
+        // Add current element 
+        q.add(val); 
+          
+        // Pop (or Dequeue) all previous 
+        // elements and put them after current 
+        // element 
+        for (int i = 0; i < size; i++)  
+        { 
+            // this will add front element into 
+            // rear of queue 
+            int x = q.remove(); 
+            q.add(x); 
+        } 
+    } 
+      
+    // Removes the top element 
+    int pop()  
+    { 
+        if (q.isEmpty())  
+        { 
+            System.out.println("No elements"); 
+            return -1; 
+        } 
+        int x = q.remove(); 
+        return x; 
+    } 
+      
+    // Returns top of stack 
+    int top()  
+    { 
+        if (q.isEmpty()) 
+            return -1; 
+        return q.peek(); 
+    } 
+      
+    // Returns true if Stack is empty else false 
+    boolean isEmpty()  
+    { 
+        return q.isEmpty(); 
+    } 
+
+================================================================================================================================================================
+Infix expression:The expression of the form a op b. When an operator is in-between every pair of operands.
+Postfix expression:The expression of the form a b op. When an operator is followed for every pair of operands.
+
+Converting Infix to Postfix
+
+Algorithm
+1. Scan the infix expression from left to right.
+2. If the scanned character is an operand, output it.
+3. Else,
+…..3.1 If the precedence of the scanned operator is greater than the precedence of the operator in the stack(or the stack is empty or the stack contains a ‘(‘ ),
+ push it.
+…..3.2 Else, Pop all the operators from the stack which are greater than or equal to in precedence than that of the scanned operator. 
+After doing that Push the scanned operator to the stack. (If you encounter parenthesis while popping then stop there and push the scanned operator in the stack.)
+4. If the scanned character is an ‘(‘, push it to the stack.
+5. If the scanned character is an ‘)’, pop the stack and and output it until a ‘(‘ is encountered, and discard both the parenthesis.
+6. Repeat steps 2-6 until infix expression is scanned.
+7. Print the output
+8. Pop and output from the stack until it is not empty.
+
+ static int Prec(char ch) 
+    { 
+        switch (ch) 
+        { 
+        case '+': 
+        case '-': 
+            return 1; 
+       
+        case '*': 
+        case '/': 
+            return 2; 
+       
+        case '^': 
+            return 3; 
+        } 
+        return -1; 
+    } 
+       
+    // The main method that converts given infix expression 
+    // to postfix expression.  
+    static String infixToPostfix(String exp) 
+    { 
+        // initializing empty String for result 
+        String result = new String(""); 
+          
+        // initializing empty stack 
+        Stack<Character> stack = new Stack<>(); 
+          
+        for (int i = 0; i<exp.length(); ++i) 
+        { 
+            char c = exp.charAt(i); 
+              
+             // If the scanned character is an operand, add it to output. 
+            if (Character.isLetterOrDigit(c)) 
+                result += c; 
+               
+            // If the scanned character is an '(', push it to the stack. 
+            else if (c == '(') 
+                stack.push(c); 
+              
+            //  If the scanned character is an ')', pop and output from the stack  
+            // until an '(' is encountered. 
+            else if (c == ')') 
+            { 
+                while (!stack.isEmpty() && stack.peek() != '(') 
+                    result += stack.pop(); 
+                  
+                if (!stack.isEmpty() && stack.peek() != '(') 
+                    return "Invalid Expression"; // invalid expression                 
+                else
+                    stack.pop(); 
+            } 
+            else // an operator is encountered 
+            { 
+                while (!stack.isEmpty() && Prec(c) <= Prec(stack.peek())){ 
+                    if(stack.peek() == '(') 
+                        return "Invalid Expression"; 
+                    result += stack.pop(); 
+             } 
+                stack.push(c); 
+            } 
+       
+        } 
+       
+        // pop all the operators from the stack 
+        while (!stack.isEmpty()){ 
+            if(stack.peek() == '(') 
+                return "Invalid Expression"; 
+            result += stack.pop(); 
+         } 
+        return result; 
+    } 
+=================================================================================================================================================================
+prefix to infix Conversion==>
+
+Algorithm for Prefix to Infix:
+
+Read the Prefix expression in reverse order (from right to left)
+If the symbol is an operand, then push it onto the Stack
+If the symbol is an operator, then pop two operands from the Stack
+Create a string by concatenating the two operands and the operator between them.
+string = (operand1 + operator + operand2)
+And push the resultant string back to Stack
+Repeat the above steps until end of Prefix expression.
+
+// function to check if character is operator or not 
+bool isOperator(char x) { 
+  switch (x) { 
+  case '+': 
+  case '-': 
+  case '/': 
+  case '*': 
+    return true; 
+  } 
+  return false; 
+} 
+  
+// Convert prefix to Infix expression 
+string preToInfix(string pre_exp) { 
+  stack<string> s; 
+  
+  // length of expression 
+  int length = pre_exp.size(); 
+  
+  // reading from right to left 
+  for (int i = length - 1; i >= 0; i--) { 
+  
+    // check if symbol is operator 
+    if (isOperator(pre_exp[i])) { 
+  
+      // pop two operands from stack 
+      string op1 = s.top();   s.pop(); 
+      string op2 = s.top();   s.pop(); 
+  
+      // concat the operands and operator 
+      string temp = "(" + op1 + pre_exp[i] + op2 + ")"; 
+  
+      // Push string temp back to stack 
+      s.push(temp); 
+    } 
+  
+    // if symbol is an operand 
+    else { 
+  
+      // push the operand to the stack 
+      s.push(string(1, pre_exp[i])); //only that character //check it later
+    } 
+  } 
+  
+  // Stack now contains the Infix expression 
+  return s.top(); 
+} 
+======================================================================================================================================================================
+
+======================================================================================================================================================================
+
+Prefix to Postfix Conversion==>
+
+Algorithm for Prefix to Postfix:
+
+Read the Prefix expression in reverse order (from right to left)
+If the symbol is an operand, then push it onto the Stack
+If the symbol is an operator, then pop two operands from the Stack
+Create a string by concatenating the two operands and the operator after them.
+string = operand1 + operand2 + operator    //just same as infix but operator at end..
+And push the resultant string back to Stack
+Repeat the above steps until end of Prefix expression.
+=====================================================================================================================================================================
+
+Always remember for postfix to anybody==>from left......and concat pop2 +pop1        //post means post operand
+--------------------prefix to anybodt===>from right.....and concat pop1 +pop2        //pre means pre operand.
+
+
+postfix to prefix==>
+
+Read the Postfix expression from left to right
+If the symbol is an operand, then push it onto the Stack
+If the symbol is an operator, then pop two operands from the Stack
+Create a string by concatenating the two operands and the operator before them.
+string = operator + operand2 + operand1
+And push the resultant string back to Stack
+Repeat the above steps until end of Prefix expression.
+
+=====================================================================================================================================================================
+
+We have already discussed Infix to Postfix. Below is algorithm for Postfix to Infix.
+
+Algorithm
+1.While there are input symbol left
+…1.1 Read the next symbol from the input.
+2.If the symbol is an operand
+…2.1 Push it onto the stack.
+3.Otherwise,
+…3.1 the symbol is an operator.
+…3.2 Pop the top 2 values from the stack.
+…3.3 Put the operator, with the values as arguments and form a string.
+…3.4 Push the resulted string back to stack.
+4.If there is only one value in the stack
+…4.1 That value in the stack is the desired infix string.
+
+same as prefix to infix==>
+but go from left to right and follow above rules to concat...
+
+======================================================================================================================================================================
+Step 1: Reverse the infix expression i.e A+B*C will become C*B+A. Note while reversing each ‘(‘ will become ‘)’ and each ‘)’ becomes ‘(‘.
+Step 2: Obtain the postfix expression of the modified expression i.e CB*A+.
+Step 3: Reverse the postfix expression. Hence in our example prefix is +A*BC.
+
+======================================================================================================================================================================
+
+Check for balanced parentheses in an expression
+
+Algorithm:
+
+Declare a character stack S.
+Now traverse the expression string exp.
+If the current character is a starting bracket (‘(‘ or ‘{‘ or ‘[‘) then push it to stack.
+If the current character is a closing bracket (‘)’ or ‘}’ or ‘]’) then pop from stack and 
+if the popped character is the matching starting bracket then fine else parenthesis are not balanced.
+After complete traversal, if there is some starting bracket left in stack then “not balanced”
+
+/* Returns true if character1 and character2 
+       are matching left and right Parenthesis */
+    static boolean isMatchingPair(char character1, char character2) 
+    { 
+       if (character1 == '(' && character2 == ')') 
+         return true; 
+       else if (character1 == '{' && character2 == '}') 
+         return true; 
+       else if (character1 == '[' && character2 == ']') 
+         return true; 
+       else
+         return false; 
+    } 
+      
+    /* Return true if expression has balanced  
+       Parenthesis */
+    static boolean areParenthesisBalanced(char exp[]) 
+    { 
+       /* Declare an empty character stack */
+       stack st=new stack(); 
+       
+       /* Traverse the given expression to  
+          check matching parenthesis */
+       for(int i=0;i<exp.length;i++) 
+       { 
+            
+          /*If the exp[i] is a starting  
+            parenthesis then push it*/
+          if (exp[i] == '{' || exp[i] == '(' || exp[i] == '[') 
+            st.push(exp[i]); 
+       
+          /* If exp[i] is an ending parenthesis  
+             then pop from stack and check if the  
+             popped parenthesis is a matching pair*/
+          if (exp[i] == '}' || exp[i] == ')' || exp[i] == ']') 
+          { 
+                   
+              /* If we see an ending parenthesis without  
+                 a pair then return false*/
+             if (st.isEmpty()) 
+               { 
+                   return false; 
+               }  
+       
+             /* Pop the top element from stack, if  
+                it is not a pair parenthesis of character  
+                then there is a mismatch. This happens for  
+                expressions like {(}) */
+             else if ( !isMatchingPair(st.pop(), exp[i]) ) 
+               { 
+                   return false; 
+               } 
+          } 
+            
+       } 
+          
+       /* If there is something left in expression  
+          then there is a starting parenthesis without  
+          a closing parenthesis */
+        
+       if (st.isEmpty()) 
+         return true; /*balanced*/
+       else
+         {   /*not balanced*/
+             return false; 
+         }  
+    }  
+      
+    /* UTILITY FUNCTIONS */
+    /*driver program to test above functions*/
+    public static void main(String[] args)  
+    { 
+        char exp[] = {'{','(',')','}','[',']'}; 
+          if (areParenthesisBalanced(exp)) 
+            System.out.println("Balanced "); 
+          else
+            System.out.println("Not Balanced ");   
+    } 
+  
+} 
+==================================================================================================================================================================
+Next Greater Element
+Given an array, print the Next Greater Element (NGE) for every element. 
+The Next greater Element for an element x is the first greater element on the right side of x in array. 
+Elements for which no greater element exist, consider next greater element as -1.
+
+Push the first element to stack.
+Pick rest of the elements one by one and follow the following steps in loop.
+Mark the current element as next.
+If stack is not empty, compare top element of stack with next.
+If next is greater than the top element,Pop element from stack. next is the next greater element for the popped element.
+Keep popping from the stack while the popped element is smaller than next. next becomes the next greater element for all such popped elements
+Finally, push the next in the stack.
+After the loop in step 2 is over, pop all the elements from stack and print -1 as next element for them.
+
+
+in brief what we r doing ==>jus push first element and than run aloop from next elemnt till end.
+                         ==>nop pop the element and check whether it is big or small
+			 ==>if big==>print both and push big one==>
+                         ==>if small=>push that one also in stack==>
+                         ==>now the push one is next element....continue loop
+                         ==>now if find bigger element pop the stack till u r getting big element..
+			 ==>in last check the stack if there any element remain print -1 for them..
+
+/* prints element and NGE pair for  
+       all elements of arr[] of size n */
+    static void printNGE(int arr[], int n)  
+    { 
+        int i = 0; 
+        stack s = new stack(); 
+        s.top = -1; 
+        int stackelement, arraynext; 
+  
+        /* push the first element to stack */
+        s.push(arr[0]); 
+  
+        // iterate for rest of the elements 
+        for (i = 1; i < n; i++)  
+        { 
+            arraynext = arr[i]; 
+  
+            if (s.isEmpty() == false)  
+            { 
+                  
+                // if stack is not empty, then  
+                // pop an element from stack 
+                stackelement = s.pop(); 
+  
+                /* If the popped element is smaller than  
+                   next, then a) print the pair b) keep  
+                   popping while elements are smaller and  
+                   stack is not empty */
+                while (stackelement < arraynext)  
+                { 
+                    System.out.println(element + " --> " + next); 
+                    if (s.isEmpty() == true) 
+                        break; 
+                    stackelement = s.pop(); 
+                } 
+  
+                /* If element is greater than next, then  
+                   push the element back */
+                if (stackelement > arraynext) 
+                    s.push(stackelement); 
+            } 
+  
+            /* push next to stack so that we can find next 
+               greater for it */
+            s.push(arraynext); 
+        } 
+   /* After iterating over the loop, the remaining  
+           elements in stack do not have the next greater  
+           element, so print -1 for them */
+        while (s.isEmpty() == false)  
+        { 
+            stackelement = s.pop(); 
+            next = -1; 
+            System.out.println(element + " -- " + next); 
+        } 
+    } 
+=======================================================================================================================================================================
+
+The Celebrity Problem
+In a party of N people, only one person is known to everyone. Such a person may be present in the party, if yes, 
+(s)he doesn’t know anyone in the party. We can only ask questions like “does A know B? “. Find the stranger (celebrity) in minimum number of questions.
+
+We can describe the problem input as an array of numbers/characters representing persons in the party.
+We also have a hypothetical function HaveAcquaintance(A, B) which returns true if A knows B, false otherwise. How can we solve the problem.
+
+We have following observation based on elimination technique (Refer Polya’s How to Solve It book).
+
+If A knows B, then A can’t be celebrity. Discard A, and B may be celebrity.
+If A doesn’t know B, then B can’t be celebrity. Discard B, and A may be celebrity.
+Repeat above two steps till we left with only one person.
+Ensure the remained person is celebrity. (Why do we need this step?)
+We can use stack to verity celebrity.
+
+Push all the celebrities into a stack.
+Pop off top two persons from the stack, discard one person based on return status of HaveAcquaintance(A, B).
+Push the remained person onto stack.
+Repeat step 2 and 3 until only one person remains in the stack.
+Check the remained person in stack doesn’t have acquaintance with anyone else.     //check its soln.
+
+======================================================================================================================================================================
+
+For arithmetic Expression just convert into post fix and evaluate than....postfix to infix.....
+======================================================================================================================================================================
+Reversing a Stack==>
+
+1)Simple using Linked List==>reverse linked list==>implementation should be done using linked list==>
+
+2)Recursion==>
+
+Simple logic==>
+Let we have a stack===>54321 top =5
+just pop in recursively way at last 1 is there and call insertAtBottom which willpush element in recursive way==>
+example we send 1 first==>now while sending two pop all elements from stack and insert it now it is 12 than 123 than 1234 than 12345..done.
+
+ // Below is a recursive function  
+    // that inserts an element 
+    // at the bottom of a stack. 
+    static void insert_at_bottom(char x) 
+    { 
+  
+        if(st.isEmpty()) 
+            st.push(x); 
+  
+        else
+        { 
+              
+            // All items are held in Function 
+            // Call Stack until we reach end 
+            // of the stack. When the stack becomes 
+            // empty, the st.size() becomes 0, the 
+            // above if part is executed and  
+            // the item is inserted at the bottom 
+            char a = st.peek(); 
+            st.pop(); 
+            insert_at_bottom(x);                   //recursively inserting element AT end..
+  
+            // push allthe items held  
+            // in Function Call Stack 
+            // once the item is inserted  
+            // at the bottom 
+            st.push(a); 
+        } 
+    } 
+      
+    // Below is the function that  
+    // reverses the given stack using 
+    // insert_at_bottom() 
+    static void reverse() 
+    { 
+        if(st.size() > 0) 
+        { 
+              
+            // Hold all items in Function 
+            // Call Stack until we 
+            // reach end of the stack  
+            char x = st.peek(); 
+            st.pop(); 
+            reverse(); 
+              
+            // Insert all the items held  
+            // in Function Call Stack 
+            // one by one from the bottom 
+            // to top. Every item is 
+            // inserted at the bottom  
+            insert_at_bottom(x); 
+        } 
+    } 
+       
+====================================================================================================================================================
+
+Sort a stack using recursion==> Same as above...
+
+static void sortedInsert(Stack<Integer> s, int x) 
+    { 
+        // Base case: Either stack is empty or newly inserted 
+        // item is greater than top (more than all existing) 
+        if (s.isEmpty() || x > s.peek()) 
+        { 
+            s.push(x); 
+            return; 
+        } 
+       
+        // If top is greater, remove the top item and recur 
+        int temp = s.pop(); 
+        sortedInsert(s, x); 
+       
+        // Put back the top item removed earlier 
+        s.push(temp); 
+    } 
+       
+    // Method to sort stack 
+    static void sortStack(Stack<Integer> s) 
+    { 
+        // If stack is not empty 
+        if (!s.isEmpty()) 
+        { 
+            // Remove the top item 
+            int x = s.pop(); 
+       
+            // Sort remaining stack 
+            sortStack(s); 
+       
+            // Push the top item back in sorted stack 
+            sortedInsert(s, x); 
+        } 
+    } 
+
+==================================================================================================================================================================
+sorted using temporary stack.
+
+a)we will use a temporary stack
+b)always pop top element drom first stack.
+c)if temporaryStack is empty just insert it..
+d)if not==>just check the top of temporaryStack with temp.if temporaryStack is bigger than this variable push it in origionL STACK.
+E)REPEat till temp ! empty..and greater than variable..
+f)if not just push in it temporary stack..as all the variable in temp will be in descending order...and we push in origional in ascending order.
+
+
+Sort a stack using a temporary stack==>
+
+// This function return the sorted stack 
+stack<int> sortStack(stack<int> &input) 
+{ 
+    stack<int> tmpStack; 
+  
+    while (!input.empty()) 
+    { 
+        // pop out the first element 
+        int tmp = input.top();                                     //everytime poping 
+        input.pop(); 
+  
+        // while temporary stack is not empty and top 
+        // of stack is greater than temp 
+        while (!tmpStack.empty() && tmpStack.top() > tmp) 
+        { 
+            // pop from temporary stack and push                  //as we r checking is there any big element in second stack just and arrange in descending order..
+            // it to the input stack 
+            input.push(tmpStack.top()); 
+            tmpStack.pop(); 
+        } 
+  
+        // push temp in tempory of stack 
+        tmpStack.push(tmp); 
+    } 
+  
+    return tmpStack; 
+} 
+  
+==================================================================================================================================================================
+Maximum Element in Stack==>
+it is somehow different from min element.
+In this we will use two stacks.
+Every time push and pop will happen in both stacks at same time but with some condition.
+
+a)if empty just push the value in stacks.
+b)if not==>just check the value of second stack
+greater==>push the element in both stack
+smaller==>push origional element in first stack and the peek of second stack into second stack//as it is greater.
+c)while popping just pop from both.
+===========================================================================================================================
+REVERSING A QUEUE==>
+
+  static void reversequeue() 
+    { 
+        Stack<Integer> stack = new Stack<>(); 
+        while (!queue.isEmpty()) { 
+            stack.add(queue.peek()); 
+            queue.remove(); 
+        } 
+        while (!stack.isEmpty()) { 
+            queue.add(stack.peek()); 
+            stack.pop(); 
+        } 
+    } 
+
+
+USING RECURSION==>
+
+queue reverseFunction(queue)
+{
+    if (queue is empty)
+       return queue;
+    else {
+       data = queue.front()
+       queue.deque()
+       queue = reverseFunction(queue);  // returning queue
+       q.enque(data);
+       return queue;
+    }
+}
+====================================================================================================================================================================
+Interleave the first half of the queue with second half==>
+Input : 11 12 13 14 15 16 17 18 19 20
+Output : 11 16 12 17 13 18 14 19 15 20
+
+Following are the steps to solve the problem:
+1.Push the first half elements of queue to stack.
+2.Enqueue back the stack elements.
+
+3.Dequeue the first half elements of the queue and enqueue them back.//not in stack
+
+4.Again push the first half elements into the stack.
+5.Interleave the elements of queue and stack.
+
+interleave===>
+
+// interleave the elements of queue and stack 
+    // queue: 11 16 12 17 13 18 14 19 15 20 
+    while (!s.empty()) 
+    { 
+        q.enque(s.peek()); 
+        s.pop(); 
+        q.enque(q.peek()); 
+        q.deque(); 
+    } 
+} 
+
+====================================================================================================================================================================
+Minimum time required to rot all oranges//later after graph
+Given a matrix of dimension m*n where each cell in the matrix can have values 0, 1 or 2 which has the following meaning:
+0: Empty cell
+
+1: Cells have fresh oranges
+
+2: Cells have rotten oranges 
+So we have to determine what is the minimum time required so that all the oranges become rotten. 
+A rotten orange at index [i,j] can rot other fresh orange at indexes [i-1,j], [i+1,j], [i,j-1], [i,j+1] (up, down, left and right). 
+If it is impossible to rot every orange then simply return -1.
+
+Examples:
+
+Input:  arr[][C] = { {2, 1, 0, 2, 1},
+                     {1, 0, 1, 2, 1},
+                     {1, 0, 0, 2, 1}};
+Output:
+All oranges can become rotten in 2 time frames.
+
+
+Input:  arr[][C] = { {2, 1, 0, 2, 1},
+                     {0, 0, 1, 2, 1},
+                     {1, 0, 0, 2, 1}};
+Output:
+All oranges cannot be rotten.
+The idea is to user Breadth First Search. Below is algorithm.
+
+1) Create an empty Q.
+2) Find all rotten oranges(2) and enqueue them to Q. Also enqueue a delimiter to indicate the beginning of next time frame.
+3) While Q is not empty do following
+a) Do following while delimiter in Q is not reached
+(i) Dequeue an orange from the queue, rot all adjacent oranges. 
+While rotting the adjacent, make sure that the time frame is incremented only once. And the time frame is not incremented if there are no adjacent oranges.
+b) Dequeue the old delimiter and enqueue a new delimiter. The oranges rotten in the previous time frame lie between the two delimiters.
+
+
+Initially : arr 
+  0 1 2 3 4
+0 2 1 0 2 1
+1 1 0 1 2 1
+2 1 0 0 2 1
+
+Insert all rotten oranges in queue.
+q ( {0,0}, £0,3},{1,1}, {2,1}, {2,2})
+ans= 0
+Insert delimiter { -1,-1 }
+q({0,0}, {0,3}, {1,1 4, {2,1 }, {2,2 }, {-1,-1 +)
+
+
+Step 1: For all neighbor of rotten oranges make rotten
+and insert into queue. Pop all rotten oranges
+which are initially in queue
+q({-1,-1 }, {0,1 3 £1,0}, {1,2}, {0,4}, {1,4}, {2,4})
+ans = 1
+arr 
+  0 1 2 3 4
+0 2 2 0 2 2
+1 2 0 2 2 2
+2 1 0 0 2 2
+
+
+Step 2: Remove delimiter from front insert into queue.
+as queue is non-empty
+q({0,1 3 £1,0}, £1,2}, {0,4}, {1,4}, {2,4}, {-1,-1 +)
+
+
+Step 3: Make all neighbors as rotten and inset into queue.
+q({-1,-1 ,{2,0})
+ans =2
+arr 
+  0 1 2 3 4
+0 2 2 0 2 2
+1 2 0 2 2 2
+2 2 0 0 2 2
+
+
+Step 4: Remove delimiter from front and insert into queue.
+( as queue is non-empty )
+q({2,0}, {-1,-1 })
+
+
+Step 5: No more fresh oranges which needs to be rotten. So
+empty queue.
+ans =2
+
+
+====================================================================================================================================================================
+Smallest multiple of a given number made of digits 0 and 9 only//after permutation string
+We are given an integer N. We need to write a program to find the least positive integer X made up of only digits 9’s and 0’s, such that, X is a multiple of N.
+
+Note: It is assumed that the value of X will not exceed 106.
+
+
+====================================================================================================================================================================
+Check if a queue can be sorted into another queue using a stack==>like we use temporary stack.
+
+====================================================================================================================================================================
+====================================================================================================================================================================
+You have three stacks of cylinders where each cylinder has the same diameter, but they may vary in height. 
+You can change the height of a stack by removing and discarding its topmost cylinder any number of times.
+Find the maximum possible height of the stacks such that all of the stacks are exactly the same height. 
+This means you must remove zero or more cylinders from the top of zero or more of the three stacks until they’re all the same height, then print the height.
+
+Remember quest is not on height of stacks==>height of cylinder it is
+
+static int equalStacks(int[] h1, int[] h2, int[] h3) {//these array have the height of cylienders with them
+    Stack<Integer> s1=new Stack();
+    Stack<Integer> s2=new Stack();
+    Stack<Integer> s3=new Stack();
+    int sum1=0,sum2=0,sum3=0;
+   for(int i=h1.length-1;i>=0;i--){
+       s1.push(h1[i]);                   //pushing cylinder in stacks
+       sum1+=h1[i];                      //maintaining sum of their heights which are inserted..
+   }
+    for(int i=h2.length-1;i>=0;i--){
+       s2.push(h2[i]);
+       sum2+=h2[i]; 
+   }
+    for(int i=h3.length-1;i>=0;i--){
+       s3.push(h3[i]);
+       sum3+=h3[i];
+   }
+   while(!(sum1==sum2&&sum2==sum3&&sum3==sum1)){
+        if(sum1==0||sum2==0||sum3==0){
+            sum1=0;
+            break;
+        }else if(sum1>=sum2&&sum1>=sum3){
+            sum1-=s1.peek();              //delete value from sum
+            s1.pop();
+        }else if(sum2>=sum1&&sum2>=sum3){
+            sum2-=s2.peek();
+            s2.pop();
+        }else if(sum3>=sum1&&sum3>=sum2){
+            sum3-=s3.peek();
+            s3.pop();
+        }
+    }
+    return sum1;
+}
+====================================================================================================================================================================
+Alexa has two stacks of non-negative integers, stack  and stack  where index denotes the top of the stack. Alexa challenges Nick to play the following game:
+//code it 
+In each move, Nick can remove one integer from the top of either stack  or stack .
+Nick keeps a running sum of the integers he removes from the two stacks.
+Nick is disqualified from the game if, at any point, his running sum becomes greater than some integer  given at the beginning of the game.
+Nick's final score is the total number of integers he has removed from the two stacks.
+
+We have to count moves==>
+
+int count = 0;
+final Stack<Long> leftStack = new Stack<>();
+for (int i = 0; i < sums1.length && sums1[i] <= x; ++i) {
+    ++count;
+    leftStack.push(sums1[i]);                          //just adding element till we get more than sum
+}
+int max = count;
+            
+for (int j = 0; j < sums2.length && sums2[j] <= x; ++j) {  //doing same 
+    if (!leftStack.isEmpty() && 
+        sums2[j] + leftStack.peek() > x) {
+        if (count > max)
+            max = count;
+        while (!leftStack.isEmpty() && 
+               sums2[j] + leftStack.peek() > x){
+            --count;
+            leftStack.pop();
+        }
+    }                                                                        //try to do yourself
+    ++count;
+}
+            
+if (count > max)
+    max = count;
+
+==================================================================================================================================================================
+Largest Rectangle in histogram.. //important Question==>
+
+Skyline Real Estate Developers is planning to demolish a number of old, unoccupied buildings and construct a shopping mall in their place. 
+Your task is to find the largest solid area in which the mall can be constructed.
+
+Actually it has a array which has some heights of building u have to find the maximum rectangle for this..
+Example==>
+12345==>draw bar graph for this x and y with 1 cm both...u will find 3*3 for this....
+
+# For each element(height) of an array,
+# 1. Search the continuous buildings to the left
+#    - if continous building is at the same height or taller, increment the count
+# 2. Seach the continuous buildings to the right
+#    - if continous building is at the same height or taller, increment the count
+# 3. Calculate the current rectangle area: 
+#    - height of the current building * current count
+# 4. Check if the current area is larger than the current maximum area
+# When the search finishes print the maximum area acquired.
+
+   // Complete the largestRectangle function below.
+    static long largestRectangle(int[] a) {
+    int i,area=0;
+    int maxArea=0;
+    Stack<Integer> st=new Stack<>();
+    for(i=0;i<a.length;)
+    {
+        if(st.isEmpty()||a[st.peek()]<=a[i])
+        {
+
+            st.push(i++);         //if we find a greater height just push that index which is length into stackk....
+
+        }  
+        else
+        {
+            int x=st.pop();      //last index    after this we will check if it is the one and only element.
+            if(st.isEmpty())
+            {
+                area=a[x]*i;                           if st is empty it should be either it on 1 index so area willbe heigh * length(i)
+            }
+            else
+            {
+                area=a[x]*(i-st.peek()-1);		//last maximum height * latest index -secondlastindex-1
+            }
+             if(area>maxArea)
+            maxArea=area;
+
+        }   
+    }
+
+    while(!st.isEmpty())
+    {
+        int x=st.pop();
+
+            if(st.isEmpty())
+            {
+                area=a[x]*i;
+            }
+            else
+            {
+                area=a[x]*(i-st.peek()-1);
+            }
+
+
+         if(area>maxArea)
+            maxArea=area;  
+        }
+
+  return maxArea;  
+
+    }
+
+===================================================================================================================================================================
+There are NN plants in a garden. Each of these plants has been added with some amount of pesticide. After each day, 
+if any plant has more pesticide than the plant at its left, being weaker than the left one, it dies. 
+You are given the initial values of the pesticide in each plant. Print the number of days after which no plant dies, 
+i.e. the time after which there are no plants with more pesticide content than the plant to their left.
+
+
+example==>in this we have array of plants containing amount of pesticides..
+
+We start with the easy case, when the current plant has more pesticide in it than the one to its immediate left. 
+Then we know that the current plant dies after one day.
+
+Otherwise, we look for the right-most plant to the left of us that has less pesticide than the current plant.
+
+If there is no such plant then we know that the current plant will never die.
+So suppose there is such a plant, and let's say it's at index i. I claim that the current plant (at index k) will die on day
+
+Let's think about the following input:
+
+2,5,1,10,3,11
+The first plant will never die, and the second plant will die on day one.
+
+For the third plant, we look at the previous two values and see that they both have more pesticide than the third, 
+so the third plant will never die. The key here is that we can now forget that the first and second plants ever existed.
+
+Why? Because any plant waiting for the first or second plant to die will have to wait for the third plant to die first.
+
+The fourth plant dies on day one.
+
+For the fifth plant, we look at the previous two values, 1 and 10. The fifth plant will die a day after the 10, 
+and again we can forget the 10 ever existed, because any plant waiting for the 10 to die will have to wait for the 3 to die first.
+
+
+we have to find how many days plant going to stop dying...
+
+
+sol1==>ArrayBased
+
+a)first search the first plant to die.and save its index and also count of removed element.
+b)if you didnt find any plant return 0;
+c)now again run a loop from the next index of died plant to last if find any plant just increase counter of removed element
+d)else shift the plant means removed died plant
+e)repeat all step with this time loop and dont forget to set plant size -=removed elements
+
+// Complete the poisonousPlants function below.
+    static int poisonousPlants(int[] plants) {
+
+  if (plants.length <= 1) return 0;
+    int plantSize = plants.length, days = 0, i, lastDying = 1;
+    
+
+while (true) {      // simulate as many days as needed
+       
+ // Search for first plant to die today
+        for (i = lastDying; i < plantSize; ++i) {
+            if (plants[i-1] < plants[i]) break;     //taking second plant before and compare to left one 
+        }
+
+
+        if (i == plantSize) return days;  // no plant found to be dying
+
+        lastDying = i;      // optimize the initial search next day
+        int removed = 1;    // the one found (plants[i]) will die
+        // Now search remaining plants for any other dying today and also remove all of them
+        for (++i; i < plantSize; ++i) {
+            if (plants[i-1] < plants[i]) {  // plant[i] dies, count+skip it.
+                ++removed;
+            } else {                        // plant[i] survives, move it to last living one
+                plants[i-removed] = plants[i];
+            }
+        }
+        plantSize -= removed;               // adjust total number of remaining plants  //so we have to move
+        ++days;                             // let's see another day
+    }
+    }
+
+===================================================================================================================================================================
+
+PRIORITY QUEUE==>
+Priority Queue is an extension of queue with following properties.
+
+Every item has a priority associated with it.
+An element with high priority is dequeued before an element with low priority.
+If two elements have the same priority, they are served according to their order in the queue.
+
+A typical priority queue supports following operations.
+insert(item, priority): Inserts an item with given priority.
+getHighestPriority(): Returns the highest priority item.
+deleteHighestPriority(): Removes the highest priority item.
+
+
+Implementation USingLinked List==>
+
+Algorithm :
+PUSH(HEAD, DATA, PRIORITY)
+Step 1: Create new node with DATA and PRIORITY
+Step 2: Check if HEAD has lower priority. If true follow Steps 3-4 and end. Else goto Step 5.
+Step 3: NEW -> NEXT = HEAD
+Step 4: HEAD = NEW
+Step 5: Set TEMP to head of the list
+Step 6: While TEMP -> NEXT != NULL and TEMP -> NEXT -> PRIORITY > PRIORITY
+Step 7: TEMP = TEMP -> NEXT
+[END OF LOOP]
+Step 8: NEW -> NEXT = TEMP -> NEXT
+Step 9: TEMP -> NEXT = NEW
+Step 10: End
+
+POP(HEAD)
+Step 2: Set the head of the list to the next node in the list. HEAD = HEAD -> NEXT.
+Step 3: Free the node at the head of the list
+Step 4: End
+
+PEEK(HEAD):
+Step 1: Return HEAD -> DATA
+Step 2: End
+
+static Node push(Node head, int d, int p)  
+{  
+    Node start = (head);  
+    
+    // Create new Node  
+    Node temp = newNode(d, p);  
+    
+    // Special Case: The head of list has lesser  
+    // priority than new node. So insert new  
+    // node before head node and change head node.  
+    if ((head).priority > p) {  
+    
+        // Insert New Node before head  
+        temp.next = head;  
+        (head) = temp;  
+    }  
+    else {  
+    
+        // Traverse the list and find a  
+        // position to insert new node  
+        while (start.next != null &&  
+               start.next.priority < p) {  
+            start = start.next;  
+        }  
+    
+        // Either at the ends of the list  
+        // or at required position  
+        temp.next = start.next;  
+        start.next = temp;  
+    }  
+    return head; 
+}  
+
+
+
+Implementation using heap==>
+
+====================================================================================================================================================================
+
+LRU Cache Implementation..with get and set operation in o(1) time==>
+
+so what is lru==>
+we have bucket of 3==>and lets insert 1,2,3 now bucket is full.if we insert 4 than 1 will come out as it is least used.
+now bucket will become 2,3,4 now when we insert 3 as 3 is already present than bucket will become 2,4,3 as 3 used recently,,
+
+as we know for o(1) get and set HashMap is best.
+
+get(key)==>get the value of the key in the cache if present otherwise -1,and if key is present put it value in front.as it is already present in cache..(Additional) 
+
+set(key,value)==>set the value if key is not present,if cache is filled just throw the least recent value and insert new one..
+
+as we have also present the order for LRU first thing come into mind is Doubly.
+LinkedList.so shifting least recently used node to front easily
+
+Create A Node Class Generic.
+
+Class Node<K,V>
+{
+Node<K,V> Previous,
+Node<K,V> Next;
+K key;
+V value;
+//Constructor with all fields.
+}
+
+And a HashMap cache.
+
+HashMap<K,Node<K,V>> cache = new HashMap<>();   //remember Key here is also same as we have in Node Class.//let asume it is of bucket size 3.
+
+Example
+Node<Integer,Integer> node1= new Node<>(null,null,12,100);
+front=node1
+
+cache.put(12,node1);   =============>we use same key as Node Referrence...it will work as front first node.....to be insert.
+
+**)Now create again a Node
+Node<Integer,Integer> node2 = new Node<>(node1,null,14,200);    //its previous is pointing to node 1//////////*****************************
+
+we will use front and rear to Notice nods of queue deletion is done on front and insertion is done on rear.
+
+cache.put(14,node2);
+rear=node2;
+
+***)Now create again a Doubly Linked List Node
+Node<Integer,Integer> node3 = new Node<>(node2,null,16,300);
+cache.put(16,node3);
+rear=rear.next;
+
+
+
+***)Now create again a Doubly Linked List Node
+but first we check the size of hashMap is it full yes its bucket is full..
+
+a)so delete the node from front and make next one front and make the latest coming node rear.Set previous of front = null;
+
+If we get a node of same key(HashMap Contains Key)=>make key node next==>front,make key node previous.next==>key.next,key.previous=null;front=key;
+
+
+////Now let understand how get Operation work in O(1) Time.
+
+As first we check if Key is present in there if not print -1;
+
+else
+
+print the value of key==>make that key value as rear as it is used recently..and set the next and previous according to it..///NICE SOLUTION.
+====================================================================================================================================================================
+Queue==>
+You are given a square grid with some cells open (.) and some blocked (X). Your playing piece can move along any row or column until it reaches the edge of the grid or a blocked cell. Given a grid, a start and an end position, determine the number of moves it will take to get to the end position.
+
+For example, you are given a grid with sides  described as follows:
+
+...
+.X.
+...
+Your starting position  so you start in the top left corner. The ending position is . The path is . It takes  moves to get to the goal.
+
+Function Description 
+Complete the minimumMoves function in the editor. It must print an integer denoting the minimum moves required to get from the starting position to the goal.
+
+
+====================================================================================================================================================================
+https://www.youtube.com/watch?v=zuLUzmaEHjs==>Continue coding from here...

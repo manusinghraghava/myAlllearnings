@@ -1,0 +1,93 @@
+import de.hybris.platform.core.Registry;
+import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.orderprocessing.model.OrderProcessModel;
+import de.hybris.platform.core.model.order.OrderModel;
+import de.hybris.platform.processengine.enums.ProcessState;
+import de.hybris.platform.servicelayer.search.FlexibleSearchQuery;
+import de.hybris.platform.core.enums.OrderStatus
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Arrays;
+
+import org.apache.commons.collections4.CollectionUtils;
+import de.hybris.platform.servicelayer.search.SearchResult;
+import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.processengine.BusinessProcessService;
+
+import de.hybris.platform.core.model.order.AbstractOrderModel;
+import de.hybris.platform.core.model.order.OrderModel;
+import de.hybris.platform.core.model.user.AddressModel;
+import de.hybris.platform.core.model.user.CustomerModel;
+import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.servicelayer.search.FlexibleSearchService;
+import de.hybris.platform.servicelayer.search.SearchResult;
+import de.hybris.platform.servicelayer.event.EventService;
+
+import de.hybris.platform.order.events.SubmitOrderEvent;
+
+import de.hybris.platform.store.BaseStoreModel;
+import java.lang.System;
+import de.hybris.platform.orderprocessing.model.OrderProcessModel;
+import de.hybris.platform.processengine.BusinessProcessService;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.amway.core.model.AmwayAccountModel;
+
+
+
+final ModelService modelService = (ModelService) Registry.getApplicationContext().getBean("modelService");
+final EventService eventService = (EventService) Registry.getApplicationContext().getBean("eventService");
+final BusinessProcessService businessProcessService   = (BusinessProcessService) Registry.getApplicationContext().getBean("businessProcessService");
+
+String query = "select {pk} from {Order} where {code} IN ('715970234','715904821','715924990','715895764','715755058','715938015','715725976','715922460','715712196','715688459','715718713','715720184','715679932','715693972','715706051','715707589','715701961','715964581','715901475','715978777','715752714','715707410','715747012','715971834','715884942','715690750','715708182','715819298','715904209','715687767','715799942','715724526','715736527','715765060','715727419','715732713','715738363','715822087','715881860','715996758','715716313','715813829','715857196','715928851','715890462','715692717','715706142','715738898','715680863','715690703','715698976','715730819','715739817','715747031','715794794','715721286','715723931','715753230','715813676','715804296','715748574','715684643','715700205','715750746','715753407','715916126','715926595','715930731','715941877','715948797','715924197','715954295','715954362','715697653','715713217','715794653','715801090','715802729','715950031','715728941','715788786','715862051','715833762','715956871','715732676','715793655','715703215','715744768','715708404','715714550','715725998','715714440','715875345','715863339','716039624','715788707','715837715','715901888','715701504','715701886','715800236','715940258')";
+
+final SearchResult<OrderModel> searchResult = Registry.getApplicationContext().getBean("flexibleSearchService").search(query);
+final List<OrderModel> results = searchResult.getResult();
+
+for (final OrderModel orderModel : results) 
+{
+
+final Optional<AddressModel> paymentAddress = Optional.ofNullable(orderModel.getAccount()).map{c -> c.getPrimaryParty()}.map{c -> c.getDefaultPaymentAddress()};		
+		if (paymentAddress.isPresent())
+		{
+			orderModel.setPaymentAddress(paymentAddress.get());
+		}
+		modelService.save(orderModel);
+		
+		if (orderModel.isGroupOrder())
+		{
+		println "In isgrouporder";
+			final List<AbstractOrderModel> subOrders = orderModel.getLynxSubcarts();
+			if (CollectionUtils.isNotEmpty(subOrders))
+			{
+				for (final AbstractOrderModel subOrder : subOrders)
+				{
+                  final Optional<AddressModel> subOrderPaymentAddress = Optional.ofNullable(subOrder.getAccount()).map{c -> c.getPrimaryParty()}.map{c -> c.getDefaultPaymentAddress()};
+					if (subOrderPaymentAddress.isPresent())
+					{
+						subOrder.setPaymentAddress(subOrderPaymentAddress.get());
+					}
+				}
+				modelService.saveAll(subOrders);
+			}
+		}
+
+
+final String processCode = "order-process-pos-pickup" + "-" + orderModel.getCode() + "-" + System.currentTimeMillis();
+final OrderProcessModel businessProcessModel = businessProcessService.createProcess(processCode, "order-process-pos-pickup");
+businessProcessModel.setOrder(orderModel);
+modelService.save(businessProcessModel);
+businessProcessService.startProcess(businessProcessModel);
+
+println "process started..." +  processCode;
+
+}
+
+

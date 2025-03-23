@@ -1,0 +1,402 @@
+
+============================================================================================================
+////////////////////////////////////////email///////////////////////////////////////////////////////////////////////
+
+que-to add a attribute in user-account page and when we click on update send a email to user
+
+Sol-
+1. find page through form id...
+2. now add a form:input to put the value of alternate email which we have add in customerModel
+3.add same attribute in customerdata in facad-beans.xml
+4.as form submit is using someform.java as command to bind value with form so we will create a additional attribute in this to bind the result
+5. now inform:inputbox we will pass some value for
+ id----which is id for that element
+ label key---which will show on label////////for this we will put value in properties file to fetch value through spring properties
+ path-----the name will be the same of attribute in form to bind result
+mandatory----to check required
+6. now we submit the form it will hit the required mapping in account-page-controller
+7.in method it will fetch the values from someform.java and put that value in customerdata..
+8.than we will pass that data object to updateprofile method to the customerfacade..
+9.customer facade than depopulate data into model and save it..
+///////////////remember every jsp include component has its jsp///////////////////////////////////////////////////////////////
+
+now process starts
+
+10. first we have to create our process so go in core-items.xml create a new process which extends storefrontprocess  or StoreFrontCustomerProcess...and every process has its *process.xml
+
+a) creating process
+
+  <itemtype code="updateMobileProcess"
+          extends="StoreFrontCustomerProcess"
+          autocreate="true"
+          generate="true">
+   		 <description>Sends thank-you email to the customer.</description>
+   		 <attributes>
+				<attribute qualifier="alternateMobileNo" type="java.lang.String">
+					<modifiers read="true" write="true" search="false" optional="true"/>
+					<persistence type="property"/>
+				</attribute>
+			</attributes>
+			</itemtype>
+
+b) now xml ---------------------path=>/bookstorecore/resources/bookstorecore/processes/updateMobileProcess.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<process xmlns="http://www.hybris.de/xsd/processdefinition"
+         start="generateUpdateMobileProcessEmail"
+         name="updateMobileProcess"
+         processClass="my.bookstore.core.model.UpdateMobileProcessModel"            ///////should be model class
+         onError="error">
+
+    <action id="generateUpdateMobileProcessEmail" bean="generateUpdateMobileProcessEmail">
+        <transition name="OK" to="sendEmail"/>
+        <transition name="NOK" to="error"/>
+    </action>
+
+    <action id="sendEmail" bean="sendEmail">
+        <transition name="OK" to="removeSentEmail"/>
+        <transition name="NOK" to="failed"/>
+    </action>
+
+    <action id="removeSentEmail" bean="removeSentEmail">
+         <transition name="OK" to="success"/>
+         <transition name="NOK" to="error"/>
+    </action>
+
+    <end id="error" state="ERROR">Something went wrong.</end>
+    <end id="failed" state="FAILED">Could not send email.</end>
+    <end id="success" state="SUCCEEDED">Sent thank-you email.</end>
+
+</process>
+ 
+some main points
+
+start => whenever we start the process it will find the bean which is referred to it..
+name=> it is used to start the process by the definite name
+
+11) now we have to create a bean so when we start the process it will find it which will extend abstractGenerateEmailAction...
+
+
+         <bean id="generateUpdateMobileProcessEmail" parent="abstractGenerateEmailAction">
+		<property name="frontendTemplateName" value="EmailMobileTemplate"/>                      //contains vm
+	      </bean>
+
+12)now register our xml file in ProcessDefinitionResource---so that when we start the process its configuration is read by hybris process eingine
+
+	<bean id="bdiCustomerServiceAccountExistsEmailProcessDefinitionResource"
+       class="de.hybris.platform.processengine.definition.ProcessDefinitionResource"
+       scope="tenant">
+       <property name="resource" value="classpath:/bookstorecore/processes/updateMobileProcess.xml"/>
+        </bean>
+
+13) now time to create context -----it is used to send the data to email template----always extend CustomerEmailContext
+
+always create it in the *facade.extension
+
+
+/**
+ *
+ */
+package my.bookstore.facades.process.email.context;
+
+
+import de.hybris.platform.acceleratorservices.model.cms2.pages.EmailPageModel;
+import de.hybris.platform.commerceservices.model.process.StoreFrontCustomerProcessModel;
+
+import my.bookstore.core.model.UpdateMobileProcessModel;
+
+
+/**
+ * @author manvendra.raghava
+ *
+ */
+public class GenerateUpdateMobileProcessEmailContext extends CustomerEmailContext
+{
+	private String alternateMobileNo;
+
+	/**
+	 * @return the alternateMobileNo
+	 */
+	public String getAlternateMobileNo()
+	{
+		return alternateMobileNo;
+	}
+
+	/**
+	 * @param alternateMobileNo
+	 *           the alternateMobileNo to set
+	 */
+	public void setAlternateMobileNo(final String alternateMobileNo)
+	{
+		this.alternateMobileNo = alternateMobileNo;
+	}
+
+
+	@Override
+	public void init(final StoreFrontCustomerProcessModel processModel, final EmailPageModel emailPageModel)
+	{
+		
+		 super.init(processModel, emailPageModel); 
+                   if (processModel instanceof UpdateMobileProcessModel) {
+                  	 setAlternateMobileNo(((UpdateMobileProcessModel) processModel).getAlternateMobileNo()); }
+		
+	}
+}
+
+
+StoreFrontCustomerProcessModel=> use to fetch details for customer
+
+
+14) register the bean in *facade-spring.xml
+
+        <bean id="GenerateUpdateMobileProcessEmailContext"
+		  class="my.bookstore.facades.process.email.context.GenerateUpdateMobileProcessEmailContext"
+		  parent="customerEmailContext" >
+
+	</bean>
+
+15) attach impex attatched
+
+16)Now created vm file for subject and body in /bookstorecore/resources/bookstorecore/import/emails/email-mobile-body.vm  or email-mobile-subject.vm
+
+body =>    
+
+<html>
+    <head>
+    </head>
+
+    <body bgcolor="#ffffff">
+
+        <h1>Hello user ${ctx.alternateMobileNo}</h1>
+
+        <p>This is your updated Mobile No.</p>
+
+    </body>
+</html>
+
+subject=>  ${ctx.messages.emailSubject} only
+
+17)now we have created process but to start process we use event which is basically used to trigger a process on basic event which run on seperate thread
+
+path=>my.bookstore.core.event
+
+/**
+ *
+ */
+package my.bookstore.core.event;
+
+import de.hybris.platform.basecommerce.model.site.BaseSiteModel;
+import de.hybris.platform.commerceservices.event.AbstractCommerceUserEvent;
+
+
+/**
+ * @author manvendra.raghava
+ *
+ */
+public class EmailMobileEvent extends AbstractCommerceUserEvent<BaseSiteModel>
+{
+
+	private String Mobile;
+
+	/**
+	 * @return the mobile
+	 */
+	public String getMobile()
+	{
+		return Mobile;
+	}
+
+	/**
+	 * @param mobile
+	 *           the mobile to set
+	 */
+	public void setMobile(final String mobile)
+	{
+		Mobile = mobile;
+	}
+
+	/**
+	 * @param mobile
+	 */
+	public EmailMobileEvent(final String mobile)
+	{
+		super();
+		Mobile = mobile;
+	}
+}
+
+event is passed to eventlistener and it contains the information regarding event
+
+Remember=>
+EventService : Publish event using publishEvent(event) method.
+EventListener : Receive event and run logic defined inside onEvent(event) method.
+Event : Hold the necessary data to be passed to the EventListener.
+
+now we have to create a listener to handle event
+
+/**
+ *
+ */
+package my.bookstore.core.event;
+
+import de.hybris.platform.acceleratorservices.site.AbstractAcceleratorSiteEventListener;
+import de.hybris.platform.basecommerce.model.site.BaseSiteModel;
+import de.hybris.platform.commerceservices.enums.SiteChannel;
+import de.hybris.platform.processengine.BusinessProcessService;
+import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.servicelayer.util.ServicesUtil;
+
+import org.springframework.beans.factory.annotation.Required;
+
+import my.bookstore.core.model.UpdateMobileProcessModel;
+
+
+/**
+ * @author manvendra.raghava
+ *
+ */
+public class EmailMobileEventListener extends AbstractAcceleratorSiteEventListener<EmailMobileEvent>
+{
+
+	private ModelService modelService;
+	private BusinessProcessService businessProcessService;
+
+
+	protected BusinessProcessService getBusinessProcessService()
+	{
+		return businessProcessService;
+	}
+
+	@Required
+	public void setBusinessProcessService(final BusinessProcessService businessProcessService)
+	{
+		this.businessProcessService = businessProcessService;
+	}
+
+	/**
+	 * @return the modelService
+	 */
+	protected ModelService getModelService()
+	{
+		return modelService;
+	}
+
+	/**
+	 * @param modelService
+	 *           the modelService to set
+	 */
+	@Required
+	public void setModelService(final ModelService modelService)
+	{
+		this.modelService = modelService;
+	}
+
+	@Override
+	protected void onSiteEvent(final EmailMobileEvent event)
+	{
+		final UpdateMobileProcessModel updateMobileProcessModel = (UpdateMobileProcessModel) getBusinessProcessService()
+				.createProcess("mobileno-" + event.getCustomer().getUid() + "-" + System.currentTimeMillis(), "updateMobileProcess");
+		updateMobileProcessModel.setSite(event.getSite());
+		updateMobileProcessModel.setCustomer(event.getCustomer());
+		updateMobileProcessModel.setAlternateMobileNo(event.getMobile());
+		updateMobileProcessModel.setLanguage(event.getLanguage());
+		updateMobileProcessModel.setCurrency(event.getCurrency());
+		updateMobileProcessModel.setStore(event.getBaseStore());
+		getModelService().save(updateMobileProcessModel);
+		getBusinessProcessService().startProcess(updateMobileProcessModel);
+	}
+
+	@Override
+	protected SiteChannel getSiteChannelForEvent(final EmailMobileEvent event)
+	{
+		final BaseSiteModel site = event.getSite();
+		ServicesUtil.validateParameterNotNullStandardMessage("event.site", site);
+		return site.getChannel();
+	}
+}
+
+
+	
+	<bean id="EmailMobileEventListener"
+	      class="my.bookstore.core.event.EmailMobileEventListener" parent="abstractAcceleratorSiteEventListener">
+		<property name="modelService" ref="modelService"/>
+		<property name="businessProcessService" ref="businessProcessService"/>
+	</bean>
+
+
+18)	now publish event from anywhere but mainly in service
+
+        but before publish inject services using using @Resource or spring D.I.
+ 
+/* four extra for my event */
+	@Resource(name = "userService")
+	private UserService userService;
+
+	@Resource(name = "commonI18NService")
+	private de.hybris.platform.servicelayer.i18n.CommonI18NService CommonI18NService;
+
+	@Resource(name = "baseSiteService")
+	private BaseSiteService CommonBaseSiteService;
+
+	@Resource(name = "baseStoreService")
+	private BaseStoreService CommonBaseStoreService;
+
+
+ now set the event to publish=>
+final EmailMobileEvent email_Mobile_Event = new EmailMobileEvent(updateProfileForm.getMobile());
+		email_Mobile_Event.setCurrency(CommonI18NService.getCurrentCurrency());
+		email_Mobile_Event.setLanguage(CommonI18NService.getCurrentLanguage());
+		email_Mobile_Event.setCustomer((CustomerModel) userService.getCurrentUser());
+		email_Mobile_Event.setBaseStore(CommonBaseStoreService.getCurrentBaseStore());
+		email_Mobile_Event.setSite(CommonBaseSiteService.getCurrentBaseSite());
+
+now publish=>
+         
+        eventService.publishEvent(new EmailMobileEvent(customerData.getMobile()));	
+
+
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////impex///////////////////////////////////////////////////////////
+
+# -----------------------------------------------------------------------
+# [y] hybris Platform
+#
+# Copyright (c) 2018 SAP SE or an SAP affiliate company.  All rights reserved.
+#
+# This software is the confidential and proprietary information of SAP
+# ("Confidential Information"). You shall not disclose such Confidential
+# Information and shall use it only in accordance with the terms of the
+# license agreement you entered into with SAP.
+# -----------------------------------------------------------------------
+# ImpEx for Importing Email Content
+
+# Macros / Replacement Parameter definitions
+$contentCatalog=electronicsContentCatalog
+$contentCV=catalogVersion(CatalogVersion.catalog(Catalog.id[default=$contentCatalog]),CatalogVersion.version[default=Staged])[default=$contentCatalog:Staged]
+# Language
+$lang=de
+# for body and subject renderer template
+$emailResource=$config-emailResourceValue
+#for context class
+UPDATE GenericItem[processor=de.hybris.platform.commerceservices.impex.impl.ConfigPropertyImportProcessor];pk[unique=true]
+$emailPackageName=$config-emailContextPackageName
+
+# Create Template Renderers
+INSERT_UPDATE RendererTemplate;code[unique=true];contextClass;templateScript[lang=en,translator=de.hybris.platform.commerceservices.impex.impl.FileLoaderValueTranslator];rendererType(code)[default='velocity']
+;email-mobile-body;$emailPackageName.GenerateUpdateMobileProcessEmailContext;$emailResource/email-mobile-body.vm
+;email-mobile-subject;$emailPackageName.GenerateUpdateMobileProcessEmailContext;$emailResource/email-mobile-subject.vm
+
+# creating email template through renderer template and we can also create a velocity template for this email page to see in cockpit
+
+INSERT_UPDATE EmailPageTemplate;$contentCV[unique=true];uid[unique=true];active;frontendTemplateName;subject(code);htmlTemplate(code);restrictedPageTypes(code)
+;;EmailMobileTemplate;true;MobileEmail;email-mobile-subject;email-mobile-body;EmailPage
+
+# Creating Email Page through template
+
+INSERT_UPDATE EmailPage;$contentCV[unique=true];uid[unique=true];masterTemplate(uid,$contentCV);approvalStatus(code)[default='approved'];fromName;fromEmail
+;;MobileEmail;EmailMobileTemplate;;aTT;att@gmail.com
+

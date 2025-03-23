@@ -1,0 +1,79 @@
+import de.hybris.platform.servicelayer.search.FlexibleSearchService
+import de.hybris.platform.payment.model.PaymentTransactionEntryModel
+import de.hybris.platform.payment.enums.PaymentTransactionType
+import de.hybris.platform.payment.model.PaymentTransactionModel
+import de.hybris.platform.core.model.order.OrderModel
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import java.util.stream.Collectors;
+import java.lang.*;
+import java.util.*;
+void addColumn(FileWriter fileWriter,String entry)
+{
+try
+{
+if(StringUtils.isNotBlank(entry) && entry.contains(",")){
+entry = entry.replace(",", StringUtils.EMPTY);
+}
+fileWriter.append(entry);
+fileWriter.append(",");
+}
+catch(Exception e)
+{
+e.printStackTrace();
+}
+
+
+}
+
+def transactions = flexibleSearchService.search("SELECT {pk} from {PaymentTransaction as pt JOIN Order as o on {pt.order} = {o.pk}} where {o.code} IN ({{SELECT {o.code} from {Order as o JOIN OrderStatus as os on {os.pk} = {o.status}} where {o.creationTime} > '2021-01-01 00:30:01 AM' and {os.code} = 'PAYMENT_FAILED'}})").getResult()
+
+String fileName ="/opt/hybris/data/amway/reports/paymentFailReport.csv";
+
+FileWriter fileWriter = new FileWriter(fileName);
+
+fileWriter.append("Order Code ,Order Creation Time ,Payment Transaction Request Id, Transaction Creation Time ,PaymentTransaction Entry Code ,Transaction Entry Creation Time ,Provider Type , Entry Type ,Transaction Id ,Error Message ,Status ,Request Token ,Amount");
+fileWriter.append("\n");
+
+transactions.each{
+def paymentTransactionEntries = it.getEntries()
+for(PaymentTransactionEntryModel entry:paymentTransactionEntries){
+try{
+def PaymentTransactionModel pt = entry.getPaymentTransaction();
+def OrderModel order = pt.getOrder();
+
+addColumn(fileWriter,order.getCode());
+addColumn(fileWriter,order.getCreationtime().toString());
+addColumn(fileWriter,pt.getRequestId());
+addColumn(fileWriter,pt.getCreationtime().toString());
+addColumn(fileWriter,entry.getCode());
+addColumn(fileWriter,entry.getCreationtime().toString());
+addColumn(fileWriter,entry.getPaymentProvider());
+addColumn(fileWriter,entry.getType().getCode());
+addColumn(fileWriter,entry.getTransactionId());
+addColumn(fileWriter,entry.getErrorMessage());
+addColumn(fileWriter,entry.getTransactionStatus());
+addColumn(fileWriter,entry.getRequestToken());
+addColumn(fileWriter,entry.getAmount().toString());
+fileWriter.append("\n");
+}
+catch(Exception e)
+{
+fileWriter.append("\n");
+e.printStackTrace();
+continue;
+}
+}
+}
+fileWriter.flush();
+
+try {
+if(fileWriter != null) {
+fileWriter.close();
+}
+}
+catch(Exception e)
+{
+e.printStackTrace();
+}
+

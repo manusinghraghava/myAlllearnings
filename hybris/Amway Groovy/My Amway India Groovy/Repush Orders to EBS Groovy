@@ -1,0 +1,128 @@
+import de.hybris.platform.core.Registry;
+import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.servicelayer.search.FlexibleSearchQuery;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Arrays;
+import org.apache.commons.collections4.CollectionUtils;
+import de.hybris.platform.servicelayer.search.SearchResult;
+import de.hybris.platform.servicelayer.model.ModelService;
+import com.amway.indcore.loyalty.service.IndCalculateLoyaltyPointsService;
+import de.hybris.platform.commerceservices.search.pagedata.PageableData;
+import de.hybris.platform.commerceservices.search.pagedata.SearchPageData;
+import de.hybris.platform.core.model.order.OrderModel;
+import com.amway.eventstream.model.AmwayEventStagingEntryModel;
+import com.amway.eventstream.enums.AmwayEventSyncState;
+import de.hybris.platform.servicelayer.i18n.CommonI18NService;
+import de.hybris.platform.store.BaseStoreModel;
+import de.hybris.platform.store.services.BaseStoreService;
+
+
+final ModelService modelService = (ModelService) Registry.getApplicationContext().getBean("modelService");
+
+
+String query="select {pk} from {AmwayEventStagingEntry} where {eventName} IN ('8796131229787','8796131197019') and {syncState} IN ('8796131000411','8796130967643','8796130934875') and {key} IN ({{select {e.key}from {AmwayEventStagingEntry as e join Order as o on {o.code} like  CONCAT(SUBSTR({e.key}, 1, 9), '%')} where {o.code} in ({{SELECT {o.code} as OrderCode FROM {PaymentTransactionEntry as pte join PaymentTransaction as pt on {pte.paymentTransaction} = {pt.pk} join Order as o on {o.pk}={pt.order}} WHERE ({o.lynxGroupNumber} is null or {o.lynxGroupNumber}={o.code}) and {pte.creationTime} >= '2020-02-07 00:00' and {creationTime} <= '2020-02-08 00:00' and {pte.authCode} in ('020490', '947281', '068613', '053890', '019330', '033624', '083438', '285823', '748068', '231873', '636762', 'R59441', 'R81595', '013063', '456136', '587746', '769857', '206415', '011890', '968313', '112986', '218814', '829436', '661854', '683886', '042586', '427885', '762546', '001807', '004344', '680002', '684263', '418307', '183461', '841489', '004754', 'DP2301', '153906', '006569', '016851', '005219', '580947', '058081', '835225', '038118', '002690', '703834', '932431', '886403', '651109', '007808', '001047', '822788', '712813', '042498', '032603', 'R99895', '922317', '007727', '976287', '082409', '144154', '004997', '965108', '016436', '992775', '197016', '108271', '017985', '909852', '853272', '321610', '910603', '654753', '010736', '952557', '008184', '013584', '020423', 'R62182', '357811', '911248', '024992', '054947', '090070', '060747', '677367', '173737', '078520', '048341', '012803', '532333', '059357', '064172', '694822', '445631', 'R92793', '512174', '721204')}})}})";
+
+
+println "QUERY" + query;
+
+final PageableData pageableData = new PageableData();
+
+pageableData.setCurrentPage(0);
+
+pageableData.setPageSize(3000);
+
+SearchPageData<AmwayEventStagingEntryModel> searchResult = Registry.getApplicationContext().getBean("pagedFlexibleSearchService").search(query.toString(), null, pageableData);
+
+final List<AmwayEventStagingEntryModel> results = searchResult.getResults();
+
+
+if(CollectionUtils.isNotEmpty(results))
+
+{
+
+	for (final AmwayEventStagingEntryModel amwayEventStagingEntry : results)
+   {
+		
+		amwayEventStagingEntry.setSyncState(AmwayEventSyncState.RETRY); 	
+		
+		modelService.save(amwayEventStagingEntry);
+		
+
+  }
+
+}
+
+-----------------------------------------------------------------------------------------------------------------------------------------
+select {key}, {eventName}, {syncState}, {numberOfAttempts} from {AmwayEventStagingEntry} where {eventName} IN ('8796131197019') and {key} IN ({{select {code} from {Order} where ({lynxGroupNumber} is null or {lynxGroupNumber}={code}) and {creationTime} >= '2019-12-06 00:00:00.000' and {creationTime} <= '2019-12-06 24:00:00.000'}})
+
+select count({key}) from {AmwayEventStagingEntry} where {eventName} IN ('8796131197019') and {syncState} = '8796130902107' and {numberOfAttempts} > '1' and {key} IN ({{select {code} from {Order} where ({lynxGroupNumber} is null or {lynxGroupNumber}={code}) and {creationTime} >= '2019-12-06 00:00:00.000' and {creationTime} <= '2019-12-14 24:00:00.000'}})
+---------------------------------------------------------------------------------------------------------------------------------------------
+All sync state : 
+
+8796130934875   FAILED		
+8796131000411   PROCESSED	
+8796130967643   PROCESSING	
+8796130902107   RETRY		
+---------------------------------------------------------------------------------------------------------------------------------------------
+All Events Names : 
+
+8796131295323	ABO_DOCUMENT_UPLOADED
+8796131164251	ORDER_CANCELLED
+8796131197019	ORDER_COMPLETED
+8796131033179	ORDER_CREATED_INVOICED
+8796131229787	ORDER_CREATED_INVOICED_SHIPPED
+8796131098715	ORDER_SHIPPED
+8796131262555	ORDER_VERIFICATION
+8796131131483	RETURN_COMPLETED
+8796131065947	RETURN_PLACED 
+--------------------------------------------------------------------------------------------------------------------------------------------
+All Delivery Modes : 
+
+8796093055016	standard
+8796093087784	zero-cost
+8796093120552	pickup
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+select {key}, {numberOfAttempts} from {AmwayEventStagingEntry} where {eventName} IN ('8796131033179') and {syncState} IN ('8796131000411','8796130967643','8796130934875') and {key} IN (
+'705383099',
+'705997976',
+'706006845',
+'706013521',
+'706048534',
+'706062589',
+'706064132',
+'706070281',
+'706192297',
+'706197529',
+'706479105',
+'706722411',
+'706729965',
+'706823159',
+'706876985',
+'706978617',
+'707085156',
+'707085248',
+'707207903',
+'707255338',
+'707407818',
+'707411474',
+'707461904',
+'707592809',
+'707762070',
+'707953271',
+'708134338',
+'708165017',
+'708389360',
+'708401303',
+'708426939',
+'708538147',
+'708721657',
+'708827491',
+'708857212')
+
+
+
+
+

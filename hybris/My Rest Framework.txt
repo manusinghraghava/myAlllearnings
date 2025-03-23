@@ -1,0 +1,281 @@
+
+
+
+============================================================================================================================================================================
+
+Create a DefaultRequest and DefaultResponse  Object===>
+
+a)AnnexCloudRequest with Default Attributes...==>
+
+	private String httpMethod;
+    private String access_code;
+	private String siteId;
+	private String user_email;           //beacuse this are common  so every requestObject we will Create Should Extend it..
+	
+
+b)AnnexCloudResponse with Default Attribute==>
+
+	private AnnexCloudResponseStatus responseStatus;     //for different Statuses..
+	private AnnexCloudResponse responseData;      // same type of response.. if we want another data
+	
+	
+c)AnnexcloudResponseStatus.
+
+		
+	private String errorCode;                                                               //for error code and Message.
+    private String errorMessage;
+	
+	
+Example for Point Redemption we need our request and Response...
+
+ <!-- Annex Cloud Point Redemption Request and Response bean start-->
+    <bean class="com.annex.cloud.loyalty.AnnexCloudPointRedemptionResponse"
+          extends="com.annex.cloud.loyalty.AnnexCloudResponse">
+        <property name="error_code" type="String"/>
+        <property name="redeemed" type="String"/>
+        <property name="reward_code" type="String"/>
+        <property name="description" type="String"/>
+        <property name="status_code" type="String"/>
+    </bean>
+
+
+    <bean class="com.annex.cloud.loyalty.AnnexCloudPointRedemptionRequest"
+          extends="com.annex.cloud.loyalty.AnnexCloudRequest">
+        <property name="reward_id" type="Integer"/>
+        <property name="reason" type="String"/>
+    </bean>
+    <!-- End-->
+	
+	 <bean class="com.annexcloud.data.response.AnnexCloudProductPointsResponse"
+          extends="com.annex.cloud.loyalty.AnnexCloudResponse">
+        <import type="com.fasterxml.jackson.annotation.JsonProperty"/>
+        <property name="error_code" type="String"/>
+        <property name="description" type="String"/>
+        <property name="status_code" type="String"/>
+        <property name="data" type="com.annexcloud.data.response.ProductPointsData"/>    //if required additional data than do this...
+
+    </bean>
+-----------------------------------------------------------------------------------------------------------------------	
+
+NOw we have Created Our AnnexCloudIntegration Class to Integrate with other platforms via RestTemplatr..
+
+public interface AnnexCloudRestIntegrationService {
+ 
+  AnnexCloudResponse execute(AnnexCloudRequest requestObject,String apiName,String api);  //takes request Object,and Api.
+}
+
+and its default Implementation..
+
+public class DefaultAnnexCloudRestIntegrationService implements AnnexCloudRestIntegrationService
+
+Inject these properties...
+
+  private AnnexCloudCreateUrlStrategy annexCloudCreateUrlStrategy;   //to create url using UriComponentsBuilder
+
+  private RestTemplate restTemplate;                                 //spring Resttemplate...
+
+  private AnnexCloudResponse response;                               // to get the response while Consuming...
+  
+  
+  
+    @Override
+  public AnnexCloudResponse execute(final AnnexCloudRequest requestObject,String apiName,String api) {     //method which is override..with RequestObject..
+
+    AnnexCloudResponse annexCloudResponse = getResponse();
+    //get url
+    final String url = annexCloudCreateUrlStrategy.processUrl(requestObject,apiName,api);         ///stratergy to process urls...
+    LOG.info("URL---------"+url);
+    //create request entity
+    final HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity(requestObject, getHeader());  //setting headers
+    LOG.info("Request-------"+requestObject.toString());
+    //create response entity
+    try {
+      final ResponseEntity<Object> responseEntity =
+              restTemplate.exchange(url, getHTTPmethod(requestObject), requestEntity, Object.class);  //sending all with getHTTP method..
+      //convert object into json
+      final String json = (new Gson()).toJson(responseEntity.getBody());           //converting
+      LOG.info("Response-------"+json);
+      final HttpStatus statusCode = responseEntity.getStatusCode();
+      if (statusCode.equals(HttpStatus.OK)) {
+        //convert json to respective response
+        AnnexCloudResponseStatus responseStatus = new AnnexCloudResponseStatus();    //setting status..
+        responseStatus.setTransactionSuccess(true);
+        annexCloudResponse = (new Gson()).fromJson(json, getResponse().getClass());     //
+        annexCloudResponse.setResponseStatus(responseStatus);
+      }
+    } catch(Exception exception)
+    {
+      LOG.info("Exception occurred while calling annex service", exception);
+    }
+    return annexCloudResponse;                                                         // returning response..
+
+  }
+  
+  
+  urlStratergy we r using for Above..==>
+  
+  
+  public class DefaultAnnexCloudUrlStrategy implements AnnexCloudCreateUrlStrategy {
+
+    @Override
+    public String processUrl(final AnnexCloudRequest requestObject, String apiName,String api) {
+        Map<String, String> params = new HashMap<>();
+        params.put(ACCESS_CODE, requestObject.getAccess_code());   //getting Access Code and put in params
+        params.put(SITE_ID, requestObject.getSiteId());            //site id..
+        String url = "";
+        switch (apiName) {
+            case PURCHASE:
+                url = api + Config.getParameter(ANNEX_CREATE_ORDER_URL);    //saving in project.properties
+                params.put(USER_EMAIL, requestObject.getUser_email());      //some specific params with some specific url.
+                break;
+
+            case PRODUCT_POINT:
+                url = api + Config.getParameter(ANNEX_PRODUCT_POINT_URL);
+                params.put(PRODUCT_ID, ((AnnexCloudProductPointsRequest) requestObject).getProduct_id());
+                break;
+
+            case CUSTOM_ACTION:
+                url = api + Config.getParameter(ANNEX_CUSTOM_ACTION_URL);
+                params.put(USER_EMAIL, requestObject.getUser_email());
+                break;
+
+            case POINT_REDEMPTION:
+                url = api + Config.getParameter(ANNEX_POINT_REDEMPTION_URL);
+                params.put(USER_EMAIL, requestObject.getUser_email());
+                break;
+
+            case USER_OPTIN:
+                url = api + Config.getParameter(ANNEX_USER_OPTIN_URL);
+                params.put(USER_EMAIL, requestObject.getUser_email());
+                break;
+            case GET_REWARD_LIST:
+                url = api + Config.getParameter(REWARD_LIST_URL);
+                params.put(USER_EMAIL, requestObject.getUser_email());
+                break;
+            case CREATE_USER:
+                url = api + Config.getParameter(CREATE_USER_URL);
+                params.put(USER_EMAIL, requestObject.getUser_email());
+                break;
+            default:
+                break;
+        }
+        return UriComponentsBuilder.fromHttpUrl(url).buildAndExpand(params).toUri().toString();     //creating url from here...
+
+    }
+}
+-----------------------------------------------------------------------------------------------------------------------	
+Now We have Created Our own Factory based on Factory Pattern...to get Service Regarding to Specific Module...
+
+public interface AnnexCloudSystemServiceFactory {
+ 
+  <T extends AnnexCloudRestIntegrationService> T getSystemService(String integrationCode)   //return object of service which extend AnnexCloudRestIntegrationService
+          throws SystemServiceNotSupportedException;
+}
+
+
+
+and override its method...
+
+
+public class DefaultAnnexCloudSystemServiceFactory implements AnnexCloudSystemServiceFactory {
+
+  private Map<String, AnnexCloudRestIntegrationService> systemServices;   //Internally using map so we have to set every service here.
+
+  /**
+   * get annex cloud service
+   * @param integrationCode
+   * @param <T>
+   * @return
+   * @throws SystemServiceNotSupportedException
+   */
+  @Override
+  public <T extends AnnexCloudRestIntegrationService> T getSystemService(final String integrationCode)
+          throws SystemServiceNotSupportedException {
+
+    final AnnexCloudRestIntegrationService systemService = this.systemServices.get(integrationCode);
+    if (systemService == null)
+    {
+      throw new SystemServiceNotSupportedException("SystemService not implemented: " + integrationCode);
+    }
+    else
+    {
+      return (T) systemService;
+    }
+
+  }
+
+  /**
+   * Sets system services.
+   *
+   * @param systemServices the system services
+   */
+  @Required
+  public void setSystemServices(final Map<String, AnnexCloudRestIntegrationService> systemServices) {
+    this.systemServices = systemServices;
+  }
+}
+==================================================================================================================================================================================
+Here is how my Rest templatge work==>
+i)Make an Entry in the Service Factory Bean.....=>
+
+ <bean name="annexCloudRestSystemServiceFactory"
+          class="com.annexcloud.service.impl.DefaultAnnexCloudSystemServiceFactory">
+        <property name="systemServices">
+            <map>
+                <entry value-ref="annexCloudCreateOrderLoyaltyService">          //Value
+                    <key>
+                        <value type="java.lang.String">AnnexCloud001</value>     //key                       //why this everyone has different response
+                    </key>
+                </entry>
+               </.....>
+
+NOw this is the factory when we pass the key it will give the object of RestIntegrationService....It is type of Factory Pattern..
+
+ <bean id="annexCloudCreateOrderLoyaltyService" class="com.annexcloud.service.impl.DefaultAnnexCloudRestIntegrationService" >  //always same class
+        <property name="restTemplate" ref="restTemplate"/>
+        <property name="response" ref="defaultRESTResponse"/>                                                                  //pass the pojo you want back in response
+        <property name="annexCloudCreateUrlStrategy" ref="annexCloudUrlStratergy"/>                                            //passing url
+    </bean>
+
+
+
+
+iii)Now calling this from any service===>
+
+
+DefaultAnnexCloudRestIntegrationService annexCloudCreateOrderLoyaltyService =
+              annexCloudRestSystemServiceFactory.getSystemService(CRETE_ORDER_SERVICE_CODE);///getting service
+      // call the service
+      createOrderInAnnexCloudResponse = (CreateOrderInAnnexCloudResponse) annexCloudCreateOrderLoyaltyService
+              .execute(createOrderInAnnexCloudRequest, PURCHASE, annexCloud.get().getApi());       //calling its execute method
+    }
+    return createOrderInAnnexCloudResponse;
+
+
+=====================================================================================================================================================
+
+Now we have our loyalty service with some methods===>
+
+
+ @Override
+  public CreateOrderInAnnexCloudResponse createOrderInAnnexCloud(OrderModel order, String transactionStatus) {//our methode
+    //get credential
+    CreateOrderInAnnexCloudResponse createOrderInAnnexCloudResponse = null;
+    Optional<AnnexCloudModel> annexCloud = order.getStore().getAnnexCloud().stream()
+            .filter(annexCloudModel -> annexCloudModel.getCurrency().equals(order.getCurrency())).findAny();
+    if (annexCloud.isPresent()) {
+      //create request object
+      CreateOrderInAnnexCloudRequest createOrderInAnnexCloudRequest = buildOrderRequestData(order, transactionStatus);
+      createOrderInAnnexCloudRequest.setHttpMethod(HTTP_METHOD_POST);
+      createOrderInAnnexCloudRequest.setSiteId(annexCloud.get().getSiteId());
+      createOrderInAnnexCloudRequest.setAccess_code(annexCloud.get().getAccess_token());
+      createOrderInAnnexCloudRequest.setUser_email(order.getUser().getUid());
+      //get respective service
+      DefaultAnnexCloudRestIntegrationService annexCloudCreateOrderLoyaltyService =
+              annexCloudRestSystemServiceFactory.getSystemService(CRETE_ORDER_SERVICE_CODE);                         //calling our integration service
+      // call the service
+      createOrderInAnnexCloudResponse = (CreateOrderInAnnexCloudResponse) annexCloudCreateOrderLoyaltyService
+              .execute(createOrderInAnnexCloudRequest, PURCHASE, annexCloud.get().getApi());    //downcating our response and returning it..
+    }
+    return createOrderInAnnexCloudResponse;
+  }

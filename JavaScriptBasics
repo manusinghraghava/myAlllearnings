@@ -1,0 +1,261 @@
+JavaScript Basics--->
+
+console.log(//data)--->to print data on log.
+console.table({json})--->to print data in table form.
+console.warn(data)----->will show warning on console..
+console.clear();  --->clear all logs.
+console.time()-------->console.timeEnd()-------------------->what ever logs we print in between this or code done ,show their time execution.
+console.error()---->to print an error on console.
+
+var,let,const we use for declare....variables..
+
+var abc;
+console.log(abc);               //will print undefined not throw error like java..as default value is null for any object in java.*****
+
+const like final in java must instantiate when we declare;
+
+let is local varaible only work in blocks...its precedence is also higher than var as var is global....same as java
+
+array is here is somehow different [] use instead of {}
+
+const abc =[1,2,3,4,5,6,7,8];  or new Array(1,2,3,4,5,6,7,8);
+abc.push(55);                 ///in const we can add values but cannot change refrence same as java.
+abc.pop();
+
+typeof is like ((Object) myInt).getClass().getSimpleName() in java.
+
+var abc ="string";
+console.log(typeof abc);    ///print String.
+
+null is primitive but return object in javascript.
+
+in array we can put mixvalues in javascript.
+
+here object is json object in javascript.
+
+Let myVar;
+myVar = String(34)      <===>"34";    //////same as java but not use new here.
+
+in here we can pass any thing in string directly to convert it into string.
+
+Example-->String(new Date()); String(Array);;;;; values will be converted into string.also we can use toString() like java
+
+Number() and parseIntorFloat("string") also do same thing and give **NAN** if value is not correct for integer.
+
+Let number =parseFloat('30.42');
+console.log(number.toFixed(3));          //30.420  .........toFixed we use for no of precisions.
+
+===============================================================================================================================================
+Strings in javascript--->
+to add string-->
+string = string.concat(string2);     same as java
+
+string.length   -->to print length of string in java we use length();
+
+upppercase,lowercase,indexOf,lastIndexOf,charAt,startsWith,endsWith,subString is also same as java...
+
+includes   <======>contains in java.
+
+slice()--->and substring is same but if i give slice(-4) it will return last 4 chars.
+
+split(),replace()---->same as java 
+
+use of `` symbol above tab--->
+
+var x ="hello";
+
+let b=`${x} manu`      ;;;;///////////////here like this we can use variable inside other variable in string.
+
+et para1 ="Good";
+let para2 = "Nice";
+let sentence = `${para1} Morning
+            ${para2} to meet you!`
+
+
+console.log(sentence);
+// Good Morning
+//             Nice to meet you
+=====================================================================================================================================================
+Arrays also has method indexOf() in javascript.
+
+const abc =[1,2,3,4,5,6,7,8];  or new Array(1,2,3,4,5,6,7,8);
+abc.push(55);                 ///in const we can add values but cannot change refrence same as java. [1,2,3,4,5,6,7,8,55]; //in last it will add
+abc.pop();                     [1,2,3,4,5,6,7,8];     //remove element from end..
+
+abc.unshift(12221);     [12221,1,2,3,4,5,6,7,8];    //it will go in front... 
+abc.shift();            ///[1,2,3,4,5,6,7,8];         //remove from front
+
+abc.slice(starting index,how much element u want to remove);
+abc.slice(1,2);  [1,4,5,6,7,8]; 
+
+reverse()----->to revese an array.
+
+concat---->to merge two array....
+
+=== we use in javascript to compare type and value....a===2 means a value must be 2 and type should be number.......for true.
+same for go to !==
+
+Array.from(a).forEach(function(el){el.toString()});  //converting a into array
+===============================================================================================================================================
+
+function===>
+
+here function is simple to declare dont have any modifier and return type just name with parametre if required.......
+
+Example-->
+
+function greet(name){
+//some code; or return something;
+}
+
+calling --->greet(parametre);
+
+let val= greet(parametre);     /////return type will store here.
+
+we can also give default value in javascript to parametres...
+
+function greet(name='manu'){
+//some code; or return something;
+}
+
+also we can declare function in variable like--->
+
+const greet=function(name){
+//some code; or return something;
+}
+
+calling --->greet(parametre);
+
+can also create in object--->
+
+var abc ={
+name:'manu',
+greet:function(name){
+//some code; or return something;
+}
+}
+
+calling --->abc.greet(parametre);
+
+=================================================================================================================================================
+Window--->
+
+let a = window;
+
+console.log(window);  ///print all element in window element like alert and prompt......and it is global...
+
+alert (a)---->to give alert;
+prompt(a)----->to input some value in js,
+confirm()----->to take true and false...like asking for ok and cancel.
+
+we dont need window to call them as window is global internally...
+
+var a = window.document;-----------> it will give full html elements which are rendering on page. known as dom.
+
+some windows objects--->
+
+innerheight/width--->size of window in browser
+
+scrollX/Y------->position when we move page from scroller....right...down...
+
+location(our url)------>give location of page with his some methods....like reload(),,,,href to render on another page.....
+
+history------->history of page.....have method go(-1)---->go back one page...history.go(-1);
+
+=================================================================================================================================================
+element variables and methods-->
+
+innertext----->for set text value or fetch
+innerhtml----->for set text value or fetch in html format
+childNodes--->give array of child nodes.///includes text and comments also/////childNodes[o].nodeName==>give html element name.
+children----->include only child tags not text and comment.
+firstChild--->gives firstChild
+firstElementChild--->gives only first element child ......use vice-versa for last.
+nextSibling,nextElementSibling------>give next sibling of element.
+parentNode--->give parent node
+document.querySelector('#asd')////like jquery.
+className/id--->to fetch and give class name/id to element.
+
+document.createElement('li');   //to create new element
+setAttribute(name,value)----->to set attribute in element.  same has get/has/removeAttribute
+
+appendChild(name);///////to append element to current element..
+
+createTextNode('hiiiiii');creating new text node.
+
+replaceWith(another element)----->to replace current element with another.
+
+replaceChild(element which has to replace,another element)----->to replace child  element with another.
+
+
+removeChild(element which has to remove)----->to remove child  element.
+
+
+
+===================================================================================================================================
+let a : number,---->giving type to variable same as int a.
+let d: any,    ---->any type
+
+example-->
+
+let drawpoint = (point:{x:number , y :number})=>  
+{
+///
+}
+
+it is same as 
+
+
+let drawpoint = function(point:{x:number , y :number})   //function with object as parametre.
+{
+
+}
+
+//passing object in function
+
+drawpoint(
+{
+x:1,
+y:1
+}
+)
+
+
+declaring functin-->
+
+draw : ()=>void;   /////function which will return void.
+
+
+====================================================================
+here constructor is bit different-->
+
+it doesnot start with class name.Its start with constructor().
+
+if we create parametrized constructor it will not create a diffault constructor like java....
+
+so we have to give parametre as optional/
+
+constructor(x? : number)      ///here ? use for optional.
+{
+//
+}
+
+----------------------------------
+unlike java we need to export class here...to import the class in other packages.
+
+1)we use to add export in front of class.
+2)we have to import in other classes to use.
+
+export class Point{
+
+}
+
+import {Point} from './point'   if it is in same folder we use ./
+
+if use different module we use '@modulename/className'
+
+--------------------------------------------
+
+
+
+

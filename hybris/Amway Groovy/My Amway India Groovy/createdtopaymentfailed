@@ -1,0 +1,391 @@
+import de.hybris.platform.core.Registry; 
+import de.hybris.platform.servicelayer.model.ModelService; 
+import de.hybris.platform.orderprocessing.model.OrderProcessModel; 
+import de.hybris.platform.core.model.order.OrderModel; 
+import de.hybris.platform.processengine.enums.ProcessState; 
+import de.hybris.platform.servicelayer.search.FlexibleSearchQuery; 
+import de.hybris.platform.core.enums.OrderStatus;  
+import java.util.HashMap; 
+import java.util.List; 
+import java.util.Map; 
+import java.util.Arrays;  
+import org.apache.commons.collections4.CollectionUtils; 
+import de.hybris.platform.servicelayer.search.SearchResult; 
+import de.hybris.platform.servicelayer.model.ModelService; 
+import de.hybris.platform.processengine.BusinessProcessService;  
+import de.hybris.platform.core.model.order.AbstractOrderModel; 
+import de.hybris.platform.core.model.order.OrderModel; 
+import de.hybris.platform.core.model.user.AddressModel; 
+import de.hybris.platform.core.model.user.CustomerModel; 
+import de.hybris.platform.servicelayer.model.ModelService; 
+import de.hybris.platform.servicelayer.search.FlexibleSearchService; 
+import de.hybris.platform.servicelayer.search.SearchResult; 
+import de.hybris.platform.servicelayer.event.EventService;  
+import de.hybris.platform.order.events.SubmitOrderEvent;  
+import de.hybris.platform.store.BaseStoreModel; 
+import java.lang.System; 
+import de.hybris.platform.orderprocessing.model.OrderProcessModel; 
+import de.hybris.platform.processengine.BusinessProcessService;  
+import java.util.List; 
+import java.util.Optional;  
+import org.apache.commons.collections4.CollectionUtils;
+import de.hybris.platform.orderprocessing.model.*; 
+import org.springframework.beans.factory.annotation.Autowired; 
+import com.amway.core.model.AmwayAccountModel; 
+import de.hybris.platform.processengine.model.BusinessProcessModel;  
+import com.amway.indpayment.service.IndOrderPaymentService; 
+import com.amway.core.order.services.impl.DefaultAmwayOrderService; 
+import de.hybris.platform.payment.model.PaymentTransactionModel; 
+import com.amway.core.enums.INDTransactionModeEnum; 
+import java.lang.Long; 
+import de.hybris.platform.core.PK; 
+import de.hybris.platform.payment.model.PaymentTransactionEntryModel; 
+import com.amway.core.payment.service.impl.DefaultAmwayPaymentService; 
+import de.hybris.platform.payment.enums.PaymentTransactionType; 
+import com.amway.indcore.order.service.IndOrderSearchService;
+import com.amway.indcore.promotion.impl.IndPromotionServiceImpl;
+import com.amway.indcore.service.IndRationingService;
+import com.amway.indcore.stock.service.IndStockService;
+import com.amway.indcore.util.service.IndSiteConfigurationService;
+import com.amway.lynxcore.coupon.services.LynxCouponService;
+import de.hybris.platform.payment.dto.TransactionStatus; 
+import de.hybris.platform.core.enums.PaymentStatus; 
+import com.amway.indpayment.facade.impl.IndDefaultPaymentFacade; 
+import com.amway.lynxcore.account.LynxRoleService; 
+import de.hybris.platform.core.Registry;
+import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.orderprocessing.model.OrderProcessModel;
+import de.hybris.platform.core.model.order.OrderModel;
+import de.hybris.platform.processengine.enums.ProcessState;
+import de.hybris.platform.servicelayer.search.FlexibleSearchQuery;
+import de.hybris.platform.core.enums.OrderStatus;
+import de.hybris.platform.core.model.order.*;
+import com.amway.core.model.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Arrays;
+import de.hybris.platform.core.Registry;
+import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.servicelayer.search.FlexibleSearchQuery;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Arrays;
+import java.util.*;
+import de.hybris.platform.payment.model.PaymentTransactionEntryModel
+import de.hybris.platform.payment.enums.PaymentTransactionType
+import de.hybris.platform.payment.model.PaymentTransactionModel
+import de.hybris.platform.core.model.order.AbstractOrderModel;
+import de.hybris.platform.servicelayer.i18n.CommonI18NService;
+import de.hybris.platform.servicelayer.search.SearchResult;
+import de.hybris.platform.commerceservices.search.pagedata.SearchPageData;
+import de.hybris.platform.core.model.order.OrderModel;
+import de.hybris.platform.commercefacades.product.PriceDataFactory;
+import de.hybris.platform.cms2.model.site.CMSSiteModel;
+import de.hybris.platform.servicelayer.search.FlexibleSearchService;
+import de.hybris.platform.servicelayer.i18n.CommonI18NService;
+import de.hybris.platform.store.BaseStoreModel;
+import de.hybris.platform.store.services.BaseStoreService;
+import de.hybris.platform.site.BaseSiteService;
+import com.amway.indcore.order.strategies.IndOrderProcessingStrategy;
+import de.hybris.platform.core.enums.PaymentStatus;
+import de.hybris.platform.core.enums.OrderStatus;
+import de.hybris.platform.core.Registry;
+import de.hybris.platform.servicelayer.model.ModelService;
+import com.amway.indpayment.facade.impl.IndDefaultRefundFacade;
+import com.amway.indpayment.populator.impl.IndPaymentCallbackResponsePopulator;
+import com.amway.indpayment.dto.IndPaymentConfirmationResponse;
+import com.amway.indpayment.service.IndPaymentService;
+import com.amway.indpayment.data.IndHOPPaymentRequestData;
+import com.amway.indpayment.data.IndPaymentTxnData;
+import com.amway.core.enums.IndPaymentConfirmationType;
+import com.amway.indpayment.constants.IndPaymentConstants;
+import org.apache.commons.collections4.CollectionUtils;
+import com.amway.indpayment.service.IndOrderPaymentService;
+import com.amway.core.constants.IndCoreConstants;
+import de.hybris.platform.servicelayer.exceptions.BusinessException;
+import groovy.time.TimeCategory
+import java.text.SimpleDateFormat;
+import org.apache.commons.collections4.CollectionUtils;
+import de.hybris.platform.servicelayer.search.SearchResult;
+import de.hybris.platform.servicelayer.model.ModelService;
+import com.amway.indcore.loyalty.service.IndCalculateLoyaltyPointsService;
+import de.hybris.platform.commerceservices.search.pagedata.PageableData;
+import de.hybris.platform.commerceservices.search.pagedata.SearchPageData;
+import de.hybris.platform.core.model.order.OrderModel;
+import com.amway.eventstream.model.AmwayEventStagingEntryModel;
+import com.amway.eventstream.enums.AmwayEventSyncState;
+import de.hybris.platform.servicelayer.i18n.CommonI18NService;
+import de.hybris.platform.store.BaseStoreModel;
+import de.hybris.platform.store.services.BaseStoreService;
+
+import org.apache.commons.collections4.CollectionUtils;
+import de.hybris.platform.servicelayer.search.SearchResult;
+import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.processengine.BusinessProcessService;
+
+import de.hybris.platform.core.model.order.AbstractOrderModel;
+import de.hybris.platform.core.model.order.OrderModel;
+import de.hybris.platform.core.model.user.AddressModel;
+import de.hybris.platform.core.model.user.CustomerModel;
+import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.servicelayer.search.FlexibleSearchService;
+import de.hybris.platform.servicelayer.search.SearchResult;
+import de.hybris.platform.servicelayer.event.EventService;
+
+import de.hybris.platform.order.events.SubmitOrderEvent;
+
+import de.hybris.platform.store.BaseStoreModel;
+import java.lang.System;
+import de.hybris.platform.orderprocessing.model.OrderProcessModel;
+import de.hybris.platform.processengine.BusinessProcessService;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import com.amway.core.model.AmwayAccountModel;
+
+import de.hybris.platform.core.model.LynxPromotionApplicationRecordModel;
+import java.util.*;
+import java.util.logging.Logger;
+import java.text.SimpleDateFormat;  
+
+import de.hybris.platform.processengine.model.BusinessProcessModel;
+final ModelService modelService = (ModelService) Registry.getApplicationContext().getBean("modelService"); 		
+final EventService eventService = (EventService) Registry.getApplicationContext().getBean("eventService");
+final DefaultAmwayOrderService defaultAmwayOrderService = (DefaultAmwayOrderService)Registry.getApplicationContext().getBean("defaultAmwayOrderService"); 		
+		final IndOrderPaymentService orderPaymentService = (IndOrderPaymentService) Registry.getApplicationContext().getBean("indOrderPaymentService"); 		
+		final DefaultAmwayPaymentService defaultAmwayPaymentService = (DefaultAmwayPaymentService) Registry.getApplicationContext().getBean("defaultAmwayPaymentService"); 		 		
+		final IndDefaultPaymentFacade indPaymentFacade = (IndDefaultPaymentFacade) Registry.getApplicationContext().getBean("indPaymentFacade"); 		
+		final LynxRoleService lynxRoleService = (LynxRoleService) Registry.getApplicationContext().getBean("lynxRoleService");
+		final BusinessProcessService businessProcessService   = (BusinessProcessService) Registry.getApplicationContext().getBean("businessProcessService");
+
+final IndRationingService indRationingService = spring.getBean("indRationingService");
+final IndStockService indStockService= spring.getBean("indStockService");	
+final LynxCouponService couponService = spring.getBean("couponService");
+final IndPromotionServiceImpl indPromotionServiceImpl = spring.getBean("indPromotionService");
+		
+Date currentDate = new Date();
+Calendar cal = Calendar.getInstance();
+cal.setTime(currentDate);
+//change this for fetching order on different time
+cal.add(Calendar.HOUR, -1);
+Date previouHour = cal.getTime();
+SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+String strDate= formatter.format(previouHour);
+
+try
+{
+		
+			String query = "SELECT {o.pk} FROM {Order as o} WHERE {o.status} = ({{select {os.pk} from {OrderStatus as os} where {os.code} = 'CREATED'}}) and {o.creationtime} <='"+strDate+"'and {o.code} in ('746760021') and ({o.lynxGroupNumber} is null or {o.lynxGroupNumber}={o.code})";
+			
+			
+			println "1";
+		final PageableData pageableData = new PageableData();
+
+pageableData.setCurrentPage(0);
+
+pageableData.setPageSize(100);
+
+SearchPageData<OrderModel> searchResult = Registry.getApplicationContext().getBean("pagedFlexibleSearchService").search(query.toString(), null, pageableData);
+
+final List<OrderModel> results = searchResult.getResults();
+
+
+for (final OrderModel order : results){
+try{
+//check for payment tr entry, if not present, make it payment failed and relese the inventory.
+if (order.getPaymentTransactions()==null || order.getPaymentTransactions().isEmpty())
+{
+println "2";
+order.setStatus(OrderStatus.PAYMENT_FAILED);
+indRationingService.reduceRationingAggregation(order);
+indStockService.releaseStockFromCartInOCC(order);
+couponService.release(order);
+indPromotionServiceImpl.removeAllPromotionApplicationRecords(order);
+order.getLynxSubcarts().stream().forEach({entry -> indPromotionServiceImpl.removeAllPromotionApplicationRecords((OrderModel) entry)});
+order.setReserve(false);
+updateSubCartsStatus(order);
+modelService.save(order);				
+}
+else{
+println "3";
+//first confirming status from payment gateway
+def transactions = order.getPaymentTransactions();
+transactions.each{
+def paymentTransactionEntries = it.getEntries()
+for(PaymentTransactionEntryModel entry:paymentTransactionEntries){
+IndPaymentConfirmationResponse confirmationResponse = null;
+IndHOPPaymentRequestData indHOPPaymentRequestData = null;
+println "4";
+if (PaymentTransactionType.CAPTURE.equals(entry.getType())
+&& IndPaymentConfirmationType.ONLINE.equals(entry.getIndPaymentConfirmationType()) && "INITIATED".equals(entry.getTransactionStatus()))
+{
+indHOPPaymentRequestData = new IndHOPPaymentRequestData();
+if(null != order){
+String paymentMode = (null != entry.getPaymentTransaction().getPaymentMode()) ? entry.getPaymentTransaction().getPaymentMode().getCode() : order.getPaymentMode().getCode();
+if((entry.getPaymentTransaction().getPaymentProvider()).equals("BILLDESK  ///ccavenue//")){
+indHOPPaymentRequestData.setPaymentProvider(entry.getPaymentTransaction().getPaymentProvider());
+
+indHOPPaymentRequestData.setPaymentMode(paymentMode);
+
+
+indHOPPaymentRequestData.setOrderNumber(order.getCode());
+
+final BigDecimal amountInBD = entry.getAmount(); // the value you get
+final double amountInDouble = amountInBD.doubleValue(); //
+indHOPPaymentRequestData.setOrderAmount(amountInDouble);
+
+indHOPPaymentRequestData.setTransactionID(entry.getTransactionId());
+indHOPPaymentRequestData.setWebReferenceNumber(entry.getCode());
+
+final IndPaymentTxnData serverTxnData = indPaymentService.checkPaymentStatus(entry.getPaymentTransaction(),
+indHOPPaymentRequestData);
+confirmationResponse = new IndPaymentConfirmationResponse();
+paymentCallbackResponsePopulator.populate(serverTxnData, confirmationResponse);
+if(confirmationResponse != null){
+if (IndPaymentConstants.SUCCESS.equals(confirmationResponse.getStatus())){
+entry.setTransactionStatus("SUCCESS")
+modelService.save(entry)
+order.setPaymentStatus(PaymentStatus.PAID)
+order.setStatus(OrderStatus.PAYMENT_CAPTURED)
+modelService.save(order)
+indOrderProcessingStrategy.postProcessingAfterPlacingOrder(order, true);
+
+
+}
+}
+}
+}
+}
+}
+}
+Optional<PaymentTransactionModel> transaction =order.getPaymentTransactions().stream().filter({s->s.getEntries().stream().filter({s1->s1.getTransactionStatus().equalsIgnoreCase("SUCCESS")}).count()>0}).findAny();
+if(transaction.isPresent())
+{
+println "5";
+Optional<OrderProcessModel> process=order.getOrderProcess().stream().filter({s->s.getProcessDefinitionName().equalsIgnoreCase("order-process-v1")}).findAny();
+if(process.isPresent()){
+
+//check for payment success and BP /events created, then invoiced and restart the process.
+
+if(CollectionUtils.isNotEmpty(order.getOrderProcess()) && CollectionUtils.isNotEmpty(order.getAmwayInvoices())&& CollectionUtils.isNotEmpty(order.getConsignments())&& order.getOrderPeriod()!=null && order.getBonusPeriod()!=null && order.getPaymentStatus().getCode().equalsIgnoreCase("PAID")){
+				
+				println " ORDER ==>" +order.getCode();
+					
+				order.setStatus(OrderStatus.INVOICED);
+				modelService.save(order);	
+				
+				if(order.isGroupOrder()){
+					println "In isgrouporder";
+					final List<AbstractOrderModel> subOrders = order.getLynxSubcarts();
+					if (CollectionUtils.isNotEmpty(subOrders))
+					{
+						for (final AbstractOrderModel subOrder : subOrders)
+						{
+							subOrder.setStatus(OrderStatus.INVOICED);
+						}
+						
+						modelService.saveAll(subOrders);
+					}
+				}
+				
+				order.getOrderProcess().stream().filter{process1 -> process1.getCode().startsWith(order.getStore().getSubmitOrderProcessCode())}.forEach{orderProcess -> businessProcessService.restartProcess(orderProcess,CHECK_ORDER)};
+				
+				}
+
+}
+else{
+println "6";
+//check for payment success and BP /events not created, then payment fail and reversing loyalty and ar balance
+
+		if (lynxRoleService.isAbo(orderModel.getUser()))
+		{ 			 
+		if (orderModel.getPaymentTransactions() != null || orderModel.getPaymentTransactions().size()>0) 				
+		{ 					
+		for (PaymentTransactionModel paymentTransactionModel:orderModel.getPaymentTransactions()) 					
+		{ 						
+		if (paymentTransactionModel.getTransactionMode()!=null && paymentTransactionModel.getTransactionMode().equals(INDTransactionModeEnum.AUTHHORIZED_AR)) 						
+		{ 						
+		//Reverse Payment 						
+		paymentTransactionModel.getEntries().forEach{entry-> if (entry.getType().equals(PaymentTransactionType.CAPTURE) && entry.getTransactionStatus()!=null && entry.getTransactionStatus().equals(TransactionStatus.ACCEPTED.toString()))
+		{ 						
+		entry.setCurrency(orderModel.getCurrency()); 						
+		//Cancel the Transaction 												
+		PaymentTransactionEntryModel reversalPaymentTransactionEntryModelResponse = defaultAmwayPaymentService.cancel(entry); 						if(reversalPaymentTransactionEntryModelResponse.getTransactionStatus().equals(TransactionStatus.ACCEPTED.toString()))
+		{ 							
+		orderModel.setPaymentStatus(PaymentStatus.NOTPAID); 							
+		modelService.save(orderModel); 													
+		} 						
+		}};
+		} 						 						 					
+		} 				
+		} 			
+		} 			
+		else 			
+		{ 
+println "7";		
+		if (orderModel.getPaymentTransactions() != null || orderModel.getPaymentTransactions().size()>0) 				
+		{ 					
+		for (PaymentTransactionModel paymentTransactionModel:orderModel.getPaymentTransactions()) 					
+		{ 						
+		if (paymentTransactionModel.getTransactionMode()!=null && paymentTransactionModel.getTransactionMode().equals(INDTransactionModeEnum.LOYALTY))
+		{
+		//Reverse Payment 							
+		paymentTransactionModel.getEntries().forEach{entry-> if (entry.getType().equals(PaymentTransactionType.CAPTURE) 							&& entry.getTransactionStatus()!=null &&entry.getTransactionStatus().equals(TransactionStatus.ACCEPTED.toString()))
+		{ 								
+		entry.setCurrency(orderModel.getCurrency()); 								
+		//Cancel the Transaction 								
+										
+		PaymentTransactionEntryModel reversalPaymentTransactionEntryModelResponse=defaultAmwayPaymentService.cancel(entry); 								
+		if(reversalPaymentTransactionEntryModelResponse.getTransactionStatus().equals(TransactionStatus.ACCEPTED.toString()))
+		{ 																		orderModel.setPaymentStatus(PaymentStatus.NOTPAID); 									modelService.save(orderModel); 									
+										
+		}							
+		} 							
+		}; 						
+		} 					
+		} 				
+		} 			 			
+		} 				
+		orderModel.setStatus(OrderStatus.PAYMENT_FAILED); 				
+		modelService.save(orderModel); 
+}
+}
+}
+}
+catch(Exception e)
+{
+e.printStackTrace();
+continue;
+}
+}  
+}
+catch(Exception e)
+{
+e.printStackTrace();
+}
+
+void updateSubCartsStatus(final AbstractOrderModel order)
+	{
+		// update subcarts status
+		
+		if ( !order.getLynxSubcarts().isEmpty())
+		{
+	    for (final AbstractOrderModel subOrder : order.getLynxSubcarts()) {
+
+		subOrder.setStatus(order.getStatus());
+
+		if (order.getStatus().equals(OrderStatus.PAYMENT_FAILED)) {
+		    indRationingService.reduceRationingAggregation((OrderModel) subOrder);
+		    indStockService.releaseStockFromCartInOCC((OrderModel) subOrder);
+		    couponService.release((OrderModel) subOrder);
+		}
+		modelService.save(subOrder);
+			}
+		}
+	}
+		

@@ -1,0 +1,731 @@
+=======================================================================================================================================================
+Product	       ln(xy)=ln(x)+ln(y)
+Quotient	   ln(x/y)=ln(x)−ln(y)
+Log of power	ln(x^y)=yln(x)
+Log of e	   ln(e)=1
+Log of one	   ln(1)=0
+Log reciprocal	ln(1/x)=−ln(x)
+
+
+by default log is 2-->log128--->2^x=128<==>x=7
+=========================
+
+there are two types of algorithm-->
+
+a)iterative.
+b)recursive.
+
+both are equivalent....can be converted into each other..
+and if a programme does not have any of this u donot have to worry about time complexity.
+
+a)iterative=>
+it works how many times a loop going to work..
+
+Example=>
+
+*)for i=1 to n syso("manu");
+--> loop is going to work n times and manu is going to print n times..
+
+so complexity=>O(n).
+
+*)for i=1 to n
+     for j=1 to n
+ 	syso("manu");
+--> loop is going to work n times for every i and manu is going to print n times..
+and i is also going to run n times.
+
+so complexity=>O(n*n).
+
+
+*)A()
+{
+i=1,s=1;
+while(s<=n)        
+{
+i++;    //i incremented by 1. 
+s=s+i;   // s incremented depends on i.
+syso("manu");
+}
+}
+
+lets check
+s-->1 3 6 10 .. >n//it stops there
+i-->1 2 3 4  .. ?
+
+let ?=k
+
+so when i =k loop is going to stop so what will be the value of s after k iteration?
+
+as we see it is the sum of first n natural no's.
+
+so when i =k==> s=k(k+1)/2 > n
+
+so no of times loop get executed ==>
+
+k=O(sqrt of n) /// we have to find value of k to find time complexity
+
+
+*)A()
+{
+i=1
+for(i=1;i*i<=n;i++)
+syso("manu")
+}
+
+lets check=>
+
+as i*i=n
+
+so as it is going to iterate sqrt of n
+
+O(sqrt of n) /// 
+
+*)constant one for O(n2)
+
+*)if we have dependency of outer loop on inner loop we have to add output..
+
+*)A()
+{
+int i,j,k,n;
+for(i=1;i<=n;i++)
+	for(j=1;j<=i*i;j++)      //as we have dependency of i on j
+		for(k=1;k<=n/2;k++)
+			syso("manu");
+
+lets check ==>
+
+i-->1         2             3		4		n
+j-->1	      4		    	9		16		n*n
+k-->n/2*1     n/2*4	    n/2*9	n/2*16		n/2*n*n
+
+so when we have dependency we have to add
+so-->n/2*1 + n/2*4 + n/2*9 + n/2*16 + n/2*n*n
+  -->n/2(1+4+9+16......n*n) sum of n squares
+  -->n/2(n(n+1)(2n+1)/6)
+  -->o(n4)
+
+
+*)A()
+{
+i=1
+for(i=1;i<=n;i=i*2)
+syso("manu")
+}
+
+lets check=>
+
+i-->1,2,4,8.....n.
+    
+lets loop is going to iterate 2 ^ k times..
+
+as we see clearly all is in 2 ^s.
+
+2^k  = n
+log2n=k
+
+so O(log2n).
+
+
+*)A()
+{
+int i,j,k,n;
+for(i=n/2;i<=n;i++)                         n/2
+	for(j=1;j<=n/2;j++)      	n/2//as we have no dependency of i on j
+		for(k=1;k<=n;k=k*2)        log2n
+			syso("manu");
+
+lets check==>
+
+as we have no dependency so just multiply-->
+
+n/2*n/2*log2n==>n*n(log2n)
+
+*)A()
+{
+int i,j,k,n;
+for(i=n/2;i<=n;i++)                         n/2
+	for(j=1;j<=n/2;j=j*2)      	log2n//as we have no dependency of i on j
+		for(k=1;k<=n;k=k*2)        log2n
+			syso("manu");
+
+lets check==>
+
+as we have no dependency so just multiply-->
+
+n/2*log2n*log2n==>n(log2n*log2n)
+
+*)A()
+{
+while(n>1)
+{
+n=n/2
+}
+}
+
+this work on assumptos-->
+
+lets take n on 2 ^s-->
+
+when-->n=2^1=1 times
+when-->n=2^2=2 times
+when-->n=2^3=3 times
+when-->n=2^k=k times
+
+so k=log2n..
+
+*)A()
+{
+int i,j,k,n;
+for(i=1;i<=n;i++)                         
+	for(j=1;j<=n;j=j+i)      	//as we have dependency of i on j
+			syso("manu");
+  
+
+lets check==>
+
+i-->1  2    3    4    n
+j-->n  n/2  n/3  n/4  n/n
+
+now sum=>n(1 + 1/2 + 1/3 +1/4 .......1/n)
+        =>n(logn)
+
+
+
+**)for(i=2;i<=n;i=i*i)
+syso("manu");
+
+lets check-->
+
+i-->2,4,16,256.....k>=n.
+
+now if we check-->
+
+2=2^2^0
+4=2^2^1
+16=2^2^2
+256=2^2^3
+
+so
+
+2^2^k ===n*
+
+2^klog2 ===logn    --->log 2=1
+klog2   ===loglogn
+k<==>lohlogn
+
+
+
+https://www.youtube.com/watch?v=p_9iYp-PldY&list=PLEbnTDJUr_IcRgfLN55di5gI6CPza5Qhm&index=3
+==========================================recursive ==========================================
+
+it is some how different than iterative one..because we have to think recursively there is nothing to count.
+
+Recursive
+
+A(n)   // we have to find T(n)
+{
+if(n>1)   // let think it is a constant
+
+return A(n-1);
+}
+
+so expression here-->
+
+T(n)= 1+ T(n-1);     ---i
+
+now try solving.by back substitution.
+
+T(n-1)=1+T(n-2);     ----eq 2
+T(n-2)=1+T(n-3);     ----eq 3
+
+now substituting eq 2,3 into 1...
+
+T(n) = 1+1+T(n-2);
+
+T(n) = 1+1+1+T(n-3);
+
+T(n)= 3+T(n-3);
+    = K +T(n-k);
+	
+Now till when this equation run we have to check---
+
+T(n)= K +T(n-k)>1;
+
+when ---.>K +T(n-k)===1 it will stop let it is 0......it is base condition..
+
+now assume k is constant so when (n-k)= 1 it will stop for value k=n-1;
+
+now put his value-->
+
+T(n)=(n-1)+T(n-(n-1))---> on solving it is n...so O(n)//complexity..
+
+
+
+-----------------------------
+Another Example-->
+
+
+T(n)= n+ T(n-1);     ---i
+
+now try solving.by back substitution.
+
+T(n-1)=n-1+T(n-2);     ----eq 2
+T(n-2)=n-2+T(n-3);     ----eq 3
+
+now substituting eq 2,3 into 1...
+
+T(n)=n+(n-1) +(n-2) + T(n-3)..........it will go on till T(n-k)+T(n-(k+1));
+
+now til when it will run while T(n)>1
+
+so
+
+T(n-(k+1)) =1  ..it will stop
+
+k=n-2;   ///now put this value in above equation
+
+T(n)=n+(n-1) +(n-2) + T(n-3)..........it will go on till T(n-(n-2))+T(n-(n-2+1));
+
+T(n)=n+(n-1) +(n-2) + T(n-3)..........it will go on till 2,1;
+
+now we if we will see it .....it is sum of n natural no.s--->n(n+1)/2-->O(n)^2
+
+
+a.p,g.p and binomial theorom.....before proceeding
+
+----------------------------------------------------------------------------------------------------------------------\
+An arithmetic progression is a sequence of numbers in which each term is derived from the preceding term by adding or subtracting a fixed number called the common difference "d"
+For example, the sequence 9, 6, 3, 0,-3, .... is an arithmetic progression with -3 as the common difference. The progression -3, 0, 3, 6, 9 is an Arithmetic Progression (AP) with 3 as the common difference.
+
+The general form of an Arithmetic Progression is a, a + d, a + 2d, a + 3d and so on. Thus nth term of an AP series is Tn = a + (n - 1) d, where Tn = nth term and a = first term. Here d = common difference = Tn - Tn-1.
+
+nth term =>Tn = a + (n - 1) d,
+
+S =(n/2)[2a + (n- 1)d]
+
+The sum of n terms is also equal to the formula where l is the last term. n*(a+l)/2
+
+Question 1 : Find the nth term for the AP : 11, 17, 23, 29, …
+Solution : Here, a = 11, d = 17 – 11 = 23 – 17 = 29 – 23 = 6
+We know that nth term of an AP is a + (n – 1) d
+=> nth term for the given AP = 11 + (n – 1) 6
+=> nth term for the given AP = 5 + 6 n
+We can verify the answer by putting values of ‘n’.
+=> n = 1 -> First term = 5 + 6 = 11
+=> n = 2 -> Second term = 5 + 12 = 17
+=> n = 3 -> Third term = 5 + 18 = 23
+and so on …
+ 
+ 
+Question 2 : Find the sum of the AP in the above question till first 10 terms.
+Solution : From the above question,
+=> nth term for the given AP = 5 + 6 n
+=> First term = 5 + 6 = 11
+=> Tenth term = 5 + 60 = 65
+=> Sum of 10 terms of the AP = 0.5 n (first term + last term) = 0.5 x 10 (11 + 65)
+=> Sum of 10 terms of the AP = 5 x 76 = 380
+
+-----------------------------------------------------------------------------------------------------------------------
+Geometric Progression
+A geometric progression is a sequence in which each term is derived by multiplying or dividing the preceding term by a fixed number called the common ratio. 
+For example, the sequence 4, -2, 1, - 1/2,.... is a Geometric Progression (GP) for which - 1/2 is the common ratio.
+
+The general form of a GP is a, ar, ar2, ar3 and so on.
+
+The nth term of a GP series is Tn = ar ^ n-1, where a = first term and r = common ratio = Tn/Tn-1) .
+
+nth term of a GP = a r ^ n-1
+Geometric Mean = nth root of product of n terms in the GP
+Sum of ‘n’ terms of a GP (r < 1) = [a (1 – r ^ n)] / [1 – r]
+Sum of ‘n’ terms of a GP (r > 1) = [a (r ^ n – 1)] / [r – 1]
+Sum of infinite terms of a GP (r < 1) = (a) / (1 – r)
+
+
+When three quantities are in GP, the middle one is called as the geometric mean of the other two.
+
+ If a, b and c are three quantities in GP and b is the geometric mean of a and c i.e. b =√ac
+
+
+Question 4 : Find the sum of the series 32, 16, 8, 4, … upto infinity.
+Solution : First term, a = 32
+Common ratio, r = 16 / 32 = 8 / 16 = 4 / 8 = 1 / 2 = 0.5
+We know that for an infinite GP, Sum of terms = a / (1 – r)
+=> Sum of terms of the GP = 32 / (1 – 0.5) = 32 / 0.5 = 64
+ 
+Question 5 : The sum of three numbers in a GP is 26 and their product is 216. ind the numbers.
+Solution : Let the numbers be a/r, a, ar.
+=> (a / r) + a + a r = 26
+=> a (1 + r + r2) / r = 26
+Also, it is given that product = 216
+=> (a / r) x (a) x (a r) = 216
+=> a3 = 216
+=> a = 6
+=> 6 (1 + r + r2) / r = 26
+=> (1 + r + r2) / r = 26 / 6 = 13 / 3
+=> 3 + 3 r + 3 r2 = 13 r
+=> 3 r2 – 10 r + 3 = 0
+=> (r – 3) (r – (1 / 3) ) = 0
+=> r = 3 or r = 1 / 3
+Thus, the required numbers are 2, 6 and 18.
+
+
+Question 6: Find the number of terms in the series 1/8, 1/2, 2…….8192.
+Solution : 1st term = 1/8
+Last term = 8192
+Number of terms in GP
+ar ^ n-1 = 8192
+n = 9
+
+Hence, number of terms in GP is 9.
+
+
+sum of n nos. n(n+1)/2
+sum of square of n nos.  [n(n+1)(2n+1)]/6
+sum of cubes              (n^2*(n+1)^2)/4
+-------------------------------------------------------------------------------------------------------------------------
+Harmonic Progression (HP)
+A sequence of numbers is called a harmonic progression if the reciprocal of the terms are in AP. In simple terms, a,b,c,d,e,f are in HP if 1/a, 1/b, 1/c, 1/d, 1/e, 1/f are in AP.
+
+For two terms ‘a’ and ‘b’,
+Harmonic Mean = (2 a b) / (a + b)
+
+
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+now continue.....
+we can also calculate time complexity in recursion by tree method where we cannot use back substitution..
+
+T(n) = 2T(N/2) + c.......here we cannot substitute n-1...so we will use tree method...
+
+when n=1,work = C
+
+                                                    C
+												/       \
+											n/2           n\2------> which is equivalent for two c if we break further
+											
+											         
+													 
+	what is n/2=====2T(n/4) +c												 
+													 C
+												/       \
+											c               c
+										/     \            /      \
+									n/4        n/4        n/4       n\4------> which is equivalent for two c if we break further
+									
+									
+so when we are going to stop it whenever it is T(1)   or T(n/n). or there will be nc...for every c ==n
+
+so total work done till last level......
+
+C+2c+4c+8c+.....nc....
+
+C(1+2+4+8+2^kc )----->n=2^k-----eq1
+
+so sum of all we will use g.p we cannot use a.p. because here we have common ration 2^k not 2.
+
+using formulae-->
+[a (r ^ n – 1)] / [r – 1]
+
+a=1
+r=2   // common ratio.
+
+1*(2^(k+1) -1)/1;
+-->2^k 
+
+by eq 1    time complexity is O(n)..
+
+----------------------------------------------------------------------------------------------------------------------------------------------
+Always remember we think for levels in case of recursion tree complexity---
+
+T(n) = 2T(N/2) + n.......here we cannot substitute n-1...so we will use tree method...
+
+when N= 1 work will be 1 which is ==n.
+
+unlike above here we have n not c...so we have to think on n not c...
+
+                                                    n
+												/       \
+											n/2           n\2------> which is equivalent for  n if we break further
+											
+			
+
+what is n/2=====2T(n/4) +n/2		
+
+
+									 
+													 n
+												/       \
+											n/2              n/2
+										/     \            /      \
+									n/4        n/4        n/4       n\4------> which is equivalent for n if we break further
+									
+									
+Now for every level--->
+sum is equal to n u can see..
+
+it will till n==1
+
+so at K+1 level it will stop where last element will be n/2^k.  when 2^k=n or logn=k it will stop.
+
+so total work done on every level  will also be n.....as we can see total work done is n...
+
+so at last level t w done = n*logn....///done...
+---------------------------------------------------------------------------------------------------------------------------------------------
+Basic idea and rules for logarithms
+
+The basic idea
+A logarithm is the opposite of a power. In other words, if we take a logarithm of a number, we undo an exponentiation.
+
+A logarithm is a function that does all this work for you. We define one type of logarithm (called “log base 2” and denoted log2) to be the solution to the problems I just asked. Log base 2 is defined so that
+log2c=k
+is the solution to the problem
+2^k=c
+
+******so logic is if log base 2 20 we have to find we have to think for what power of 2 the value will be 20.
+
+remember log(1)=0
+---------------------------------------------------------------------------------------------------------------------------------------------
+Space Complexity-->
+
+iterative--->Always remember we always calculate space over no of inputs.not on inputs they are not considered.
+
+1)Algo(A,1,n)
+{
+int i;    // here we are taking one extra cell for variable i.
+
+for(1 1 to n)
+{
+sysyo("");
+}
+}
+
+so space complexity is O(1);
+
+2)Algo(A,1,n)
+{
+int i,j;    // here we are taking two extra cell for variable i,j.
+
+for(1 1 to n)
+{
+sysyo("");
+}
+}
+
+so space complexity is O(2);  which is O(1);
+
+3)Algo(A,1,n)
+{
+int i;    // here we are taking one extra cell for variable i.
+int[n] k;  // here we are taking n extra cells for array
+for(1 1 to n)
+{
+sysyo("");
+}
+}
+
+so space complexity is O(1 + n);==O(n)
+
+4)Algo(A,1,n)
+{
+int i;    // here we are taking one extra cell for variable i.
+int[n*n] k;  // here we are taking n*n extra cells for array
+for(1 1 to n)
+{
+sysyo("");
+}
+}
+
+so space complexity is O(1 + n*n);==O(n*n)
+----------------------------------------------------------
+Recursion--->Always think for tree while recursion and put values in stack to evaluate.
+
+A(n)
+{
+if(n>=1)
+{
+A(n-1);
+print (n);
+}
+}
+
+now try to evaluate for n=3    
+                                     
+									 A(3) ------print
+									/
+								A(2)-----print
+								/
+                               A(1)--print
+							  /
+							 A(0) ------------------------------recursion will end here.
+							 
+so here for n values we need 4 recursive calls.
+Always remember recursion use tree......go top to  bottom than left to right to evaluate.and to find order of method to call and push it in stack.
+
+so push pattern..... A(3),A(2),A(1),A(0)
+
+Now we will go left to right.
+but there is nothing so we will go back and pop function...
+
+so we need stack for every method call.
+let every stack take k cells.
+
+so total space required for n inputs is (n+1)k whre k is constant so O(n).
+
+
+------------------------------
+2)
+----------------------------------------------------------------------------------------------------------------------------------------------
+Creating Custom Annotations
+We're going to create three custom annotations with the goal of serializing an object into a JSON string.
+
+We'll use the first one on the class level, to indicate to the compiler that our object can be serialized. 
+
+Next, we'll apply the second one to the fields that we want to include in the JSON string.
+
+Finally, we'll use the third annotation on the method level, to specify the method that we'll use to initialize our object. 
+
+
+1)The first step toward creating a custom annotation is to declare it using the @interface keyword:
+
+public @interface JsonSerializable {
+}
+The next step is to add meta-annotations to specify the scope and the target of our custom annotation:
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.Type)
+public @interface JsonSerializable {
+}
+As we can see, our first annotation has runtime visibility, and we can apply it to types (classes). Moreover, it has no methods, and thus serves as a simple marker to mark classes that can be serialized into JSON.
+
+
+
+2)Field Level Annotation Example
+
+In the same fashion, we create our second annotation, to mark the fields that we are going to include in the generated JSON:
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.FIELD)
+public @interface JsonElement {
+    public String key() default "";
+}
+The annotation declares one String parameter with the name “key” and an empty string as the default value.
+
+When creating custom annotations with methods, we should be aware that these methods must have no parameters, and cannot throw an exception. Also, the return types are restricted to primitives, String, Class, enums, annotations, and arrays of these types, and the default value cannot be null.
+
+
+3.) Method Level Annotation Example
+Let's imagine that, before serializing an object to a JSON string, we want to execute some method to initialize an object. For that reason, we're going to create an annotation to mark this method:
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface Init {
+}
+
+We declared a public annotation with runtime visibility that we can apply to our classes' methods.
+
+
+4.)Applying Annotations
+Now, let's see how we can use our custom annotations. For instance, let's imagine that we have an object of type Person that we want to serialize into a JSON string. This type has a method that capitalizes the first letter of the first and last names. We'll want to call this method before serializing the object:
+
+@JsonSerializable
+public class Person {
+
+    @JsonElement
+    private String firstName;
+
+    @JsonElement
+    private String lastName;
+
+    @JsonElement(key = "personAge")
+    private String age;
+
+    private String address;
+
+    @Init
+    private void initNames() {
+        this.firstName = this.firstName.substring(0, 1).toUpperCase() 
+          + this.firstName.substring(1);
+        this.lastName = this.lastName.substring(0, 1).toUpperCase() 
+          + this.lastName.substring(1);
+    }
+
+    // Standard getters and setters
+}
+By using our custom annotations, we're indicating that we can serialize a Person object to a JSON string. In addition, the output should contain only the firstName, lastName, and age fields of that object. Moreover, we want the initNames() method to be called before serialization.
+
+By setting the key parameter of the @JsonElement annotation to “personAge”, we are indicating that we'll use this name as the identifier for the field in the JSON output.
+
+For the sake of demonstration, we made initNames() private, so we can't initialize our object by calling it manually, and our constructors aren't using it either.
+
+
+
+5.)Processing Annotations
+
+freestar
+So far, we have seen how to create custom annotations and how to use them to decorate the Person class. Now, we're going to see how to take advantage of them by using Java's Reflection API.
+
+The first step will be to check whether our object is null or not, as well as whether its type has the @JsonSerializable annotation or not:
+
+private void checkIfSerializable(Object object) {
+    if (Objects.isNull(object)) {
+        throw new JsonSerializationException("The object to serialize is null");
+    }
+        
+    Class<?> clazz = object.getClass();
+    if (!clazz.isAnnotationPresent(JsonSerializable.class)) {
+        throw new JsonSerializationException("The class " 
+          + clazz.getSimpleName() 
+          + " is not annotated with JsonSerializable");
+    }
+}
+Then, we look for any method with @Init annotation, and we execute it to initialize our object's fields:
+
+private void initializeObject(Object object) throws Exception {
+    Class<?> clazz = object.getClass();
+    for (Method method : clazz.getDeclaredMethods()) {
+        if (method.isAnnotationPresent(Init.class)) {
+            method.setAccessible(true);
+            method.invoke(object);
+        }
+    }
+ }
+
+The call of method.setAccessible(true) allows us to execute the private initNames() method.
+
+After the initialization, we iterate over our object's fields, retrieve the key and value of JSON elements, and put them in a map. Then, we create the JSON string from the map:
+
+private String getJsonString(Object object) throws Exception {	
+    Class<?> clazz = object.getClass();
+    Map<String, String> jsonElementsMap = new HashMap<>();
+    for (Field field : clazz.getDeclaredFields()) {
+        field.setAccessible(true);
+        if (field.isAnnotationPresent(JsonElement.class)) {
+            jsonElementsMap.put(getKey(field), (String) field.get(object));
+        }
+    }		
+     
+    String jsonString = jsonElementsMap.entrySet()
+        .stream()
+        .map(entry -> "\"" + entry.getKey() + "\":\"" 
+          + entry.getValue() + "\"")
+        .collect(Collectors.joining(","));
+    return "{" + jsonString + "}";
+}
+Again, we used field.setAccessible(true) because the Person object's fields are private.
+
+Our JSON serializer class combines all the above steps:
+
+public class ObjectToJsonConverter {
+    public String convertToJson(Object object) throws JsonSerializationException {
+        try {
+            checkIfSerializable(object);
+            initializeObject(object);
+            return getJsonString(object);
+        } catch (Exception e) {
+            throw new JsonSerializationException(e.getMessage());
+        }
+    }
+}
+
+--------------------------------------------------------------------------------------------------------------------------------------                    revise again ana again and practice...

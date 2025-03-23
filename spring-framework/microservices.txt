@@ -1,0 +1,261 @@
+==========================================MicroService===========================================
+what is microservice?
+before microservice we used to follow monolithic architecture(all modules in single app) deployed in sinle bundle.
+
+now problem is that if we have some changes in one service than we have to rebundle and deploy whole again.
+whole testing should be done on whole project.
+also have buildings problem like developers have to communicate each other like no conflicts.
+
+problem in scale.
+
+after microservice--->
+large apps are divide into smaller parts and can commincate each other over rest calls.
+
+
+---------------------------------------------------------------------------------------------------
+if we use multiple services to communicate each other , user will see different url calls as every server has its own
+deployment url.
+So to avoid this discripency we have an api gateway which will handle all request and response.
+now ho we do authentication for these services...we will use okta auth over api gateway.
+
+we will create a service registry which work as a centralized registry to handle all services and check all services are working.
+other services can be called by their names. all load balancing will be done by it.
+
+we use mainly eureka server.it is also a spring boot project.which have dependencies of spring cloud and eureka server..
+
+
+Eureka Server-->
+a)it is our first step.
+
+i)just create a spring boot project with added dependency of eureka server and cloud bootstrap..
+ii)in the main file just add @EnableEurekaServer annotation on it.
+iii)now third thing is that we have to tell our project that you are yourself server not a client.
+    for this we have to add some properties.
+	
+iv)just add some properties.
+
+server:
+  port: 8762
+eureka:
+  instance: 
+    hostname: localhost
+  client:
+    registerWithEureka: false
+    fetchRegistry: false
+spring:
+  application:
+    name: Eureka-Server
+	
+these properties are just telling that we are not a client we are a server.
+
+v)now which microservices we want to register with eureka we have to put annotaion @EnableDiscoveryClient on main.
+vi)now in the microservice project we have to put some properties also.
+
+spring:
+  application:
+    name: Employee-database    // this is the service name which we will redirect
+server:
+  port: 8888                   // port on which microservice running
+eureka:
+  client:
+    registerWithEureka: true
+    fetchRegistry: true                                         // telling we are client
+    serviceUrl:
+      defaultZone: ${EUREKA_URI:http://localhost:8762/eureka}   // eureka service url
+  instance:
+    preferIpAddress: true                                       //it will prefer hostname to guess
+
+if any error comes just add jersey dependency.
+
+now it get registered..
+
+vii)create another service and call the first service from inside...
+
+a)	
+	@Bean
+	@LoadBalanced                            // this is main otherwise eureka service not get called
+	public RestTemplate getTemplate()
+	{
+		return new RestTemplate();
+	}
+
+
+@Autowired
+private RestTemplate template;	
+
+@ResponseBody
+@GetMapping(value="/client/service")
+private String getEmployeeServiceCall()
+{
+	String url= "http://EMPLOYEE/primary-service/primary";
+	return template.getForObject(url, String.class);
+}
+
+}
+
+############here we can see we dont need hostname and port we just can call by eureka name in url u can see EMPLOYEE.
+
+======================================================================================
+Feign Client--->
+It is also developed by netflix.
+it is same as rest template but it follows declerative approach.
+we can declare our methods using annotation and we can call them directly..no need to cast and all...
+
+example--> like we have to take response from another service in dtring.
+
+i)add maven dependecy for open feign 
+<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-openfeign</artifactId>
+		</dependency>
+		
+ii)annotate main class with @EnableFeignClients
+
+iii)make a interface where we can create our method.
+
+@FeignClient(name="EMPLOYEE")      /// this is the name of our microservice on eureka
+public interface ClientServiceExternal {
+
+	@GetMapping(value="/primary-service/primary")
+	String getResponse();
+}
+
+iv)just autowire and call the interface whereever u want....it will call service//primary-service/primary main one
+======================================================================================
+
+API GATEWAY--->
+It is also a microservice like service registry(eureka) and have some common features.
+eureka is used for internal communication with another services but gateway is used by client to coonect with microservice.
+we cannot give users to call microservices api via different different port we will give one gateway and it will call it.
+
+Spring Cloud Gateway we will use-->
+
+https://docs.spring.io/spring-cloud-gateway/docs/current/reference/html/ 
+
+follow the documentation.
+
+for this we need to add dependency..and we have to create new starter project and also have to register it as eureka client.
+
+<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webflux</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-gateway</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+		</dependency>
+		
+		// remember not to add spring-mvc dependency otherwise build fail
+
+a)first register it as a eureka client using @enableDiscoveryClient.
+now need to add yml file as usual.
+
+spring:
+  application:
+    name: CLIENT_API_GATEWAY                        // name of our gateway
+  cloud:
+    gateway:
+      routes:
+        - id: EMPLOYEE                             // for every service we define routes
+          uri: lb://EMPLOYEE                       // lb is loadbalancer here.
+          predicates:
+            - Path=/primary-service/**
+        
+        - id: SERVICE
+          uri: lb://SERVICE
+          predicates:
+             - Path=/client-service/**
+server:
+  port: 8083
+eureka:
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://localhost:8762/eureka/
+  instance:
+    hostname: localhost    
+
+
+so whenever any path matches predicate it will redirect it to that service uri ...
+if we have multiple mapping urls for service we can also define it in the path.
+
+ - Path=/client-service/**,/hotels/**
+======================================================================================
+now lets learn spring cloud config and how config related changes deploy without restarting a server.
+it is a repositry used to save our configs or in other word we can say to externalize our local configs.
+if some configs are repeating we can externalize them.
+
+config server provides client-server architecture.
+
+it is also a microservice project as a eureka client having a dependency of spring-cloud-server.
+
+<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-config-server</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+		</dependency>
+		
+now to make it is a config server we have to annotate the main class with 
+@EnableConfigServer
+@EnableDiscoveryClient
+
+and in application.yml file we have to do some properties changes.
+
+spring:
+  application:
+    name: CONFIG-SERVER    
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/manusinghraghava/micro-configurations
+          clone-on-start: true
+          default-label: main                              // this is our main branch name
+		  
+
+now we can save some files on this branch.
+a)application.yml     ///// whatever properties we will save into it will reflect.it is default.
+b)application-dev.yml, application-prod.yml these are environment specific ...but to use them we have make these profile active.
+
+now to use common properties in microservices...we have to add one dependency on those microservice..
+
+<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-config</artifactId>
+		</dependency>
+		
+and some changes in properties file also..
+
+spring:
+  application:
+    name: Service
+  config:
+    import: optional:configserver:http://localhost:8085/     // this is the url of config server.
+	
+===============================================================================================================
+Fault Tolerance(Reselience 4j |||| hystrix)--->
+
+if one service is calling other service and it is down so we will got a fault.	
+
+
+
+=====================================
+
+videos-->
+spring boot first
+https://www.youtube.com/watch?v=Pz7w_JZI148&list=PL0zysOflRCelb2Y4WOVckFC6B050BzV0D
+https://github.com/manusinghraghava/micro-configurations/blob/main/application.yml
+https://www.youtube.com/watch?v=0B1M7TUE360&list=PLQTYNpk8jwk2StWpxZU93ZdVC14OVKNED
+https://www.youtube.com/watch?v=x1BR0D-buQg&list=PLVz2XdJiJQxz3L2Onpxbel6r72IDdWrJh

@@ -1,0 +1,14 @@
+Insert_update IbmGravityUserDetails;memberId[unique=true];id[unique=true]
+;GTBBWP8;4342765
+
+Insert_update IbmQwikcilverUserWalletDetails;externalWalletId[unique=true];walletNumber;walletPin;&wallet
+                                            ;1648532586335-b46d007b-5441-44ad-918a-197c0dbdf41f;3200015010057540;;3200015010057540
+											
+Insert_update Customer;uid[unique=true];crmUserDetails(id);crmUserWalletDetails(&wallet)
+                      ;testfabindia3@gmail.com;4342765;3200015010057540
+					  
+					  
+					  
+					  
+Insert_update Customer;contactNumber[unique=true];crmUserDetails(id);crmUserWalletDetails(&wallet)
+                      ;9981367458;4342765;3200015010057540

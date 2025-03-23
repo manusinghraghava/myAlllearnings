@@ -1,0 +1,80 @@
+import de.hybris.platform.core.Registry;
+import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.orderprocessing.model.OrderProcessModel;
+import de.hybris.platform.core.model.order.OrderModel;
+import de.hybris.platform.processengine.enums.ProcessState;
+import de.hybris.platform.servicelayer.search.FlexibleSearchQuery;
+import de.hybris.platform.core.enums.OrderStatus;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Arrays;
+
+import org.apache.commons.collections4.CollectionUtils;
+import de.hybris.platform.servicelayer.search.SearchResult;
+import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.processengine.BusinessProcessService;
+
+import de.hybris.platform.core.model.order.AbstractOrderModel;
+import de.hybris.platform.core.model.order.OrderModel;
+import de.hybris.platform.core.model.user.AddressModel;
+import de.hybris.platform.core.model.user.CustomerModel;
+import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.servicelayer.search.FlexibleSearchService;
+import de.hybris.platform.servicelayer.search.SearchResult;
+import de.hybris.platform.servicelayer.event.EventService;
+
+import de.hybris.platform.order.events.SubmitOrderEvent;
+
+import de.hybris.platform.store.BaseStoreModel;
+import java.lang.System;
+import de.hybris.platform.orderprocessing.model.OrderProcessModel;
+import de.hybris.platform.processengine.BusinessProcessService;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import com.amway.core.model.AmwayAccountModel;
+
+import de.hybris.platform.processengine.model.BusinessProcessModel;
+
+
+		final ModelService modelService = (ModelService) 	Registry.getApplicationContext().getBean("modelService");
+		final EventService eventService = (EventService) Registry.getApplicationContext().getBean("eventService");
+		final BusinessProcessService businessProcessService   = (BusinessProcessService) Registry.getApplicationContext().getBean("businessProcessService");
+		
+		String query ="SELECT {o.pk} as OrderCode,{pte.authCode} as AuthCode FROM {PaymentTransactionEntry as pte join PaymentTransaction as pt on {pte.paymentTransaction} = {pt.pk} join Order as o on {o.pk}={pt.order}} WHERE ({o.lynxGroupNumber} is null or {o.lynxGroupNumber}={o.code}) and {pte.creationTime} >= '2020-02-07 00:00' and {creationTime} <= '2020-02-08 00:00' and {pte.authCode} in ('020490', '947281', '068613', '053890', '019330', '033624', '083438', '285823', '748068', '231873', '636762', 'R59441', 'R81595', '013063', '456136', '587746', '769857', '206415', '011890', '968313', '112986', '218814', '829436', '661854', '683886', '042586', '427885', '762546', '001807', '004344', '680002', '684263', '418307', '183461', '841489', '004754', 'DP2301', '153906', '006569', '016851', '005219', '580947', '058081', '835225', '038118', '002690', '703834', '932431', '886403', '651109', '007808', '001047', '822788', '712813', '042498', '032603', 'R99895', '922317', '007727', '976287', '082409', '144154', '004997', '965108', '016436', '992775', '197016', '108271', '017985', '909852', '853272', '321610', '910603', '654753', '010736', '952557', '008184', '013584', '020423', 'R62182', '357811', '911248', '024992', '054947', '090070', '060747', '677367', '173737', '078520', '048341', '012803', '532333', '059357', '064172', '694822', '445631', 'R92793', '512174', '721204')";
+		
+		final SearchResult<OrderModel> searchResult = ((FlexibleSearchService) Registry.getApplicationContext().getBean("flexibleSearchService")).search(query);
+		
+		final String INVOICED_SHIPPED = "generateCreateInvoiceAndShippedEvent";
+		final List<OrderModel> results = searchResult.getResult();
+		
+		if (CollectionUtils.isNotEmpty(results))
+			{
+			for (final OrderModel order : results) 
+			{
+			if(CollectionUtils.isNotEmpty(order.getOrderProcess()) && CollectionUtils.isNotEmpty(order.getAmwayInvoices())){
+			order.getOrderProcess().stream().filter{process -> process.getCode().startsWith(order.getStore().getSubmitOrderProcessCode())}.forEach{orderProcess -> businessProcessService.restartProcess(orderProcess,INVOICED_SHIPPED)};
+				
+			}
+			}
+			}
+			
+			===================================================================================================
+			for fetching order process we can laso use this
+			
+			import de.hybris.platform.processengine.BusinessProcessService
+			import de.hybris.platform.processengine.model.BusinessProcessModel;
+			import de.hybris.platform.servicelayer.search.FlexibleSearchService
+			import de.hybris.platform.orderprocessing.model.OrderProcessModel
+ 
+			def orderProcesses = flexibleSearchService.search("SELECT {pk} from {OrderProcess as op} where {op.processDefinitionName} = 'order-process-v1' and {op.order} IN ({{SELECT {pk} from {Order as o} where {o.code} IN ('yourOrderNumber1',’yourOrderNumber2’)}})").getResult()
+			  orderProcesses.each{
+              BusinessProcessModel process = (BusinessProcessModel)it;
+              businessProcessService.restartProcess(it, "generateOrderShippedEvent");
+}
+ 

@@ -1,0 +1,51 @@
+$productCatalog = indProductCatalog
+$catalogVersion = catalogversion(catalog(id[default = $productCatalog]), version[default = 'Online'])[unique = true, default = $productCatalog:Online]
+$siteUid=indsite
+
+$supercategories = source(code, $catalogVersion)[unique = true]
+$variantSupercategories = supercategories(code, $catalogVersion)[mode=replace]
+$categories = target(code, $catalogVersion)[unique = true]
+$businessNaturesVisibility = lynxBusinessNaturesVisibility(code)[default = 'AmwayBusinessNature_4,AmwayBusinessNature_1,VISITOR'][mode=replace]
+$segmentationLevelClassesVisibility = lynxSegmentationLevelClassesVisibility(code)[default='SegmentationLevelTypeEnum_2,SegmentationLevelTypeEnum_4,SegmentationLevelTypeEnum_6,SegmentationLevelTypeEnum_9'][mode=replace]
+$categoryAvailability = lynxCategoryAvailability(code[default = ENABLED])
+$allowedPrincipals = allowedPrincipals(uid)[default = 'customergroup']
+$internalName = lynxInternalName
+$brandsSupercategory = brands
+$superbranCategories = superCategories(code, $catalogVersion)[default = $brandsSupercategory][mode=replace]
+
+$shopCategoryId = 100000
+# Language
+$lang = en
+
+
+
+INSERT VariantValueCategory;code[unique = true];name[lang=en];$variantSupercategories;sequence;$businessNaturesVisibility;$segmentationLevelClassesVisibility;$catalogVersion;$categoryAvailability; $allowedPrincipals
+
+;	Size_500_ml_100949ID	;	500 ml	;	Size_Product_Variant	;	200
+;	Size_1_Ltr_110488ID	;	1 Ltr	;	Size_Product_Variant	;	201
+;	Size_1_Ltr_112532ID	;	1 Ltr	;	Size_Product_Variant	;	202
+;	Size_500_ml_116511ID	;	500 ml	;	Size_Product_Variant	;	203
+;	Size_500_ml_116512ID	;	500 ml	;	Size_Product_Variant	;	204
+;	Size_500_ml_116514ID	;	500 ml	;	Size_Product_Variant	;	205
+;	Size_250_ml_118101ID	;	250 ml	;	Size_Product_Variant	;	206
+;	Size_250_ml_118109ID	;	250 ml	;	Size_Product_Variant	;	207
+;	Size_60_ml_119606ID	;	60 ml	;	Size_Product_Variant	;	208
+;	Size_60_ml_119607ID	;	60 ml	;	Size_Product_Variant	;	209
+;	Size_350_g_215358ID	;	350 g	;	Size_Product_Variant	;	210
+;	Size_5_Ltr_239814ID	;	5 Ltr	;	Size_Product_Variant	;	211
+;	Size_250_ml_246164ID	;	250 ml	;	Size_Product_Variant	;	212
+;	Size_250_ml_246167ID	;	250 ml	;	Size_Product_Variant	;	213
+;	Size_250_ml_246168ID	;	250 ml	;	Size_Product_Variant	;	214
+;	Size_200_ml_272156ID	;	200 ml	;	Size_Product_Variant	;	215
+;	Size_200_ml_272157ID	;	200 ml	;	Size_Product_Variant	;	216
+;	Size_1_Ltr_E0001ID	;	1 Ltr	;	Size_Product_Variant	;	217
+;	Size_1_Ltr_E3417ID	;	1 Ltr	;	Size_Product_Variant	;	218
+;	Size_500_ml_E7506ID	;	500 ml	;	Size_Product_Variant	;	219
+;	Size_1_Ltr_EAD1605ID	;	1 Ltr	;	Size_Product_Variant	;	220
+;	Size_500_ml_WHU9061ID	;	500 ml	;	Size_Product_Variant	;	221
+;	Size_500_ml_215358ID	;	200 g	;	Size_Product_Variant	;	222
+
+
+
+
+

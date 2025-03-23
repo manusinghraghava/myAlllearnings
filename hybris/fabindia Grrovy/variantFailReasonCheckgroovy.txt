@@ -1,0 +1,28 @@
+import org.apache.commons.lang3.StringUtils;
+import de.hybris.platform.core.Registry;
+import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.servicelayer.search.FlexibleSearchQuery;
+import de.hybris.platform.servicelayer.search.FlexibleSearchService;
+import org.apache.commons.collections4.CollectionUtils;
+import de.hybris.platform.servicelayer.search.SearchResult;
+import de.hybris.platform.core.model.product.*;
+import de.hybris.platform.europe1.model.*;
+import de.hybris.platform.catalog.enums.*;
+import de.hybris.platform.variants.model.*
+import de.hybris.platform.inboundservices.model.*;
+String query = "select {pk} from {InboundRequest as io JOIN IntegrationRequestStatus as s on {io.status}={s.pk}} where {s.code}='ERROR' and {type} IN ('RetailGenericVariant','RetailInboundProduct') and {creationtime}> '2022-07-26 08:09:52'";
+
+			
+		final SearchResult<InboundRequestModel> searchResult = ((FlexibleSearchService) Registry.getApplicationContext().getBean("flexibleSearchService")).search(query);
+final ModelService modelService = (ModelService) Registry.getApplicationContext().getBean("modelService"); 
+final List<InboundRequestModel> results = searchResult.getResult();
+
+println results.size();
+if(CollectionUtils.isNotEmpty(results))
+{
+for(InboundRequestModel request :results)
+{
+
+println "key--->"+request.getIntegrationKey() + "Reason----->"+request.getErrors().stream().findAny().get().getMessage()
+}
+}

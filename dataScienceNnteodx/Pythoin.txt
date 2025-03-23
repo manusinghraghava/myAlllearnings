@@ -1,0 +1,3179 @@
+Learn Python-->General Purpose Language
+It is an oop programming.
+we are going to learn 3.x.
+=========================================================theory basic ==================================
+IDE-->Pycharm / Anaconda jupyter notebook
+
+file extension will be .ipynb(editable) or .py 
+
+Here are naming conventions for Python identifiers −
+
+Python Class names start with an uppercase letter. All other identifiers start with a lowercase letter.
+
+Starting an identifier with a single leading underscore indicates that the identifier is private identifier.
+
+Starting an identifier with two leading underscores indicates a strongly private identifier.
+
+If the identifier also ends with two trailing underscores, the identifier is a language-defined special name.
+
+Python programming provides no braces to indicate blocks of code for class and function definitions or flow control. Blocks of code are denoted by line indentation, which is rigidly enforced.
+
+The number of spaces in the indentation is variable, but all statements within the block must be indented the same amount. For example −
+
+if True:
+   print ("True")
+else:
+   print ("False")
+
+instead of {} here works : and spaces.
+remember here true and false will be True and False different from java.
+
+a) here we dont need to define data types python will automatically do all the operations.
+
+2*3=6
+2+3=5
+6/2=3.0
+
+here by default we will get a double value..
+so for int value we have to use two //
+
+6//2 =3
+------------------------------------------------------
+to check the type of variable we use type(variable) which is little bit different from java
+type(x)<==>x.getClass().getName();
+
+Example
+a,b,c = 10,1.5,'abc'
+type(a)
+<class 'int'>
+type(b)
+<class 'float'>
+type(c)
+<class 'str'>
+
+-----
+you can delete a single object or multiple objects by using the del statement. For example −
+
+del var
+del var_a, var_b
+
+------------
+You can also assign multiple objects to multiple variables. For example −
+
+a,b,c = 1,2,"Zara Ali"
+
+print (a)
+print (b)
+print (c)
+
+a,b,c=10,False,'manu'
+print(type(a),type(b),type(c))
+
+-------------
+public class OperatorExample{  
+public static void main(String args[]){  
+System.out.println(10<<2);//10*2^2=10*4=40  
+System.out.println(10<<3);//10*2^3=10*8=80  
+System.out.println(20<<2);//20*2^2=20*4=80  
+System.out.println(15<<4);//15*2^4=15*16=240  
+}}  
+
+left shift increase right shift decrease. 
+give int value in result.
+-----------------
+
+for power in python we have a very simple way just use **
+
+2**3=2*2*2=8
+
+String here is in '' as well as "".
+print('navin')  we can use also vice versa to print '' and ""
+"manu's laptop"
+'manu "laptop"'
+
+like java we can use \ to avoid special characters
+
+manu\'s laptop
+
+if u want to print name 10 times unlike java we can do multiple here
+
+10*'navin' // it will print it 10 times
+
+\n here we use here for new line...
+
+for use\n in your String we have to tell python it is raw String.
+
+Print(r'c:\manu\newfolder')  // now it will print full line.
+
+-----------------------------------------------------------------------------------
+Variables in Python-->
+x=10
+x+3 =13
+
+if we want to use output from previous operation instead of assigning in varaible we can use _ here
+
+_  +7 =20
+
+here String we can also treat as array-->
+in java we have to convert it to char array to do operations on characters but here we dont need 
+
+example-->
+
+name = 'manu'
+name[3]=u
+name[-1]=u
+
+if we give - here it will start from backside.
+
+name[0:2] = ma   it is same as name.subString(0,2) in java
+name[1:]  = anu it is same as name.subString(1) in java
+len(name) = 4  same as name.length()
+
+All Strings in python are truly Immutable.
+
+str = 'Hello World!'
+
+print (str)          # Prints complete string
+print (str[0])       # Prints first character of the string
+print (str[2:5])     # Prints characters starting from 3rd to 5th
+print (str[2:])      # Prints string starting from 3rd character
+print (str * 2)      # Prints string two times
+print (str + "TEST") # Prints concatenated string
+
+a='manvendra'
+a[0:5:2]
+'mne'
+
+third : defines the traverse in the laps of 1
+
+
+-------------------------------------------------------------------------------------------
+bitwise operator in python
+
+a = 60            # 60 = 0011 1100
+b = 13            # 13 = 0000 1101
+
+# Binary AND
+c = a & b        # 12 = 0000 1100
+print ("a & b : ", c)
+
+# Binary OR
+c = a | b        # 61 = 0011 1101
+print ("a | b : ", c)
+
+# Binary XOR
+c = a ^ b        # 49 = 0011 0001
+print ("a ^ b : ", c)
+
+# Binary Ones Complement
+c = ~a;           # -61 = 1100 0011
+print ("~a : ", c)
+
+# Binary Left Shift
+c = a << 2;       # 240 = 1111 0000
+print ("a << 2 : ", c)
+
+# Binary Right Shift
+c = a >> 2;       # 15 = 0000 1111
+print ("a >> 2 : ", c)
+
+--------------------------------------------------------------------------------------------
+
+here logical operator is bit different than java.
+&& -->and
+|| -->or
+!  -->not
+a,b=10,20
+(a and b) is true//1.
+(a or b) is true.
+Not(a and b) is false.
+
+----------------------------------------------------------------------------------------------
+Python Membership Operators
+Python’s membership operators test for membership in a sequence, such as strings, lists, or tuples. There are two membership operators as explained below −
+
+
+
+Operator	
+in	=======>Evaluates to true if it finds a variable in the specified sequence and false otherwise.	x in y, here in results in a 1 if x is a member of sequence y.
+
+
+not in	========>Evaluates to true if it does not finds a variable in the specified sequence and false otherwise.	x not in y, here not in results in a 1 if x is not a member of sequence y.
+
+Example-->
+string = 'bobbyhadz.com'
+
+substring = 'abc'
+
+if substring not in string:
+    # 👇 this runs
+    print('The string does NOT contain the substring')
+else:
+    print('The string contains the substring')
+
+--------------------------------------
+Python Identity Operators
+Identity operators compare the memory locations of two objects. There are two Identity operators explained below −
+
+
+
+Operator
+is=========>	Evaluates to true if the variables on either side of the operator point to the same object and false otherwise.	x is y, here is results in 1 if id(x) equals id(y).
+
+
+is not	=======>Evaluates to false if the variables on either side of the operator point to the same object and true otherwise.	x is not y, here is not results in 1 if id(x) is not equal to id(y).
+
+
+ In Python != is defined as not equal to operator. It returns True if operands on either side are not equal to each other, and returns False if they are equal. Whereas is not operator checks whether id() of two objects is same or not. If same, it returns False and if not same, it returns True. And is not operator returns True if operands on either side are not equal to each other, and returns false if they are equal.
+ 
+ a = 10
+b = 10
+  
+print(a is not b)   //false
+print(a==b)   //true
+print(id(a), id(b)) 
+  
+c = "Python"
+d = "Python"
+print(c is not d)
+print(id(c), id(d))   true
+  
+e = [1,2,3,4]
+f = [1,2,3,4]
+print(e is not f)
+print(id(e), id(f))    // it will return true because list always have different address.
+
+is --> ==
+is not -->!=
+
+same like java if wrapper point to same object it will be same but always collection is false
+-----------------------------------------------------------
+here boolean values have different Syntax true<==>True  false<==>False.
+
+multi level comments and single line is different here
+//java <==> #python  //--sql
+/** **/<==> """ """  ///**/
+-------------------------------------------------------------------------------------------
+=============================================================
+Some points left -->
+
+Object Identity
+In Python, every created object identifies uniquely in Python. Python provides the guaranteed that no two objects will have the same identifier. The built-in id() function, is used to identify the object identifier. Consider the following example.
+
+a = 50  
+b = a  
+print(id(a))  
+print(id(b))  
+# Reassigned variable a  
+a = 500  
+print(id(a))  
+Output:
+
+140734982691168
+140734982691168
+2822056960944
+We assigned the b = a, a and b both point to the same object. When we checked by the id() function it returned the same number. We reassign a to 500; then it referred to the new object identifier.
+
+here id print address of 50 and 500.
+==============================================================
+Conditional Statements in python
+
+number = int(input("Enter the number?"))     ///input is here to take the input from user
+if number==10:  
+    print("number is equals to 10")  
+elif number==50:  
+    print("number is equal to 50");  
+elif number==100:  
+    print("number is equal to 100");  
+else:  
+    print("number is not equal to 10, 50 or 100");  
+
+
+here everything is space no {}  ...space define for which parent it is their with the help of : (Gglobar operator)
+
+input here is same Scanner in java ....
+scanner sc = new Scanner(System.in) <===>  input()
+by default it is string in python for convert it to int we use int() function here.
+
+===============================================================
+Loops in Python..
+
+a)For Loop-->
+In Python, the for loop is often used to iterate over iterable objects such as lists, tuples, or strings. Traversal is the process of iterating across a series. 
+
+Syntax of for Loop
+for value in sequence:  
+    {loop body}
+
+in java it is like 
+for(datatype value : sequence)
+{
+loop body
+}	
+
+example-->
+
+# Code to find the sum of squares of each element of the list using for loop  
+  
+# creating the list of numbers  
+numbers = [3, 5, 23, 6, 5, 1, 2, 9, 8]  
+  
+# initializing a variable that will store the sum  
+sum_ = 0  
+  
+# using for loop to iterate over the list  
+for num in numbers:  
+     sum_ = sum_ + num ** 2   
+print("The sum of squares is: ", sum_)  
+
+Output:
+The sum of squares is:  774
+
+The range() Function
+Because the "range" function appears so frequently in for loops, we might mistakenly believe the range is a component of the syntax of for loop. It isn't: it's a Python built-in method that provides a series that follows a specified pattern (usually serial integers), fulfilling the criteria of giving a series for the for expression to run over. There is no necessity to count because for can act straight on sequences most of the time. If they're coming from some other language with distinctive loop syntax, this is a frequent novice construct:
+
+Code
+
+my_list = [3, 5, 6, 8, 4]  
+for iter_var in range( len( my_list ) ):  =====>range(0, 5)
+    my_list.append(my_list[iter_var] + 2)  
+print( my_list )  
+Output:
+
+[3, 5, 6, 8, 4, 5, 7, 8, 10, 6]
+
+-----------------------------------------------------------------
+while loop-->
+The Python while loop iteration of a code block is executed as long as the given condition, i.e., conditional_expression, is true.
+
+If we don't know how many times we'll execute the iteration ahead of time, we can write an indefinite loop.
+
+while conditional_expression:  
+    Code block of while  
+	
+The given condition, i.e., conditional_expression, is evaluated initially in the Python while loop. Then, if the conditional expression gives a boolean value True, the while loop statements are executed. The conditional expression is verified again when the complete code block is executed. This procedure repeatedly occurs until the conditional expression returns the boolean value False.
+
+The statements of the Python while loop are dictated by indentation.
+The code block begins when a statement is indented & ends with the very first unindented statement.
+Any non-zero number in Python is interpreted as boolean True. False is interpreted as None and 0.
+
+# Python program example to show the use of while loop   
+  
+num = 15  
+  
+# initializing summation and a counter for iteration  
+summation = 0  
+c = 1  
+  
+while c <= num: # specifying the condition of the loop  
+    # begining the code block  
+    summation = c**2 + summation  
+    c = c + 1    # incrementing the counter  
+  
+# print the final sum  
+print("The sum of squares is", summation)  
+
+another example--> to check no is prime or not-->
+
+we know if no is dividied by itself and 1 is prime.
+logic-->
+trvaerse 2 to number/2 and check if mod is 0 any where it is not prime else it is prime..
+
+sl-->
+
+def primeNumber(nums) :                                      // declaring method
+    for number in nums :
+        divident =2
+        prime = False
+        while divident <= number/2 :
+            if number%divident == 0 :
+                prime=False
+                break
+            else :
+                prime=True
+                divident = divident+1
+        print("Number : "+str(number)+" is :"+str(prime))   // here we have to convert everything in string
+nums=[9,10,11]
+primeNumber(nums)
+
+
+---------------------
+
+What is Pass Statement in Python?
+The null statement is another name for the pass statement. A Comment is not ignored by the Python interpreter, whereas a pass statement is not. Hence, they two are different Python keywords.
+
+We can use the pass statement as a placeholder when unsure what code to provide. So, we only have to place the pass on that line. Pass may be used when we don't wish any code to be executed. We can simply insert a pass in places where empty code is prohibited, such as loops, functions, class definitions, or if-else statements.
+
+# Python program to show how to use a pass statement in a for loop  
+'''''pass acts as a placeholder. We can fill this place later on'''  
+sequence = {"Python", "Pass", "Statement", "Placeholder"}  
+for value in sequence:  
+    if value == "Pass":  
+        pass # leaving an empty if block using the pass keyword    ///it will like continue but remaining code will execute.
+    else:  
+        print("Not reached pass keyword: ", value)  
+
+==============================================================
+
+String --->Till now, we have discussed numbers as the standard data-types in Python. In this section of the tutorial, we will discuss the most popular data type in Python, i.e., string.
+Python string is the collection of the characters surrounded by single quotes, double quotes, or triple quotes. The computer does not understand the characters; internally, it stores manipulated character as the combination of the 0's and 1's.
+
+Each character is encoded in the ASCII or Unicode character. So we can say that Python strings are also called the collection of Unicode characters.
+
+name = 'manu'   // it is a char array from start
+name[3]=u
+name[-1]=u
+
+if we give - here it will start from backside.
+
+name[0:2] = ma   it is same as name.subString(0,2) in java
+name[1:]  = anu it is same as name.subString(1) in java
+len(name) = 4  same as name.length()
+
+but here in python we dont have any replace method all Strings in python are truly Immutable.
+
+str = 'Hello World!'
+
+print (str)          # Prints complete string
+print (str[0])       # Prints first character of the string
+print (str[2:5])     # Prints characters starting from 3rd to 5th
+print (str[2:])      # Prints string starting from 3rd character
+print (str * 2)      # Prints string two times
+print (str + "TEST") # Prints concatenated string
+
+a='manvendra'
+a[0:5:2]
+'mne'
+
+third : defines the traverse in the laps of 1
+
+
+
+we can also create String Using triple quotes.
+
+#Using triple quotes  
+str3 = '''Triple quotes are generally used for  
+    represent the multiline or 
+    docstring'''   
+
+
+Updating the content of the strings is as easy as assigning it to a new string. The string object doesn't support item assignment i.e., A string can only be replaced with new string since its content cannot be partially replaced. Strings are immutable in Python.
+
+str = "HELLO"    
+str[0] = "h"    
+print(str)    //error they are truly immutable..
+
+-----------
+
+str = "HELLO"    
+print(str)    
+str = "hello"    
+print(str)      // it will work as we are assigning a whole new object.
+
+------------
+As we know that strings are immutable. We cannot delete or remove the characters from the string.  But we can delete the entire string using the del keyword.
+
+str = "JAVATPOINT"  
+del str[1]                /// will give error
+del str                   /// it will work fine.
+
+---------------
+more examples-->
+str = "Hello"     
+str1 = " world"    
+print(str*3) # prints HelloHelloHello    
+print(str+str1)# prints Hello world     
+print(str[4]) # prints o                
+print(str[2:4]); # prints ll                    
+print('w' in str) # prints false as w is not present in str    <===>System.out.println(myStr.contains("Hel"));
+print('wo' not in str1) # prints true as wo is present in str1.     
+print(r'C://python37') # prints C://python37 as it is written    
+print("The string str : %s"%(str)) # prints The string str : Hello     //use for formatting.
+
+-----------------------
+
+The format() method
+The format() method is the most flexible and useful method in formatting strings. The curly braces {} are used as the placeholder in the string and replaced by the format() method argument. Let's have a look at the given an example:
+
+# Using Curly braces  
+print("{} and {} both are the best friend".format("Devansh","Abhishek"))  
+  
+#Positional Argument  
+print("{1} and {0} best players ".format("Virat","Rohit"))  
+  
+#Keyword Argument  
+print("{a},{b},{c}".format(a = "James", b = "Peter", c = "Ricky"))  
+ 
+
+-------------------------------------------------------------------------------------------
+some c logics we can also use here..
+
+Python String Formatting Using % Operator
+Python allows us to use the format specifiers used in C's printf statement. The format specifiers in Python are treated in the same way as they are treated in C. However, Python provides an additional operator %, which is used as an interface between the format specifiers and their values. In other words, we can say that it binds the format specifiers to the values.
+
+Consider the following example.
+
+Integer = 10;    
+Float = 1.290    
+String = "Devansh"    
+print("Hi I am Integer ... My value is %d\nHi I am float ... My value is %f\nHi I am string ... My value is %s"%(Integer,Float,String))    
+Output:
+
+Hi I am Integer ... My value is 10
+Hi I am float ... My value is 1.290000
+Hi I am string ... My value is Devansh
+
+-------------------------------------
+methods and example 
+a)len(str)... give length of string
+b)title--->to make it titlecase
+
+str = 'mAnU'
+str=str.title()                  // when there any change in String we have to assign it back.
+print(str)
+
+str.istitle()                    // true to check string is title or not.
+Manu 
+
+title() – Python title() method returns a title cased string by converting the initial letter of each word to a capital letter. capitalize() – The capitalize() method only capitalizes the first character of the string i.e. it converts only the first letter of the input string into uppercase and others to lowercase.  
+_____
+
+c)center()
+
+Python center() method alligns string to the center by filling paddings left and right of the string. This method takes two parameters, first is a width and second is a fillchar which is optional. The fillchar is a character which is used to fill left and right padding of the string.
+
+# Python center() function example  
+# Variable declaration  
+str = "Hello Javatpoint"  
+# Calling function  
+str2 = str.center(20)  if we want another character instead of space use center(20,#)
+# Displaying result  
+print("Old value:", str)  
+print("New value:", str2)  
+
+Old value: Hello Javatpoint
+New value:   Hello Javatpoint                                       
+
+___________
+
+d)count()
+It returns the number of occurences of substring in the specified range. It takes three parameters, first is a substring, second a start index and third is last index of the range. Start and end both are optional whereas substring is required.
+
+# Python count() function example  
+# Variable declaration  
+str = "Hello Javatpoint"  
+str2 = str.count('t')  
+# Displaying result  
+print("occurences:", str2)      //2
+
+# Python count() function example  
+# Variable declaration  
+str = "ab bc ca de ed ad da ab bc ca"  
+oc = str.count('a', 3, 8)  
+# Displaying result  
+print("occurences:", oc)     ///5
+
+___________________________________________________________
+
+e)encode()---> to encode a string in utf-8
+___________________________________________________________
+
+f)endswith()
+
+Python endswith() method returns true of the string ends with the specified substring, otherwise returns false.
+all methods we can also use in a specific range..
+
+str = "Hello this is javatpoint."  
+isends = str.endswith(".")    // true
+
+str = "Hello this is javatpoint."  
+isends = str.endswith("is",0,13)  //true because it is checking on a range.
+
+______________________________
+g)find()---> it is equivalent to indexOf() java
+
+Python find() method finds substring in the whole string and returns index of the first match. It returns -1 if substring does not match.
+
+str = "Welcome to the Javatpoint."  
+# Calling function  
+str2 = str.find("is")  //-1
+str2 = str.find("t")     //8
+str3 = str.find("t",25)  //-1
+
+index()--> it is also same but it give error instead of -1.
+
+___________________________________________________________
+
+h)isalnum()
+Python String isalnum() Method
+Python isalnum() method checks whether the all characters of the string is alphanumeric or not. A character which is either a letter or a number is known as alphanumeric. It does not allow special chars even spaces.
+
+i)isalpha()
+Python String isalpha() Method
+Python isalpha() method returns true if all characters in the string are alphabetic. It returns False if the characters are not alphabetic. It returns either True or False.
+
+j)isdecimal() Method  isdigit()
+Python isdecimal() method checks whether all the characters in the string are decimal or not. Decimal characters are those have base 10.
+
+k)isvalididentifier()
+A valid identifier can have letters (both uppercase and lowercase letters), digits and underscores. The first letter of an identifier should be either a letter or an underscore. You cannot use keywords like int , while etc. as identifiers.
+
+l)islower() Method
+Python string islower() method returns True if all characters in the string are in lowercase. It returns False if not in lowercase.
+--------------------
+>>> def spam(s):
+...     for attr in 'isnumeric', 'isdecimal', 'isdigit':
+...         print(attr, getattr(s, attr)())
+...         
+>>> spam('½')
+isnumeric True
+isdecimal False
+isdigit False
+>>> spam('³')
+isnumeric True
+isdecimal False
+isdigit True
+----------------------
+m)isupper() Method
+Python isupper() method returns True if all characters in the string are in uppercase. It returns False if characters are not in uppercase.
+
+n)isspace() Method
+Python isspace() method is used to check space in the string. It returna true if there are only whitespace characters in the string. Otherwise it returns false. Space, newline, and tabs etc are known as whitespace characters and are defined in the Unicode character database as Other or Separator.
+-------------------
+o)join() Method
+Python join() method is used to concat a string with iterable object. It returns a new string which is the concatenation of the strings in iterable. It throws an exception TypeError if iterable contains any non-string value.
+
+It allows various iterables like: List, Tuple, String etc.
+
+# Python join() method example  
+# Variable declaration  
+str = ":"   # string  
+list = ['1','2','3']    # iterable  
+# Calling function  
+str2 = str.join(list)  
+# Displaying result  
+print(str2)  
+
+it work on other collections not same as in java.
+In case of dictionary, this method join keys only. Make sure keys are string, otherwise it throws an exception.
+
+# Variable declaration  
+dic =  {'key1': 1, 'key2': 2}  
+str = '&'  
+# Calling function  
+str = str.join(dic)  
+# Displaying result  
+print(str)  
+
+key1&key2.
+
+
+in java -->
+ArrayList<String> msg = new ArrayList<>();
+        msg.add("Educative");
+        msg.add("is");
+        msg.add("Informative");
+
+        String result = String.join(delimiter, msg);
+		
+-------------
+p)String ljust() Method
+Python ljust() method left justify the string and fill the remaining spaces with fillchars. This method returns a new string justified left and filled with fillchars.
+
+str = 'Javatpoint'  
+# Calling function  
+str = str.ljust(15,"$")  ///javatpoint$$$$$
+
+rjust() is opposite..
+
+------------------------
+q)lower()//upper()  /// convert and return a new string after converting them.
+
+---------------------------------
+r)lstrip() Method
+Python lstrip() method is used to remove all leading characters from the string. It takes a char type parameter which is optional. If parameter is not provided, it removes all the leading spaces from the string.
+rstrip() is vice versa
+
+str =  "  Javatpoint  "  
+# Calling function  
+str2 = str.lstrip()    //javatpoint remove spaces from left.
+
+str =  "$$$$-Javatpoint-$$$$"  
+# Calling function  
+str2 = str.lstrip('$')  //-Javatpoint-$$$$
+
+-----------------------------------
+s)partition() Method
+Python partition() method splits the string from the string specified in parameter. It splits the string from at the first *****occurrence of parameter**** and returns a tuple. The tuple contains the three parts before the separator, the separator itself, and the part after the separator.
+
+It returns an empty tuple having seperator only, if the seperator not found.
+
+str = "Java is a programming language"
+# Calling function
+str2 = str.partition("is")
+# Displaying result
+print(str2)                  //('Java ', 'is', ' a programming language')
+# when seperate from the start
+str2 = str.partition("Java")
+print(str2)                  //('', 'Java', ' is a programming language')
+# when seperate is the end
+str2 = str.partition("language")  
+print(str2)                  // ('Java is a programming ', 'language', '')
+# when seperater is a substring
+str2 = str.partition("av")
+print(str2)                  //('J', 'av', 'a is a programming language')
+
+str2 = str.partition("not")  
+# Displaying result  
+print(str2)                  // ('Java is a programming language', '', '')
+
+-----------------------------------
+t)replace() Method
+Return a copy of the string with all occurrences of substring old replaced by new. If the optional argument count is given, only the first count occurrences are replaced.
+
+# Python replace() method example  
+# Variable declaration  
+str = "Java is a programming language"  
+# Calling function  
+str2 = str.replace("Java","C")  
+# Displaying result  
+print("Old String: \n",str)  
+print("New String: \n",str2)  
+Output:
+
+Old String: 
+ Java is a programming language
+New String: 
+ C is a programming language
+
+
+---------------------------------------
+u)rfind() Method
+Python rfind() method finds a substring in in the string and returns the highest index. It means it returns the index of most righmost matched subtring of the string. It returns -1 if substring not found.
+
+str = "Learn Java from Javatpoint"  
+# calling function  
+str2 = str.rfind("Java")  
+# displaying result  
+print(str2)  
+Output:
+
+16  ///same as lastIndexOf() java
+
+rindex() Method
+Python rindex() method works same as the rfind() method except it throws error ValueError. This method throws an exception ValueError if the substring is not found. The syntax is given below.
+
+-------------------------
+v)String rsplit() Method
+Python rsplit() method seperates the string and returns a list. It splits from the right using seperator as a delimiter. If seperator is not specified, any whitespace string is a separator. This method does same as split() except splitting from the right which is described in detail below.
+
+# Python rsplit() method example  
+# Variable declaration  
+str = "Java is a programming language"  
+# Calling function  
+str2 = str.rsplit('a')  
+# Displaying result  
+print(str2)  
+Output:
+
+['J', 'v', ' is ', ' progr', 'mming l', 'ngu', 'ge']   /// here a is not present
+
+
+# Python split() method example  
+# Variable declaration  
+str = "Java is a programming language"  
+# Calling function  
+str2 = str.split('a',1)  
+# Displaying result  
+print(str2)  
+  
+str2 = str.split('a',3)  
+# Displaying result  
+print(str2)  
+Output:
+
+['J', 'va is a programming language']
+['J', 'v', ' is ', ' programming language']
+
+split will work on multiple times on occurence while partition not
+----------------------------------
+w)Python String startswith() Method
+Python startswith() method returns either True or False. It returns True if the string starts with the prefix, otherwise False. It takes two parameters start and end. Start is a starting index from where searching starts and end index is where searching stops.
+vicevera endswith()
+
+# Python String startswith() method  
+# Declaring variable  
+str = "Hello Javatpoint"  
+# Calling function  
+str2 = str.startswith("Hello")  
+# Displaying result  
+print (str2)  
+Output:
+
+True
+
+--------------------
+x)swapcase() Method
+Python swapcase() method converts case of the string characters from uppercase to lowercase and vice versa. It does not require any parameter and returns a string after case conversion.
+# Declaring variable  
+str = "HELLO JAVATPOINT"  
+# Calling function  
+str2 = str.swapcase()  
+# Displaying result  
+print (str2)  
+Output:
+
+hello javatpoint   /// again it will do uppercase if we call again..
+
+---------------------
+y)rpartition() Method
+Python rpartition() method splits the string at the last occurrence of seperator substring.It splits the string from the last occurrence of parameter and returns a tuple. The tuple contains the three parts before the separator, the separator itself, and the part after the separator.
+
+It returns an empty tuple having seperator only, if the seperator not found.
+
+if the separator is not found, It returns a tuple containing string itself and two empty strings to the right. See the example below.
+
+# Python rpartition() method example  
+# Variable declaration  
+str = "Java is a programming language"  
+# Calling function  
+str2 = str.rpartition("not")  
+# Displaying result  
+print(str2)  
+Output:
+
+('', '', 'Java is a programming language')
+
+------------
+example-->
+reverse a string-->
+def reverse_string(str):
+    str1 = ""  # Declaring empty string to store the reversed string
+    for i in str:
+        str1 = i + str1
+    return str1  # It will return the reverse string to the caller function
+	
+def reverse(str):
+    str = str[::-1]    // check it
+    return str
+---------------
+using recursion reversing a string
+def reverseString(dtr):
+    if len(dtr)==0 :
+        return dtr
+    else :
+        oldstr = dtr[-1]                                      
+        oldstr=oldstr+reverseString(dtr[0:len(dtr)-1])
+        return oldstr
+
+reversevalue =input("Enter the string to get reversed")
+print(reverseString(reversevalue))
+
+===============================================================
+List in Python-->
+
+nums = [1,2,3,4,5]
+for traverse like String
+nums[0:]
+
+here list can have any data type.
+
+here list are mutable.we can change values but not in tuples.
+nums[2] = 10;  // it will change the value.
+some operations
+nums.append(6)  // it will add in last always
+nums.insert(2,4) // it will insert at the particular position.
+
+nums.remove(4)  // it will remove 4
+
+nums.pop()  // it will remove last element
+
+for particular index we will use index pop(1)   //  it will remove 2
+
+if we want to remove range del num[1:3]     // it will remove 2,3,4
+
+nums.extend([7,8,9])  it will extend list with these values....   1,2,3,4,5,7,8,9
+
+min(num)  // find min
+max(num)   // find max and there are many functions   // for these func items should be homogeneous
+
+Characteristics of Lists
+The list has the following characteristics:
+
+The lists are ordered.
+The element of the list can access by index.
+The lists are mutable types.
+A list can store the number of various elements.
+
+# example  
+a = [ 1, 2, "Ram", 3.50, "Rahul", 5, 6]    
+b = [ 1, 2, "Ram", 3.50, "Rahul", 5, 6]    
+a == b    
+Output:
+
+True   //== work on values is or is not work on address.
+
+# negative indexing example  
+list = [1,2,3,4,5]    
+print(list[-1])    
+print(list[-3:])    
+print(list[:-1])    //not take -1
+print(list[-3:-1])    
+Output:
+
+5
+[3, 4, 5]
+[1, 2, 3, 4]
+[3, 4] 
+
+
+Lists are the most versatile data structures in Python since they are mutable, and their values can be updated by using the slice and assignment operator. Python also provides append() and insert() methods, which can be used to add values to the list.
+
+# updating list values  
+list = [1, 2, 3, 4, 5, 6]       
+print(list)       
+# It will assign value to the value to the second index     
+list[2] = 10     
+print(list)      
+# Adding multiple-element     
+list[1:3] = [89, 78]       
+print(list)     
+# It will update value at the end of the list    
+list[-1] = 25    
+print(list)    
+Output:
+
+[1, 2, 3, 4, 5, 6]
+[1, 2, 10, 4, 5, 6]
+[1, 89, 78, 4, 5, 6]
+[1, 89, 78, 4, 5, 25]
+
+------
+list1 = [12, 14, 16, 18, 20]  
+list2 = [9, 10, 32, 54, 86]  
+# concatenation operator +  
+l = list1 + list2  
+print(l)  
+Output:
+
+[12, 14, 16, 18, 20, 9, 10, 32, 54, 86]
+
+------
+another Example-->
+#Declaring the empty list    
+l =[]    
+#Number of elements will be entered by the user      
+n = int(input("Enter the number of elements in the list:"))    
+# for loop to take the input    
+for i in range(0,n):       
+    # The input is taken from the user and added to the list as the item    
+    l.append(input("Enter the item:"))       
+print("printing the list items..")     
+# traversal loop to print the list items      
+for i in l:     
+    print(i, end = "  ")   
+	---------------
+
+
+# minimum of the list  
+list1 = [103, 675, 321, 782, 200]  
+# smallest element in the list  
+print(min(list1))  
+Output:
+
+103
+
+
+-----
+nums = [1,2,3,4,5]
+print(nums.count(2))   //1
+------------------------------------
+Example: 1- Write the program to remove the duplicate element of the list.
+
+list1 = [1,2,2,3,55,98,65,65,13,29]    
+# Declare an empty list that will store unique values    
+list2 = []    
+for i in list1:    
+    if i not in list2:    
+        list2.append(i)    
+print(list2)    
+
+2-->print pattern 
+
+1
+12
+123
+1234
+12345
+
+for i in range(1,6):              1,5
+    for j in range(1,i+1):        1,2 will print 1
+        print(j,end="")    // it will not send to new line.
+    print()
+=============
+-------------------------------------------------------------------------------------------
+Tuple-->
+
+It is same as list but it is immutable we cannot change values.
+
+syntax is different = (1,2,3,4,5)
+
+set is also same as list with syntax {} and it will not maintain order and cannot  contain duplicate values.and index will not work here. 
+
+# Python program to create a tuple without using parentheses    
+# Creating a tuple    
+tuple_ = 4, 5.7, "Tuples", ["Python", "Tuples"]    
+# Displaying the tuple created    
+print(tuple_)    
+# Checking the data type of object tuple_    
+print(type(tuple_) )    
+# Trying to modify tuple_    
+try:    
+    tuple_[1] = 4.2    
+except:    
+    print(TypeError )    
+	
+Count () Method
+The number of times the specified element occurs in the tuple is returned by the count () function of Tuple.
+
+# Creating tuples  
+T1 = (0, 1, 5, 6, 7, 2, 2, 4, 2, 3, 2, 3, 1, 3, 2)  
+T2 = ('python', 'java', 'python', 'Tpoint', 'python', 'java')  
+# counting the appearance of 3  
+res = T1.count(2)  
+print('Count of 2 in T1 is:', res)  
+# counting the appearance of java  
+res = T2.count('java')  
+print('Count of Java in T2 is:', res)  
+
+Count of 2 in T1 is: 5
+Count of java in T2 is: 2
+
+--------------------------------------
+
+Index() Method
+
+# Creating tuples  
+Tuple_data = (0, 1, 2, 3, 2, 3, 1, 3, 2)  
+# getting the index of 3  
+res = Tuple_data.index(3)  
+print('First occurrence of 1 is', res)  
+# getting the index of 3 after 4th  
+# index  
+res = Tuple_data.index(3, 4)       (3,0,4)   //if u want to search between indexes
+print('First occurrence of 1 after 4th index is:', res)  
+
+First occurrence of 1 is 3
+First occurrence of 1 after 4th index is: 5
+
+-----------------------
+ Python program to show how to perform membership test for tuples    
+# Creating a tuple    
+tuple_ = ("Python", "Tuple", "Ordered", "Immutable", "Collection", "Ordered")    
+# In operator    
+print('Tuple' in tuple_)    
+print('Items' in tuple_)    
+# Not in operator    
+print('Immutable' not in tuple_)    
+print('Items' not in tuple_)    
+Output:
+
+True
+False
+False
+True
+
+--------------------------
+# Python program to show how to concatenate tuples    
+# Creating a tuple    
+tuple_ = ("Python", "Tuple", "Ordered", "Immutable")    
+# Adding a tuple to the tuple_    
+print(tuple_ + (4, 5, 6))    
+Output:
+
+('Python', 'Tuple', 'Ordered', 'Immutable', 4, 5, 6)
+
+Following are Some Advantages of Tuples over Lists:
+Lists take longer than tuples.
+
+The code is protected from any unintentional changes thanks to tuples. It is preferable to store non-changing data in "tuples" rather than "lists" if it is required by a programme.
+
+If a tuple includes immutable values like strings, numbers, or another tuple, it can be used as a dictionary key. Since "lists" are mutable, they cannot be utilized as dictionary keys.
+we cannot add data in tuple after creation.
+=============================
+dir()  // use to check function for the collection
+
+example-->
+dir(list_)
+
+===========================
+set-->
+A Python set is the collection of the unordered items. Each element in the set must be unique, immutable, and the sets remove the duplicate elements. Sets are mutable which means we can modify it after its creation.
+
+Unlike other collections in Python, there is no index attached to the elements of the set, i.e., we cannot directly access any element of the set by the index. However, we can print them all together, or we can get the list of elements by looping through the set.
+
+Creating a set
+The set can be created by enclosing the comma-separated immutable items with the curly braces {}. Python also provides the set() method, which can be used to create the set by the passed sequence.
+
+Example 1: Using curly braces
+Days = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"}    
+print(Days)    
+
+here we dont have index so we use for loop ///it is like we declare array in java
+
+Example 2: Using set() method
+Days = set(["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"])    //converting list into set
+print(Days)    
+print(type(Days))    
+print("looping through the set elements ... ")    
+for i in Days:    
+    print(i)
+
+-------
+*******It can contain any type of element such as integer, float, tuple etc. But mutable elements (list, dictionary, set) can't be a member of set.
+
+# Empty curly braces will create dictionary  
+set3 = {}  
+print(type(set3))     //it will be a dictionary always
+
+we use add() method to add values in set
+
+Using update() function
+Months = set(["January","February", "March", "April", "May", "June"])    //list sending inside
+print("\nprinting the original set ... ")    
+print(Months)    
+print("\nupdating the original set ... ")    
+Months.update(["July","August","September","October"]);     //we can add multiple values using list
+print("\nprinting the modified set ... ")     
+print(Months);      
+Months.remove("January")   // will remove from set
+------------------------------------
+
+Removing items from the set
+Python provides the discard() method and remove() method which can be used to remove the items from the set. The difference between these function, using discard() function if the item does not exist in the set then the set remain unchanged whereas remove() method will through an error.
+
+We can also use the pop() method to remove the item. Generally, the pop() method will always remove the last item but the set is unordered, we can't determine which element will be popped from set.
+
+Python provides the clear() method to remove all the items from the set.
+
+-----------------------------------------
+
+Python Set Operations
+Set can be performed mathematical operation such as union, intersection, difference, and symmetric difference. Python provides the facility to carry out these operations with operators or methods. We describe these operations as follows.
+
+a)using union | operator
+
+Days1 = {"Monday","Tuesday","Wednesday","Thursday", "Sunday"}    
+Days2 = {"Friday","Saturday","Sunday"}    
+print(Days1|Days2) #printing the union of the sets     
+
+or
+
+Days1.union(Days2)
+{'Friday', 'Sunday', 'Saturday', 'Tuesday', 'Wednesday', 'Monday', 'Thursday'}
+
+
+b)Using & operator
+
+Days1 = {"Monday","Tuesday", "Wednesday", "Thursday"}    
+Days2 = {"Monday","Tuesday","Sunday", "Friday"}    
+print(Days1&Days2) #prints the intersection of the two sets    
+
+orprint(set1.intersection(set2))
+{'Monday', 'Tuesday'}
+
+c) intersection_update() method removes the items from the original set that are not present in both the sets (all the sets if more than one are specified).
+
+The intersection_update() method is different from the intersection() method since it modifies the original set by removing the unwanted items, on the other hand, the intersection() method returns a new set.
+
+
+Python Set
+A Python set is the collection of the unordered items. Each element in the set must be unique, immutable, and the sets remove the duplicate elements. Sets are mutable which means we can modify it after its creation.
+
+Unlike other collections in Python, there is no index attached to the elements of the set, i.e., we cannot directly access any element of the set by the index. However, we can print them all together, or we can get the list of elements by looping through the set.
+
+Creating a set
+The set can be created by enclosing the comma-separated immutable items with the curly braces {}. Python also provides the set() method, which can be used to create the set by the passed sequence.
+
+Example 1: Using curly braces
+Days = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"}    
+print(Days)    
+print(type(Days))    
+print("looping through the set elements ... ")    
+for i in Days:    
+    print(i)    
+
+
+{'Friday', 'Tuesday', 'Monday', 'Saturday', 'Thursday', 'Sunday', 'Wednesday'}
+<class 'set'>
+looping through the set elements ... 
+Friday
+Tuesday
+Monday
+Saturday
+Thursday
+Sunday
+Wednesday
+
+Example 2: Using set() method
+Days = set(["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"])    
+print(Days)    
+print(type(Days))    
+print("looping through the set elements ... ")    
+for i in Days:    
+    print(i)    
+Output:
+
+{'Friday', 'Wednesday', 'Thursday', 'Saturday', 'Monday', 'Tuesday', 'Sunday'}
+<class 'set'>
+looping through the set elements ... 
+Friday
+Wednesday
+Thursday
+Saturday
+Monday
+Tuesday
+Sunday
+It can contain any type of element such as integer, float, tuple etc. But mutable elements (list, dictionary, set) can't be a member of set. Consider the following example.
+
+# Creating a set which have immutable elements  
+set1 = {1,2,3, "JavaTpoint", 20.5, 14}  
+print(type(set1))  
+#Creating a set which have mutable element  
+set2 = {1,2,3,["Javatpoint",4]}  
+print(type(set2))  
+Output:
+
+<class 'set'>
+
+Traceback (most recent call last)
+<ipython-input-5-9605bb6fbc68> in <module>
+      4 
+      5 #Creating a set which holds mutable elements
+----> 6 set2 = {1,2,3,["Javatpoint",4]}
+      7 print(type(set2))
+
+TypeError: unhashable type: 'list'
+In the above code, we have created two sets, the set set1 have immutable elements and set2 have one mutable element as a list. While checking the type of set2, it raised an error, which means set can contain only immutable elements.
+
+Creating an empty set is a bit different because empty curly {} braces are also used to create a dictionary as well. So Python provides the set() method used without an argument to create an empty set.
+
+# Empty curly braces will create dictionary  
+set3 = {}  
+print(type(set3))  
+  
+# Empty set using set() function  
+set4 = set()  
+print(type(set4))  
+Output:
+
+<class 'dict'>
+<class 'set'>
+Let's see what happened if we provide the duplicate element to the set.
+
+set5 = {1,2,4,4,5,8,9,9,10}  
+print("Return set with unique elements:",set5)  
+Output:
+
+
+Return set with unique elements: {1, 2, 4, 5, 8, 9, 10}
+In the above code, we can see that set5 consisted of multiple duplicate elements when we printed it remove the duplicity from the set.
+
+Adding items to the set
+Python provides the add() method and update() method which can be used to add some particular item to the set. The add() method is used to add a single element whereas the update() method is used to add multiple elements to the set. Consider the following example.
+
+Example: 1 - Using add() method
+Months = set(["January","February", "March", "April", "May", "June"])    
+print("\nprinting the original set ... ")    
+print(months)    
+print("\nAdding other months to the set...");    
+Months.add("July");    
+Months.add ("August");    
+print("\nPrinting the modified set...");    
+print(Months)    
+print("\nlooping through the set elements ... ")    
+for i in Months:    
+    print(i)    
+Output:
+
+printing the original set ... 
+{'February', 'May', 'April', 'March', 'June', 'January'}
+
+Adding other months to the set...
+
+Printing the modified set...
+{'February', 'July', 'May', 'April', 'March', 'August', 'June', 'January'}
+
+looping through the set elements ... 
+February
+July
+May
+April
+March
+August
+June
+January 
+To add more than one item in the set, Python provides the update() method. It accepts iterable as an argument.
+
+Consider the following example.
+
+
+Example - 2 Using update() function
+Months = set(["January","February", "March", "April", "May", "June"])    
+print("\nprinting the original set ... ")    
+print(Months)    
+print("\nupdating the original set ... ")    
+Months.update(["July","August","September","October"]);    
+print("\nprinting the modified set ... ")     
+print(Months);  
+Output:
+
+printing the original set ... 
+{'January', 'February', 'April', 'May', 'June', 'March'}
+
+updating the original set ... 
+printing the modified set ... 
+{'January', 'February', 'April', 'August', 'October', 'May', 'June', 'July', 'September', 'March'}
+Removing items from the set
+Python provides the discard() method and remove() method which can be used to remove the items from the set. The difference between these function, using discard() function if the item does not exist in the set then the set remain unchanged whereas remove() method will through an error.
+
+Consider the following example.
+
+Example-1 Using discard() method
+months = set(["January","February", "March", "April", "May", "June"])    
+print("\nprinting the original set ... ")    
+print(months)    
+print("\nRemoving some months from the set...");    
+months.discard("January");    
+months.discard("May");    
+print("\nPrinting the modified set...");    
+print(months)    
+print("\nlooping through the set elements ... ")    
+for i in months:    
+    print(i)    
+Output:
+
+printing the original set ... 
+{'February', 'January', 'March', 'April', 'June', 'May'}
+
+Removing some months from the set...
+
+Printing the modified set...
+{'February', 'March', 'April', 'June'}
+
+looping through the set elements ... 
+February
+March
+April
+June
+Python provides also the remove() method to remove the item from the set. Consider the following example to remove the items using remove() method.
+
+Example-2 Using remove() function
+months = set(["January","February", "March", "April", "May", "June"])    
+print("\nprinting the original set ... ")    
+print(months)    
+print("\nRemoving some months from the set...");    
+months.remove("January");    
+months.remove("May");    
+print("\nPrinting the modified set...");    
+print(months)    
+Output:
+
+printing the original set ... 
+{'February', 'June', 'April', 'May', 'January', 'March'}
+
+Removing some months from the set...
+
+Printing the modified set...
+{'February', 'June', 'April', 'March'}
+We can also use the pop() method to remove the item. Generally, the pop() method will always remove the last item but the set is unordered, we can't determine which element will be popped from set.
+
+Consider the following example to remove the item from the set using pop() method.
+
+Months = set(["January","February", "March", "April", "May", "June"])    
+print("\nprinting the original set ... ")    
+print(Months)    
+print("\nRemoving some months from the set...");    
+Months.pop();    
+Months.pop();    
+print("\nPrinting the modified set...");    
+print(Months)    
+Output:
+
+printing the original set ... 
+{'June', 'January', 'May', 'April', 'February', 'March'}
+
+Removing some months from the set...
+
+Printing the modified set...
+{'May', 'April', 'February', 'March'}
+In the above code, the last element of the Month set is March but the pop() method removed the June and January because the set is unordered and the pop() method could not determine the last element of the set.
+
+Python provides the clear() method to remove all the items from the set.
+
+Consider the following example.
+
+
+Months = set(["January","February", "March", "April", "May", "June"])    
+print("\nprinting the original set ... ")    
+print(Months)    
+print("\nRemoving all the items from the set...");    
+Months.clear()    
+print("\nPrinting the modified set...")    
+print(Months)    
+Output:
+
+printing the original set ... 
+{'January', 'May', 'June', 'April', 'March', 'February'}
+
+Removing all the items from the set...
+
+Printing the modified set...
+set()
+Difference between discard() and remove()
+Despite the fact that discard() and remove() method both perform the same task, There is one main difference between discard() and remove().
+
+If the key to be deleted from the set using discard() doesn't exist in the set, the Python will not give the error. The program maintains its control flow.
+
+On the other hand, if the item to be deleted from the set using remove() doesn't exist in the set, the Python will raise an error.
+
+Consider the following example.
+
+Example-
+Months = set(["January","February", "March", "April", "May", "June"])    
+print("\nprinting the original set ... ")    
+print(Months)    
+print("\nRemoving items through discard() method...");    
+Months.discard("Feb"); #will not give an error although the key feb is not available in the set    
+print("\nprinting the modified set...")    
+print(Months)    
+print("\nRemoving items through remove() method...");    
+Months.remove("Jan") #will give an error as the key jan is not available in the set.     
+print("\nPrinting the modified set...")    
+print(Months)    
+Output:
+
+printing the original set ... 
+{'March', 'January', 'April', 'June', 'February', 'May'}
+
+Removing items through discard() method...
+
+printing the modified set...
+{'March', 'January', 'April', 'June', 'February', 'May'}
+
+Removing items through remove() method...
+Traceback (most recent call last):
+  File "set.py", line 9, in 
+    Months.remove("Jan")
+KeyError: 'Jan'
+Python Set Operations
+Set can be performed mathematical operation such as union, intersection, difference, and symmetric difference. Python provides the facility to carry out these operations with operators or methods. We describe these operations as follows.
+
+Union of two Sets
+The union of two sets is calculated by using the pipe (|) operator. The union of the two sets contains all the items that are present in both the sets.
+
+Python Set
+Consider the following example to calculate the union of two sets.
+
+Example 1: using union | operator
+
+Days1 = {"Monday","Tuesday","Wednesday","Thursday", "Sunday"}    
+Days2 = {"Friday","Saturday","Sunday"}    
+print(Days1|Days2) #printing the union of the sets     
+Output:
+
+{'Friday', 'Sunday', 'Saturday', 'Tuesday', 'Wednesday', 'Monday', 'Thursday'}
+Python also provides the union() method which can also be used to calculate the union of two sets. Consider the following example.
+
+Example 2: using union() method
+
+Days1 = {"Monday","Tuesday","Wednesday","Thursday"}    
+Days2 = {"Friday","Saturday","Sunday"}    
+print(Days1.union(Days2)) #printing the union of the sets     
+Output:
+
+{'Friday', 'Monday', 'Tuesday', 'Thursday', 'Wednesday', 'Sunday', 'Saturday'}
+Intersection of two sets
+The intersection of two sets can be performed by the and & operator or the intersection() function. The intersection of the two sets is given as the set of the elements that common in both sets.
+
+Python Set
+Consider the following example.
+
+Example 1: Using & operator
+
+Days1 = {"Monday","Tuesday", "Wednesday", "Thursday"}    
+Days2 = {"Monday","Tuesday","Sunday", "Friday"}    
+print(Days1&Days2) #prints the intersection of the two sets    
+Output:
+
+{'Monday', 'Tuesday'}
+Example 2: Using intersection() method
+
+set1 = {"Devansh","John", "David", "Martin"}    
+set2 = {"Steve", "Milan", "David", "Martin"}    
+print(set1.intersection(set2)) #prints the intersection of the two sets    
+Output:
+
+{'Martin', 'David'}
+Example 3:
+
+set1 = {1,2,3,4,5,6,7}  
+set2 = {1,2,20,32,5,9}  
+set3 = set1.intersection(set2)  
+print(set3)  
+Output:
+
+{1,2,5}
+
+
+
+c)The intersection_update() method
+The intersection_update() method removes the items from the original set that are not present in both the sets (all the sets if more than one are specified).
+
+The intersection_update() method is different from the intersection() method since it modifies the original set by removing the unwanted items, on the other hand, the intersection() method returns a new set.
+
+Consider the following example.
+
+a = {"Devansh", "bob", "castle"}    
+b = {"castle", "dude", "emyway"}    
+c = {"fuson", "gaurav", "castle"}    
+    
+a.intersection_update(b, c)    
+    
+print(a)    
+{"castle"}
+
+d)Symmetric Difference of two sets
+The symmetric difference of two sets is calculated by ^ operator or symmetric_difference() method. Symmetric difference of sets, it removes that element which is present in both sets. Consider the following example:
+
+a = {1,2,3,4,5,6}  
+b = {1,2,9,8,10}  
+c = a^b  or a.symmetric_difference(b)  
+print(c)  
+Output:
+{3, 4, 5, 6, 8, 9, 10}
+
+
+
+
+---------------------------------
+
+Set comparisons
+Python allows us to use the comparison operators i.e., <, >, <=, >= , == with the sets by using which we can check whether a set is a subset, superset, or equivalent to other set. The boolean true or false is returned depending upon the items present inside the sets.
+
+Consider the following example.
+
+Days1 = {"Monday",  "Tuesday", "Wednesday", "Thursday"}    
+Days2 = {"Monday", "Tuesday"}    
+Days3 = {"Monday", "Tuesday", "Friday"}    
+    
+#Days1 is the superset of Days2 hence it will print true.     
+print (Days1>Days2)     
+    
+#prints false since Days1 is not the subset of Days2     
+print (Days1<Days2)    
+    
+#prints false since Days2 and Days3 are not equivalent     
+print (Days2 == Days3)    
+
+True
+False
+False
+
+------------------------------------------
+FrozenSets
+The frozen sets are the immutable form of the normal sets, i.e., the items of the frozen set cannot be changed and therefore it can be used as a key in the dictionary.
+
+The elements of the frozen set cannot be changed after the creation. We cannot change or append the content of the frozen sets by using the methods like add() or remove().
+
+The frozenset() method is used to create the frozenset object. The iterable sequence is passed into this method which is converted into the frozen set as a return type of the method.
+
+Consider the following example to create the frozen set.
+
+Frozenset = frozenset([1,2,3,4,5])     
+print(type(Frozenset))    
+print("\nprinting the content of frozen set...")    
+for i in Frozenset:    
+    print(i);    
+Frozenset.add(6) #gives an error since we cannot change the content of Frozenset after creation     
+Output:
+
+<class 'frozenset'>
+
+printing the content of frozen set...
+1
+2
+3
+4
+5
+Traceback (most recent call last):
+  File "set.py", line 6, in <module>
+    Frozenset.add(6) #gives an error since we can change the content of Frozenset after creation 
+AttributeError: 'frozenset' object has no attribute 'add'
+
+-------------------------------------------------
+list-->ordered and contain any values []
+tuples_-->contain any value but are immutable () but can have mutable objects inside it.
+set ---->{} unorderes that why [:] didnot work are unordered, cannot contain duplicate values{} and contain only immutables,but itself is mutable.
+-------------------------------------------------
+Dictionary = {"Name":"John", "Country":"USA", "ID":101}     
+print(type(Dictionary))    
+Frozenset = frozenset(Dictionary); #Frozenset will contain the keys of the dictionary    
+print(type(Frozenset))    
+for i in Frozenset:     
+    print(i)    
+Output:
+
+<class 'dict'>
+<class 'frozenset'>
+Name
+Country
+ID
+
+dictionary also we can have any values list tuples etc.
+
+my_set={1,1,'a','a',True,True}
+print(my_set)
+{1, 'a'}        1 and True is same.
+----------------
+Isdisjoint(....)	Return True if two sets have a null intersection.
+Issubset(....)	Report whether another set contains this set.
+Issuperset(....)	Report whether this set contains another set.
+===========================
+----------------------------------------------------------------------------------------------
+Dictionary --> It is a map which is in java
+having key value pair..key can be of any type but not set,list
+
+data = {1:'manu,2:'shelly'}  // here we can fetch data using key.
+data[2]  ---> shelly   ///here we will use key to fetch data.
+or
+data.get(1)--->manu    // in this we will not get any error if key is not available...
+data.get(3,'abc')--->abc  if it is not having key it will return abc 
+
+key = [1,2,3,4]
+value=['manu','singh','raghava']
+
+if we want to merge and create dictionary using these i will go on
+
+mydict = dict(zip(key,value))
+
+adding value in dictionary 
+dict[5] ='jhf'
+
+deleting data in dictionary
+del dict[5]
+or
+Dict.pop(2) 
+.popitem()      // will delete recently added key-pair
+clear() method removes all elements to the whole dictionary.
+
+# Creating an empty Dictionary     
+Dict = {}     
+print("Empty Dictionary: ")     
+print(Dict)     
+    
+# Creating a Dictionary     
+# with dict() method     
+Dict = dict({1: 'Microsoft', 2: 'Google', 3:'Facebook'})     
+print("\nCreate Dictionary by using  dict(): ")     
+print(Dict)     
+    
+# Creating a Dictionary     
+# with each item as a Pair     
+Dict = dict([(4, 'Praneeth'), (2, 'Varma')])   //zip will do this  
+print("\nDictionary with each item as a pair: ")     
+print(Dict)    
+
+---------
+Iterate dict
+
+ for loop to print all the keys of a dictionary  
+Employee = {"Name": "John", "Age": 29, "salary":25000,"Company":"GOOGLE"}      
+for x in Employee:      
+    print(x)    
+Output  // only keys
+
+Name
+Age
+salary
+Company
+
+for values-->
+#for loop to print all the values of the dictionary  
+Employee = {"Name": "John", "Age": 29, "salary":25000,"Company":"GOOGLE"} 
+for x in Employee:      
+ print(Employee[x])    
+Output
+
+John
+29
+25000
+GOOGLE
+
+for loop to print the values of the dictionary by using values() method.  
+Employee = {"Name": "John", "Age": 29, "salary":25000,"Company":"GOOGLE"}      
+for x in Employee.values():      
+    print(x)    
+Output
+
+John
+29
+25000
+GOOGLE
+
+----------
+for loop to print the items of the dictionary by using items() method  
+Employee = {"Name": "John", "Age": 29, "salary":25000,"Company":"GOOGLE"}     
+for x in Employee.items():      
+    print(x)    
+Output
+
+('Name', 'John')
+('Age', 29)
+('salary', 25000)
+('Company', 'GOOGLE')
+
+---------------------
+functions-->
+dict = {1: "Ayan", 2: "Bunny", 3: "Ram", 4: "Bheem"}  
+len(dict)  
+Output
+
+4
+
+b)any()
+The any() method returns True indeed if one dictionary key does have a Boolean expression of True, much like it does for lists and tuples.
+dict = {1: "Ayan", 2: "Bunny", 3: "Ram", 4: "Bheem"}  
+any({'':'','3':''})  
+Output
+True
+//it will work if we have any value true inside only
+c)all()
+Unlike in any() method, all() only returns True if each of the dictionary's keys contain a True Boolean value.
+dict = {1: "Ayan", 2: "Bunny", 3: "Ram", 4: "Bheem"}  
+all({1:'',2:'','':''})  
+Output
+False   // python takes value greater than 0 true
+
+d)sorted()   // all these func calls direct
+The sorted() method returns an ordered series of the dictionary's keys, much like it does with lists as well as tuples. The initial Python dictionary is not changed by the ascending sorting.
+
+Code
+
+dict = {7: "Ayan", 5: "Bunny", 8: "Ram", 1: "Bheem"}  
+sorted(dict)  
+
+
+[ 1, 5, 7, 8]
+
+
+dict = {7: "Ayan", 5: "Bunny", 8: "Ram", 1: "Bheem"}  
+sorted(dict,reverse=True)  // for reversw
+
+sorting based of values-->
+
+ootballers_goals = {'Eusebio': 120, 'Cruyff': 104, 'Pele': 150, 'Ronaldo': 132, 'Messi': 125}
+
+sorted_footballers_by_goals = sorted(footballers_goals.items(), key=lambda x:x[1])
+converted_dict = dict(sorted_footballers_by_goals)
+
+print(converted_dict)
+# Output: {'Cruyff': 104, 'Eusebio': 120, 'Messi': 125, 'Ronaldo': 132, 'Pele': 150}
+
+As I said earlier, we have to get those values of the dictionary so we can sort the dictionary by values. That’s why you can see 1 in the lambda function.
+
+1 represents the indexes of the values. The keys are 0. Remember that a programmer starts counting from 0, not 1.
+
+With that code above, I got the result below:
+
+as items give key,value pair and where value is present on 1 index.
+------------
+methods-->
+1   dic.clear()	It is used to delete all the items of the dictionary.
+2	dict.copy()	It returns a shallow copy of the dictionary.
+3	dict.fromkeys(iterable, value = None, /)	Create a new dictionary from the iterable with the values equal to value.
+4	dict.get(key, default = "None")	It is used to get the value specified for the passed key.{****prefer**will not give error}
+5	dict.has_key(key)	It returns true if the dictionary contains the specified key.
+6	dict.items()	It returns all the key-value pairs as a tuple.
+7	dict.keys()	It returns all the keys of the dictionary.
+8	dict.setdefault(key,default= "None")	It is used to set the key to the default value if the key is not specified in the dictionary
+9	dict.update(dict2)	It updates the dictionary by adding the key-value pair of dict2 to this dictionary.
+10	dict.values()	It returns all the values of the dictionary.
+-------------------------------------------------------------------
+help()  we use it for docs
+------------------------------------------------------------------
+
+Functions-->
+
+Syntax of Python Function
+
+#  An example Python Function  
+def function_name( parameters ):  
+    # code block  
+	
+# Example Python Code for User-Defined function  
+def square( num ):    
+    """  
+    This function computes the square of the number.  
+    """    
+    return num**2     
+object_ = square(6)    
+print( "The square of the given number is: ", object_ )   
+
+in python methods we can return multiple values ,,so we need multiple variable to accept the return
+
+def bod_mass(x,y):
+    a=x+y
+    b=x-y
+    c=x*y
+    d=x/y
+    return a,b,c,d
+
+sum,diff,multi,divide=bod_mass(9,3)
+print(sum,diff,multi,divide)
+
+12 6 27 3.0                        // multiple values
+ 
+--------------
+default arguments-->
+
+def function( n1, n2 = 20 ):    
+    print("number 1 is: ", n1)    
+    print("number 2 is: ", n2)    
+     
+     
+# Calling the function and passing only one argument    
+print( "Passing only one argument" )    
+function(30)    
+
+-----
+ Variable-Length Arguments-->
+We can use special characters in Python functions to pass as many arguments as we want in a function. There are two types of characters that we can use for this purpose:
+
+*args -These are Non-Keyword Arguments
+**kwargs -These are Keyword Arguments.
+Here is an example to clarify Variable length arguments
+
+like varargs in java..
+
+
+# Python code to demonstrate the use of variable-length arguments       
+# Defining a function    
+def function( *args_list ):       *b////like a tuple   //public static void fun(int ... a) 
+    ans = []    
+    for l in args_list:    
+        ans.append( l.upper() )    
+    return ans    
+# Passing args arguments    
+object = function('Python', 'Functions', 'tutorial')    
+print( object )    
+    
+# defining a function    
+def function( **kargs_list ):       **b///like dict
+    ans = []    
+    for key, value in kargs_list.items():    
+        ans.append([key, value])      //here we are not extending just appending 
+    return ans    
+# Paasing kwargs arguments    
+object = function(First = "Python", Second = "Functions", Third = "Tutorial")    //here we are sending key arguments..
+print(object)    
+Output:
+
+['PYTHON', 'FUNCTIONS', 'TUTORIAL']
+[['First', 'Python'], ['Second', 'Functions'], ['Third', 'Tutorial']]
+
+-----------------------------------------------------------------
+variables in python-->
+we have global and local same as java in python also....
+
+variable outside method is global and inside is local
+
+so what if we use to change same global variable in python..we will use global keyword..
+
+a=10
+def change_global() :
+ global a
+ a= 15
+change_global()
+print(a)         // 15 
+
+we can also use like 
+globals()['a']   // if we dont want to affect local variable.
+
+------------------------------------------------------------------
+Example-->
+A)fibonacci series 
+
+def print_fibonaaci(length) :
+    if(length<=1) :
+        return length
+    else :
+        return print_fibonaaci(length-1) + print_fibonaaci(length-2)   // returning two lower fibonaaci sum
+
+input_length=int(input('please input the length of fibonacci to print'))
+for i in range(input_length+1) :
+    print(print_fibonaaci(i))
+
+	
+------------------------------------------------------------------
+Anonymous Functions-->
+These types of Python functions are anonymous since we do not declare them, as we declare usual functions, using the def keyword. We can use the lambda keyword to define the short, single output, anonymous functions.
+
+Lambda expressions can accept an unlimited number of arguments; however, they only return one value as the result of the function. They can't have numerous expressions or instructions in them. Since lambda needs an expression, an anonymous function cannot be directly called to print.
+
+Lambda functions contain their unique local domain, meaning they can only reference variables in their argument list and the global domain name.
+
+Lambda functions have exactly one line in their syntax:
+
+lambda [argument1 [,argument2... .argumentn]] : expression    
+Below is an illustration of how to use the lambda function:
+
+
+
+# Python code to demonstrate ananymous functions  
+# Defining a function    
+lambda_ = lambda argument1, argument2: argument1 + argument2;    
+    
+# Calling the function and passing values    
+print( "Value of the function is : ", lambda_( 20, 30 ) )    
+print( "Value of the function is : ", lambda_( 40, 50 ) )    //here we can call lambda direct unlike java in which we call method
+Output:
+
+Value of the function is :  50
+Value of the function is :  90
+
+java way-->
+
+interface A{
+    void run();
+}
+class HelloWorld {
+    void display(A a)
+    {
+        a.run();
+    }
+    public static void main(String[] args) {
+        A a=()->System.out.println("hello");
+        a.run();
+        HelloWorld ndn = new HelloWorld();
+        ndn.display(()->System.out.println("hello"));
+    }
+}
+
+
+
+methods of lambda like java streams...with example-->
+
+import functools as func                           // to use reduce
+check_even = lambda a:a%2==0;
+power_even = lambda a:a**2;
+reduce_numbers = lambda a,b:a+b;
+numbers=[1,2,3,4,5,6,7,8,9]
+even_numbers = list(filter(check_even,numbers))
+print(even_numbers[0:])
+power_of_even_numbers=list(map(power_even,even_numbers))
+print(power_of_even_numbers[:])
+print(func.reduce(reduce_numbers,power_of_even_numbers))
+
+[2, 4, 6, 8]
+[4, 16, 36, 64]
+120                        // reducing it to single number.
+
+---------------------------------------------------------
+Decorators-->
+it is passing the method as refrence .as in python everything is object...
+if we want to add some functionality in existing method without touch it or override it..
+
+def div(a,b):
+    return a+b;
+
+def multiply(func):
+    def inner(a,b):
+        return a*b;
+    return inner
+
+
+div=multiply(div)
+print(div(10,2))    //20
+
+here we are assigning back div by passing it to multiply and multplying passing a new function inner.
+---------------------------------------------------------
+__name__   here it works as main method...
+first point of execution
+
+thats why we start a file for main in python
+if __name__=="__main__" :    like this
+
+if u import any class into another if it have a call method it will automatically called.
+So to stop this we use name keyword to tell to run methods only we run this class standalone.
+---------------------------------------------------------
+method to find greater of all three// outer if statement
+  if (n1 >= n2) {
+
+    // inner if...else
+    if (n1 >= n3)
+      printf("%.2lf is the largest number.", n1);
+    else
+      printf("%.2lf is the largest number.", n3);
+  }
+
+  // outer else statement
+  else {
+
+    // inner if...else
+    if (n2 >= n3)
+      printf("%.2lf is the largest number.", n2);
+    else
+      printf("%.2lf is the largest number.", n3);
+  }
+---------------------------------------------------------
+OOPS Concept-->
+
+in object-oriented paradigm is to design the program using classes and objects. The object is related to real-word entities such as book, house, pencil, etc. The oops concept focuses on writing the reusable code. It is a widespread technique to solve the problem by creating objects.
+
+Class
+The class can be defined as a collection of objects. It is a logical entity that has some specific attributes and methods. For example: if you have an employee class, then it should contain an attribute and method, i.e. an email id, name, age, salary, etc.
+
+Example-->
+
+class car:  
+    def __init__(self,modelname, year):    //constructor
+        self.modelname = modelname         //self is this here like java
+        self.year = year  
+    def display(self):                     // whatever method inside class self should have to pass
+        print(self.modelname,self.year)  
+  
+c1 = car("Toyota", 2016)      // creating object here.
+c1.display()  
+
+In Python, we must notice that each class is associated with a documentation string which can be accessed by using <class-name>.__doc__. A class contains a statement suite including fields, constructor, function, etc. definition.
+
+
+Constructors in python :
+In Python, the method the __init__() simulates the constructor of the class. This method is called when the class is instantiated. It accepts the self-keyword as a first argument which allows accessing the attributes or method of the class.
+
+We can pass any number of arguments at the time of creating the class object, depending upon the __init__() definition. It is mostly used to initialize the class attributes. Every class must have a constructor, even if it simply relies on the default constructor.
+-----------------------------------------
+here we if do not declare a variable explicitly.
+
+def __init__ (self,cpu,ram):
+self.cpu=cpu
+self.ram=ram        // it will automatic create a variable and assign it to self.we dont need to declare explicitly
+-----------------------------------------
+Variables in python-->
+instance/static
+
+class manu :
+age=10     // this is static variable common for all instances
+
+def __init__(self,name) :
+self.name=name               // this is instance variable value can be differ for all instances
+
+-----------------------------------------
+pass is mainly use if we donot declare anything in class or make it abstract.
+-----------------------------------------
+Counting the number of objects of a class
+The constructor is called automatically when we create the object of the class. Consider the following example.
+
+Example
+class Student:    
+    count = 0    
+    def __init__(self):    
+        Student.count = Student.count + 1    
+s1=Student()    
+s2=Student()    
+s3=Student()    
+print("The number of students:",Student.count)    
+Output:
+
+The number of students: 3
+
+
+-----------------------
+Python built-in class functions
+The built-in functions defined in the class are described in the following table.
+// here we dont call attribute direct of a class..we use setter and getter..
+SN	Function	Description
+1	getattr(obj,name,default)	It is used to access the attribute of the object.
+2	setattr(obj, name,value)	It is used to set a particular value to the specific attribute of an object.
+3	delattr(obj, name)	It is used to delete a specific attribute.
+4	hasattr(obj, name)	It returns true if the object contains some specific attribute.
+Example
+class Student:  
+    def __init__(self, name, id, age):  
+        self.name = name  
+        self.id = id  
+        self.age = age  
+  
+    # creates the object of the class Student  
+s = Student("John", 101, 22)  
+  
+# prints the attribute name of the object s  
+print(getattr(s, 'name'))  
+  
+# reset the value of attribute age to 23  
+setattr(s, "age", 23)  
+  
+# prints the modified value of age  
+print(getattr(s, 'age'))  
+  
+# prints true if the student contains the attribute with name id  
+  
+print(hasattr(s, 'id'))  
+# deletes the attribute age  
+delattr(s, 'age')  
+  
+# this will give an error since the attribute age has been deleted  
+print(s.age)  
+Output:
+
+
+John
+23
+True
+AttributeError: 'Student' object has no attribute 'age'
+
+-----------------------
+Built in methods--->
+1	__dict__	It provides the dictionary containing the information about the class namespace.
+2	__doc__	It contains a string which has the class documentation
+3	__name__	It is used to access the class name.
+4	__module__	It is used to access the module in which, this class is defined.
+5	__bases__	It contains a tuple including all base classes.
+Example
+class Student:    
+    def __init__(self,name,id,age):    
+        self.name = name;    
+        self.id = id;    
+        self.age = age    
+    def display_details(self):    
+        print("Name:%s, ID:%d, age:%d"%(self.name,self.id))    
+s = Student("John",101,22)    
+print(s.__doc__)    
+print(s.__dict__)    
+print(s.__module__)    
+Output:
+
+None
+{'name': 'John', 'id': 101, 'age': 22}
+__main__
+---------------------------------------------------
+static methods-->
+
+@classmethod                         // using this annotation
+def info(cls) :                     //here we use cls keyword instead of self
+ return cls.variable_name;
+ 
+ ClassName.methodname()             // calling method
+ 
+@staticmethod                       // for static method..
+
+A static method does not receive an implicit first argument. A static method is also a method that is bound to the class and not the object of the class. This method can’t access or modify the class state. It is present in a class because it makes sense for the method to be present in class.
+
+# Python program to demonstrate
+# use of class method and static method.
+from datetime import date
+ 
+ 
+class Person:
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+ 
+    # a class method to create a Person object by birth year.
+    @classmethod
+    def fromBirthYear(cls, name, year):
+        return cls(name, date.today().year - year)
+ 
+    # a static method to check if a Person is adult or not.
+    @staticmethod
+    def isAdult(age):                         //dont need any reference so we cannot modify class variable
+        return age > 18
+ 
+ 
+person1 = Person('mayank', 21)
+person2 = Person.fromBirthYear('mayank', 1996)
+ 
+print(person1.age)
+print(person2.age)    //new value
+ 
+# print the result
+print(Person.isAdult(22))
+Output:
+
+21
+25
+True
+---------------------------------------------------
+---------------------------------------------------
+Inheritence in python-->
+
+a)class Animal:  
+    def speak(self):  
+        print("Animal Speaking")  
+#child class Dog inherits the base class Animal  
+class Dog(Animal):               // parent-chil relationship
+    def bark(self):  
+        print("dog barking")  
+d = Dog()  
+d.bark()  
+d.speak()  
+Output:
+
+dog barking
+Animal Speaking
+
+b)multiple inheritence is possible in python.
+class Calculation1:  
+    def Summation(self,a,b):  
+        return a+b;  
+class Calculation2:  
+    def Multiplication(self,a,b):  
+        return a*b;  
+class Derived(Calculation1,Calculation2):  
+    def Divide(self,a,b):  
+        return a/b;  
+d = Derived()  
+print(d.Summation(10,20))  
+print(d.Multiplication(10,20))  
+print(d.Divide(10,20))  
+
+---
+The issubclass(sub,sup) method
+The issubclass(sub, sup) method is used to check the relationships between the specified classes. It returns true if the first class is the subclass of the second class, and false otherwise.
+
+class Calculation1:  
+    def Summation(self,a,b):  
+        return a+b;  
+class Calculation2:  
+    def Multiplication(self,a,b):  
+        return a*b;  
+class Derived(Calculation1,Calculation2):  
+    def Divide(self,a,b):  
+        return a/b;  
+d = Derived()  
+print(issubclass(Derived,Calculation2))  
+print(issubclass(Calculation1,Calculation2))  
+Output:
+
+True
+False
+------------------
+In multiple inheritance which class is first inherited calls the method of that if they are having common method
+
+class A:
+    def print(self):
+        print("A")
+
+class B:
+    def print(self):
+        print("B")
+
+class C(A,B):
+    def show(self):
+        print("C")
+
+c=C()
+c.show()
+c.print()
+------------------
+
+The isinstance (obj, class) method
+The isinstance() method is used to check the relationship between the objects and classes. It returns true if the first parameter, i.e., obj is the instance of the second parameter, i.e., class.
+
+Consider the following example.
+
+Example
+class Calculation1:  
+    def Summation(self,a,b):  
+        return a+b;  
+class Calculation2:  
+    def Multiplication(self,a,b):  
+        return a*b;  
+class Derived(Calculation1,Calculation2):  
+    def Divide(self,a,b):  
+        return a/b;  
+d = Derived()  
+print(isinstance(d,Derived))  
+Output:
+
+
+True
+-------------------------------------------------------------
+Constructor calling in Inheritance..
+
+def __init__(self):
+ super().__init__()              // to call parent constructor without self keyword
+-------------------------------------------------------------
+
+ternary in python
+min = a if a < b else b
+==============================================================
+polymorphism-->
+------------------------------------
+modifiers--->Access specifiers or access modifiers in python programming are used to limit the access of class variables and class methods outside of class while implementing the concepts of inheritance. This can be achieved by: Public, Private and Protected keyword.
+
+#defining class Student
+class Student:
+    #constructor is defined
+    def __init__(self, name, age, salary):
+        self.age = age             # public Attribute
+        self._name = name          # protected Attribute 
+        self.__salary = salary     # private Attribute
+
+    def _funName(self):            # protected method
+        pass
+ 
+    def __funName(self):           # private method
+        pass
+
+# object creation 
+obj = Student("pythonlobby",21,45000)
+
+-------------------------------------
+Packages are same as java folder to seperate..
+-------------------------------------
+Operator Overloading-->
+like int float string we can add and concat them ..
++/- internally called __add__() ,__sub__()
+
+a+b ===> internally is int.__add__(a,b)
+
+but it does not work for instance objects so we need to overload them.
+
+Example-->
+class Manu:
+ def __init__(self, a, b):
+        self.a = a;
+        self.b = b;
+
+ def __add__(self, other):
+        m1 = self.a + other.a
+        m2 = self.b + other.b
+        return Manu(m1, m2)
+
+ def __sub__(self, other):
+        m1 = self.a - other.a
+        m2 = self.b - other.b
+        return Manu(m1, m2)
+
+ def __mul__(self, other):
+        m1 = self.a * other.a
+        m2 = self.b * other.b
+        return Manu(m1, m2)
+
+a1 = Manu(10,12)
+a2 = Manu(111,112)
+a3 = a1 + a2
+print(a3.__getattribute__('a'))   //121
+print(a3.b)						  //124
+a3 = a1 * a2					  //1110
+print(a3.__getattribute__('a'))   //1344
+print(a3.b)
+a3 = a1 - a2                      
+print(a3.__getattribute__('a'))   //-101
+print(a3.b)                       //-100
+
+
+
+-------------------------------------
+Method Overriding/overloading-->
+
+same as java..
+
+------------------------------------------------------------
+Abstraction in python-->
+
+Data abstraction in python
+Abstraction is an important aspect of object-oriented programming. In python, we can also perform data hiding by adding the double underscore (___) as a prefix to the attribute which is to be hidden. After this, the attribute will not be visible outside of the class through the object.private variable
+
+class Employee:  
+    __count = 0;  
+    def __init__(self):  
+        Employee.__count = Employee.__count+1    //it is made not with self so give error
+    def display(self):  
+        print("The number of employees",Employee.__count)  
+emp = Employee()  
+emp2 = Employee()  
+try:  
+    print(emp.__count)  
+finally:  
+    emp.display()  
+Output:
+
+The number of employees 2
+AttributeError: 'Employee' object has no attribute '__count'
+-----------------------------------------------------------------------------------------
+Abstraction classes in Python
+In Python, abstraction can be achieved by using abstract classes and interfaces.
+
+A class that consists of one or more abstract method is called the abstract class. Abstract methods do not contain their implementation. Abstract class can be inherited by the subclass and abstract method gets its definition in the subclass. Abstraction classes are meant to be the blueprint of the other class. An abstract class can be useful when we are designing large functions. An abstract class is also helpful to provide the standard interface for different implementations of components. Python provides the abc module to use the abstraction in the Python program. Let's see the following syntax.
+
+Syntax
+
+from abc import ABC                     //abc is abstract base classes  //import functools as func  
+class ClassName(ABC):  
+We import the ABC class from the abc module.
+
+
+Unlike the other high-level language, Python doesn't provide the abstract class itself. We need to import the abc module, which provides the base for defining Abstract Base classes (ABC). The ABC works by decorating methods of the base class as abstract. It registers concrete classes as the implementation of the abstract base. We use the @abstractmethod decorator to define an abstract method or if we don't provide the definition to the method, it automatically becomes the abstract method. Let's understand the following example.
+
+Example--->
+
+# Python program demonstrate  
+# abstract base class work   
+from abc import ABC, abstractmethod    //import these to implement abstraction  
+class Car(ABC):   
+
+@abstractmethod                        //creating abstract method
+    def mileage(self):   
+        pass              //ending  abstract method
+  
+class Tesla(Car):   
+    def mileage(self):   
+        print("The mileage is 30kmph")   
+class Suzuki(Car):   
+    def mileage(self):   
+        print("The mileage is 25kmph ")   
+class Duster(Car):   
+     def mileage(self):   
+          print("The mileage is 24kmph ")   
+  
+class Renault(Car):   
+    def mileage(self):   
+            print("The mileage is 27kmph ")   
+          
+# Driver code   
+t= Tesla ()   
+t.mileage()   
+  
+r = Renault()   
+r.mileage()   
+  
+s = Suzuki()   
+s.mileage()   
+d = Duster()   
+d.mileage()  
+Output:
+
+
+The mileage is 30kmph
+The mileage is 27kmph 
+The mileage is 25kmph 
+The mileage is 24kmph
+
+In the above code, we have imported the abc module to create the abstract base class. We created the Car class that inherited the ABC class and defined an abstract method named mileage(). We have then inherited the base class from the three different subclasses and implemented the abstract method differently. We created the objects to call the abstract method.
+
+---------------
+example-->
+
+
+===================================================
+For swapping two variable there is a shortcut in py
+a,b=10,20
+a,b=b,a                         // it will swap.
+
+------------------------------------------------------
+to import library classes like java here we also use import.
+
+import array as arr    /// alias we also give
+or
+from array import *   // here we can give * or any specific method we use to import
+
+------------------------
+Arrays in python---> it is like list but here they are for specific datatype 
+
+from array import *    // first we have to import the class
+
+vals = array('i',[5,6,7,8,9])        // here i is type code for int
+print(val)
+print(type(val))
+
+array('i', [5, 6, 7, 8, 9])
+<class 'array.array'>
+
+array always create with a typecode and cannot have different values.
+
+typecode-->
+i-->for integer
+I-->for non negative integer
+f-->float
+
+print(vals.buffer_info())   // print a tuple (23234,5)   address //size
+vals.typecode()     // give typecode
+vals.reverse()   //to reverse
+vals.append()    // to append a value
+vals.remove()    // to remove
+len(vals)        //size
+
+also we can create one array from other
+
+newval  = array(vals.typecode,(a*a for a in vals))    //nice use of for loop but see syntax. //all other functions same as list.
+
+-------------------------------------------------
+Exception Handeling--->
+types of error:
+1)compiletime
+2)logical                            
+3)runtime
+
+we use try catch type of thing same as java..
+
+here we use except instead of catch
+
+Example--->
+
+a=10
+b=0
+try :
+    c=a/b
+    print('divided')
+except Exception as e :
+    print(e)
+finally :
+    print('we have closed')
+print('bye')
+
+-------------------------------------------------
+Multithreading in python..
+
+Same like java...
+1)extend thread class
+2)override run() method
+3)create object
+4)call start() to do multithreading
+5)same join() first allow other threads to finish work
+
+from time import *
+from threading import *
+
+class A(Thread):
+   def run(self):
+       for i in range(5):
+           sleep(1)
+           print('hello')
+
+class B(Thread):
+   def run(self):
+       for i in range(6):
+           sleep(1)
+           print('hii')
+
+a= A()
+b = B()
+a.start()
+b.start()
+
+a.join()
+b.join()
+
+print("bye")                     //will print in last due to join
+------------------------------------------------------------------------------------------------------
+for private variable and method to access we have to use like this
+_ClassName__variable/Method    ......without(.)
+
+class Employee:  
+    __count = 0;  
+    def __init__(self):  
+        Employee.__count = Employee.__count+1  
+    def display(self):  
+        print("The number of employees",Employee.__count)  
+emp = Employee()  
+emp2 = Employee()  
+try:  
+    print(emp._Employee__count)                 #important
+finally:  
+    emp.display()  
+-----------------------------------------------------------------------------------------------------
+Throwing an exception in python:-
+
+class Manu :
+    def check_variable(self) :
+        a=int(input('Enter the variable'))
+        b = int(input('Enter the variable  to be divide'))
+        try:
+            if (b == 0):
+                raise ZeroDivisionError("Sorry, no numbers below zero")  # here we use raise to throw an exception
+            c=a/b
+            print(c)
+        except Exception as e :
+            print('Exception occurred :{}'.format(str(e)))
+
+m=Manu()
+m.check_variable()
+
+--------------------------------------------------------------------------------------------------------
+Custom Expetion in python-->
+
+class SalaryNotInRangeError(Exception):
+    """Exception raised for errors in the input salary.
+
+    Attributes:
+        salary -- input salary which caused the error
+        message -- explanation of the error
+    """
+
+    def __init__(self, salary, message="Salary is not in (5000, 15000) range"):
+        self.salary = salary
+        self.message = message
+        super().__init__(self.message)
+
+
+salary = int(input("Enter salary amount: "))
+if not 5000 < salary < 15000:
+    raise SalaryNotInRangeError(salary)
+
+output-->
+Enter salary amount: 2000
+Traceback (most recent call last):
+  File "<string>", line 17, in <module>
+    raise SalaryNotInRangeError(salary)
+__main__.SalaryNotInRangeError: Salary is not in (5000, 15000) range
+========================================================================================================
+========================================================================================================
+--------------------------------------------------------------------------------------------------------
+
+Exercise 4: Display float number with 2 decimal places using print()
+Given:
+
+num = 458.541315
+Expected Output:
+
+458.54
+
+num = 458.541315
+print('%.2f' % num)	
+
+-----------------------------------
+str1, str2, str3 = input("Enter three string").split()
+print('Name1:', str1)
+print('Name2:', str2)
+print('Name3:', str3)   //spliting on "" 
+
+------------------------------------
+list1 = [10, 20, 30, 40, 50]
+# reverse list
+new_list = reversed(list1)
+# iterate reversed list
+for item in new_list:
+    print(item)
+	
+	
+list1 = [10, 20, 30, 40, 50]
+# get list size
+# len(list1) -1: because index start with 0
+# iterate list in reverse order
+# star from last item to first
+size = len(list1) - 1
+for i in range(size, -1,-1):    //here -1 indicates that increment go in -1
+    print(list1[i])
+	
+====================
+for i in range(5):
+    print(i)
+else:
+    print("Done!")  // it is like finally for loop
+	
+------------------------------------------------------------------------------
+we can copy function also
+
+def display_student(name, age):
+    print(name, age)
+
+# call using original name
+display_student("Emma", 26)
+
+# assign new name
+showStudent = display_student
+# call using new name
+showStudent("Emma", 26)
+
+--------------------------------------------------------------------------------
+Arrange string with lower and upper character
+
+str1 = "PYnAtivE"
+print('Original String:', str1)
+lower = []
+upper = []
+for char in str1:
+    if char.islower():
+        # add lowercase characters to lower list
+        lower.append(char)
+    else:
+        # add uppercase characters to lower list
+        upper.append(char)
+
+# Join both list
+sorted_str = ''.join(lower + upper)
+print('Result:', sorted_str)
+
+
+-------------------------------------------------------------------------------------
+check first string chars are present in second string
+
+def string_balance_test(s1, s2):
+    flag = True
+    for char in s1:                               like for(character char : s1.tocharArray())
+        if char in s2:
+            continue
+        else:
+            flag = False
+    return flag
+
+
+s1 = "Yn"
+s2 = "PYnative"
+flag = string_balance_test(s1, s2)
+print("s1 and s2 are balanced:", flag)
+
+s1 = "Ynf"
+s2 = "PYnative"
+flag = string_balance_test(s1, s2)
+print("s1 and s2 are balanced:", flag)
+
+
+-----------------------------------------------------------------------------------------
+Count no of words in words
+
+word = 'manvendra'
+dict_word={}
+print(type(dict_word))
+for char in word:
+    if char in dict_word :                         //has_key method has been removed only use membershiup variable
+        dict_word[char] =dict_word[char] + 1;
+    else :
+        dict_word[char] =1
+for i in dict_word.items() :
+    print(i)
+	
+
+-----------------------------------------------------------------------------------------
+remove empty strings:
+
+str_list = ["Emma", "Jon", "", "Kelly", None, "Eric", ""]
+res_list = []
+for s in str_list:
+    # check for non empty string
+    if s:
+        res_list.append(s)
+print(res_list)
+
+--------------------------------------------------------------------------------------------
+Removal all characters from a string except integers
+Given:
+
+str1 = 'I am 25 years and 10 months old'
+
+Expected Output:
+2510
+
+str1 = 'I am 25 years and 10 months old'
+print("Original string is", str1)
+
+# Retain Numbers in String
+# Using list comprehension + join() + isdigit()
+res = "".join([item for item in str1 if item.isdigit()])
+
+print(res)
+
+-------------------------------------------------------------------------------------------
+divide list into 3 and reverse
+
+sample_list = [11, 45, 8, 23, 14, 12, 78, 45, 89]
+print("Original list ", sample_list)
+
+length = len(sample_list)
+chunk_size = int(length / 3)
+start = 0
+end = chunk_size
+
+# run loop 3 times
+for i in range(3):
+    # get indexes
+    indexes = slice(start, end)
+    
+    # get chunk
+    list_chunk = sample_list[indexes]
+    print("Chunk ", i, list_chunk)
+    
+    # reverse chunk
+    print("After reversing it ", list(reversed(list_chunk)))
+
+    start = end
+    end += chunk_size
+
+------------------------
+first_list = [2, 3, 4, 5, 6, 7, 8]
+print("First List ", first_list)
+
+second_list = [4, 9, 16, 25, 36, 49, 64]
+print("Second List ", second_list)
+
+result = zip(first_list, second_list)
+result_set = set(result)
+print(result_set)
+
+instead of update we can use zip also....
+
+-------------------------------------------
+check values of list present in dict if not remove from list
+
+roll_number = [47, 64, 69, 37, 76, 83, 95, 97]
+sample_dict = {'Jhon': 47, 'Emma': 69, 'Kelly': 76, 'Jason': 97}
+
+print("List:", roll_number)
+print("Dictionary:", sample_dict)
+
+# create new list
+roll_number[:] = [item for item in roll_number if item in sample_dict.values()]
+print("after removing unwanted elements from list:", roll_number)
+
+----------------------------------------
+Using variables in Python strings with the f-strings
+Sometimes, you want to use the values of variables in a string.
+
+For example, you may want to use the value of the name variable inside the message string variable:
+
+name = 'John'
+message = 'Hi'
+Code language: Python (python)
+To do it, you place the letter f before the opening quotation mark and put the brace around the variable name:
+
+name = 'John'
+message = f'Hi {name}'
+print(message)
+Code language: Python (python)
+
+----------------------------------------
+When a value evaluates to True, it’s truthy. And if a value evaluates to False, it’s falsy.
+
+The following are falsy values in Python:
+
+The number zero (0)
+An empty string ''
+False
+None
+An empty list []
+An empty tuple ()
+An empty dictionary {}
+
+----------------------------------------
+ternary if else
+
+age = input('Enter your age:')
+
+ticket_price = 20 if int(age) >= 18 else 5
+
+print(f"The ticket price is {ticket_price}")
+
+------------------------------------------
+recusrively adding the list-->
+
+class A:
+    def calcule_sum_recursive(self,list):
+        sum=0
+        if(len(list)==0) :
+            return sum
+        sum+=sum+list[0]
+        return sum + self.calcule_sum_recursive(list[1:])   //here sum is always remmebebrer
+
+
+first_list = [2, 3, 4, 5, 6, 7, 8]
+mu=A()
+a=mu.calcule_sum_recursive(first_list)
+print(a)
+
+
+---------------------------------------
+list.sort(reverse=True)  // we can sort reverse like this
+
+Using the Python List sort() method to sort a list of tuples
+Suppose that you have a list of tuples like this:
+
+companies = [('Google', 2019, 134.81),
+             ('Apple', 2019, 260.2),
+             ('Facebook', 2019, 70.7)]
+
+And you want to sort the companies list by revenue from highest to lowest. To do it:
+
+First, specify a sort key and pass it to the sort() method. To define a sort key, you create a function that accepts a tuple and returns the element that you want to sort by:
+
+def sort_key(company):
+    return company[2]
+	
+This sort_key() function accepts a tuple called company and returns the third element.
+
+Note that the company is a tuple e.g., ('Google', 2019, 134.81). And the company[2] references the revenue like 134.81 in this case.
+
+Second, pass the sort_key function to the sort() method:
+
+companies.sort(key=sort_key, reverse=True)
+
+
+---***********
+
+we can also pass lambda directly
+
+companies = [('Google', 2019, 134.81),
+             ('Apple', 2019, 260.2),
+             ('Facebook', 2019, 70.7)]
+
+# sort the companies by revenue
+companies.sort(key=lambda company: company[2])
+
+# show the sorted companies
+print(companies)
+
+------
+Using Python sorted() function to sort a list of strings,it will not change the origional
+The following example uses the sorted() function to sort a list of strings in alphabetical order:
+
+guests = ['James', 'Mary', 'John', 'Patricia', 'Robert', 'Jennifer']
+sorted_guests = sorted(guests)
+
+print(guests)
+print(sorted_guests)
+
+------------------------------------------------------------------------------
+Using Python List slice to get the n-last elements from a list
+To get the n-last elements of a list, you use the negative indexes.
+
+For example, the following returns a list that includes the last 3 elements of the colors list:
+
+colors = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet']
+sub_colors = colors[-3:]
+
+print(sub_colors)
+Output:
+
+['blue', 'indigo', 'violet']
+
+=============================
+colors = ['red', 'blue', 'green']
+To assign the first, second, and third elements of the list to variables, you may assign individual elements to variables like this:
+
+red = colors[0]
+blue = colors[1]
+green = colors[2]
+However, Python provides a better way to do this. It’s called sequence unpacking.
+
+Basically, you can assign elements of a list (and also a tuple) to multiple variables. For example:
+
+red, blue, green = colors
+This statement assigns the first, second, and third elements of the colors list to the red, blue, and green variables.
+
+In this example, the number of variables on the left side is the same as the number of elements in the list on the right side.
+
+If you use a fewer number of variables on the left side, you’ll get an error. For example:
+
+colors = ['red', 'blue', 'green']
+red, blue = colors
+Error:
+
+ValueError: too many values to unpack (expected 2)
+
+using varargs
+colors = ['red', 'blue', 'green']
+red, blue, *other = colors
+
+
+=======================================================
+Iterators-->
+
+colors = ['red', 'green', 'blue']
+colors_iter = iter(colors)         //use for any iterable objects
+
+color = next(colors_iter)         //lilke has next java
+print(color)
+
+color = next(colors_iter)
+print(color)
+
+color = next(colors_iter)
+print(color)
+
+# cause an excpetion
+color = next(colors_iter)
+print(color)
+
+
+===========================================================
+list comprehenssion -->
+making another list with a given list with some logic--
+
+numbers = [1, 2, 3, 4, 5]
+squares = [number**2 for number in numbers]
+
+print(squares)
+
+so syntax-->
+[output_expression for element in list]
+
+highest_mountains = [m for m in mountains if m[1] > 8600]    // if u are using any condition it will come in last.
+
+
+#Create a list containing squares of numbers from 1 to 10
+squares_of_numbers=[number*number for number in range(1,11)]
+print(squares_of_numbers)
+
+----------------------------------
+#Write a Function that takes 2 arrays and prints the members of first array that are present of second array. (HINT: use Membership Comprehension)
+a=[1,2,34,5,6,7,8,9]
+b=[34,6,2,33,45,66]
+def check_numbers(array1,array2):
+    for i in array1:
+        if i in array2:
+          print(i)
+
+check_numbers(a,b)
+#or
+print(list(set(a) & set(b)))            ////////nice 
+
+def __str__(self):    //it is like tostring() method for class
+------------------------------------------------------------------------------
+
+Dictionary Comprehension-->
+{key:value for (key,value) in dict.items() if condition}
+
+stocks = {
+    'AAPL': 121,
+    'AMZN': 3380,
+    'MSFT': 219,
+    'BIIB': 280,
+    'QDEL': 266,
+    'LVGO': 144
+}
+
+new_stocks = {symbol: price * 1.02 for (symbol, price) in stocks.items()}  /////remember key:value
+
+print(new_stocks)
+
+------------------------------------------------------------------------------------
+Elements in a set cannot be changed. For example, they can be numbers, strings, and tuples, but cannot be lists or dictionaries.
+
+
+An empty set evaluates to False in Boolean context. For example:
+
+skills = set()
+
+if not skills:                                 // if skills will give true
+    print('Empty sets are falsy')
+	
+	
+In fact, you can pass an iterable to the set() function to create a set. For example, you can pass a list, which is an iterable, to the set() function like this:
+
+skills = set(['Problem solving','Critical Thinking'])
+print(skills)
+
+Output:
+
+{'Critical Thinking', 'Problem solving'}
+
+Note that the original order of elements may not be preserved.
+
+If an iterable has duplicate elements, the set() function will remove them. For example:
+
+characters = set('letter')
+print(characters)
+
+Output:
+
+{'r', 'l', 't', 'e'}
+
+----------------------------------------------------------------
+swich case in python
+    def execute_command(self,methodName,x,y):
+        match methodName:
+            case 'add':
+                return self.add(x,y)
+            case 'minus':
+                return self.minus(x, y)
+            case 'multiply':
+                return self.multiply(x, y)
+            case 'divide':
+                return self.divide(x, y)
+
+here switch is named as match
+--------------------------------------------------------------
+class MyClass:
+    static_var = 0
+
+    def __init__(self):
+        MyClass.static_var += 1
+        self.instance_var = MyClass.static_var
+
+
+obj2 = MyClass()
+obj1 = MyClass()
+print(obj1.instance_var)  # Output: 1
+  # Output: 2
+
+print(MyClass.static_var)
+print(obj2.instance_var)
+
+output 221
+
+here static and instance are same whatever value we will change in static variable after the object creation
+will not affect the value for object.
+
+=====================================================================================
+we can also define datatype if we want...
+
+class JoiningDetail(Employee):
+    def __init__(self, id: str, gender: str, salary: int, perfomance_rating: int, date: dt.date):  //data type
+        super().__init__(id, gender, salary, perfomance_rating)
+        self.date = date
+
+    def get_DoJ(self):
+        return self.date
+
+    def __str__(self):                                     //to string method override.
+        return f"id {self.id} : {self.date}"
+		
+-=========================================================================================
+
+from random import random
+
+class Vehicle:
+    def __init__(self):
+        self.fare = None
+
+    def Fare(self, fare):
+        self.fare = fare
+
+
+bus, car, train, truck, ship = Vehicle(), Vehicle(), Vehicle(), Vehicle(), Vehicle()
+vehicles = [bus, car, train, truck, ship]
+for v in vehicles: 
+    v.Fare(int(random() * 10))
+
+totalfare = sum([i.fare for i in vehicles])
+print(totalfare)
+
+=============================================================================================
+find highest of map of map.
+
+M = {"test1": {'Dhoni': 56, "Balaji": 85}, 'test2': {'Dhoni': 87, 'Balaji': 200}}
+
+def Max_Score(d):
+    total = {}
+    for k in d.keys():
+        for n in d[k].keys():
+            if n in total.keys():
+                total[n] = total[n] + d[k][n]
+            else:
+                total[n] = d[k][n]                        ###like d['test1'][['Dhoni']]==56
+    print("Total Run Scored by Each Playes in 2 Tests: ")
+    print(total)
+
+    print("Player With highest score")
+    maxtotal = -1
+    for n in total.keys():
+        if total[n] > maxtotal:
+            maxname = n
+            maxtotal = total[n]
+
+    return (maxname, maxtotal)
+
+summary = Max_Score(M)
+print(summary)

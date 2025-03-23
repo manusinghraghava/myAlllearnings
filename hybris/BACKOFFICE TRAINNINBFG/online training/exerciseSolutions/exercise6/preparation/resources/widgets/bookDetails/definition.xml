@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ [y] hybris Platform
+ 
+ Copyright (c) 2000-2016 SAP SE or an SAP affiliate company.
+ All rights reserved.
+ 
+ This software is the confidential and proprietary information of SAP
+ ("Confidential Information"). You shall not disclose such Confidential
+ Information and shall use it only in accordance with the terms of the
+ license agreement you entered into with SAP.
+-->
+<widget-definition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:noNamespaceSchemaLocation="http://www.hybris.com/schema/cockpitng/widget-definition.xsd"
+                   id="my.bookstore.bookstorecustombackoffice.widgets.bookDetails">
+	<name>Book Details</name>
+	<description>Renders a preview that contains the basic info of a single book</description>
+	<defaultTitle>Book Details</defaultTitle>
+	<author>SAP Hybris</author>
+	<version>0.1</version>
+    
+	<controller class="my.bookstore.bookstorecustombackoffice.widgets.bookdetails.BookDetailsController"/>
+    <view src="bookDetails.zul"/>
+
+    <sockets>
+        <input id="selectedBook" type="my.bookstore.core.model.BookModel"/>
+		<!-- TODO exercise 6.6: add allowPreview as a boolean input here. -->
+		
+    </sockets>
+
+    <keywords>
+        <keyword>Book</keyword>
+        <!-- Note: Regardless of how many <keyword> elements, only the first one is used by Backoffice -->
+    </keywords>
+
+    <settings>
+        <setting key="configContext" default-value="base" type="String" />
+    </settings>
+
+</widget-definition>

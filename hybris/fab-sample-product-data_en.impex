@@ -1,0 +1,74 @@
+$catalog-id = fabindia-b2cProductCatalog
+$catalog-version = Staged
+$catalogVersion = catalogversion(catalog(id[default=$catalog-id]), version[default=$catalog-version])[unique=true, default=$catalog-id:$catalog-version]
+$supercategories = supercategories(code, catalogversion(catalog(id[default=$catalog-id]), version[default=$catalog-version]))
+$vendor = apparello
+$lang = en
+$storeUid = fabindiab2c
+$classificationCatalog = ERP_CLASSIFICATION_026
+$classificationVersion = ERP_IMPORT
+$clAttrModifiersVariants = system='$classificationCatalog', version='$classificationVersion', translator=de.hybris.platform.catalog.jalo.classification.impex.ClassificationAttributeTranslator;
+$featureMode1 = @FIT_F[$clAttrModifiersVariants];
+$featureMode2 = @PLACKET[$clAttrModifiersVariants];
+$featureMode3 = @SIZE_F[$clAttrModifiersVariants];
+
+
+
+UPDATE Product; code[unique = true]; $catalogVersion; name[lang = $lang]; summary[lang = $lang]                     ; description[lang = $lang];
+              ; FI000005001        ;                ; Coach Kasual Shoe ; <p>COACH CASUAL SHOE COLOR RED    </p>    ;                          ; beet red ; ; ;
+              ; FI000005002        ;                ; Coach Kasual Shoe ; <p>COACH CASUAL SHOE COLOR YELLOW </p>    ;                          ; beet red ; ; ;
+              ; FI000006001        ;                ; Coach Kasual Shoe ; <p>COACH CASUAL Shirts COLOR RED    </p>  ;                          ; beet red ; ; ;
+              ; FI000006002        ;                ; Coach Kasual Shoe ; <p>COACH CASUAL Shirts COLOR YELLOW </p>  ;                          ; beet red ; ; ;
+              ; FI000007001        ;                ; Coach Kasual Shoe ; <p>COACH CASUAL Tshirts COLOR RED    </p> ;                          ; beet red ; ; ;
+              ; FI000007002        ;                ; Coach Kasual Shoe ; <p>COACH CASUAL Tshirts COLOR YELLOW </p> ;                          ; beet red ; ; ;
+              ; FI000008001        ;                ; Coach Kasual Shoe ; <p>COACH CASUAL Glasses COLOR RED    </p> ;                          ; beet red ; ; ;
+              ; FI000008002        ;                ; Coach Kasual Shoe ; <p>COACH CASUAL Glasses COLOR YELLOW </p> ;                          ; beet red ; ; ;
+              ; FI000009001        ;                ; Coach Kasual Shoe ; <p>COACH CASUAL Goggles COLOR RED    </p> ;                          ; beet red ; ; ;
+              ; FI000009002        ;                ; Coach Kasual Shoe ; <p>COACH CASUAL Goggles COLOR YELLOW </p> ;                          ; beet red ; ; ;
+              ; FI0000010          ;                ; Coach Kasual Shoe ; <p>COACH CASUAL SHOE </p>                 ;                          ; beet red ; ; ;
+              ; FI0000011          ;                ; Coach Kasual Shoe ; <p>COACH CASUAL Shirts </p>               ;                          ; beet red ; ; ;
+              ; FI0000012          ;                ; Coach Kasual Shoe ; <p>COACH CASUAL Tshirts </p>              ;                          ; beet red ; ; ;
+              ; FI0000013          ;                ; Coach Kasual Shoe ; <p>COACH CASUAL Glasses </p>              ;                          ; beet red ; ; ;
+              ; FI0000014          ;                ; Coach Kasual Shoe ; <p>COACH CASUAL Goggles  </p>             ;                          ; beet red ; ; ;
+
+
+UPDATE PromotionSourceRule[$ruleImportProcessor]; code[unique = true]                         ; name[lang = $lang]                    ; description[lang = $lang]             ; messageFired[lang = $lang]
+                                                ; fab_product_10_percentage_discount_qnty_one ; 10% off on FI0000010                  ; Get 10% off on FI0000010              ; {a1a5d598-c351-43a4-92bf-eb63d877496a}% off on products {0164259c-8014-4cf4-a315-83cf050b0b4a}
+                                                ; fab_product_15_percentage_discount_qnty_two ; 15% off on FI0000010                  ; Get 50% off on FI0000010              ; {a1a5d598-c351-43a4-92bf-eb63d877496a}% off on products {0164259c-8014-4cf4-a315-83cf050b0b4a}
+                                                ; fab_product_20_percentage_discount_qnty_one ; 20% off on FI000009002                ; Get 20% off on FI000009002            ; {a1a5d598-c351-43a4-92bf-eb63d877496a}% off on products {0164259c-8014-4cf4-a315-83cf050b0b4a}
+                                                ; fab_product_30_percentage_discount_qnty_two ; 30% off on FI000009002                ; Get 30% off on FI000009002            ; {a1a5d598-c351-43a4-92bf-eb63d877496a}% off on products {0164259c-8014-4cf4-a315-83cf050b0b4a}
+                                                ; fab_product_free_gift                       ; FI0000011 free gift                   ; FI0000011 free gift                   ; {a1a5d598-c351-43a4-92bf-eb63d877496a}% off on products {0164259c-8014-4cf4-a315-83cf050b0b4a}
+                                                ; fab_product_order_percentage_discount       ; FI000009001 product cart 10% discount ; FI000009001 product cart 10% discount ; {f2de1179-37b3-4646-8c2a-d4f77d5e64b5}% off on order if order has {0164259c-8014-4cf4-a315-83cf050b0b4a} product
+
+UPDATE PromotionSourceRule[$ruleImportProcessor]; code[unique = true]                     ; name[lang = $lang]                      ; description[lang = $lang]                     ; messageFired[lang = $lang]; status(code)[unique = true, default = UNPUBLISHED]
+                                                ; fab_product_potential_promotion_massage ; fab_product_potential_promotion_massage ; Add one more product then get 20% off on cart ;
+
+UPDATE ClassificationAttributeValue; code[unique = true]    ; name[lang = $lang]
+                                   ; FIT_F_SLIM             ; Slim
+                                   ; FIT_F_SKINNY           ; Skinny
+                                   ; FIT_F_REGULAR          ; Regular
+                                   ; FIT_F_LEISURE          ; Leisure
+                                   ; FIT_F_COMFORT          ; Comfort
+                                   ; PLACKET_V PLACKET      ; V Placket
+                                   ; PLACKET_SQUARE PLACKET ; Square Placket
+                                   ; PLACKET_SLIM PLACKET   ; Slim Placket
+                                   ; SIZE_F_XXL             ; XXL
+                                   ; SIZE_F_XL              ; XL
+                                   ; SIZE_F_L               ; L
+                                   ; SIZE_F_M               ; M
+                                   ; SIZE_F_S               ; S
+
+UPDATE Product; code[unique = true]; $featureMode1[lang = $lang]; $featureMode2[lang = $lang]; $catalogVersion
+              ; 000000000001000384 ; FIT_F_SLIM                 ; PLACKET_SQUARE PLACKET     ;
+              ; 000000001000384001 ; FIT_F_SLIM                 ; PLACKET_SQUARE PLACKET     ;
+              ; 000000001000384002 ; FIT_F_SLIM                 ; PLACKET_SQUARE PLACKET     ;
+              ; 000000001000384003 ; FIT_F_SLIM                 ; PLACKET_SQUARE PLACKET     ;
+              ; 000000001000384004 ; FIT_F_SLIM                 ; PLACKET_SQUARE PLACKET     ;
+              ; 000000001000384005 ; FIT_F_SLIM                 ; PLACKET_SQUARE PLACKET     ;
+              ; 000000001000384006 ; FIT_F_SLIM                 ; PLACKET_SQUARE PLACKET     ;
+
+
+UPDATE Product; code[unique = true]; $featureMode3[lang = $lang]; $catalogVersion
+              ; 000000001000384001 ; SIZE_F_L                   ;
+              ; 000000001000384002 ; SIZE_F_M                   ;
+              ; 000000001000384003 ; SIZE_F_XL                  ;

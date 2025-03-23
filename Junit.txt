@@ -1,0 +1,337 @@
+JUnit is a unit testing framework for the Java programming language that plays a big role in regression testing.
+An open-source framework, it is used to write and run repeatable automated tests.
+
+Set Up JUnit
+
+====>
+
+The more common IDEs, such as Eclipse and IntelliJ, will already have JUnit functionality installed by default..
+
+If one is not using an IDE and perhaps relying solely on a build system such as Maven or Gradle, the installation of Junit 4/5 is handled via the pom.xml 
+
+<dependency>
+<groupId>junit</groupId>
+<artifactId>junit</artifactId>
+<version>4.12</version>
+<scope>test</scope>
+</dependency>
+
+It is an open-source testing framework for java programmers. The java programmer can create test cases and test his/her own code.
+
+To perform unit testing, we need to create test cases. The unit test case is a code which ensures that the program logic works as expected.
+
+The org.junit package contains many interfaces and classes for junit testing such as Assert, Test, Before, After etc
+
+Annotations for Junit testing===>
+
+@Test -->annotation specifies that method is the test method.
+
+@Test(timeout=1000) -->annotation specifies that method will be failed if it takes longer than 1000 milliseconds (1 second).
+
+@BeforeClass -->annotation specifies that method will be invoked only once, before starting all the tests of a class.
+
+@Before -->annotation specifies that method will be invoked before each test.
+
+@After -->annotation specifies that method will be invoked after each test.
+
+@AfterClass -->annotation specifies that method will be invoked only once, after finishing all the tests.
+
+
+Main Class Which Is Used For TestCasing--------->
+
+Assert class
+The org.junit.Assert class provides methods to assert the program logic.
+
+Methods of Assert class
+The common methods of Assert class are as follows:
+
+void assertEquals(boolean expected,boolean actual): checks that two primitives/objects are equal. It is overloaded.
+
+void assertTrue(boolean condition): checks that a condition is true.
+
+void assertFalse(boolean condition): checks that a condition is false.
+
+void assertNull(Object obj): checks that object is null.
+
+void assertArrayEquals(expectedOutput, methodOutput);  to match array.
+
+If it is ok or matches it will show no failure otherwise Assertion Error..
+
+void assertNotNull(Object obj): checks that object is not null.
+
+void fail()  //make a test fail.
+
+void assertThat(actual,matcher);//validate
+
+verify(METHOD_NAME,times(?)).method(PARAMETRE_pasesd);   //to verify how many times method is called.  //also we can use atLeast atMost<=======>times
+
+Remember==>Package name should be same for test class.
+
+Mockito==>
+
+When we are doing junit test on any class..but it is depend on another class..test case fail otherwise we have to create a object of that class..
+MOckito mock()=>is used to create a fake object for that class to run test cases..but object parametres will be null on creation.
+
+Mockito.mock(Class_name.class)
+
+Now==> If it is a interface and we didnt have implemented its method body is not implemented===>
+Then there comes two methods when() and thenReturn();
+
+Lets take Example Interface A having method add(i,j);
+
+So when(A.add(i,j)).thenReturn(i+j);               // dont forget the(.)
+
+iF YOU WANT TO CHECK WHETHER YOUR SERVICE IS CALLING OR NOT USE VERIFY()
+
+Example  =>
+verify(mock_object).methodName();
+
+@Mock creates a mock. @InjectMocks creates an instance of the class and injects the mocks that are created with the @Mock (or @Spy) annotations into this instance.
+
+@InjectMocks==>on the class which we are creating test class..
+@Mock==.resource we want to mock..
+and then 
+MockitoAnnotations.initMocks(this);// do this in before method..
+
+
+
+Examples===>
+@Test (expected = Exception.class): Sometimes we need to test the exception to be thrown by the test. @
+Test annotation provides a parameter called 'expected', declares that a test method should throw an exception. 
+If it doesn't throw an exception or if it throws a different exception than the one declared, the test fails.
+
+public class MyTestClass {
+    @Test(expected=IOException.class) 
+    public void myTestMethod() {
+        /**
+         * this test performs some IO operations, sometimes we may not 
+         * get access to the resources, then the method should through 
+         * declared exception. 
+         */
+       ....
+       ....
+    }
+ }
+ 
+ 
+==============================================================================================================================================================
+Steps to implement junit==>
+Create a folder test in your project.
+right click==>build path==>use as source folder.......right click==>new junit test case//package should be same.
+
+a)we should always start with failing test.//we can instantiate object and also call its method inside test method.
+b)We should write different test methods for different scenario for a method.
+
+=================================================================================================================================================================
+
+Spy vs mock==>
+1)mock is dumy object produce with default values didn't give effect on stub and any other methods does not retain values.
+2)spy is fake object work as real object. //does not use in real life projects.....
+if you add something in spy it will reflect.
+
+===============================================================================================================================================================
+Character.isDigit(str.charAt(i))   // use to check either char is digit or Not.
+Character.getNumericValue to fetch it.
+================================
+Example of Assertthat==>
+
+@Test
+    public void given2Strings_whenEqual_thenCorrect() {
+        String a = "foo";
+        String b = "FOO";
+        assertThat(a, equalToIgnoringCase(b));        // check whether it is equal or not
+    }
+	
+	
+	
+	
+	@Test
+public void givenBean_whenToStringReturnsRequiredString_thenCorrect(){
+    Person person=new Person("Barrack", "Washington");
+    String str=person.toString();
+    assertThat(person,hasToString(str));            //converting back and matching
+}
+
+
+
+We can also check that one class is a sub-class of another:
+@Test
+public void given2Classes_whenOneInheritsFromOther_thenCorrect(){
+        assertThat(Cat.class,typeCompatibleWith(Animal.class));
+    }
+}
+
+To check the size of a Collection:
+@Test
+public void givenAList_whenChecksSize_thenCorrect() {
+    List<String> hamcrestMatchers = Arrays.asList(
+      "collections", "beans", "text", "number");
+    assertThat(hamcrestMatchers, hasSize(4));
+}
+
+We can also use it to assert that an array has a required size:
+@Test
+public void givenArray_whenChecksSize_thenCorrect() {
+    String[] hamcrestMatchers = { "collections", "beans", "text", "number" };
+    assertThat(hamcrestMatchers, arrayWithSize(4));
+}
+
+
+To check if a Collection contains given members, regardless of order:
+@Test
+public void givenAListAndValues_whenChecksListForGivenValues_thenCorrect() {
+    List<String> hamcrestMatchers = Arrays.asList(
+      "collections", "beans", "text", "number");
+    assertThat(hamcrestMatchers,
+    containsInAnyOrder("beans", "text", "collections", "number"));
+} 
+
+The is construct on a simple data type:
+@Test
+public void given2Strings_whenIsEqual_thenCorrect() {
+    String str1 = "text";
+    String str2 = "text";
+    assertThat(str1, is(str2));
+}
+
+Negation with the not construct on a matcher:
+@Test
+public void given2Strings_whenIsNotEqualRegardlessWhiteSpace_thenCorrect() {
+    String str1 = "text";
+    String str2 = " texts ";
+    assertThat(str1, not(equalToIgnoringWhiteSpace(str2)));
+}
+
+The not construct on a simple data type:
+@Test
+public void given2Strings_whenNotEqual_thenCorrect() {
+    String str1 = "text";
+    String str2 = "texts";
+    assertThat(str1, not(str2));
+}
+
+Check if a String contains a given sub-string:
+@Test
+public void givenAStrings_whenContainsAnotherGivenString_thenCorrect() {
+    String str1 = "calligraphy";
+    String str2 = "call";
+    assertThat(str1, containsString(str2));
+}
+
+Check if a String starts with given sub-string:
+@Test
+public void givenAString_whenStartsWithAnotherGivenString_thenCorrect() {
+    String str1 = "calligraphy";
+    String str2 = "call";
+    assertThat(str1, startsWith(str2));
+}
+
+
+
+=============================================================================================
+Examples-->
+
+testing for exception
+
+create a class with method-->
+
+public String setName(String name)
+	{
+		if(StringUtils.isEmpty(name))
+		{
+			throw new IllegalArgumentException("String is null");
+		}
+		
+		return "Hello" +name;
+	}
+	
+
+**)All test method should return void.
+
+
+	@Test(expected = IllegalArgumentException.class)
+	public void nameTest()
+	{
+		Testabd test = new Testabd();
+		String name =test.setName(null);
+	}
+	
+=========================================================
+Junit5-->
+
+Before/after changes to before/aftereach  annotation.
+
+also expected exceptions has changed.we use assertions here.
+
+like this-->
+
+@Test
+	public void nameTest()
+	{
+		Testabd test = new Testabd();
+	
+		Assertions.assertThrows(IllegalArgumentException.class, ()->{
+			test.setName(null);
+		});
+	}
+
+
+===============================================================
+Mockito Example-->
+
+create a interface for crud operations
+
+
+public interface OrderDao {
+
+	 int createOrder(Order order)throws SQLException;   //order here is just a pojo with id and status
+	 int readOrder(int id)throws SQLException;
+	 int updateOrder(Order order)throws SQLException;
+	 int deletOrder(int id)throws SQLException;
+	 
+	
+}
+
+
+create a interface for business layer like faacde.
+
+
+public class OrderFacade {
+	OrderDao dao;               //we dont havw to implement method for test case.
+
+	boolean placeOrder(Order order) throws BoException
+	{
+		try {
+			int result = dao.createOrder(order);
+			if (result==0)
+				return false;
+		} catch (SQLException e) {
+			throw new BoException(e.getMessage());
+		}
+		return true;
+	}
+	boolean cancelOrder(int id)throws BoException{
+		try {
+			Order order = dao.readOrder(id);
+			order.setStatus("cancelled");
+			int result =dao.updateOrder(order);
+			if (result==0)
+				return false;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			throw new BoException(e.getMessage());
+		}
+		return true;
+	}
+	boolean deleteOrder(int id)throws BoException{
+		try {
+			int result =dao.deletOrder(id);
+			if (result==0)
+				return false;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			throw new BoException(e.getMessage());
+		}
+		return true;
+	}
+}

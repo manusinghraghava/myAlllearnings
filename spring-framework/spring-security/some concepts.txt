@@ -1,0 +1,113 @@
+you can alsso pass csrf token through jsp in spring security using spring sec tag library.
+<sec:csrfInput/>    //wherever u use post method.
+
+<always-use-default-target=true/> always redirect to that url anyone authenticates..
+
+whatever we send in error and attribute we can check on jsp {param.error !=null} and print msg according to it.
+
+when we want to use authentication on jsp just include DefaultWebSecurityExpressionHandeler Bean in spring.xml.
+
+on jsp ==><sec:authorize access="Role" var="xyz">  //variable is boolean put true or false in it..
+          <sec:authentication property="name"/>use to find name of user on jsp.
+		  
+		  logout will be always like 
+		  create a href of logout and than create form with c:url and include csrf token and make action post..
+		  than write a js ==>and submit form from there..
+		  
+
+Security Interceptor==>
+Spring use two types of interceptor to protect different type of resources.
+FilterSecurityInterceptor==>for http resources     intercept-url activates it..
+MethodSecurityInterceptor==>for method invocation.....@Secured<security-method-global-security /> it enables it.
+
+
+we can decide which filter will called on intercept-url using filter-chain..using filterchainSecurity..
+
+for user detail service create class implementing UserDetailService and override loadUserByUsername.. and return user Object..
+
+in registration process-->
+@modelAttribute User user==>SetRole yourself..
+
+than we have to authenticate that user and redirect to homePage..so we will go programacilly ..
+
+Authentication auth = new UsernamePasswordAuthenticationToken(user,user.getPassword(),user.getAuthorities);   //pass these attributes..
+than pass it to COntext
+SecurityContextHolder.getContext().setAuthentication(auth);
+
+
+Custom AuthenticationProvider==>
+CreateClass which Implement AuthenticationProvider Interface....
+and overrides two methods==>authenticate()  and supports()..
+
+write logic in authenticate===>if users not able to authenticate return authenticateException..
+to authenticate user first create object of UsernamePasswordAuthenticationToken from downcastin authentication object and then match username,password
+by fetching token.getName() and token.getCredentials   and username,password from database..
+
+if match than return UsernamePasswordAuthenticationToken(user,user.getPassword(),user.getAuthorities);
+
+u can also create custom object extending UsernamePasswordAuthenticationToken...
+
+after creating this not forget to make a filter extending UsernamePasswordAuthenticationFilter..and overide attempAuthentication..
+
+public class RequestBodyReaderAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+ 
+    private static final Log LOG = LogFactory.getLog(RequestBodyReaderAuthenticationFilter.class);
+ 
+    private static final String ERROR_MESSAGE = "Something went wrong while parsing /login request body";
+ 
+    private final ObjectMapper objectMapper = new ObjectMapper();
+ 
+    public RequestBodyReaderAuthenticationFilter() {
+    }
+ 
+    @Override
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+        String requestBody;
+        try {
+            requestBody = IOUtils.toString(request.getReader());
+            LoginRequest authRequest = objectMapper.readValue(requestBody, LoginRequest.class);
+ 
+            UsernamePasswordAuthenticationToken token
+                = new UsernamePasswordAuthenticationToken(authRequest.login, authRequest.password);
+ 
+            // Allow subclasses to set the "details" property
+            setDetails(request, token);
+ 
+            return this.getAuthenticationManager().authenticate(token);
+        } catch(IOException e) {
+            LOG.error(ERROR_MESSAGE, e);
+            throw new InternalAuthenticationServiceException(ERROR_MESSAGE, e);
+        }
+    }
+}
+
+
+than register its bean in security.xml with properties
+
+filterprocessurl====for which this filter works
+authenticationmanager,username,password,default-target-url in authentication success handeler.
+
+
+we can define a bean with log entry point to redirect if any unauthenticated user process and reirect it to login page..using security.loginurlauthenticationEntrypoint.
+and put that bean in entry-point-ref in <http> tag. and filter in custom-filter=  of<http>  and put position=""//whereevr u want FORM_LOGIN_FIlTER
+
+//create programme of it..
+
+Some Annotations==>
+first in dispatcher servlet
+<security-method-global-security pre-post-annotations="ennabled" jsr-250-annotations="ennabled"/>
+
+and than on any method
+@PreAuthorize(hasRole'admin')      or RolesAllowed('')
+public String confirm()      // before hitting this method it will check is it role specific..
+
+@PostAuthorize(''),pre filter ,post filter//check its video
+
+
+
+for https configuration=>https://www.youtube.com/watch?v=8msnA_K1eNM&list=PLGXpHMFOMTTbCC4t6WSoKfVnUxHmyGXKJ&index=49
+
+
+
+
+

@@ -1,0 +1,56 @@
+import de.hybris.platform.core.Registry;
+import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.servicelayer.search.FlexibleSearchQuery;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Arrays;
+import org.apache.commons.collections4.CollectionUtils;
+import de.hybris.platform.servicelayer.search.SearchResult;
+import de.hybris.platform.servicelayer.model.ModelService;
+import com.amway.indcore.loyalty.service.IndCalculateLoyaltyPointsService;
+import de.hybris.platform.commerceservices.search.pagedata.PageableData;
+import de.hybris.platform.commerceservices.search.pagedata.SearchPageData;
+import de.hybris.platform.core.model.order.OrderModel;
+import com.amway.eventstream.model.AmwayEventStagingEntryModel;
+import com.amway.eventstream.enums.AmwayEventSyncState;
+import com.amway.indfacades.order.payload.*;
+import java.util.List;
+import java.util.Optional;
+import com.google.gson.*;
+import de.hybris.platform.commercefacades.product.PriceDataFactory;
+import de.hybris.platform.servicelayer.dto.converter.Converter;
+import de.hybris.platform.cms2.model.site.CMSSiteModel;
+import de.hybris.platform.servicelayer.search.FlexibleSearchService;
+import org.apache.commons.collections4.CollectionUtils;
+import de.hybris.platform.servicelayer.i18n.CommonI18NService;
+import de.hybris.platform.store.BaseStoreModel;
+import de.hybris.platform.store.services.BaseStoreService;
+import de.hybris.platform.site.BaseSiteService;
+import org.apache.commons.lang.StringEscapeUtils;
+import com.amway.eventstream.enums.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import de.hybris.platform.variants.model.*;
+import de.hybris.platform.category.model.*;
+import de.hybris.platform.core.model.product.*;
+
+
+String query="select {o.pk} from {Product as o} where {o.code} in('239814ID', 'E0001ID', '112532ID', 'E3417ID', '110488ID', 'EAD1605ID', '119606ID', '119607ID', 'E7506ID', '116512ID', '100949ID', '116511ID', '116514ID', 'WHU9061ID', '246167ID', '246164ID', '246168ID', '118101ID', '118109ID', '272157ID', '272156ID', '215358ID') and {o.catalogVersion}='8796093153881'";
+
+final SearchResult<ProductModel> searchResult = ((FlexibleSearchService) Registry.getApplicationContext().getBean("flexibleSearchService")).search(query);
+
+final List<ProductModel> results = searchResult.getResult();
+
+for(ProductModel order :results)
+{
+if(order!=null)
+{
+for(CategoryModel category :order.getSupercategories())
+{
+if(category instanceof VariantValueCategoryModel)
+{
+println category.getCode()+"_"+order.getCode();
+}
+}
+}
+}

@@ -1,0 +1,2 @@
+shhipment.getConsignmentEntries().stream().findFirst().get().getOrderEntry().getNamedDeliveryDate()
+

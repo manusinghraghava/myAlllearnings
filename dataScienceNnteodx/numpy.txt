@@ -1,0 +1,1534 @@
+====================================================================
+Some logical concepts
+
+
+What is the Value of Sin pi/2?
+The value of sin pi/2 is 1. Sin pi/2 can also be expressed using the equivalent of the given angle (pi/2) in degrees (90°).
+
+We know, using radian to degree conversion, θ in degrees = θ in radians × (180°/pi)
+⇒ pi/2 radians = pi/2 × (180°/pi) = 90° or 90 degrees
+∴ sin pi/2 = sin π/2 = sin(90°) = 1
+
+remember
+30degree = pi/6
+so 
+90 degree=3*pi/6=pi/2
+
+
+---------
+   sin   p/h   cosec
+   cos	 b/h   sec
+   tan	 p/b   cot
+   
+Trigonometric functions are also known as Circular Functions can be simply defined as the functions of an angle of a triangle. It means that the relationship between the angles and sides of a triangle are given by these trig functions
+
+----------
+In Mathematics, the hyperbolic functions are similar to the trigonometric functions or circular functions. Generally, the hyperbolic functions are defined through the algebraic expressions that include the exponential function (e^x) and its inverse exponential functions (e^-x), where e is the Euler’s constant
+
+
+====================================================================
+Numpy-->
+it is library we used for data manipulation.
+
+data manipulation:-->
+a)numpy
+b)pandas
+
+visualization-->
+Matplotlib
+Seaborn
+plotly
+
+Lets Start with numpy-->
+numerical python
+it is used to do all numeric operations such as statistics,probality
+
+here we use mainly array with class known as ndarray..
+
+used by calling numpy.array()/////in numpy library
+
+numpy.array() is faster than list and also take less space.
+Because the Numpy array is densely packed in memory due to its homogeneous type, it also frees the memory faster. So overall a task executed in Numpy is around 5 to 100 times faster than the standard python list, which is a significant leap in terms of speed.
+
+list holds 14 bytes for every index while array olds 4 bytes.
+
+
+to use numpy-->
+a)install numpy
+pip install numpy               //latest 1.24.5
+
+b)importing
+import numpy as np              //small n always
+
+
+example-->
+
+import numpy as np
+var=np.array([2,3,4,5,6,7,8])   // creating array from list
+print(var)
+print(type(var))
+print(var.ndim)    // it will tell the dimension of array
+
+[2 3 4 5 6 7 8]
+<class 'numpy.ndarray'>
+
+print(np.__version__)   // to check version
+
+
+example-->second dimensional array
+as 2d array is array of 1 d array
+
+var2 = np.array([[1,2,3],[4,5,6],[7,8,9]])        //as many d as many[] in array
+
+we have to give symmetric members as 3*3 ,3*2 etc otherwise will give error
+var = np.array([[1,2,3],[4,5,6,7],[7,8,9]])   //error
+
+shape of a array-->
+print(var.shape)    //(3,3)    // it will give that there will be 3 rows and 3 column
+
+
+third dimensional array -->
+it is array of 2 diensional array
+var = np.array([[[1,2,3],[4,5,6],[7,8,9]]])    //shape (1,3,3)
+
+why shape is 1,3,3
+
+as we know 3d is array of 2d.
+[[1,2,3],[4,5,6],[7,8,9]]   //so how many 2d elements are there 1.(x)
+
+now y elements work on how many array of 1 d array in 2d  ///
+[1,2,3],[4,5,6],[7,8,9]  // they are three so 3 
+
+now y axis depend on how many elements in 1d array
+[1,2,3]     // they are three
+
+always remember elemnts should be symmetric for y and z it should be either 1*3*3 ,1*2*2 ,1*2*3 etc
+
+import numpy as np
+var = np.array([[[1,2],[4,5],[7,8]],[[1,2],[4,5],[4,5]]])
+print(var)
+print(type(var))
+print(np.__version__)
+print(var.ndim)
+print(var.shape)
+
+
+[[[1 2]
+  [4 5]
+  [7 8]]
+
+ [[1 2]
+  [4 5]
+  [4 5]]]
+<class 'numpy.ndarray'>
+1.24.3
+3
+(2, 3, 2)
+
+dir(np) // will give list of all functions.
+
+===============================
+Methods-->
+
+a)arange()-->
+it is mainly to use for 1d array known as vector in mathematical term.
+it is same as range method but it will return array.
+
+np.arange(5)
+[1,2,3,4]
+
+np.arange(1,5)
+[1,2,3,4]
+
+np.arange(1,5,2)
+1,3
+
+
+linspace---> it is same as arange but in this stop is included and we have to give breakpoint in which it is divided
+np.linspace(10,20)  ///  //if we dont give breakpoint it will break it into 50 points
+
+
+arr =np.linspace(10,20,5)
+[10.  12.5 15.  17.5 20. ]          //break in 5 points with equal diffrerence
+
+arr =np.linspace(10,20,3)
+[10. 15. 20.]
+
+b)zeros()-->
+it is used to put all the values to be zeros in a array.
+it takes another argument as shape for the output.
+
+np.zeros((2,2))    //argument as shape
+[[0. 0.]
+ [0. 0.]]          //by default all values are float
+ 
+c)ones()--> same as zeros but fill all ones.
+
+np.ones((2,2))    //argument as shape
+
+[[1. 1.]
+ [1. 1.]]
+ 
+d)full()----> this method is used to fill any value for all d array.
+
+np.full((2,3),5)
+[[5 5 5]
+ [5 5 5]]
+ 
+e)dtype /// it is also a variable and argument
+when use as a variable it will give the numerical datatype of array
+
+var.dtype
+int32      int where one index having 4 byte =32 bit value
+
+now if we use as argument it is used to change the datatype of numerical array
+
+print(np.full((2,3),5,dtype=int))
+[[5 5 5]
+ [5 5 5]]
+ 
+as float is of 64 size we can also give size on int in ''
+
+print(np.full((2,3),5,dtype='int64'))
+[[5 5 5]
+ [5 5 5]]
+
+f)identity function ---> to print identity matrix(in which diagonal one diagonal is 1 and other is 0)
+
+np.identity(3,dtype=int)
+[[1 0 0
+  0 1 0
+  0 0 1]]
+  
+g)eye function ---> it is same as above just it take shape
+np.eye(3,3,dtype=int)
+[[1 0 0
+  0 1 0
+  0 0 1]]
+indexing/slicing in numpy-->
+indexing/slicing on 1d array is same as what we have learned till now..
+
+in 2d array indexing work as asusual
+
+Slicing arrays
+Slicing in python means taking elements from one given index to another given index.
+
+We pass slice instead of index like this: [start:end].
+
+We can also define the step, like this: [start:end:step].
+
+If we don't pass start its considered 0
+
+If we don't pass end its considered length of array in that dimension
+
+If we don't pass step its considered 1
+
+example--
+
+arr --->
+[[5 6 7]
+ [8 9 10]]
+
+if we want to access 6 element we will call arr[0][1]
+
+but slicing is little bit different by default slicing works on rows
+a[0]--->567
+a[1]--->8910
+a[-1]--->8910
+a[-2]--->567
+
+it all works on rows
+
+a[0:]--->all rows
+a[0:1]-->index 0 row 
+
+// as always end index is reduce by -1 in searching
+a[0:1]-->index 0 row    //
+
+in 2d array we can also slice between the row elements
+
+From the second element, slice elements from index 1 to index 4 (not included):
+
+import numpy as np
+
+arr = np.array([[1, 2, 3, 4, 5], [6, 7, 8, 9, 10]])
+
+print(arr[1, 1:4])   [start:end,start:end]   // first one is for row and second one is for column///
+
+here 1 is row and slicing 1st to 4 element of row
+[7 8 9]
+
+---------
+From both elements, return index 2:
+
+import numpy as np
+
+arr = np.array([[1, 2, 3, 4, 5], [6, 7, 8, 9, 10]])
+
+print(arr[0:2, 2])               here we didnt include step and it will give result in 1d array as no range in column
+so from row o, and row 1 give second element////
+[3 8]
+
+From both elements, slice index 1 to index 4 (not included), this will return a 2-D array:
+
+import numpy as np
+
+arr = np.array([[1, 2, 3, 4, 5], [6, 7, 8, 9, 10]])
+
+print(arr[0:2, 1:4])   //it will give 2d array result in return
+
+[[2 3 4]
+ [7 8 9]]
+ 
+ 
+import numpy as np
+var = np.array([[1,2,3],
+                [4,5,6],
+                [7,8,9]])
+print(var)
+
+print(var[2,0:2:2])         1 is row and second is slicing here 
+ -=------------------------
+ Create an array with 5 dimensions and verify that it has 5 dimensions:
+
+import numpy as np
+
+arr = np.array([1, 2, 3, 4], ndmin=5)
+
+print(arr)
+print('number of dimensions :', arr.ndim)
+
+------------------------------------------------------
+Below is a list of all data types in NumPy and the characters used to represent them.
+
+i - integer
+b - boolean
+u - unsigned integer
+f - float
+c - complex float
+m - timedelta
+M - datetime
+O - object
+S - string
+U - unicode string
+V - fixed chunk of memory for other type ( void )
+
+Get the data type of an array object:
+
+import numpy as np
+
+arr = np.array([1, 2, 3, 4])
+
+print(arr.dtype)    //dtype will give datta type of array
+
+---------------
+import numpy as np
+
+arr = np.array(['apple', 'banana', 'cherry'])
+
+print(arr.dtype)
+u6
+
+-----------------
+A non integer string like 'a' can not be converted to integer (will raise an error):
+
+import numpy as np
+
+arr = np.array(['a', '2', '3'], dtype='i')  //we can also give int instead of i
+
+
+----------------
+Change data type from float to integer by using 'i' as parameter value:
+
+import numpy as np
+
+arr = np.array([1.1, 2.1, 3.1])
+
+newarr = arr.astype('i')    //converting datatype of already existed array.
+or
+newarr = arr.astype(int)    //it is array function
+---------------
+converting into boolean
+arr = np.array([1, 0, 3])
+
+newarr = arr.astype(bool)   //always create a new array
+
+print(newarr)
+print(newarr.dtype)
+
+[ True False True]
+bool
+
+--------------------
+The main difference between a copy and a view of an array is that the copy is a new array, and the view is just a view of the original array.
+
+The copy owns the data and any changes made to the copy will not affect original array, and any changes made to the original array will not affect the copy.
+
+The view does not own the data and any changes made to the view will affect the original array, and any changes made to the original array will affect the view.
+
+import numpy as np
+
+arr = np.array([1, 2, 3, 4, 5])
+x = arr.copy()                //array function
+arr[0] = 42
+
+
+import numpy as np
+
+arr = np.array([1, 2, 3, 4, 5])
+y = arr.view()                /array function
+arr[0] = 42
+
+print(arr)
+
+
+print(x.base)   //none   because it made by copy
+print(y.base)   //it will refer origional array
+
+----------------------------
+reshape-->
+it is used to change the shape of an array
+
+converting shape of 1d to 2d
+
+import numpy as np
+​
+arr = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
+​
+newarr = arr.reshape(4, 3)
+​
+print(newarr)
+​
+[[ 1  2  3]
+ [ 4  5  6]
+ [ 7  8  9]
+ [10 11 12]]
+
+//1d to 3d
+ 
+newarr = arr.reshape(2, 3, 2)
+
+
+Can We Reshape Into any Shape?
+Yes, as long as the elements required for reshaping are equal in both shapes.
+
+We can reshape an 8 elements 1D array into 4 elements in 2 rows 2D array but we cannot reshape it into a 3 elements 3 rows 2D array as that would require 3x3 = 9 elements.
+
+-----------
+Unknown Dimension
+You are allowed to have one "unknown" dimension.
+
+Meaning that you do not have to specify an exact number for one of the dimensions in the reshape method.
+
+Pass -1 as the value, and NumPy will calculate this number for you.
+
+Example
+Convert 1D array with 8 elements to 3D array with 2x2 elements:
+
+import numpy as np
+
+arr = np.array([1, 2, 3, 4, 5, 6, 7, 8])
+
+newarr = arr.reshape(2, 2, -1)
+
+print(newarr)
+
+----------------
+Flattening the arrays
+Flattening array means converting a multidimensional array into a 1D array.
+
+We can use reshape(-1) to do this.
+
+Example
+Convert the array into a 1D array:
+
+import numpy as np
+
+arr = np.array([[1, 2, 3], [4, 5, 6]])
+
+newarr = arr.reshape(-1)
+
+print(newarr)
+
+---------------------------------
+Iteratin array in numpy-->
+we can use for loop for iterating
+but in multidimensional array we need multiple array to iterate
+
+instead of this there is a method which we use to iterate 
+
+import numpy as np
+
+arr = np.array([[[1, 2], [3, 4]], [[5, 6], [7, 8]]])
+
+for x in np.nditer(arr):        //it will flatten an iterate over the array. // nd method
+  print(x)
+----------------------------------------------------------------------- 
+Axis Concept-->
+when axis =0 operation will be done on column  // it is default
+when axis=1  operation will be done on rows.   
+
+-----------------------------------------------------------------------
+join in arrays
+
+1d-->
+we will just use concatenate function
+
+arr1 = np.array([1, 2, 3])
+
+arr2 = np.array([4, 5, 6])
+
+arr = np.concatenate((arr1, arr2))
+
+
+2d-->
+
+arr1 = np.array([[1, 2], 
+                 [3, 4]])
+
+arr2 = np.array([[5, 6], 
+                [7, 8]])
+
+arr = np.concatenate((arr1, arr2), axis=1)
+
+[[1 2 5 6]                                  axis = 1 so join will be done on columns and new elemnt will add in new columns
+ [3 4 7 8]]
+
+arr = np.concatenate((arr1, arr2), axis=0)  axis = 0 works downward as join will work on rows new rows will be added with new ele
+[[1 2]
+ [3 4]
+ [5 6]
+ [7 8]]
+
+axis = 0 default
+--------------------------------------------------------------------------------------------
+
+vstack will add a row with the new elemnts as vertical increases rows,
+hstack will add a column with new elemnts.
+
+
+import numpy as np
+arr1 = np.array([1, 2, 3])
+
+arr2 = np.array([[4, 5, 6],[7,8,9]])
+
+arr = np.vstack((arr2,arr1))       adding in bottom //elements should be common in rows in case of v stack
+
+[[4 5 6]
+ [7 8 9]
+ [1 2 3]]
+
+arr = np.hstack((arr2,arr1))    // it will give error as it will add in columns for this dimension should be equal
+
+vstack put second below the first so column will be equal join axis=0
+
+
+vstack put second beside the first so rows will be equal join axis=1
+
+but it will work in case of hstack
+
+import numpy as np
+arr1 = np.array([[1],[2]]) 
+
+arr2 = np.array([[4, 5, 6],[7,8,9]])
+
+print(np.hstack((arr2,arr1)))
+
+[[4 5 6 1]
+ [7 8 9 2]]
+
+-------------------------------------------------------------------------------------------
+numpy.array_equal(arr1, arr2) : This logical function that checks if two arrays have the same shape and elements.
+--------------------------------------------------------------------------------------------
+
+Splitting NumPy Arrays
+Splitting is reverse operation of Joining.
+
+Joining merges multiple arrays into one and Splitting breaks one array into multiple.
+
+We use array_split() for splitting arrays, we pass it the array we want to split and the number of splits.
+
+import numpy as np
+
+arr = np.array([1, 2, 3, 4, 5, 6])
+
+newarr = np.array_split(arr, 3)
+
+print(newarr)
+
+[array([1, 2]), array([3, 4]), array([5, 6])]
+
+print(newarr[0])
+print(newarr[1])
+print(newarr[2])   // as the result is array of arrays.
+
+[1 2]
+[3 4]
+[5 6]
+
+
+Split the 2-D array into three 2-D arrays along rows.
+
+import numpy as np
+
+arr = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12], [13, 14, 15], [16, 17, 18]])
+
+newarr = np.array_split(arr, 3, axis=1)     //here we are giving columns so remove from columns
+
+print(newarr)
+
+
+
+[[ 1  2  3]
+ [ 4  5  6]
+ [ 7  8  9]
+ [10 11 12]
+ [13 14 15]
+ [16 17 18]]
+ 
+ will break into 
+ 
+ [[ 1\  2\  3]
+ [ 4 \ 5 \ 6]
+ [ 7 \ 8 \ 9]
+ [10 \11 \12]
+ [13 \14 \15]
+ [16 \17 \18]]
+ 
+ now if we pass axis=0
+ 
+[[ 1  2  3]
+ [ 4  5  6]
+ ----------------
+ [ 7  8  9]
+ [10 11 12]
+ ----------------
+ [13 14 15]
+ [16 17 18]]
+ 
+ np.hsplit(arr, 3)   <--->np.array_split(arr, 3, axis=1)
+ np.vsplit(arr, 3)   <--->np.array_split(arr, 3, axis=0)
+----------------------------------------------------------------------------------------------
+
+NumPy Searching Arrays
+
+You can search an array for a certain value, and return the indexes that get a match.
+
+To search an array, use the where() method.
+
+
+import numpy as np
+
+arr = np.array([1, 2, 3, 4, 5, 4, 4])
+
+x = np.where(arr == 4)
+
+print(x)
+
+The example above will return a tuple of array: (array([3, 5, 6],)
+
+Which means that the value 4 is present at index 3, 5, and 6.
+
+in 2d
+
+import numpy as np
+arr=np.ones((3,3),dtype=int)
+arr[1][1]=4
+print(arr)
+
+x=np.where(arr==4)
+print(x[:])
+
+[[1 1 1]
+ [1 4 1]
+ [1 1 1]]
+(array([1], dtype=int64), array([1], dtype=int64))  // 1 array for row and 1 for column
+
+
+---
+Find the indexes where the values are even:
+
+import numpy as np
+
+arr = np.array([1, 2, 3, 4, 5, 6, 7, 8])
+
+x = np.where(arr%2 == 0)
+
+print(x)
+
+--
+There is a method called searchsorted() which performs a binary search in the array, and returns the index where the specified value would be inserted to maintain the search order.
+
+import numpy as np
+
+arr = np.array([6, 7, 8, 9])
+
+x = np.searchsorted(arr, 7)
+
+print(x)
+Example explained: The number 7 should be inserted on index 1 to remain the sort order.
+
+The method starts the search from the left and returns the first index where the number 7 is no longer larger than the next value.
+
+Search From the Right Side
+By default the left most index is returned, but we can give side='right' to return the right most index instead.
+
+Example
+Find the indexes where the value 7 should be inserted, starting from the right:
+
+import numpy as np
+
+arr = np.array([6, 7, 8, 9])
+
+x = np.searchsorted(arr, 7, side='right')
+
+
+------------------
+import numpy as np
+
+arr = np.array([3, 2, 0, 1])
+
+print(np.sort(arr))
+
+for sorting array
+
+
+import numpy as np
+
+arr = np.array([[3, 2, 4], [5, 0, 1]])   //by default axis=1 in case of sort
+
+print(np.sort(arr) , axis=1)     //here sorting will done on rows
+
+[[2 3 4]
+ [0 1 5]]
+
+----------------
+Getting some elements out of an existing array and creating a new array out of them is called filtering.
+
+In NumPy, you filter an array using a boolean index list.
+
+
+import numpy as np
+
+arr = np.array([41, 42, 43, 44])
+
+x = [True, False, True, False]
+
+newarr = arr[x]     // passing list
+
+print(newarr)
+The example above will return [41, 43], why?
+
+Because the new array contains only the values where the filter array had the value True, in this case, index 0 and 2.
+
+
+we can pass any boolean expression
+
+import numpy as np
+
+arr = np.array([41, 42, 43, 44])
+
+filter_arr = arr > 42                                   // condition of filtering wii check on each element and return t/f
+
+newarr = arr[filter_arr]
+
+print(filter_arr)
+print(newarr)
+[False False  True  True]             //checking condition
+[43 44]                               //filtering
+
+
+
+import numpy as np
+arr=np.ones((3,3),dtype=int)
+arr[1][1]=4
+print(arr)
+
+arr2=np.sort(arr,axis=0)
+y=arr>3
+print(y)
+print(arr[y])
+
+[[1 1 1]
+ [1 4 1]
+ [1 1 1]]
+[[False False False]
+ [False  True False]
+ [False False False]]
+[4]
+
+
+--------------------
+dot function in numpy...
+this is the function which we use to get multiplication sum of arrays.
+
+a)if arrays are 1d than it will have value scalar.
+
+a=[0,1,2]
+b=[3,4,5]
+
+print(np.dot(a,b)) ---> 0*3 + 1*4 + 2*5
+                   ---> 14
+				   
+
+for multidimensional array to do dot product .
+if one array is m*n than another should be n*m..
+
+row in first will do dot product with column of another.
+
+import numpy as np
+
+left = np.arange(12).reshape((3,4))
+print (left)
+
+right = np.arange(12).reshape((4,3))
+print (right)
+
+dot_array= np.dot(left,right)   --->(3,4).(4,3)    new shape will be (3,3)////(first,last)
+print(dot_array)
+
+
+[[ 0  1  2  3]
+ [ 4  5  6  7]
+ [ 8  9 10 11]]
+ 
+ [[ 0  1  2]
+ [ 3  4  5]
+ [ 6  7  8]
+ [ 9 10 11]]
+ 
+[[ 42  48  54]                       every row with do dot with every column...
+ [114 136 158]                                  
+ [186 224 262]]
+==============================
+Ufunc
+==============================
+What are ufuncs?
+ufuncs stands for "Universal Functions" and they are NumPy functions that operate on the ndarray object.
+
+
+ufuncs are used to implement vectorization in NumPy which is way faster than iterating over elements.
+
+They also provide broadcasting and additional methods like reduce, accumulate etc. that are very helpful for computation.
+
+ufuncs also take additional arguments, like:
+
+where boolean array or condition defining where the operations should take place.
+
+dtype defining the return type of elements.
+
+out output array where the return value should be copied.
+
+A scalar is a number, like 3, -5, 0.368, etc,
+A vector is a list of numbers (can be in a row or column),
+A matrix is an array of numbers (one or more rows, one or more columns).
+
+
+Add the Elements of Two Lists
+list 1: [1, 2, 3, 4]
+
+list 2: [4, 5, 6, 7]
+
+One way of doing it is to iterate over both of the lists and then sum each elements.
+
+Without ufunc, we can use Python's built-in zip() method:
+
+x = [1, 2, 3, 4]
+y = [4, 5, 6, 7]
+z = []
+
+for i, j in zip(x, y):
+  z.append(i + j)
+print(z)
+
+------
+a = ("John", "Charles", "Mike")
+b = ("Jenny", "Christy", "Monica")
+
+x = zip(a, b)   //gives tuple  
+
+#use the tuple() function to display a readable version of the result:
+
+print(tuple(x))
+
+(("John","Jenny"),("Charles","Christy"),("Mike","Monica"))
+
+------
+
+
+With ufunc, we can use the add() function:
+
+import numpy as np
+
+x = [1, 2, 3, 4]
+y = [4, 5, 6, 7]
+z = np.add(x, y)
+
+print(z)
+
+[ 5  7  9 11]
+
+---------------
+How To Create Your Own ufunc
+To create your own ufunc, you have to define a function, like you do with normal functions in Python, then you add it to your NumPy ufunc library with the frompyfunc() method.
+
+The frompyfunc() method takes the following arguments:
+
+function - the name of the function.
+inputs - the number of input arguments (arrays).
+outputs - the number of output arrays.
+
+import numpy as np
+
+def myadd(x, y):
+  return x+y
+
+myadd = np.frompyfunc(myadd, 2, 1)
+
+print(myadd([1, 2, 3, 4], [4,5, 6, 7]))
+
+[ 5  7  9 11]
+
+import numpy as np
+
+print(type(np.add))           //this is ufunc
+print(type(np.concatenate))   //this is function
+
+
+---------------
+ufunc simple arithmetic on arrays-->
+
+The add() function sums the content of two arrays, and return the results in a new array.
+
+The subtract() function subtracts the values from one array with the values from another array, and return the results in a new array.
+
+The multiply() function multiplies the values from one array with the values from another array, and return the results in a new array.
+
+The divide() function divides the values from one array with the values from another array, and return the results in a new array.
+
+The power() function rises the values from the first array to the power of the values of the second array, and return the results in a new array.
+
+Both the mod() and the remainder() functions return the remainder of the values in the first array corresponding to the values in the second array, and return the results in a new array.
+
+The divmod() function return both the quotient and the the mod. The return value is two arrays, the first array contains the quotient and second array contains the mod.
+
+Both the absolute() and the abs() functions do the same absolute operation element-wise but we should use absolute() to avoid confusion with python's inbuilt math.abs()
+
+import numpy as np        //always remember element should be same
+
+arr1 = np.array([10, 11, 12, 13, 14, 15])
+arr2 = np.array([2, 1, 3, 4, 5, 1])
+
+newarr = np.add(arr1, arr2)   //[12 12 15 17 19 16]
+
+print(newarr)
+
+newarr = np.subtract(arr1, arr2)   //[ 8 10  9  9  9 14]
+
+print(newarr)
+
+newarr = np.multiply(arr1, arr2)   //[20 11 36 52 70 15]
+
+print(newarr)
+
+newarr = np.divide(arr1, arr2)    //[ 5.   11.    4.    3.25  2.8  15.  ]
+
+print(newarr)
+
+newarr = np.power(arr1, arr2)    //[   100     11   1728  28561 537824     15]
+
+print(newarr)
+
+newarr = np.remainder(arr1, arr2)
+
+print(newarr)        //[0 0 0 1 4 0]
+ 
+newarr = np.divmod(arr1, arr2)  
+
+print(newarr)//(array([ 5, 11,  4,  3,  2, 15]), array([0, 0, 0, 1, 4, 0]))
+
+arr = np.array([-1, -2, 1, 2, 3, -4])
+
+newarr = np.absolute(arr)
+
+print(newarr)    //[1 2 1 2 3 4]
+
+----
+we can pass scalar also in second argument
+
+import numpy as np
+arr=np.ones((3,3),dtype=int)
+arr[1][1]=4
+print(arr)
+
+arr2=np.sort(arr,axis=0)
+y=np.mod(arr,3)
+print(y)
+
+[[1 1 1]
+ [1 4 1]
+ [1 1 1]]
+[[1 1 1]
+ [1 1 1]
+ [1 1 1]]
+
+
+---------------------------------------
+Rounding Decimals
+There are primarily five ways of rounding off decimals in NumPy:
+
+truncation
+fix
+rounding
+floor
+ceil
+
+Truncation Remove the decimals, and return the float number closest to zero. Use the trunc() and fix() functions.
+
+Rounding
+The around() function increments preceding digit or decimal by 1 if >=5 else do nothing.
+E.g. round off to 1 decimal point, 3.16666 is 3.2
+
+Floor
+The floor() function rounds off decimal to nearest lower integer.
+E.g. floor of 3.166 is 3.
+
+Ceil
+The ceil() function rounds off decimal to nearest upper integer.
+E.g. ceil of 3.166 is 4.
+
+
+import numpy as np
+
+arr = np.trunc([-3.1666, 3.6667])     //  [-3.  3.]
+
+arr = np.fix([-3.1666, 3.6667])      //[-3.  3.]
+
+arr = np.around([-3.1666, 3.6667], 2)  //[-3.17  3.67]      if 1 [-3.2  3.7]
+
+arr = np.around([-3.1666, 3.6667])     //[-3.  4.]
+
+arr = np.floor([-3.1666, 3.6667])     //[-4.  3.]
+
+arr = np.ceil([-3.1666, 3.6667])      //[-3.  4.]
+
+-----------------------------------------------------------------
+Logs
+NumPy provides functions to perform log at the base 2, e and 10.
+
+We will also explore how we can take log for any base by creating a custom ufunc.
+
+All of the log functions will place -inf or inf in the elements if the log can not be computed.
+
+
+Log at Base 2
+Use the log2() function to perform log at the base 2.
+import numpy as np
+arr = np.arange(1, 10)
+print(arr)
+print(np.log2(arr))
+
+[1 2 3 4 5 6 7 8 9]
+[0.         1.         1.5849625  2.         2.32192809 2.5849625      2.80735492 3.         3.169925  ]
+
+import numpy as np
+
+arr = np.arange(1, 10)
+
+print(np.log10(arr))
+
+
+
+Find log at base e of all elements of following array:
+
+import numpy as np
+
+arr = np.arange(1, 10)
+
+print(np.log(arr))
+
+-----------
+Summations
+What is the difference between summation and addition?
+
+Addition is done between two arguments whereas summation happens over n elements.
+
+Sum the values in arr1 and the values in arr2:
+
+import numpy as np
+
+arr1 = np.array([1, 2, 3])
+arr2 = np.array([1, 2, 3])
+
+newarr = np.sum([arr1, arr2])    // 12
+
+over axis
+newarr = np.sum([arr1, arr2], axis=1)  //[6 6]
+
+-----------------
+Cummulative sum means partially adding the elements in array.
+
+E.g. The partial sum of [1, 2, 3, 4] would be [1, 1+2, 1+2+3, 1+2+3+4] = [1, 3, 6, 10].
+
+Perfom partial sum with the cumsum() function.
+
+Example
+import numpy as np
+arr = np.array([1, 2, 3])
+newarr = np.cumsum(arr)
+print(newarr)
+Returns: [1 3 6]
+=======================================================================================================
+
+---------------------------
+NUmpy Products-->
+To find the product of the elements in an array, use the prod() function.
+import numpy as np
+
+arr = np.array([1, 2, 3, 4])
+
+x = np.prod(arr)                  //different than product
+
+print(x)     
+
+
+--
+arr1 = np.array([1, 2, 3, 4])
+arr2 = np.array([5, 6, 7, 8])
+
+x = np.prod([arr1, arr2])    //total product if give axis will do on axis only.
+
+arr = np.array([5, 6, 7, 8])
+
+newarr = np.cumprod(arr)     //[5 30 210 1680]
+
+dot()---->
+
+a = [[1, 0], [0, 1]]
+b = [[4, 1], [2, 2]]
+np.dot(a, b)
+array([[4, 1],                                // it is like sum
+       [2, 2]])
+
+-----------------------------
+NumPy Differences-->
+
+Differences
+A discrete difference means subtracting two successive elements.
+
+E.g. for [1, 2, 3, 4], the discrete difference would be [2-1, 3-2, 4-3] = [1, 1, 1]
+
+To find the discrete difference, use the diff() function.
+
+import numpy as np
+
+arr = np.array([10, 15, 25, 5])
+
+newarr = np.diff(arr)  // [5 10 -20]
+
+
+
+We can perform this operation repeatedly by giving parameter n.
+
+E.g. for [1, 2, 3, 4], the discrete difference with n = 2 would be [2-1, 3-2, 4-3] = [1, 1, 1] , then, since n=2, we will do it once more, with the new result: [1-1, 1-1] = [0, 0]
+
+import numpy as np
+
+arr = np.array([10, 15, 25, 5])
+
+newarr = np.diff(arr, n=2)
+
+-----------------------------------
+Finding LCM-->
+import numpy as np
+
+num1 = 4
+num2 = 6
+
+x = np.lcm(num1, num2)
+
+print(x)     //12
+
+
+
+Finding LCM in Arrays
+To find the Lowest Common Multiple of all values in an array, you can use the reduce() method.
+
+The reduce() method will use the ufunc, in this case the lcm() function, on each element, and reduce the array by one dimension.
+
+import numpy as np
+
+arr = np.array([3, 6, 9])
+
+x = np.lcm.reduce(arr)
+
+print(x)   //18
+
+vice versa gcd is used to find gcd..
+
+=============================================================
+
+
+
+Trigonometric Functions
+NumPy provides the ufuncs sin(), cos() and tan() that take values in radians and produce the corresponding sin, cos and tan values.
+
+ExampleGet your own Python Server
+Find sine value of PI/2:
+
+import numpy as np
+
+x = np.sin(np.pi/2)  //1
+
+arr = np.array([np.pi/2, np.pi/3, np.pi/4, np.pi/5])
+
+x = np.sin(arr)     //values in  array
+
+
+convert degree into raidans
+
+arr = np.array([90, 180, 270, 360])
+
+x = np.deg2rad(arr)
+
+print(x)  //array of pis  we have vice versa rad2deg also
+
+=================================================================
+Finding angles from values of sine, cos, tan. E.g. sin, cos and tan inverse (arcsin, arccos, arctan).
+
+NumPy provides ufuncs arcsin(), arccos() and arctan() that produce radian values for corresponding sin, cos and tan values given.
+
+import numpy as np
+
+x = np.arcsin(1.0)   //90
+
+print(x)
+
+
+arr = np.array([1, -1, 0.1])
+
+x = np.arcsin(arr)
+
+====================================
+Hypotenues
+Finding hypotenues using pythagoras theorem in NumPy.
+
+NumPy provides the hypot() function that takes the base and perpendicular values and produces hypotenues based on pythagoras theorem.
+
+Example
+Find the hypotenues for 4 base and 3 perpendicular:
+
+import numpy as np
+
+base = 3
+perp = 4
+
+x = np.hypot(base, perp)   //5
+
+print(x)  //5
+
+==============================================
+
+Hyperbolic Functions
+NumPy provides the ufuncs sinh(), cosh() and tanh() that take values in radians and produce the corresponding sinh, cosh and tanh values..
+
+import numpy as np
+
+x = np.sinh(np.pi/2)
+
+print(x)   same as all above
+==============================================
+
+Create Sets in NumPy
+We can use NumPy's unique() method to find unique elements from any array. E.g. create a set array, but remember that the set arrays should only be 1-D arrays.
+
+import numpy as np
+
+arr = np.array([1, 1, 1, 2, 3, 4, 5, 5, 6, 7])
+
+x = np.unique(arr)
+
+------
+Finding Union
+To find the unique values of two arrays, use the union1d() method.
+
+Example
+Find union of the following two set arrays:
+
+import numpy as np
+
+arr1 = np.array([1, 2, 3, 4])
+arr2 = np.array([3, 4, 5, 6])
+
+newarr = np.union1d(arr1, arr2)
+
+--------
+Finding Intersection
+To find only the values that are present in both arrays, use the intersect1d() method.
+
+Example
+Find intersection of the following two set arrays:
+
+import numpy as np
+
+arr1 = np.array([1, 2, 3, 4])
+arr2 = np.array([3, 4, 5, 6])
+
+newarr = np.intersect1d(arr1, arr2, assume_unique=True)
+
+------------------
+Finding Difference
+To find only the values in the first set that is NOT present in the seconds set, use the setdiff1d() method.
+
+Example
+Find the difference of the set1 from set2:
+
+import numpy as np
+
+set1 = np.array([1, 2, 3, 4])
+set2 = np.array([3, 4, 5, 6])
+
+newarr = np.setdiff1d(set1, set2, assume_unique=True)
+
+---------------------
+Finding Symmetric Difference
+To find only the values that are NOT present in BOTH sets, use the setxor1d() method.
+
+Example
+Find the symmetric difference of the set1 and set2:
+
+import numpy as np
+
+set1 = np.array([1, 2, 3, 4])
+set2 = np.array([3, 4, 5, 6])
+
+newarr = np.setxor1d(set1, set2, assume_unique=True)
+
+
+
+
+
+===============================================================
+
+===============================================================
+Numpy Advance with visualization.
+===============================================================
+
+generating random number:->
+
+from numpy import random
+
+x = random.randint(100)
+
+print(x)
+68
+
+----------------------
+Generate a random float from 0 to 1:
+from numpy import random
+
+x = random.rand()
+
+print(x)
+
+Generate a 1-D array containing 5 random floats:
+
+from numpy import random
+
+x = random.rand(5)
+
+print(x)
+
+----------------------
+from numpy import random
+
+x=random.randint(0,100, size=(5))
+
+print(x)
+
+y=random.randint(0,100, size=(3,3))
+print(y)
+
+[39 18 44 51 37]
+[[43  0 93]
+ [56  1 25]
+ [85 95 12]]
+ 
+--------------------------
+we can also do it by choice=-->
+
+from numpy import random
+
+x = random.choice([3, 5, 7, 9])
+
+print(x)
+
+x = random.choice([3, 5, 7, 9],size=3)
+
+print(x)
+
+x = random.choice([3, 5, 7, 9], size=(3, 5))
+
+print(x)
+
+7
+[5 7 9]
+[[3 9 7 5 5]
+ [3 5 3 3 7]
+ [5 3 9 5 9]]
+============================================================================================ 
+----------------------------------
+
+What is Data Distribution?
+Data Distribution is a list of all possible values, and how often each value occurs.
+
+Such lists are important when working with statistics and data science.
+
+The random module offer methods that returns randomly generated data distributions.
+
+Example-->
+
+Generate a 1-D array containing 100 values, where each value has to be 3, 5, 7 or 9.
+
+The probability for the value to be 3 is set to be 0.1
+
+The probability for the value to be 5 is set to be 0.3
+
+The probability for the value to be 7 is set to be 0.6
+
+The probability for the value to be 9 is set to be 0
+
+from numpy import random
+
+x = random.choice([3, 5, 7, 9], p=[0.1, 0.3, 0.6, 0.0], size=(100))
+
+print(x)
+
+--------------------------------------------------------------------
+Random Permutations of Elements
+A permutation refers to an arrangement of elements. e.g. [3, 2, 1] is a permutation of [1, 2, 3] and vice-versa.
+
+The NumPy Random module provides two methods for this: shuffle() and permutation().
+
+Shuffling Arrays
+Shuffle means changing arrangement of elements in-place. i.e. in the array itself.
+
+
+Randomly shuffle elements of following array:
+
+from numpy import random
+import numpy as np
+
+arr = np.array([1, 2, 3, 4, 5])
+
+random.shuffle(arr)
+
+print(arr)
+
+The shuffle() method makes changes to the original array
+----------------------------------------------------------------
+
+from numpy import random
+import numpy as np
+
+arr = np.array([1, 2, 3, 4, 5])
+
+print(random.permutation(arr))
+The permutation() method returns a re-arranged array (and leaves the original array un-changed).
+
+both are doing the same thing...but permutation create a new array without changing old one.
+
+------------------------------------------------------------------------
+import numpy as np
+print(np.info(np.add))   // to check info on every methods
+======================================================================================
+Visualize Distributions With Seaborn
+Seaborn is a library that uses Matplotlib underneath to plot graphs. It will be used to visualize random distributions.
+
+installing seaborn-->
+pip install seaborn
+
+Distplots
+Distplot stands for distribution plot, it takes as input an array and plots a curve corresponding to the distribution of points in the array.
+
+in new vrsion it is Displot-->it will create histogram
+
+Import Matplotlib
+Import the pyplot object of the Matplotlib module in your code using the following statement:
+import matplotlib.pyplot as plt    // this is for view graphs
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+sns.distplot([0, 1, 2, 3, 4, 5])
+
+plt.show()    // it will show graphs
+
+===========================================================================================
+
+Normal Distribution
+The Normal Distribution is one of the most important distributions.
+
+It is also called the Gaussian Distribution after the German mathematician Carl Friedrich Gauss.
+
+It fits the probability distribution of many events, eg. IQ Scores, Heartbeat etc.
+
+Use the random.normal() method to get a Normal Data Distribution.
+
+It has three parameters:
+
+loc - (Mean) where the peak of the bell exists.
+
+scale - (Standard Deviation) how flat the graph distribution should be.
+
+size - The shape of the returned array.
+
+
+Generate a random normal distribution of size 2x3 with mean at 1 and standard deviation of 2:
+
+from numpy import random
+
+x = random.normal(loc=1, scale=2, size=(2, 3))
+
+print(x)
+
+
+-------------------------------------------
+import numpy as np
+# numpy array
+arr = np.array([9, 8, 7, 6, 5, 4, 3, 2, 1])
+ 
+# index array with index of all the elements, except index = 5.
+# so element at 5th index will be deleted.
+indexArray = [0, 1, 2, 3, 4, 6, 7, 8]
+ 
+# passing indexarray to the array as index
+arr = arr[indexArray]
+ 
+print(arr)
+
+-----------------------------------------------
+removing unwanted elements in array
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+x=np.array([1,3,5,7,7,4,1,3,12,8,5,2,6,34])
+max_deviation_zscore=3
+mean=np.mean(x)
+print(mean)
+std = np.std(x)
+print(std)
+outliners=[]
+for data in x:
+    zscore = (data-mean)/std
+    if abs(zscore)>max_deviation_zscore :
+        outliners.append(data)
+
+print(outliners)
+list1 = [ele for ele in x if ele not in outliners]
+print(list1)
+figsize=plt.figure(figsize=(3,3))
+ax1=plt.subplot()
+ax1.hist(list1,bins=3)
+plt.show()

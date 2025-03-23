@@ -1,0 +1,288 @@
+import de.hybris.platform.core.Registry;
+import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.orderprocessing.model.OrderProcessModel;
+import de.hybris.platform.core.model.order.OrderModel;
+import de.hybris.platform.processengine.enums.ProcessState;
+import de.hybris.platform.servicelayer.search.FlexibleSearchQuery;
+import de.hybris.platform.core.enums.OrderStatus;
+import org.apache.commons.lang.StringUtils;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Arrays;
+
+import org.apache.commons.collections4.CollectionUtils;
+import de.hybris.platform.servicelayer.search.SearchResult;
+import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.processengine.BusinessProcessService;
+
+import de.hybris.platform.core.model.order.AbstractOrderModel;
+import de.hybris.platform.core.model.order.OrderModel;
+import de.hybris.platform.core.model.user.AddressModel;
+import de.hybris.platform.core.model.user.CustomerModel;
+import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.servicelayer.search.FlexibleSearchService;
+import de.hybris.platform.servicelayer.search.SearchResult;
+import de.hybris.platform.servicelayer.event.EventService;import de.hybris.platform.core.model.order.AbstractOrderEntryModel;
+import de.hybris.platform.core.model.order.OrderModel;
+import de.hybris.platform.core.model.order.price.TaxModel;
+import de.hybris.platform.core.model.user.AddressModel;
+import de.hybris.platform.ordersplitting.model.ConsignmentEntryModel;
+import de.hybris.platform.ordersplitting.model.ConsignmentModel;
+import de.hybris.platform.ordersplitting.model.WarehouseModel;
+import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.util.TaxValue;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections.ListUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.amway.core.model.INDDropCodeModel;
+import com.amway.core.model.INDDropCodeWareHouseMappingModel;
+import com.amway.core.util.IndAmountFormatUtil;
+import com.amway.core.warehouse.dao.IndWareHouseStockDao;
+import com.amway.indcore.delivery.tax.service.IndDeliveryTaxService;
+import com.amway.indcore.price.IndFindPriceStrategy;
+import com.amway.indcore.tax.dao.IndTaxDao;
+
+import de.hybris.platform.order.events.SubmitOrderEvent;
+
+import de.hybris.platform.store.BaseStoreModel;
+import java.lang.System;
+import de.hybris.platform.orderprocessing.model.OrderProcessModel;
+import de.hybris.platform.processengine.BusinessProcessService;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import com.amway.core.model.AmwayAccountModel;
+
+import de.hybris.platform.processengine.model.BusinessProcessModel;
+
+
+
+final ModelService modelService = (ModelService) Registry.getApplicationContext().getBean("modelService");
+
+String query = "select {o.pk} from {Order as o} where {o.code} in ('742790205')";
+
+
+final SearchResult<OrderModel> searchResult = ((FlexibleSearchService) Registry.getApplicationContext().getBean("flexibleSearchService")).search(query);
+final List<OrderModel> results = searchResult.getResult();
+
+
+
+
+List<WarehouseModel> getHighestPriorityWarehouses(
+			final List<INDDropCodeWareHouseMappingModel> dropCodeWarehouseMappingList)
+	{
+		List<WarehouseModel> highest_pripority_warehouses = ListUtils.EMPTY_LIST;
+		if (CollectionUtils.isNotEmpty(dropCodeWarehouseMappingList))
+		{
+			final Integer highestPriority = dropCodeWarehouseMappingList.stream().filter({dcwm -> dcwm.getPriority() != null;})
+					.map({dcwm -> dcwm.getPriority();}).findFirst().orElse(null);
+
+			if (highestPriority != null)
+			{
+				highest_pripority_warehouses = dropCodeWarehouseMappingList.stream()
+						.filter({dcwm -> dcwm.getPriority() == highestPriority}).map({dcwm -> dcwm.getWarehouse()})
+						.collect(Collectors.toList());
+			}
+		}
+		return highest_pripority_warehouses;
+	}
+
+List<INDDropCodeWareHouseMappingModel> getWarehouseMappingOnConsignmentAndDeliveryAddress(
+			final Set<ConsignmentModel> consignments, final AddressModel shippingAddress)
+	{
+		if (consignments != null && shippingAddress != null)
+		{
+			INDDropCodeModel shippingDropCodeModel = null;
+
+			final List<WarehouseModel> warehouseList = consignments.stream().map({c -> c.getWarehouse()}).collect(Collectors.toList());
+			
+			println "wareHouseList====> "+warehouseList;
+			
+			println "size of list===> "+warehouseList.size();
+			
+			println "first warehouse code===> "+warehouseList.stream().findFirst().get().getCode();
+			
+			println "old dropcode===> "+shippingAddress.getPostalcode();
+			
+
+			if (shippingAddress.getPostalcode() != null)
+			{
+				shippingDropCodeModel = indWarehouseStockDao.getDropcodeModel(shippingAddress.getPostalcode());
+				
+			}
+			
+			println "dropCodeModel=====> "+  shippingDropCodeModel;
+
+			if (CollectionUtils.isNotEmpty(warehouseList) && shippingDropCodeModel != null)
+			{
+			modelService.refresh(shippingDropCodeModel);
+				final List<INDDropCodeWareHouseMappingModel> dropCodeWarehouseMappingList = indWarehouseStockDao
+						.getDropcodeWarehouseMappingByDropCodeAndWarehouse(warehouseList, shippingDropCodeModel);
+						
+						println "dropCodeWarehouseMappingList=====> "+  dropCodeWarehouseMappingList;
+				return dropCodeWarehouseMappingList;
+			}
+		}
+		return ListUtils.EMPTY_LIST;
+	}
+	double getTotalTaxPercentageFortaxValues(final Collection<TaxValue> taxValues)
+	{
+		if (CollectionUtils.isNotEmpty(taxValues))
+		{
+			final Collection<TaxValue> taxValuesNonTaxOnTax = getTaxValuesWithoutTaxOnTax(taxValues);
+			if (CollectionUtils.isNotEmpty(taxValuesNonTaxOnTax))
+			{
+				final double totalTaxPercentage = taxValuesNonTaxOnTax.stream().mapToDouble({tv -> tv.getValue()}).sum();
+				return totalTaxPercentage;
+			}
+		}
+		return 0.0;
+	}
+	
+	Collection<TaxValue> getTaxValuesWithoutTaxOnTax(final Collection<TaxValue> taxValues)
+	{
+		final List<TaxModel> taxList = indTaxDao.findTaxesByTaxOnTax(Boolean.FALSE);
+		Collection<TaxValue> taxValuesNonTaxOnTax = Collections.emptyList();
+		if (CollectionUtils.isNotEmpty(taxList))
+		{
+			final List<String> taxListCodes = taxList.stream().map({tv -> tv.getCode()}).collect(Collectors.toList());
+			taxValuesNonTaxOnTax = taxValues.stream().filter({tv -> taxListCodes.contains(tv.getCode())}).collect(Collectors.toList());
+		}
+		return taxValuesNonTaxOnTax;
+	}
+AbstractOrderEntryModel findOrderEntryWithHighestTaxes(final Set<ConsignmentModel> consignments,
+			final List<WarehouseModel> highestPriorityWarehouses)
+	{
+		if (CollectionUtils.isNotEmpty(consignments) && CollectionUtils.isNotEmpty(highestPriorityWarehouses))
+		{
+			final List<ConsignmentModel> consignmentFilteredByWarehouses = consignments.stream()
+					.filter({c -> highestPriorityWarehouses.contains(c.getWarehouse())}).collect(Collectors.toList());
+					
+					
+
+			if (CollectionUtils.isNotEmpty(consignmentFilteredByWarehouses))
+			{
+				double totalTaxPercentage = 0.0;
+				AbstractOrderEntryModel orderEntryWithHighestTaxes = null;
+				for (final ConsignmentModel consignmentModel : consignmentFilteredByWarehouses)
+				{
+					final Set<ConsignmentEntryModel> consignmentEntries = consignmentModel.getConsignmentEntries();
+					for (final ConsignmentEntryModel consignmentEntryModel : consignmentEntries)
+					{
+						final AbstractOrderEntryModel orderEntryModel = consignmentEntryModel.getOrderEntry();
+						final Collection<TaxValue> taxValues = orderEntryModel.getTaxValues();
+						
+						println "taxValues===>"+taxValues;
+						double totalTaxPercentageForEntry = 0.0;
+						if (CollectionUtils.isNotEmpty(taxValues))
+						{
+							totalTaxPercentageForEntry = getTotalTaxPercentageFortaxValues(taxValues);
+							
+							println "totalTaxPercentageForEntry====>"+totalTaxPercentageForEntry;
+						}
+						if (totalTaxPercentageForEntry >= totalTaxPercentage)
+						{
+							totalTaxPercentage = totalTaxPercentageForEntry;
+							orderEntryWithHighestTaxes = orderEntryModel;
+						}
+					}
+				}
+				println "orderEntryWithHighestTaxes===>"+orderEntryWithHighestTaxes;
+				return orderEntryWithHighestTaxes;
+			}
+		}
+		return null;
+	}
+	
+	void setDeliveryTaxInOrderEntry(final OrderModel order, final AbstractOrderEntryModel orderEntryWithHighestTaxes)
+	{
+		final Double deliveryCost = order.getDeliveryCost();
+		final Collection<TaxValue> taxValues = orderEntryWithHighestTaxes.getTaxValues();
+		final Collection<TaxValue> taxValuesNonTaxOnTax = getTaxValuesWithoutTaxOnTax(taxValues);
+		
+		println "taxValues======>"+taxValues+"       taxValuesNonTaxOnTax====>"+taxValuesNonTaxOnTax;
+		if (deliveryCost != null && CollectionUtils.isNotEmpty(taxValuesNonTaxOnTax))
+		{
+			final Collection<TaxValue> deliveryTaxValues = new ArrayList();
+			double totalDeliveryTax = 0.0;
+			BigDecimal deliveryCostWithoutTax = BigDecimal.valueOf(0);
+			final double totalDeliveryTaxPercentage = taxValuesNonTaxOnTax.stream().mapToDouble({tv -> tv.getValue()}).sum();
+			if (Double.compare(totalDeliveryTaxPercentage, 0.0) >= 0)
+			{
+				for (final TaxValue taxValue : taxValuesNonTaxOnTax)
+				{
+					final double taxOnDelivery = currentFactoryFindPricingStrategy.getDeliveryTaxBasedOnTaxType(deliveryCost, taxValue,
+							totalDeliveryTaxPercentage);
+					final TaxValue deliveryTaxValue = new TaxValue(taxValue.getCode(), taxValue.getValue(), taxValue.isAbsolute(),
+							taxOnDelivery, taxValue.getCurrencyIsoCode());
+					totalDeliveryTax += taxOnDelivery;
+					deliveryTaxValues.add(deliveryTaxValue);
+				}
+				order.setLynxDeliveryTax(Double.valueOf(totalDeliveryTax));
+				order.setDeliveryTaxValues(deliveryTaxValues);
+				deliveryCostWithoutTax = null != order.getDeliveryCost()
+						? BigDecimal.valueOf(order.getDeliveryCost().doubleValue()).subtract(BigDecimal.valueOf(totalDeliveryTax))
+						: BigDecimal.valueOf(0);
+				order.setDeliveryCost(IndAmountFormatUtil.formatDouble(deliveryCostWithoutTax.doubleValue()));
+				modelService.save(order);
+				modelService.refresh(order);
+			}
+		}
+	}
+try{	
+for(OrderModel order : results)
+{
+if (order != null)
+		{
+			final Set<ConsignmentModel> consignments = order.getConsignments();
+			
+			
+			final List<INDDropCodeWareHouseMappingModel> dropCodeWarehouseMappingList = getWarehouseMappingOnConsignmentAndDeliveryAddress(
+					consignments, order.getDeliveryAddress());
+					
+					
+				println "dropCodeWarehouseMappingList===> "+dropCodeWarehouseMappingList;	
+				
+			if (CollectionUtils.isNotEmpty(dropCodeWarehouseMappingList))
+			{
+				final List<WarehouseModel> highestPriorityWarehouses = getHighestPriorityWarehouses(dropCodeWarehouseMappingList);
+				
+				println "highestPriorityWarehouses===> "+highestPriorityWarehouses;
+				
+				if (CollectionUtils.isNotEmpty(highestPriorityWarehouses))
+				{
+					final AbstractOrderEntryModel orderEntryWithHighestTaxes = findOrderEntryWithHighestTaxes(consignments,
+							highestPriorityWarehouses);
+							println "orderEntryWithHighestTaxes ===>" +orderEntryWithHighestTaxes;
+					if (orderEntryWithHighestTaxes != null)
+					{
+						setDeliveryTaxInOrderEntry(order, orderEntryWithHighestTaxes);
+					}
+				}
+			}
+		}
+		
+println order.getDeliveryCost();
+
+println order.getDeliveryTaxValues();
+}
+}
+catch(Exception e)
+{
+e.printStackTrace();
+}

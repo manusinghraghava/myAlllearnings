@@ -1,0 +1,1908 @@
+First Learn Search and Sorting
+a)Binary Search
+i)sort the array.
+ii)Find the middle of the array by dividing (begin+end)/2
+iii)check the middle element is equql to element to be find
+else check if samller then change last index to middle -1
+or if bigger than begin index to middle+1;continue till elemet get find
+
+
+b)Bubble Sort==>Bubble Sort is the simplest sorting algorithm that works by repeatedly swapping the adjacent elements if they are in wrong order.
+ private static void bubbleSort(int[] x) {
+		// TODO Auto-generated method stub
+		for(int i=0;i<x.length;i++)
+		{
+			for(int j=0;j<x.length-i-1;j++)  ///second condition for recursive
+			{
+				if(x[j]>x[j+1])
+				{
+					int temp=x[j];               //as last element is the biggest on first iteration
+					x[j]=x[j+1];                 //so we iterate one time less next time
+					x[j+1]=temp;
+				}
+			}
+		}
+	}
+
+
+
+
+c)Recursive Bubble Sort==>Recursion Idea.
+
+Base Case: If array size(length) is 1, return.
+Do One Pass of normal Bubble Sort. This pass fixes last element of current subarray.
+Recur for all elements except last of current subarray.
+
+static void bubbleSort(int arr[], int n) 
+    { 
+        // Base case 
+        if (n == 1) 
+            return; 
+       
+        // One pass of bubble sort. After 
+        // this pass, the largest element 
+        // is moved (or bubbled) to end. 
+        for (int i=0; i<n-1; i++) 
+            if (arr[i] > arr[i+1]) 
+            { 
+                // swap arr[i], arr[i+1] 
+                int temp = arr[i]; 
+                arr[i] = arr[i+1]; 
+                arr[i+1] = temp; 
+            } 
+       
+        // Largest element is fixed, 
+        // recur for remaining array 
+        bubbleSort(arr, n-1);                                           //as on first pass last element is biggest so decreasing size every time
+    } 
+
+
+
+d)InsertionSort==>like playing cards
+Logic==>just compare the i element with every j element if smaller than swap it..always first smaller element
+
+void sort(int arr[]) 
+    { 
+        int n = arr.length; 
+        for (int i = 1; i < n; ++i) { 
+            int key = arr[i]; 
+            int j = i - 1; 
+  
+            /* Move elements of arr[0..i-1], that are 
+               greater than key, to one position ahead 
+               of their current position */
+            while (j >= 0 && arr[j] > key) { 
+                arr[j + 1] = arr[j]; 
+                j = j - 1; 
+            } 
+            arr[j + 1] = key; 
+        } 
+    } 
+
+
+Now Recursively==>
+
+ static void insertionSortRecursive(int arr[], int n) 
+    { 
+        // Base case 
+        if (n <= 1) 
+            return; 
+       
+        // Sort first n-1 elements 
+        insertionSortRecursive( arr, n-1 ); 
+       
+        // Insert last element at its correct position 
+        // in sorted array. 
+        int last = arr[n-1];                                   //start with n=2 as return type is void so 1 will skip.
+        int j = n-2; 
+       
+        /* Move elements of arr[0..i-1], that are 
+          greater than key, to one position ahead 
+          of their current position */
+        while (j >= 0 && arr[j] > last) 
+        { 
+            arr[j+1] = arr[j]; 
+            j--; 
+        } 
+        arr[j+1] = last; 
+    } 
+
+
+e)SelectionSort==>Just Like Insertion but we dont have to compare..we have to just find the minimu element in whole array (remaining after i index)and replace it with i position..and go on
+
+ void sort(int arr[]) 
+    { 
+        int n = arr.length; 
+  
+        // One by one move boundary of unsorted subarray 
+        for (int i = 0; i < n-1; i++) 
+        { 
+            // Find the minimum element in unsorted array  
+            int min_idx = i; 
+            for (int j = i+1; j < n; j++) 
+                if (arr[j] < arr[min_idx]) 
+                    min_idx = j; 
+  
+            // Swap the found minimum element with the first 
+            // element 
+            int temp = arr[min_idx]; 
+            arr[min_idx] = arr[i]; 
+            arr[i] = temp; 
+        } 
+    } 
+	
+	recursive==>
+static void selectionSortRecursive(int[] arr, int n)
+	{
+		if (n==arr.length-1)
+			return;
+		
+		int min = n;
+		for(int j=n+1;j<arr.length;j++)
+		{
+			if (arr[j]<arr[min])
+			{
+				min=j;
+			}
+		}
+		int temp = arr[min];
+		arr[min]=arr[n];
+		arr[n]=temp;
+			selectionSortRecursive(arr,n+1);
+	}
+	
+	
+f)MergeSort==>Merge Sort is a Divide and Conquer algorithm. 
+It divides input array in two halves, calls itself for the two halves and then merges the two sorted halves. The merge() function is used for merging two halves.
+
+
+MergeSort(arr[], l,  r)
+If r > l
+     1. Find the middle point to divide the array into two halves:  
+             middle m = (l+r)/2
+     2. Call mergeSort for first half:   
+             Call mergeSort(arr, l, m)
+     3. Call mergeSort for second half:
+             Call mergeSort(arr, m+1, r)
+     4. Merge the two halves sorted in step 2 and 3:
+             Call merge(arr, l, m, r)
+			 
+			  // Merges two subarrays of arr[].
+    // First subarray is arr[l..m]
+    // Second subarray is arr[m+1..r]
+    void merge(int arr[], int l, int m, int r) ///prefix traversal in recursion.
+    {
+        // Find sizes of two subarrays to be merged
+        int n1 = m - l + 1;
+        int n2 = r - m;
+ 
+        /* Create temp arrays */
+        int L[] = new int[n1];
+        int R[] = new int[n2];
+ 
+        /*Copy data to temp arrays*/
+        for (int i = 0; i < n1; ++i)
+            L[i] = arr[l + i];
+        for (int j = 0; j < n2; ++j)
+            R[j] = arr[m + 1 + j];
+ 
+        /* Merge the temp arrays */
+ 
+        // Initial indexes of first and second subarrays
+        int i = 0, j = 0;
+ 
+        // Initial index of merged subarry array
+        int k = l;
+        while (i < n1 && j < n2) {
+            if (L[i] <= R[j]) {
+                arr[k] = L[i];
+                i++;
+            }
+            else {
+                arr[k] = R[j];
+                j++;
+            }
+            k++;
+        }
+ 
+        /* Copy remaining elements of L[] if any */
+        while (i < n1) {
+            arr[k] = L[i];
+            i++;
+            k++;
+        }
+ 
+        /* Copy remaining elements of R[] if any */
+        while (j < n2) {
+            arr[k] = R[j];
+            j++;
+            k++;
+        }
+    }
+ 
+    // Main function that sorts arr[l..r] using
+    // merge()
+    void sort(int arr[], int l, int r)
+    {
+        if (l < r) {
+            // Find the middle point
+            int m =l+ (r-l)/2;
+ 
+            // Sort first and second halves
+            sort(arr, l, m);
+            sort(arr, m + 1, r);
+ 
+            // Merge the sorted halves
+            merge(arr, l, m, r);
+        }
+    }
+
+g)quick sort==>
+Like Merge Sort, QuickSort is a Divide and Conquer algorithm. It picks an element as pivot and partitions the given array around the picked pivot.
+
+The key process in quickSort is partition(). Target of partitions is, given an array and an element x of array as pivot, put x at its correct position in sorted array and put all smaller elements (smaller than x) before x, and put all greater elements (greater than x) after x. All this should be done in linear time.
+Pseudo Code for recursive QuickSort function : 
+
+ 
+/* low  --> Starting index,  high  --> Ending index */
+quickSort(arr[], low, high)
+{
+    if (low < high)
+    {
+        /* pi is partitioning index, arr[pi] is now
+           at right place */
+        pi = partition(arr, low, high);
+// as already at pi index all elements are smaller at right and bigger at left...
+        quickSort(arr, low, pi - 1);  // Before pi
+        quickSort(arr, pi + 1, high); // After pi
+    }
+}
+
+private static int findPivotIndex(int[] x, int l, int r) {
+		int pivotIndex=l-1;   // always smaller than left index.
+		int pivotElement=x[r];
+		for(int i=l;i<=r;i++)    // loop from left to right element
+		{
+			if(x[i]<pivotElement)
+			{
+				pivotIndex++;       //on finding small element increase index and swap.
+				int temp=x[pivotIndex];
+				x[pivotIndex]=x[i];
+				x[i]=temp;
+			}
+		}
+		pivotIndex++;
+		int temp=x[pivotIndex];
+		x[pivotIndex]=x[r];   // at last increase index and swap...all smaaller at right and vice-versa.
+		x[r]=temp;
+		return pivotIndex;
+	}
+==================================================================================================================================================
+
+//////refer while loop than for loop //////////////////////////////////////////////////////////////for array
+
+1///> best and easy approach for rotation of array...
+
+-->Reverse Algorithm
+a)divide the array into the two part with elements of left side equal to the no of rotations if you are doing left rotation else in right side if right notation..
+b)reverse the individual parts.
+c)now reverse the whole array..
+
+code-->
+
+package lambda;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Scanner;
+
+public class A
+{
+
+	public static void reverseArray(int[] arr,int start,int end)
+	{
+       while (start < end) 
+		    { 
+		        int temp = arr[start]; 
+		        arr[start] = arr[end]; 
+		        arr[end] = temp; 
+		        start++; 
+		        end--; 
+		    } 
+	}
+	public static void main(String[] args)
+	{
+     int a[]={1,2,3,4,5,6,7,8,9};
+     System.out.println("enter the no by which you want to do rotation");
+	 Scanner scn = new Scanner(System.in);
+	 int b = scn.nextInt();
+	 reverseArray(a,0,b-1);
+	 System.out.println(Arrays.toString(a));
+     reverseArray(a,b,a.length-1);
+     System.out.println(Arrays.toString(a));
+	 reverseArray(a,0,a.length-1);
+	 System.out.println(Arrays.toString(a));
+	}
+}
+
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+check it==>youtube
+2///>Search an element in a sorted and rotated array
+Compute mid i.e low+high/2.
+Check if a[mid…high] is sorted            //arr[mid]<arr[high]
+If number lies between the range , low=mid+1.
+If number does not lie in the range, high=mid-1.
+Check if a[low..mid] is sorted.
+If number lies between the range, high=mid-1..
+If number does not lie in the range,low=mid+1.
+so--->
+
+/* public  static  int findElementRotatedSortedArray(int[] arr,int low,int high,int number)
+	{
+		int mid;
+		while(low<=high)
+		{
+			mid=low + ((high - low) / 2);;
+ 
+			if(arr[mid]==number)
+			{
+				return mid;
+			}
+			if(arr[mid]<=arr[high])     mid element with last element
+			{
+				// Right part is sorted
+				if(number > arr[mid] && number <=arr[high])
+				{
+					low=mid+1;
+				}
+				else
+				{
+					high=mid-1;
+				}
+			}
+			else
+			{
+				// Left part is sorted
+				if(arr[low]<=number && number < arr[mid])
+				{
+					high=mid-1;
+				}
+				else
+				{
+					low=mid+1;
+				}
+			}
+		}
+		return -1;
+	}
+}
+
+//nice solution.
+
+
+----------------------------------------------------------------------------------------------------------------------------------
+
+3//>
+Maximum equlibrium sum in an array
+Example-->
+
+Input : arr[] = {-1, 2, 3, 0, 3, 2, -1}
+Output : 4
+Prefix sum of arr[0..3] = 
+            Suffix sum of arr[3..6]
+
+Input : arr[] = {-2, 5, 3, 1, 2, 6, -4, 3}
+Output : 7
+Prefix sum of arr[0..3] = 
+              Suffix sum of arr[3..7]
+
+
+A Simple Solution is to one by one check the given condition (prefix sum equal to suffix sum) for every element and 
+return the element that satisfies the given condition with maximum value.
+
+ // equilibrium sum. 
+    static int findMaxSum(int []arr, int n) 
+    { 
+        int res = Integer.MIN_VALUE; 
+          
+        for (int i = 0; i < n; i++) 
+        { 
+            int prefix_sum = arr[i];           // as checking ofr every position from i from left and also right 
+              
+            for (int j = 0; j < i; j++)        // way to check leftsubarray==right subarray..
+                prefix_sum += arr[j]; 
+          
+            int suffix_sum = arr[i]; 
+              
+            for (int j = n - 1; j > i; j--) 
+                suffix_sum += arr[j]; 
+          
+            if (prefix_sum == suffix_sum) 
+                res = Math.max(res, prefix_sum); 
+        } 
+          
+        return res; 
+    } 
+
+but -->
+Time Complexity: O(n2)
+Auxiliary Space: O(n)
+
+for O(n)
+
+  // Function to find maximum 
+    // equilibrium sum. 
+    static int findMaxSum(int []arr, int n) 
+    { 
+          
+        // Array to store prefix sum. 
+        int []preSum = new int[n]; 
+      
+        // Array to store suffix sum. 
+        int []suffSum = new int[n]; 
+      
+        // Variable to store maximum sum. 
+        int ans = Integer.MIN_VALUE; 
+      
+        // Calculate prefix sum. 
+        preSum[0] = arr[0]; 
+        for (int i = 1; i < n; i++)  
+            preSum[i] = preSum[i - 1] + arr[i];     ////new entry will be the sum of current entry and last entry..
+      
+        // Calculate suffix sum and compare 
+        // it with prefix sum. Update ans 
+        // accordingly. 
+        suffSum[n - 1] = arr[n - 1]; 
+          
+        if (preSum[n - 1] == suffSum[n - 1]) 
+            ans = Math.max(ans, preSum[n - 1]); 
+              
+        for (int i = n - 2; i >= 0; i--)  
+        { 
+            suffSum[i] = suffSum[i + 1] + arr[i]; 
+              
+            if (suffSum[i] == preSum[i])                                   //////nice solution
+                ans = Math.max(ans, preSum[i]);  
+        } 
+      
+        return ans; 
+    } 
+------------------------------------------------------------------------------------------------------------------------------------
+
+4//> Given an array A[] and a number x, check for pair in A[] with sum as x
+
+Write a program that, given an array A[] of n numbers and another number x, 
+determines whether or not there exist two elements in S whose sum is exactly x.
+
+METHOD 1 (Use Sorting)
+
+Algorithm :
+
+hasArrayTwoCandidates (A[], ar_size, sum)
+1) Sort the array in non-decreasing order.
+2) Initialize two index variables to find the candidate 
+   elements in the sorted array.
+       (a) Initialize first to the leftmost index: l = 0
+       (b) Initialize second  the rightmost index:  r = ar_size-1
+3) Loop while l < r.
+       (a) If (A[l] + A[r] == sum)  then return 1
+       (b) Else if( A[l] + A[r] <  sum )  then l++
+       (c) Else r--    
+4) No candidates in whole array - return 0
+
+Example :
+Let Array be {1, 4, 45, 6, 10, -8} and sum to find be 16
+
+Sort the array
+A = {-8, 1, 4, 6, 10, 45}
+
+Initialize l = 0, r = 5
+A[l] + A[r] ( -8 + 45) > 16 => decrement r. Now r = 10
+A[l] + A[r] ( -8 + 10) increment l. Now l = 1
+A[l] + A[r] ( 1 + 10) increment l. Now l = 2
+A[l] + A[r] ( 4 + 10) increment l. Now l = 3
+A[l] + A[r] ( 6 + 10) == 16 => Found candidates (return 1)
+
+METHOD 2 (Use Hashing)
+This method works in O(n) time.
+
+logic-->
+a) as hashset doest not add duplicate values..
+b)so while traversing we check is there any value for pair of sum in set after int temp = sum-arr[i]; 
+c)if temp is available in hashset means we found the pair for exact sum..
+
+static void printpairs(int arr[],int sum) 
+    {        
+        HashSet<Integer> s = new HashSet<Integer>(); 
+        for (int i=0; i<arr.length; ++i) 
+        { 
+            int temp = sum-arr[i]; 
+  
+            // checking for condition 
+            if (temp>=0 && s.contains(temp)) 
+            { 
+                System.out.println("Pair with given sum " + 
+                                    sum + " is (" + arr[i] + 
+                                    ", "+temp+")"); 
+            } 
+            s.add(arr[i]); 
+        } 
+
+
+------------------------------------------------------------------------------------------------------------------------------------
+5//>Find common elements in three sorted arrays
+
+easy like merge
+
+sol-->
+
+void findCommon(int ar1[], int ar2[], int ar3[]) 
+    { 
+        // Initialize starting indexes for ar1[], ar2[] and ar3[] 
+        int i = 0, j = 0, k = 0; 
+  
+        // Iterate through three arrays while all arrays have elements 
+        while (i < ar1.length && j < ar2.length && k < ar3.length) 
+        { 
+             // If x = y and y = z, print any of them and move ahead 
+             // in all arrays 
+             if (ar1[i] == ar2[j] && ar2[j] == ar3[k]) 
+             {   System.out.print(ar1[i]+" ");   i++; j++; k++; } 
+  
+             // x < y 
+             else if (ar1[i] < ar2[j]) 
+                 i++; 
+  
+             // y < z 
+             else if (ar2[j] < ar3[k]) 
+                 j++; 
+  
+             // We reach here when x > y and z < y, i.e., z is smallest 
+             else
+                 k++; 
+        } 
+    } 
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+6//>
+Find position of an element in a sorted array of infinite numbers
+Suppose you have a sorted array of infinite numbers, how would you search an element in the array?
+
+Source: Amazon Interview Experience.
+Since array is sorted, the first thing clicks into mind is binary search, but the problem here is that we don’t know size of array.
+If the array is infinite, that means we don’t have proper bounds to apply binary search. So in order to find position of key, 
+first we find bounds and then apply binary search algorithm.
+
+Let low be pointing to 1st element and high pointing to 2nd element of array, Now compare key with high index element,
+->if it is greater than high index element then copy high index in low index and double the high index.
+->if it is smaller, then apply binary search on high and low indices found.
+sol-->
+
+static int findPos(int arr[],int key)     
+    { 
+        int l = 0, h = 1; 
+        int val = arr[1]; 
+   
+        // Find h to do binary search 
+        // As we dont know the size of an array so we just take first two index as low and high..
+        // now we check key(element to be find) is greater than value than we just assign high one as low and high=high*2
+        // now we do binary search
+        // thus we maintain logn complexity....(:
+        while (val < key) 
+        { 
+            l = h;        // store previous high 
+            h = 2*h;      // double high index 
+            val = arr[h]; // update new val 
+        } 
+   
+        // at this point we have updated low 
+        //  and high indices, thus use binary  
+        // search between them 
+        return binarySearch(arr, l, h, key); 
+    } 
+
+
+---------------------------------------------------------------------------------------------------------------------------------
+*//>Find the only repetitive element between 1 to n
+
+sol ... We know sum of first n natural numbers is (n + 1)*n/2. 
+We compute sum of array elements and subtract natural number sum from it to find the only missing element.
+
+----------------------------------------------------------------------------------------------------------------------------------
+
+*//>Find the element that appears once in an array where every other element appears twice
+
+simple approach-->
+2*(sum_of_array_without_duplicates) – (sum_of_array)
+
+The best solution is to use XOR. XOR of all array elements gives us the number with single occurrence. 
+The idea is based on following two facts.
+a) XOR of a number with itself is 0.
+b) XOR of a number with 0 is number itself.
+
+A	 	B	 	C
+0	 XOR 	0	->	0
+0	 XOR 	1	->	1
+1	 XOR 	0	->	1
+1	 XOR 	1	->	0
+
+// Return the maximum Sum of difference 
+	
+// between consecutive elements. 
+	
+static int findSingle(int ar[], int ar_size) 
+	
+{ 
+		
+// Do XOR of all elements and return 
+		
+int res = ar[0]; 
+		
+for (int i = 1; i < ar_size; i++) 
+			
+res = res ^ ar[i]; 
+	
+// as we r Xor each element 2^33 is something
+return res; 
+	}       // but that something ^ 33 is 2 always remeber thats why on xor every element only remain single one
+
+
+This is based on the simple fact that XOR of a number with itself results Zero.
+
+and XOR of a number with 0 results the number itself.
+
+So, if we have an array = {5,8,12,5,12}.
+
+5 is occurring 2 times. 8 is occurring 1 times. 12 is occurring 2 times.
+
+We have to find the number occurring odd number of times. Clearly, 8 is the number.
+
+We start with res=0 and XOR with all the elements of the array.
+
+int res=0;
+ for(int i:array)
+   res = res ^ i;
+
+    1st Iteration: res = 0^5 = 5
+    2nd Iteration: res = 5^8 
+    3rd Iteration: res = 5^8^12
+    4th Iteration: res = 5^8^12^5 = 0^8^12 = 8^12
+    5th Iteration: res = 8^12^12 = 8^0 = 8
+
+------------------------------------------------------------------------------------------------------------------------------------
+*//>Largest Sum Contiguous Subarray
+Write an efficient program to find the sum of contiguous subarray within a one-dimensional array of numbers which has the largest sum.
+*************kadane algorithm**********************
+
+Kadane’s Algorithm:
+
+Initialize:
+    max_so_far = 0
+    max_ending_here = 0
+
+Loop for each element of the array
+  (a) max_ending_here = max_ending_here + a[i]
+  (b) if(max_ending_here < 0)
+            max_ending_here = 0
+  (c) if(max_so_far < max_ending_here)
+            max_so_far = max_ending_here
+return max_so_far
+
+proof-->
+ Lets take the example:
+    {-2, -3, 4, -1, -2, 1, 5, -3}
+
+    max_so_far = max_ending_here = 0
+
+    for i=0,  a[0] =  -2
+    max_ending_here = max_ending_here + (-2)
+    Set max_ending_here = 0 because max_ending_here < 0
+
+    for i=1,  a[1] =  -3
+    max_ending_here = max_ending_here + (-3)
+    Set max_ending_here = 0 because max_ending_here < 0
+
+    for i=2,  a[2] =  4
+    max_ending_here = max_ending_here + (4)
+    max_ending_here = 4
+    max_so_far is updated to 4 because max_ending_here greater 
+    than max_so_far which was 0 till now
+
+    for i=3,  a[3] =  -1
+    max_ending_here = max_ending_here + (-1)
+    max_ending_here = 3
+
+    for i=4,  a[4] =  -2
+    max_ending_here = max_ending_here + (-2)
+    max_ending_here = 1
+
+    for i=5,  a[5] =  1
+    max_ending_here = max_ending_here + (1)
+    max_ending_here = 2
+
+    for i=6,  a[6] =  5
+    max_ending_here = max_ending_here + (5)
+    max_ending_here = 7
+    max_so_far is updated to 7 because max_ending_here is 
+    greater than max_so_far
+
+    for i=7,  a[7] =  -3
+    max_ending_here = max_ending_here + (-3)
+    max_ending_here = 4
+
+if we want to find the array save index for the last update of max_ending_here =0 (index after)to 
+the last update of max_so_far(same index).....
+
+code-->
+
+ public static void findArr(int[] a)
+     
+{
+         
+int max_end=0,max_sofar=0,begin_index=0,last_index=0;
+         
+         
+for(int i=0;i<a.length;i++)
+         
+{
+            
+ max_end=max_end +a[i];
+            
+ if(max_end<0)
+         
+{
+            
+ max_end=0;
+            
+ begin_index=i+1;
+         
+}
+             
+if(max_sofar<max_end)
+             
+{
+                
+ max_sofar=max_end;
+                
+ last_index=i;
+             
+}
+         
+}
+         
+System.out.println("maximum sum so far is "+max_sofar);
+         
+System.out.println(begin_index+"        " + last_index);
+         
+for(int i=begin_index;i<=last_index;i++)
+         
+{
+            
+ System.out.println(a[i]);
+        
+}
+     
+}
+------------------------------------------------------------------------------------------------------------------------------------
+*//>Maximum Subarray Sum Excluding Certain Elements
+Given an array of A of n integers and an array B of m integers find the Maximum 
+Contiguous Subarray Sum of array A such that any element of array B is not present in that subarray
+
+Examples :
+
+Input : A = {1, 7, -10, 6, 2}, B = {5, 6, 7, 1}
+Output : 2
+Explanation Since the Maximum Sum Subarray of A is not allowed to have any element that is present in array B.
+The Maximum Sum Subarray satisfying this is {2} as the only allowed subarrays are:{-10} and {2}. 
+The Maximum Sum Subarray being {2} which sums to 2
+
+We can solve this problem using the Kadane’s Algorithm. 
+Since we don’t want any of the elements of array B to be part of any subarray of A, 
+we need to modify the classical Kadane’s Algorithm a little.
+
+Whenever we consider an element in the Kadane’s algorithm we either extend current subarray or we start a new subarray.
+
+curr_max = max(a[i], curr_max+a[i]);
+if (curr_max < 0)
+   curr_max = 0
+
+sol..
+
+ public static void findArr(int[] a,int[] b)
+     
+{
+         
+int max_end=0,max_sofar=0;
+         
+         
+for(int i=0;i<a.length;i++)
+         
+{
+             
+max_end=max_end +a[i];
+             
+for(int j=0;j<b.length;j++)   //this loop to check element of b
+          
+{
+             
+             
+             
+if(a[i]==b[j])
+            
+ {
+             
+max_end=0;
+             
+}
+            
+             
+if(max_sofar<max_end)
+             
+{
+                 
+max_sofar=max_end;
+            
+ }
+        
+ }
+         
+}
+         
+System.out.println("maximum sum so far is "+max_sofar);
+        
+    
+ }
+
+
+----------------------------------------------------------------------------------------------------------------------------------
+
+*//>Equilibrium index of an array
+Equilibrium index of an array is an index such that the sum of elements at lower indexes 
+is equal to the sum of elements at higher indexes. For example, in an array A:
+
+Example :
+
+Input : A[] = {-7, 1, 5, 2, -4, 3, 0}
+Output : 3
+3 is an equilibrium index, because:
+A[0] + A[1] + A[2]  =  A[4] + A[5] + A[6]
+
+Method 1 (Simple but inefficient)
+
+Use two loops. Outer loop iterates through all the element and inner loop finds out whether the current 
+index picked by the outer loop is equilibrium index or not. Time complexity of this solution is O(n^2).
+
+int equilibrium(int arr[], int n) 
+    { 
+        int i, j; 
+        int leftsum, rightsum; 
+  
+        /* Check for indexes one by one until  
+           an equilibrium index is found */
+        for (i = 0; i < n; ++i) { 
+  
+            /* get left sum */
+            leftsum = 0;   
+            for (j = 0; j < i; j++) 
+                leftsum += arr[j]; 
+  
+            /* get right sum */
+            rightsum = 0; 
+            for (j = i + 1; j < n; j++) 
+                rightsum += arr[j]; 
+  
+            /* if leftsum and rightsum are same,  
+               then we are done */
+            if (leftsum == rightsum) 
+                return i; 
+        } 
+  
+
+
+Method 2 (Tricky and Efficient)
+The idea is to get total sum of array first. Then Iterate through the array and keep updating the left sum 
+which is initialized as zero. In the loop, we can get right sum by subtracting the elements one by one. Thanks to Sambasiva for suggesting this solution and providing code for this.
+
+1) Initialize leftsum  as 0
+2) Get the total sum of the array as sum
+3) Iterate through the array and for each index i, do following.
+    a)  Update sum to get the right sum.  
+           sum = sum - arr[i] 
+       // sum is now right sum
+    b) If leftsum is equal to sum, then return current index. 
+    c) leftsum = leftsum + arr[i] // update leftsum for next iteration.
+4) return -1 // If we come out of loop without returning then
+             // there is no equilibrium index
+
+int equilibrium(int arr[], int n) 
+{ 
+    int sum = 0; // initialize sum of whole array 
+    int leftsum = 0; // initialize leftsum 
+  
+    /* Find sum of the whole array */
+    for (int i = 0; i < n; ++i) 
+        sum += arr[i]; 
+  
+    for (int i = 0; i < n; ++i) { 
+        sum -= arr[i]; // sum is now right sum for index i 
+  
+        if (leftsum == sum) 
+            return i; 
+  
+        leftsum += arr[i]; 
+    } 
+  
+    /* If no equilibrium index found, then return 0 */
+    return -1; 
+} 
+
+-------------------------------------------------------------------------------------------------------------------------------------
+
+*//>Leaders in an array
+Write a program to print all the LEADERS in the array. An element is leader 
+if it is greater than all the elements to its right side. And the rightmost element is always a leader. 
+For example int the array {16, 17, 4, 3, 5, 2}, leaders are 17, 5 and 2.
+
+sol==>
+
+(Scan from right)
+Scan all the elements from right to left in array and keep track of maximum till now. When maximum changes it’s value, print it.
+
+
+    void printLeaders(int arr[], int size) 
+    { 
+        int max_from_right =  arr[size-1]; 
+   
+        /* Rightmost element is always leader */
+        System.out.print(max_from_right + " "); 
+       
+        for (int i = size-2; i >= 0; i--) 
+        { 
+            if (max_from_right < arr[i]) 
+            {            
+            max_from_right = arr[i]; 
+            System.out.print(max_from_right + " "); 
+            } 
+        }     
+    } 
+  
+Some important terms in a array-->
+fixed points-->when value==index
+majority element-->when a value repeat more than the half of the size of an array..
+peek element --> if element is greater than both the neighbour elements..
+sort by parity==>even no followed by odd in array@@@@@@@@@@@@@@@@@@@@@@@
+---------------------------------------------------------------------------------------------------------------------------------------
+*//> two find pair with given sum in a sorted array-->in O(n)
+
+
+// Two pointer technique based solution to find  
+// if there is a pair in A[0..N-1] with given sum. 
+bool isPairSum(A[], N, X) 
+{ 
+    // represents first pointer 
+    int i = 0; 
+  
+    // represents second pointer 
+    int j = N - 1; 
+  
+    while (i < j) { 
+  
+        // If we find a pair 
+        if (A[i] + A[j] == X) 
+            return true; 
+  
+        // If sum of elements at current 
+        // pointers is less, we move towards 
+        // higher values by doing i++ 
+        else if (A[i] + A[j] < X) 
+            i++; 
+  
+        // If sum of elements at current 
+        // pointers is more, we move towards 
+        // lower values by doing i++ 
+        else
+            j--; 
+    } 
+    return false; 
+} 
+--------------------------------------------------------------------------------------------------------------------------------------
+
+*//>Find subarray with given sum | Set 1 (Nonnegative Numbers)
+Given an unsorted array of nonnegative integers, find a continous subarray which adds to a given number.
+Examples :
+
+Input: arr[] = {1, 4, 20, 3, 10, 5}, sum = 33
+Ouptut: Sum found between indexes 2 and 4
+
+Input: arr[] = {1, 4, 0, 0, 3, 10, 5}, sum = 7
+Ouptut: Sum found between indexes 1 and 4
+
+Input: arr[] = {1, 4}, sum = 0
+Output: No subarray found
+
+sol-->
+int subArraySum(int arr[], int n, int sum)  
+    { 
+        int curr_sum, i, j; 
+  
+        // Pick a starting point 
+        for (i = 0; i < n; i++)  
+        { 
+            curr_sum = arr[i]; 
+  
+            // try all subarrays starting with 'i' 
+            for (j = i + 1; j <= n; j++)  
+            { 
+                if (curr_sum == sum)  
+                { 
+                    int p = j - 1; 
+                    System.out.println("Sum found between indexes " + i 
+                            + " and " + p); 
+                    return 1; 
+                } 
+                if (curr_sum > sum || j == n) 
+                    break; 
+                curr_sum = curr_sum + arr[j]; 
+            } 
+        } 
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+*//>
+Maximum triplet sum in array
+Given an array, the task is to find maximum triplet sum in the array.
+
+Examples :
+
+Input : arr[] = {1, 2, 3, 0, -1, 8, 10} 
+Output : 21
+10 + 8 + 3 = 21
+
+Input : arr[] = {9, 8, 20, 3, 4, -1, 0}
+Output : 37
+20 + 9 + 8 = 37
+
+approach : In this, we first need to sort the whole array and after that when we add last three element of the array then 
+we find maximum sum of triplates.
+
+complexity nlogn
+
+Efficent approach : Scan the array and compute Maximum, second maximum and third maximum element present in the array and 
+return the sum of its and it would be maximum sum .
+
+static int maxTripletSum(int arr[], int n) 
+    { 
+        // Initialize Maximum, second maximum and third 
+        // maximum element 
+        int maxA = -100000000, maxB = -100000000; 
+        int maxC = -100000000; 
+      
+        for (int i = 0; i < n; i++) { 
+      
+            // Update Maximum, second maximum  
+            // and third maximum element 
+            if (arr[i] > maxA)  
+            { 
+                maxC = maxB; 
+                maxB = maxA; 
+                maxA = arr[i]; 
+            } 
+      
+            // Update second maximum and third maximum    ///dont forget to swap
+            // element 
+            else if (arr[i] > maxB)  
+            { 
+                maxC = maxB; 
+                maxB = arr[i]; 
+            } 
+      
+            // Update third maximum element 
+            else if (arr[i] > maxC) 
+                maxC = arr[i]; 
+        } 
+      
+        return (maxA + maxB + maxC); 
+    } 
+  
+--------------------------------------------------------------------------------------------------------------------------------------
+
+*//>Smallest Difference Triplet from Three arrays
+Three arrays of same size are given. Find a triplet such that maximum – minimum in that triplet is minimum of all the triplets. 
+A triplet should be selected in a way such that it should have one number from each of the three given arrays.
+
+Sort the 3 arrays in non-decreasing order.
+Start three pointers from left most elements of three arrays.
+Now find min and max and calculate max-min from these three elements.
+Now increment pointer of minimum element’s array.
+Repeat steps 2, 3, 4, for the new set of pointers until any one pointer reaches to its end.
+
+If there are 2 or more smallest difference triplets, then the one with the smallest sum of its elements should be displayed.
+
+Examples :
+
+Input : arr1[] = {5, 2, 8}
+    arr2[] = {10, 7, 12}
+    arr3[] = {9, 14, 6}
+Output : 8, 7, 6
+
+Input : arr1[] = {15, 12, 18, 9}
+    arr2[] = {10, 17, 13, 8}
+    arr3[] = {14, 16, 11, 5}
+Output : 11, 10, 9
+
+Efficient Solution:
+
+Sort the 3 arrays in non-decreasing order.
+/Start three pointers from left most elements of three arrays.
+//Now find min elemnt and max element and calculate max-min from these three elements.
+///Now increment pointer of minimum element’s array.
+///Repeat steps 2, 3, 4, for the new set of pointers until any one pointer reaches to its end.
+
+
+As we have to find smallest difference triplet...
+so difference will be smallest if all the element are close to each other so which is minimum element---> increase its index 
+---> and than we will check the difference of max nad min --> if old one is greater just replace it...
+sol-->
+
+ // function to find maximum number 
+    static int maximum(int a, int b, int c) 
+    { 
+        return Math.max(Math.max(a, b), c); 
+    } 
+      
+    // function to find minimum number 
+    static int minimum(int a, int b, int c) 
+    { 
+        return Math.min(Math.min(a, b), c); 
+    } 
+      
+    // Finds and prints the smallest Difference 
+    // Triplet 
+    static void smallestDifferenceTriplet(int arr1[], 
+                       int arr2[], int arr3[], int n) 
+    { 
+          
+        // sorting all the three arrays 
+        Arrays.sort(arr1); 
+        Arrays.sort(arr2); 
+        Arrays.sort(arr3); 
+      
+        // To store resultant three numbers 
+        int res_min=0, res_max=0, res_mid=0; 
+      
+        // pointers to arr1, arr2, arr3 
+        // respectively 
+        int i = 0, j = 0, k = 0; 
+      
+        // Loop until one array reaches to its end 
+        // Find the smallest difference. 
+        int diff = 2147483647; 
+          
+        while (i < n && j < n && k < n) 
+        { 
+            int sum = arr1[i] + arr2[j] + arr3[k]; 
+                                                                       /////@@@@@@@@@@@@@@@@@@@@@@
+            // maximum number 
+            int max = maximum(arr1[i], arr2[j], arr3[k]); 
+      
+            // Find minimum and increment its index. 
+            int min = minimum(arr1[i], arr2[j], arr3[k]); 
+            if (min == arr1[i])                                      // as we have to find smallest difference,increase smallest element counter
+                i++; 
+            else if (min == arr2[j]) 
+                j++; 
+            else
+                k++; 
+      
+            // comparing new difference with the 
+            // previous one and updating accordingly 
+            if (diff > (max - min)) 
+            { 
+                diff = max - min; 
+                res_max = max; 
+                res_mid = sum - (max + min); 
+                res_min = min; 
+            } 
+        } 
+      
+        // Print result 
+        System.out.print(res_max + ", " + res_mid 
+                                 + ", " + res_min); 
+    } 
+Note:The elements of the triplet are displayed in non-decreasing order.
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+*//>perm_identity
+Find a triplet that sum to a given value
+
+Given an array and a value, find if there is a triplet in array whose sum is equal to the given value. If there is such a triplet present in array, then print the triplet and return true. 
+Else return false. For example, if the given array is {12, 3, 4, 1, 6, 9} and given sum is 24, then there is a triplet (12, 3 and 9) present in array whose sum is 24.
+
+ // returns true if there is triplet with sum equal 
+    // to 'sum' present in A[]. Also, prints the triplet 
+    boolean find3Numbers(int A[], int arr_size, int sum) 
+    { 
+        int l, r; 
+  
+        /* Sort the elements */
+        quickSort(A, 0, arr_size - 1);                                                       /////first sort the elements..
+  
+        /* Now fix the first element one by one and find the 
+           other two elements */
+        for (int i = 0; i < arr_size - 2; i++) {                                            /////fixing first element every time
+  
+            // To find the other two elements, start two index variables 
+            // from two corners of the array and move them toward each 
+            // other 
+            l = i + 1; // index of the first element in the remaining elements             ////// fixing other two one the next index and second one the last index like pair one above
+            r = arr_size - 1; // index of the last element 
+            while (l < r) { 
+                if (A[i] + A[l] + A[r] == sum) { 
+                    System.out.print("Triplet is " + A[i] + 
+                                 ", " + A[l] + ", " + A[r]); 
+                    return true; 
+                } 
+                else if (A[i] + A[l] + A[r] < sum) 
+                    l++; 
+  
+                else // A[i] + A[l] + A[r] > sum 
+                    r--; 
+            } 
+        } 
+  
+        // If we reach here, then no triplet was found 
+        return false; 
+    } 
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+*///>Find all triplets with zero sum
+Given an array of distinct elements. The task is to find triplets in array whose sum is zero.
+
+Examples :
+
+Input : arr[] = {0, -1, 2, -3, 1}
+Output : 0 -1 1
+         2 -3 1
+
+Input : arr[] = {1, -2, 1, 0, 5}
+Output : 1 -2  1
+
+Same as Above-->\
+
+1. Sort all element of array
+2. Run loop from i=0 to n-2.
+     Initialize two index variables l=i+1 and r=n-1
+4. while (l < r) 
+     Check sum of arr[i], arr[l], arr[r] is
+     zero or not if sum is zero then print the
+     triplet and do l++ and r--.
+5. If sum is less than zero then l++
+6. If sum is greater than zero then r--
+7. If not exist in array then print not found.
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+public static String reverseComplement( String dna ) {
+        String out = "";
+        for(int i = dna.length() - 1; i >= 0; --i) {
+            char curr = dna.charAt(i);
+            if(curr == 'A')
+                out += 'T';
+            else if(curr == 'T')
+                out += 'A';
+            else if(curr == 'C')
+                out += 'G';
+            else if(curr == 'G')
+                out += 'C';
+            else {
+                System.out.println("ERROR: Input is not a DNA Sequence.");
+                System.exit(-1);
+            }
+        }
+
+=============================================================================================================================================================================================
+Pascal Triangle==>
+First for pascal triangle we should know about combination and binomial theorom
+
+two ways to print pascal triangle
+1)Combination print nC0 --nCn===>where n is no of rows
+
+Solution==>
+
+public static void printPascalTriangle(int x)
+	{
+		int space =x-1;
+		for(int i=0;i<x;i++)
+		{
+			
+			for(int k=0;k<space;k++)
+			{
+				System.out.print(" ");
+			}
+			space--;
+			for(int z=0;z<=i;z++)
+			{
+				if(z%2!=0)
+				{
+					System.out.print("* ");
+				}
+				else
+				{
+					System.out.print(factorial(i)/(factorial(z)*factorial(i-z))+" ");
+				}
+				
+			}
+			System.out.println();
+		}
+	}
+	
+
+
+************Remember*********Use Big Intger class for Math operations like prime pow..
+
+ii)Binomnai Expression====>check online to solve(a+b)pow n
+uses combination and binomial both.....
+
+==============================================================================================================================
+
+Smallest subarray with sum greater than a given value
+
+i)A simple solution is to use two nested loops. The outer loop picks a starting element, the inner loop considers all elements
+ (on right side of current start) as ending element. 
+Whenever sum of elements between current start and end becomes more than the given number,
+update the result if current length is smaller than the smallest length so far.
+
+timeComplexity==>o(n*n)
+
+Solution==>
+
+// Returns length of smallest subarray with sum greater than x. 
+    // If there is no subarray with given sum, then returns n+1 
+    static int smallestSubWithSum(int arr[], int n, int x) 
+    { 
+        //  Initilize length of smallest subarray as n+1 
+        int min_len = n + 1; 
+  
+        // Pick every element as starting point 
+        for (int start = 0; start < n; start++) 
+        { 
+            // Initialize sum starting with current start 
+            int curr_sum = arr[start]; 
+  
+            // If first element itself is greater 
+            if (curr_sum > x) 
+                return 1; 
+  
+            // Try different ending points for curremt start 
+            for (int end = start + 1; end < n; end++) 
+            { 
+                // add last element to current sum 
+                curr_sum += arr[end]; 
+  
+                // If sum becomes more than x and length of 
+                // this subarray is smaller than current smallest 
+                // length, update the smallest length (or result) 
+                if (curr_sum > x && (end - start + 1) < min_len) 
+                    min_len = (end - start + 1); 
+            } 
+        } 
+        return min_len; 
+    } 
+=============================================================================================
+Find the closest pair from two sorted arrays
+Given two sorted arrays and a number x, find the pair whose sum is closest to x and the pair has an element from each array.
+
+1) Initialize a variable diff as infinite (Diff is used to store the 
+   difference between pair and x).  We need to find the minimum diff.
+2) Initialize two index variables l and r in the given sorted array.
+       (a) Initialize first to the leftmost index in ar1:  l = 0
+       (b) Initialize second  the rightmost index in ar2:  r = n-1   //always
+3) Loop while (l<r && r>=0)
+       (a) If  abs(ar1[l] + ar2[r] - sum) < diff  then 
+           update diff and result 
+       (b) Else if(ar1[l] + ar2[r] <  sum )  then l++
+       (c) Else r--    
+4) Print the result. 
+=============================================================================================
+Fetching duplicate items using Stream..
+Integer[] numbers = new Integer[] { 1, 2, 1, 3, 4, 4 };
+Set<Integer> allItems = new HashSet<>();
+Set<Integer> duplicates = Arrays.stream(numbers)
+        .filter(n -> !allItems.add(n)) //Set.add() returns false if the item was already in the set.
+        .collect(Collectors.toSet());
+System.out.println(duplicates); // [1, 4]
+
+Another Way..==>numbers.stream().filter(n -> numbers.stream().filter(x -> x == n).count() > 1).forEach(Exception::new); //throwing Exception
+===============================================================================================
+================================================================================================
+Whether is no prime or Not==>
+1)find the sqrt of no and convert it into int.
+2)now from i=2 and i<=sqrt if disible by it return false else true. 
+
+======================================================================================================================
+given-a-string-find-its-first-non-repeating-character==>
+
+sol==>
+
+import java.util.*;
+public class HelloWorld{
+public static char firstNonRepeatingChar(String word) 
+{ 
+    Set<Character> repeating = new HashSet<>(); 
+    List<Character> nonRepeating = new ArrayList<>(); //maintained order.
+    for (int i = 0; i < word.length(); i++) 
+    {
+        char letter = word.charAt(i); 
+        if (repeating.contains(letter)) 
+        { 
+            continue; 
+            
+        } if (nonRepeating.contains(letter)) 
+        { 
+            nonRepeating.remove((Character) letter); 
+            repeating.add(letter); 
+            
+        } 
+        else 
+        { 
+            nonRepeating.add(letter); 
+            
+        } 
+        
+    } 
+    return nonRepeating.get(0); 
+    
+}
+
+public static void main(String []args){
+        System.out.println(firstNonRepeatingChar("manvendra"));
+     }
+}
+
+=====================================================================================================================================================
+Segregate 0 and 1 in a array in o(n)
+
+input =[0,1,0,1,0,0,1,1,0,0,0,0,1]
+output =[0,0,0,0,0,0,0,0,1,1,1,1,1]
+
+Algo==>
+just make a variable z=0
+
+first replace all index with 0 equals to the 0 present in array and increase z++
+
+now length-z =1 //nice
+  private static void printSegregate(int[] x) {
+    int z=0;
+    for(int i=0;i<x.length;i++)
+    {
+        if(x[i]==0)
+        {
+            x[z++]=0;
+        }
+    }
+    while(z<x.length)
+    {
+        x[z++]=1;
+    }
+        System.out.println(Arrays.toString(x));
+    }
+
+=====================================================================================================================================================
+sort by parity==>even no followed by odd in array==>in a single traverse
+
+input==>int[] x= {20,3,5,6,8,12,11,17};
+output=>int[] x= {20, 6, 8, 12, 5, 3, 11, 17};
+
+Algo==>
+intialize a variable j=0;
+traverse the array
+if value is even just replace the value on jth position.
+increment j.
+
+ private static void printParity(int[] x) {
+
+        int j=0;
+        for(int i=0;i<x.length;i++)
+        {
+
+            if(x[i]%2==0)
+            {
+                int temp =x[j];
+                x[j]=x[i];
+                x[i]=temp;
+                j++;
+            }
+
+        }
+    }
+	
+	//check it tomorrow
+=====================================================================================================================================================
+Find Maximum difference between two any elements==>elemnt 2 must be greate than element 1 and element 2 must be on right side.
+
+arr={2,5,15,6,4}
+output=>13---->15-2
+
+arr={7,9,5,6,13,2}
+output=>8-->13-5
+
+o(n) solution for==>
+
+//tomorrow
+
+
+  private static int maxDiff(int[] x) {
+    int dif=x[1]-x[0];      //max difference assuming   ///find greater than it update
+    int minEle=x[0];        //min element...if get smaller than it just update
+    for (int i=1;i<x.length;i++)
+    {
+        if(x[i]<minEle)
+        {
+            minEle=x[i];       //updating element
+        }
+        if(x[i]-minEle>dif)
+        {
+            dif=x[i]-minEle;   //updating difference.
+        }
+    }
+    return dif;
+    }
+	
+//code it next time.	
+==================================================================================================================================================
+sorting hashap on values==>
+
+public static HashMap<String, Integer> sortByValue(HashMap<String, Integer> hm) 
+    { 
+        // Create a list from elements of HashMap 
+        List<Map.Entry<String, Integer> > list = 
+               new LinkedList<Map.Entry<String, Integer> >(hm.entrySet()); 
+  
+        // Sort the list 
+        Collections.sort(list, new Comparator<Map.Entry<String, Integer> >() { 
+            public int compare(Map.Entry<String, Integer> o1,  
+                               Map.Entry<String, Integer> o2) 
+            {                                                                      //nice solution.
+                return (o1.getValue()).compareTo(o2.getValue()); 
+            } 
+        }); 
+          
+        // put data from sorted list to hashmap  
+        HashMap<String, Integer> temp = new LinkedHashMap<String, Integer>();   // linked to maintain order.
+        for (Map.Entry<String, Integer> aa : list) { 
+            temp.put(aa.getKey(), aa.getValue()); 
+        } 
+        return temp; 
+    } 
+  
+==================================================================================================================================================
+fetching key on value HashMap==>
+
+public static <T, E> Set<T> getKeysByValue(Map<T, E> map, E value) {
+    return map.entrySet()
+              .stream()
+              .filter(entry -> Objects.equals(entry.getValue(), value))
+              .map(Map.Entry::getKey)
+              .collect(Collectors.toSet());
+}
+==================================================================================================================================================
+find top k most frequent elements==>
+
+arr={1,1,1,2,2,3,3,3}k=2
+output=>{1,3}  these are the 2 most frequent elements.
+
+superb soln==>
+1)use hashmap for count for key/value pair
+2)we will create a array of list.
+3)for index==value we just add key in that array.   *************** 
+4)traverse the array of list and return the list of kth position.
+
+private static List maxFreq(int[] x,int k) {
+        HashMap<Integer,Integer> hs=new HashMap<>();
+        int freq=0;
+        for (int i =0;i<x.length;i++)
+        {
+         if(hs.containsKey(x[i]))
+         {
+             hs.put(x[i],hs.get(x[i])+1);    //just updating value of key like we do in duplicates one
+
+             if(hs.get(x[i])>freq)
+             {
+                 freq=hs.get(x[i]);
+             }
+         }
+         else {
+             hs.put(x[i],0);
+         }
+        }
+        List<Integer>[] ls = new List[freq+1];        ///creating array of list.
+        for(Map.Entry<Integer,Integer> map:hs.entrySet())
+        {
+            if(ls[map.getValue()]==null)               //here we are checking if the position is null for value
+            {
+                ArrayList al = new ArrayList();
+                al.add(map.getKey());
+                ls[map.getValue()]=al;                 //saving key in arraylist for respective position
+            }
+            else {
+                ls[map.getValue()].add(map.getKey());  //for k position adding value in integer.
+            }
+        }
+        for (int i=0;i<ls.length;i++)
+        {
+            if((i==k))
+            {
+                return ls[i];
+            }
+        }
+   return null;
+    }
+	
+=====================================================================================================================================================
+find all no disappeared in array==>
+we have a array of size n.in which elements should also present 1 to n-1 .
+some elements are disappeared and some get twice find the disappeared elements.
+
+arr ={4,3,7,2,8,2,3,1}
+output==>{5,6}
+
+sol 1===>
+print no ==>from loop 1 to n ==>which elements are not present in hashset.///first add all elements in set..
+
+=====================================================================================================================================================
+Group anagram together
+
+array={abc,bca,cba,dfsd,fsdd}
+output==>{abc,bca,cba},{dfsd,fsdd}
+
+
+ private static void groupAnagram(String[] x) {
+        HashMap<String,List<String>> hs = new HashMap<>();
+        for(int i=0;i<x.length;i++)
+        {
+            char[]l =x[i].toCharArray();
+            Arrays.sort(l);
+            String s = new String(l);   ///remember l.toString() is different not work here.
+            if(hs.containsKey(s))
+            {
+                hs.get(s).add(x[i]);
+            }
+            else
+            {
+               List<String> ls= new ArrayList<String>();
+                ls.add(x[i]);
+                hs.put(s,ls);
+            }
+        }
+        for (Map.Entry h:hs.entrySet())
+        {
+            System.out.println(h.getValue());
+        }
+    }
+	
+======================================================================================================================================================
+
+Given an array of positive numbers and a positive number ‘S,’ find the length of the smallest contiguous subarray whose sum is greater than or equal to ‘S’. Return 0 if no such subarray exists.
+
+Example 1:
+
+Input: [2, 1, 5, 2, 3, 2], S=7 
+Output: 2
+Explanation: The smallest subarray with a sum greater than or equal to '7' is [5, 2].
+
+Example 2:
+
+Input: [2, 1, 5, 2, 8], S=7 
+Output: 1
+Explanation: The smallest subarray with a sum greater than or equal to '7' is [8].
+
+This problem follows the Sliding Window pattern, and we can use a similar strategy as discussed in Maximum Sum Subarray of Size K. There is one difference though: in this problem, the sliding window size is not fixed. Here is how we will solve this problem:
+
+First, we will add-up elements from the beginning of the array until their sum becomes greater than or equal to ‘S.’
+These elements will constitute our sliding window. We are asked to find the smallest such window having a sum greater than or equal to ‘S.’ We will remember the length of this window as the smallest window so far.
+After this, we will keep adding one element in the sliding window (i.e., slide the window ahead) in a stepwise fashion.
+In each step, we will also try to shrink the window from the beginning. We will shrink the window until the window’s sum is smaller than ‘S’ again. This is needed as we intend to find the smallest window. This shrinking will also happen in multiple steps; in each step, we will do two things:
+Check if the current window length is the smallest so far, and if so, remember its length.
+Subtract the first element of the window from the running sum to shrink the sliding window.
+  
+  
+package practice;
+
+public class SmallestSubaarayWithGivenSum {
+
+	public static void main(String[] args) {
+	int[] arr1 = {2, 1, 5, 2, 3, 2};
+	int[] arr2 = {2, 1, 5, 2, 8};
+	
+	smallestSubarrayWithGivenSum(arr1,7);
+	smallestSubarrayWithGivenSum(arr2,7);
+	}
+
+	private static void smallestSubarrayWithGivenSum(int[] arr, int k) {
+		int sum =0;
+		int index=0;  // for tracking start index
+		int lastIndex =0;
+		int minLength =Integer.MAX_VALUE;
+		for(int i=0;i<arr.length;i++)
+		{
+			sum+=arr[i];  // adding sum
+			if(sum>=k)
+			{
+				lastIndex=i;   // for tracking last index
+			}
+			while(sum>=k)
+			{
+				if(lastIndex-index+1<minLength)
+				{
+					minLength =lastIndex-index+1;  //due to length
+				}
+				sum-=arr[index++]; //tracking start index
+			}
+		}
+		
+		System.out.println(minLength);
+	}
+
+}
+==================================================================================================================================================
+
+Longest Substring with K Distinct Characters ===>
+
+Example 1:
+
+Input: String="araaci", K=2
+Output: 4
+Explanation: The longest substring with no more than '2' distinct characters is "araa".
+
+
+Example 2:
+
+Input: String="araaci", K=1
+Output: 2
+Explanation: The longest substring with no more than '1' distinct characters is "aa".
+  
+  
+  This problem follows the Sliding Window pattern, and we can use a similar dynamic sliding window strategy as discussed in Smallest Subarray with a given sum. We can use a HashMap to remember the frequency of each character we have processed. Here is how we will solve this problem:
+
+Logic is same as above...
+
+take two variable to trace length of array like above.....and a hashmap
+iterate loop and check if character is present in map or not...
+yes increase frequency else put 0.
+now check size of map...if map size increase by k element....than start from first index and go in backward direction...
+remove element from map whose frequency is 0.
+for each itearation check maxLength for array.
+
+private static void longestSubstringWithKDistinctChaharcter(String str, int k) {
+	    if (str == null || str.length() == 0 || str.length() < k)
+	        throw new IllegalArgumentException();
+
+	      int index = 0, maxLength = 0;
+	      Map<Character, Integer> charFrequencyMap = new HashMap<>();
+	      // in the following loop we'll try to extend the range [windowStart, windowEnd]
+	      for (int i = 0; i < str.length(); i++) {
+	        char rightChar = str.charAt(i);
+	        charFrequencyMap.put(rightChar, charFrequencyMap.getOrDefault(rightChar, 0) + 1);
+	        // shrink the sliding window, until we are left with 'k' distinct characters in the frequency map
+	        while (charFrequencyMap.size() > k) 
+	        {
+	          char leftChar = str.charAt(index);
+	          charFrequencyMap.put(leftChar, charFrequencyMap.get(leftChar) - 1);
+	          if (charFrequencyMap.get(leftChar) == 0) {
+	            charFrequencyMap.remove(leftChar);
+	          }
+	          index++; // shrink the window
+	        }
+	        maxLength = Math.max(maxLength, i - index + 1); // remember the maximum length so far
+	      }
+
+	      System.out.println(maxLength);
+	    }
+		
+=========================================================================================================================================
+
+Fruits into Baskets (medium)
+
+Given an array of characters where each character represents a fruit tree, you are given two baskets, and your goal is to put maximum number of fruits in each basket. The only restriction is that each basket can have only one type of fruit.
+
+You can start with any tree, but you can’t skip a tree once you have started. You will pick one fruit from each tree until you cannot, i.e., you will stop when you have to pick from a third fruit type.
+
+Write a function to return the maximum number of fruits in both baskets.
+
+Input: Fruit=['A', 'B', 'C', 'A', 'C']
+Output: 3
+Explanation: We can put 2 'C' in one basket and one 'A' in the other from the subarray ['C', 'A', 'C']
+
+Input: Fruit=['A', 'B', 'C', 'B', 'B', 'C']
+Output: 5
+Explanation: We can put 3 'B' in one basket and two 'C' in the other basket. 
+This can be done if we start with the second letter: ['B', 'C', 'B', 'B', 'C']
+
+This problem follows the Sliding Window pattern and is quite similar to Longest Substring with K Distinct Characters. In this problem, we need to find the length of the longest subarray with no more than two distinct characters (or fruit types!). This transforms the current problem into Longest Substring with K Distinct Characters where K=2.
+		
+		
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+======================================================================================================================================================
+==================================================================================================================
+
+Find the smallest positive integer value that cannot be represented as sum of any subset of a given sorted array==>
+
+
+================================================================================================================================================
+Rearrange array in alternating positive & negative items with O(1) extra space 
+
+Input:  arr[] = {1, 2, 3, -4, -1, 4}
+Output: arr[] = {-4, 1, -1, 2, 3, 4}
+
+
+======================================================================================================================

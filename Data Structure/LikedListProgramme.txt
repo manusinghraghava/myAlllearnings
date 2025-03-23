@@ -1,0 +1,1086 @@
+add node==>>
+
+public boolean addNode(Node insertNode,int position)
+	{
+		int size=sizeLl(this.head);
+		if(this.head==null)
+		{
+			this.head=insertNode;
+			return true;
+	}
+		else if(position>size+1||position<0)
+		{
+			System.out.println("Plzz give proper size");
+			return false;
+		}
+		else{
+			Node current=this.head;
+			for(int j=1;j<position-1;j++)
+			{
+				current=current.getNext();
+			}
+			Node next=null;
+			if(null!=current.getNext())
+			{
+				next=current.getNext();
+			}
+			if(next==this.head)
+			{
+				insertNode.setNext(this.head);
+				this.head=insertNode;
+				return true;
+			}
+			else
+			{
+				current.setNext(insertNode);
+				insertNode.setNext(next);
+				return true;
+			}
+		}
+	}
+    -------------------------------------------------------------------------------
+
+deleteNode ==>
+
+public boolean deleteNode(int position)
+	{
+		int size=sizeLl(this.head);
+		if(position<1||position>size)
+		{
+			System.out.println("plzz give proper position");
+			return false;
+		}
+		else if(this.head==null)
+		{
+			System.out.println("list is already empty");
+			return false;
+		}
+		else if(position==1)
+		{
+			head=head.getNext();
+			return true;
+		}
+		else
+		{
+			Node current =this.head;
+			for(int k=1;k<position-1;k++)
+			{
+				current=current.getNext();
+			}
+			if(null!=current.getNext())
+			{
+				current.setNext(current.getNext().getNext());
+			}
+			else
+			{
+				this.head=null;
+			}
+			return true;
+		}
+		
+	}
+
+----------------------------------------------------------------------------------------------------------
+
+middle Element==>
+
+private void findMiddle() {
+		Node slow=this.head;
+		Node fast=this.head;
+		while(fast!=null &&fast.getNext()!=null)
+		{
+			slow=slow.getNext();
+			fast=fast.getNext().getNext();
+		}
+		System.out.println(slow.getData());
+	}
+
+--------------------------------------------------------------------------------------------------------------
+
+Detect loop in a linked list==>
+
+two methods==>
+
+1)Using hashMap==> same as finding duplicate elemnts in String..
+2) like middle if slow pointer and fast pointer meet there should be a loop.
+
+-----------------------------------------------------------------------------------------------------------------
+Detect length in a loop ==>
+
+1)find the loop first than traverse the loop from that point till it again didnt find that point..
+
+private void findLoop() {
+		Node slow=this.head;
+		Node fast=this.head;
+		while(fast!=null &&fast.getNext()!=null)
+		{
+			slow=slow.getNext();
+			fast=fast.getNext().getNext();        //always do first this otherwise both are head and equal
+			if(slow==fast)
+			{
+				System.out.println("true");
+				System.out.println(getLengthLoop(slow));
+		}
+		System.out.println(slow.getData());
+	}
+		
+	}
+
+	private int getLengthLoop(Node slow) {
+		// TODO Auto-generated method stub
+		int counter=0;
+		Node current=slow;
+		while(current.getNext()!=current)
+		{
+			counter++;
+			current=current.getNext();
+		}
+		return counter+1;
+	}
+
+-----------------------------------------------------------------------------------------------------------------------
+Function to check if a singly linked list is palindrome==>
+
+==>METHOD 1 (Use a Stack)
+
+A simple solution is to use a stack of list nodes. This mainly involves three steps.
+Traverse the given list from head to tail and push every visited node to stack.
+Traverse the list again. For every visited node, pop a node from stack and compare data of popped node with currently visited node.
+If all nodes matched, then return true, else false.
+
+private void isPalindrome(Node head) {
+		Node v=head;
+		Node d=head;
+		Stack<Integer> a = new Stack<>();
+		while(v!=null)
+		{
+			a.push(v.getData());
+			v=v.getNext();
+		}
+		while(d!=null)
+		{
+			if(a.pop()!=d.getData())
+			{
+			System.out.println("not pallindrome");
+			return;
+			}
+			d=d.getNext();
+		}
+		System.out.println("pallindrome");
+	}
+
+--------------------------------------------------------------------------------------------------------------------
+removing duplicate items using recursion in a sorted list==>
+
+private void removeDuplicate(Node cur) {
+		if(cur==null)
+			return;
+		
+		else if(cur.getNext()==null)
+			return;
+		
+		else
+		{
+			if(cur.getData()==cur.getNext().getData())
+				cur.setNext(cur.getNext().getNext());
+		}
+		removeDuplicate(cur.getNext());
+	}
+--------------------------------------------------------------------------------------------------------------------
+swapping linked list==>
+
+
+  
+static Node swapNodes(Node head_ref, int x, int y)  
+{  
+    Node head=head_ref; 
+    // Nothing to do if x and y are same  
+    if (x == y)  
+        return null;  
+  
+    Node a = null, b = null;  
+  
+    // search for x and y in the linked list  
+    // and store therir pointer in a and b  
+    while (head_ref.next!=null) {  
+  
+        if ((head_ref.next).data == x) {  
+            a = head_ref;  
+        }  
+  
+        else if ((head_ref.next).data == y) {  
+            b = head_ref;  
+        }  
+  
+        head_ref = ((head_ref).next);  
+    }  
+  
+    // if we have found both a and b  
+    // in the linked list swap current  
+    // pointer and next pointer of these  
+    if (a!=null&&  b!=null) {  
+    Node temp = a.next;  
+    a.next = b.next;  
+    b.next = temp;      
+    temp = a.next.next;  
+    a.next.next = b.next.next;  
+    b.next.next = temp;  
+    }  
+    return head; 
+}
+
+       oooooooooooooooooooorrrrrrrrrrrrrrrr
+
+Node previousI=null;;
+		Node previousJ=null;;
+		Node currI=getHead();
+		Node currJ=getHead();
+		if(i==j)
+			return;
+		while(currI!=null&&currI.getData()!=i)
+		{
+			previousI=currI;
+			currI=currI.getNext();
+		}
+		while(currJ!=null&&currJ.getData()!=j)
+		{
+			previousJ=currJ;
+			currJ=currJ.getNext();
+		}
+		if(currI==null ||currJ==null)
+			return;
+		if(previousI!=null)
+			previousI.setNext(currJ);
+		else
+			this.setHead(currJ);
+		if(previousJ!=null)
+			previousJ.setNext(currI);
+		else
+			this.setHead(currI);
+		
+		//swapping rest
+		
+		Node temp=currI.getNext();
+		currI.setNext(currJ.getNext());
+		currJ.setNext(temp);
+		
+	}
+-------------------------------------------------------------------------------------------------------------------
+swap Adjacent in linkedList node==>*********************
+
+private void swapAdjacent() {
+		Node current=this.head;
+		
+		Node temp=current.getNext();
+		
+		Node next=null;
+		while(current!=null && current.getNext()!=null)
+		{
+			if(next!=null)
+			{
+				next.getNext().setNext(current.getNext()); // only if not null to link upcoming next pointer to previous current
+			}
+			next=current.getNext();
+			current.setNext(next.getNext());   //moving in even and odd
+			next.setNext(current);
+			current=current.getNext();
+			
+		}
+		this.head=temp;
+		}
+
+----------------------------------------------------------------------------------------------------------------------
+reverse link list==>
+Initialize three pointers prev as NULL, curr as head and next as NULL.
+Iterate trough the linked list. In loop, do following.
+// Before changing next of current,
+// store next node
+next = curr->next
+// Now change next of current
+// This is where actual reversing happens
+curr->next = prev
+
+// Move prev and curr one step forward
+prev = curr
+curr = next
+
+private void reverseIterative() {
+		Node prev=null;
+		Node next=null;
+		Node current=head;
+		while(current!=null)
+		{
+			next=current.getNext();
+			current.setNext(prev);
+			prev=current;                            //remember to do it first
+			current=next;
+		}
+		this.head=prev;   // at last current = null so we use prev
+	}
+
+
+ // A simple and tail recursive function to reverse 
+    // a linked list.  prev is passed as NULL initially. 
+    Node reverseUtil(Node curr, Node prev) { 
+  
+        /* If last node mark it head*/
+        if (curr.next == null) { 
+            head = curr; 
+  
+            /* Update next to prev node */
+            curr.next = prev; 
+              
+            return head; 
+        } 
+  
+        /* Save curr->next node for recursive call */
+        Node next1 = curr.next; 
+  
+        /* and update next ..*/
+        curr.next = prev; 
+  
+        reverseUtil(next1, curr); 
+        return head; 
+    } 
+
+------------------------------------------------------------------------------------------------------------------------
+QuickSort In LinkedList==>
+
+
+  ---------------------------------------------------------------------------------------------------------------------
+inserting node in a sorted singly list
+
+1) If Linked list is empty then make the node as
+   head and return it.
+2) If the value of the node to be inserted is smaller 
+   than the value of the head node, then insert the node 
+at the start and make it head.
+3) In a loop, find the appropriate node after 
+   which the input node (let 9) is to be inserted. 
+   To find the appropriate node start from the head, 
+   keep moving until you reach a node GN (10 in
+   the below diagram) who's value is greater than 
+   the input node. The node just before GN is the
+appropriate node (7).
+4) Insert the node (9) after the appropriate node
+   (7) found in step 3.
+----------------------------------------------------------------------------------------------------------------------
+Optimising solution of bubble sort==>
+
+The old function always runs O(n^2) time even if the array is sorted. 
+It can be optimized by stopping the algorithm if inner loop didn’t cause any swap.
+
+// An optimized version of Bubble Sort 
+    static void bubbleSort(int arr[], int n) 
+    { 
+        int i, j, temp; 
+        boolean swapped; 
+        for (i = 0; i < n - 1; i++)  
+        { 
+            swapped = false; 
+            for (j = 0; j < n - i - 1; j++)  
+            { 
+                if (arr[j] > arr[j + 1])  
+                { 
+                    // swap arr[j] and arr[j+1] 
+                    temp = arr[j]; 
+                    arr[j] = arr[j + 1]; 
+                    arr[j + 1] = temp; 
+                    swapped = true; 
+                } 
+            } 
+  
+            // IF no two elements were  
+            // swapped by inner loop, then break 
+            if (swapped == false) 
+                break; 
+        } 
+    } 
+
+As in first go bubble sort compare adjacent elements..
+if there is not any single element to swap than break loop.
+
+recursive solution of bubble sort==>
+
+	private static void bubbleSort(int[] x,int n) {  //simple as every time last element is the highest element
+		
+		if(n==1)
+			return;
+			for(int j=0;j<n-1;j++)
+			{
+				if(x[j]>x[j+1])
+				{
+					int temp=x[j];
+					x[j]=x[j+1];
+					x[j+1]=temp;
+				}
+			
+		}
+		bubbleSort(x,n-1);
+	}
+
+-----------------------------------------------------------------------------------------------------------------------
+Selection sort==>it says select the minimum element in the array and put it at beginning.
+
+The good thing about selection sort is it never makes more than O(n) swaps and can be useful when memory write is a costly operation.
+
+Solution==>
+
+
+    void sort(int arr[]) 
+    { 
+        int n = arr.length; 
+  
+        // One by one move boundary of unsorted subarray 
+        for (int i = 0; i < n-1; i++) 
+        { 
+            // Find the minimum element in unsorted array 
+            int min_idx = i; 
+            for (int j = i+1; j < n; j++)                   //as always we have to reduce one rotation
+                if (arr[j] < arr[min_idx]) 
+                    min_idx = j; 
+  
+            // Swap the found minimum element with the first 
+            // element 
+            int temp = arr[min_idx]; 
+            arr[min_idx] = arr[i]; 
+            arr[i] = temp; 
+        } 
+    } 
+
+-------------------------------------------------------------------------------------------------------------------------
+InsertionSort==>
+
+Insertion sort is a simple sorting algorithm that works the way we sort playing cards in our hands.
+Insertion sort takes maximum time to sort if elements are sorted in reverse order. And it takes minimum time (Order of n) when elements are already sorted.
+
+private static void insertionSort(int[] arr, int n) {
+		int i, key, j;  
+	    for (i = 1; i < n; i++) 
+	    {  
+	        key = arr[i];   //unsorted part
+	        j = i - 1;      //till sorted part
+	  
+	        /* Move elements of arr[0..i-1], that are  
+	        greater than key, to one position ahead  
+	        of their current position */
+	        while (j >= 0 && arr[j] > key) 
+	        {  
+	            arr[j + 1] = arr[j];  //moving one point ahead
+	            j--;       
+	        }  
+	        arr[j + 1] = key;  //now setting key at position as after loop j value get decrement
+	    }  
+---------------------------------------------------------------------------------------------------------------------------------------------------------------
+QuickSort==>
+QuickSort is a Divide and Conquer algorithm. It picks an element as pivot and partitions the given array around the picked pivot
+
+Remember==>there is a lot difference between returning I++  and I+1==>as it return old value than increment
+
+
+	private static void quickSort(int[] x, int beg,int end) {
+		// TODO Auto-generated method stub
+		if(beg<end)
+			{
+			//fetch pivot index -->all small at left and big at right
+		int pivotIndex=pivotElement(x,beg,end);
+		
+		//calling recursion excluding pivotIndex
+		quickSort(x, beg, pivotIndex-1);
+		quickSort(x, pivotIndex+1, end);
+		
+	}
+	}
+
+	private static int pivotElement(int[] arr, int beg, int end) {
+		// TODO Auto-generated method stub
+		int pivot=arr[end];   //choosing pivotElement
+		int pivotIndex=beg-1; //for small element
+		for(int i =beg;i<end;i++)//as we doont need last element
+		{
+			if(arr[i]<=pivot)
+			{
+				pivotIndex++;
+				int temp=arr[pivotIndex];//if find any small element jst replace with pivotIndex one
+				arr[pivotIndex]=arr[i];
+				arr[i]=temp;
+				
+			}
+			
+		}
+		pivotIndex++;
+		int temp=arr[pivotIndex];
+		arr[pivotIndex]=arr[end];
+		arr[end]=temp;           //lst replace it with next index and return
+		return pivotIndex;
+	}
+
+Although the worst case time complexity of QuickSort is O(n2) which is more than many other sorting algorithms like Merge Sort and Heap Sort, 
+QuickSort is faster in practice, because its inner loop can be efficiently implemented on most architectures, and in most real-world data. 
+QuickSort can be implemented in different ways by changing the choice of pivot, so that the worst case rarely occurs for a given type of data. 
+Average case is nlogn.
+------------------------------------------------------------------------------------------------------------------------------------------------------------------
+MergeSort==>
+Like QuickSort, Merge Sort is a Divide and Conquer algorithm. 
+It divides input array in two halves, calls itself for the two halves and then merges the two sorted halves. 
+The merge() function is used for merging two halves.
+
+private static void mergeSort(int[] x, int n) {
+		// TODO Auto-generated method stub
+		if(n<2)
+			return;
+		int left =n/2;
+		int right =n-left;
+		int arrayLeft[]=new int[left];
+		int arrayright[]=new int[right];
+		for(int i=0;i<arrayLeft.length;i++)
+		{
+			arrayLeft[i]=x[i];
+		}
+		for(int i=arrayLeft.length;i<x.length;i++)
+		{
+			arrayright[i-arrayright.length]=x[i];
+		}
+		mergeSort(arrayLeft, arrayLeft.length);
+		mergeSort(arrayright, arrayright.length);
+		merge(arrayLeft,arrayright,x);       //remember x is the array we have send here
+	}
+
+	private static void merge(int[] arrayLeft, int[] arrayright, int[] x) {
+		// TODO Auto-generated method stub
+		int i=0,j=0,k=0;
+		while(i<arrayLeft.length&&j<arrayright.length&&k<x.length)
+		{
+			if(arrayLeft[i]<arrayright[j])
+			{
+				x[k]=arrayLeft[i];
+				i++;
+				k++;
+			}
+			else if(arrayLeft[i]>arrayright[j])
+			{
+				x[k]=arrayright[j];
+				j++;
+				k++;
+			}
+			else
+			{
+				x[k]=arrayright[j];
+				j++;
+				k++;                                             //if there are some equal elemnts both should go
+				x[k]=arrayLeft[i];
+				i++;
+				k++;
+			}
+		}
+		while(i<arrayLeft.length)
+		{
+			x[k]=arrayLeft[i];
+			i++;
+			k++;
+		}
+		while(j<arrayright.length)
+		{
+			x[k]=arrayright[j];
+			j++;
+			k++;
+		}
+		
+	}
+
+
+
+
+-----------------------------------------------------------------------------------------------------------------------------------
+merging two sorted linked list
+
+Node sortedMerge(Node headA, Node headB) 
+{ 
+      
+    /* a dummy first node to  
+       hang the result on */
+    Node dummyNode = new Node(0); 
+      
+    /* tail points to the  
+    last result node */
+    Node tail = dummyNode; 
+    while(true)  
+    { 
+          
+        /* if either list runs out,  
+        use the other list */
+        if(headA == null) 
+        { 
+            tail.next = headB; 
+            break; 
+        } 
+        if(headB == null) 
+        { 
+            tail.next = headA;         ///if one of the tail ends just add the pointer of next one
+            break; 
+        } 
+          
+        /* Compare the data of the two 
+        lists whichever lists' data is  
+        smaller, append it into tail and 
+        advance the head to the next Node 
+        */
+        if(headA.data <= headB.data) 
+        { 
+            tail.next = headA; 
+            headA = headA.next; 
+        }  
+        else
+        { 
+            tail.next = headB; 
+            headB = headB.next; 
+        } 
+          
+        /* Advance the tail */
+        tail = tail.next; 
+    } 
+    return dummyNode.next; 
+} 
+} 
+---------------------------------------------------------------------------------------------------------------------------
+Write a function to get the intersection point of two Linked Lists
+
+There are two singly linked lists in a system. By some programming error, 
+the end node of one of the linked list got linked to the second list, 
+forming an inverted Y shaped list. Write a program to get the point where two linked list merge.
+
+Method 3(Using difference of node counts)
+
+Get count of the nodes in the first list, let count be c1.
+Get count of the nodes in the second list, let count be c2.
+Get the difference of counts d = abs(c1 – c2)
+Now traverse the bigger list from the first node till d nodes so that from here onwards both the lists have equal no of nodes.
+Then we can traverse both the lists in parallel till we come across a common node. (Note that getting a common node is done by comparing the address of the nodes)
+
+
+ /*function to get the intersection point of two linked 
+    lists head1 and head2 */
+    int getNode() 
+    { 
+        int c1 = getCount(head1); 
+        int c2 = getCount(head2); 
+        int d; 
+  
+        if (c1 > c2) { 
+            d = c1 - c2; 
+            return _getIntesectionNode(d, head1, head2); 
+        } 
+        else { 
+            d = c2 - c1; 
+            return _getIntesectionNode(d, head2, head1); //which is greater send it first.....
+        } 
+    } 
+  
+    /* function to get the intersection point of two linked 
+     lists head1 and head2 where head1 has d more nodes than 
+     head2 */
+    int _getIntesectionNode(int d, Node node1, Node node2) 
+    { 
+        int i; 
+        Node current1 = node1; 
+        Node current2 = node2; 
+        for (i = 0; i < d; i++) { 
+            if (current1 == null) { 
+                return -1; 
+            } 
+            current1 = current1.next;     //bigger one reached to the second one
+        } 
+        while (current1 != null && current2 != null) { 
+            if (current1.data == current2.data) { 
+                return current1.data; 
+            } 
+            current1 = current1.next; 
+            current2 = current2.next; 
+        } 
+  
+        return -1; 
+    } 
+  
+
+oooooooooooooooooooooooorrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr other efficient code---------------
+
+    SinglyLinkedListNode current1 = head1;
+    SinglyLinkedListNode current2 = head2;
+    while(current1 != current2) {                                      //this will run till curr1=====curr2
+        current1 = current1.next != null ? current1.next : head2;
+        current2 = current2.next != null ? current2.next : head1;
+    }
+    return current1.data;
+}
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------S
+
+====================================================================
+--------------------------------------------------------------------------------------------------------------------------------------------------------------
+LRU Cache Implementation of Linked List==>done in queue
+
+---------------------------------------------------------------------------------------------------------------------------
+Merge Sort for Linked Lists==>
+
+MergeSort(headRef)
+1) If the head is NULL or there is only one element in the Linked List 
+    then return.
+2) Else divide the linked list into two halves.  
+      FrontBackSplit(head, &a, &b); /* a and b are two halves */
+3) Sort the two halves a and b.
+      MergeSort(a);
+      MergeSort(b);
+4) Merge the sorted a and b (using SortedMerge() discussed here) 
+   and update the head pointer using headRef.
+     *headRef = SortedMerge(a, b);
+
+// Java program to illustrate merge sorted 
+// of linkedList 
+
+public class linkedList { 
+	node head = null; 
+	// node a, b; 
+	static class node { 
+		int val; 
+		node next; 
+
+		public node(int val) 
+		{ 
+			this.val = val; 
+		} 
+	} 
+
+	node sortedMerge(node a, node b) 
+	{ 
+		node result = null; 
+		/* Base cases */
+		if (a == null) 
+			return b; 
+		if (b == null) 
+			return a; 
+
+		/* Pick either a or b, and recur */
+		if (a.val <= b.val) { 
+			result = a;                         	///as till here result is null
+			result.next = sortedMerge(a.next, b);  // return in last b
+		} 
+		else { 
+			result = b; 
+			result.next = sortedMerge(a, b.next); //return in last a
+		} 
+		return result; 
+	} 
+
+	node mergeSort(node h) 
+	{ 
+		// Base case : if head is null 
+		if (h == null || h.next == null) { 
+			return h; 
+		} 
+
+		// get the middle of the list 
+		node middle = getMiddle(h); 
+		node nextofmiddle = middle.next; 
+
+		// set the next of middle node to null 
+		middle.next = null; 
+
+		// Apply mergeSort on left list 
+		node left = mergeSort(h);                <-------------------------|     
+                                                                                   |    this is how recursion works
+		// Apply mergeSort on right list                                   |    it will return from here
+		node right = mergeSort(nextofmiddle);                              |
+                                                                                   |
+		// Merge the left and right lists                                  |
+		node sortedlist = sortedMerge(left, right); ------------------------
+		return sortedlist; 
+	} 
+
+	// Utility function to get the middle of the linked list 
+	node getMiddle(node h) 
+	{ 
+		// Base case 
+		if (h == null) 
+			return h; 
+		node fastptr = h.next; 
+		node slowptr = h; 
+
+		// Move fastptr by two and slow ptr by one 
+		// Finally slowptr will point to middle node 
+		while (fastptr != null) { 
+			fastptr = fastptr.next; 
+			if (fastptr != null) { 
+				slowptr = slowptr.next; 
+				fastptr = fastptr.next; 
+			} 
+		} 
+		return slowptr; 
+	} 
+
+	void push(int new_data) 
+	{ 
+		/* allocate node */
+		node new_node = new node(new_data); 
+
+		/* link the old list off the new node */
+		new_node.next = head; 
+
+		/* move the head to point to the new node */
+		head = new_node; 
+	} 
+
+	// Utility function to print the linked list 
+	void printList(node headref) 
+	{ 
+		while (headref != null) { 
+			System.out.print(headref.val + " "); 
+			headref = headref.next; 
+		} 
+	} 
+
+	public static void main(String[] args) 
+	{ 
+
+		linkedList li = new linkedList(); 
+		/* 
+		* Let us create a unsorted linked list to test the functions 
+		* created. The list shall be a: 2->3->20->5->10->15 
+		*/
+		li.push(15); 
+		li.push(10); 
+		li.push(5); 
+		li.push(20); 
+		li.push(3); 
+		li.push(2); 
+
+		// Apply merge Sort 
+		li.head = li.mergeSort(li.head); 
+		System.out.print("\n Sorted Linked List is: \n"); 
+		li.printList(li.head); 
+	} 
+} 
+
+// This code is contributed by Rishabh Mahrsee 
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------
+Flattening a Linked List
+Given a linked list where every node represents a linked list and contains two pointers of its type:
+(i) Pointer to next node in the main list (we call it ‘right’ pointer in below code)
+(ii) Pointer to a linked list where this node is head (we call it ‘down’ pointer in below code).
+All linked lists are sorted.
+
+
+The idea is to use Merge() process of merge sort for linked lists. 
+We use merge() to merge lists one by one. We recursively merge() the current list with already flattened list.
+The down pointer is used to link nodes of the flattened list.
+
+
+we will start merging here from right hand..and than we will attach it from it left.
+
+
+Node merge(Node a, Node b) 
+{ 
+    // if first linked list is empty then second 
+    // is the answer 
+    if (a == null)     return b; 
+
+    // if second linked list is empty then first 
+    // is the result 
+    if (b == null)      return a; 
+
+    // compare the data members of the two linked lists 
+    // and put the larger one in the result 
+    Node result; 
+
+    if (a.data < b.data) 
+    { 
+        result = a; 
+        result.down =  merge(a.down, b);    //same as merge instead of calling next we r calling right and down..
+    } 
+
+    else
+    { 
+        result = b; 
+        result.down = merge(a, b.down); 
+    } 
+
+    return result; 
+} 
+
+Node flatten(Node root) 
+{ 
+    // Base Cases 
+    if (root == null || root.right == null) 
+        return root; 
+
+    // recur for list on right 
+    root.right = flatten(root.right); 
+
+    // now merge 
+    root = merge(root, root.right); //we r sending two right most node with their down list.
+
+    // return the root 
+    // it will be in turn merged with its left 
+    return root; 
+} 
+---------------------------------------------------------------------------------------------------------------------------------------------------------------
+Reverse linkedList on given points===>
+
+easy just find point reverse both of them join and return new list
+===================================================================================================================
+print linked list in reverse==>
+
+ static void reversePrint(SinglyLinkedListNode head) {
+    if(head==null)        //when head==null than return okkkkkkk practice recursion.
+    return;
+    
+    reversePrint(head.next);
+    System.out.println(head.data);
+    }
+
+---------------------------------------------------------------------------------------------------------------------------
+Comparing two linked List==>
+
+ if(headA!=null && headB!=null)
+        {
+        if(headA.data==headB.data)
+            return CompareLists(headA.next,headB.next);
+        else
+            return 0;
+    }
+    else if(headA==null && headB==null) // both null at the same time
+        return 1;
+    else
+        return 0;   // if any one is null
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+que======>Counting backwards from the tail node of the linked list, get the value of the node at the given position. 
+
+
+verrrrrrrrrrrrrrrrrrryyyyyyyyyyyyyyyyyyyyyyyy goooooooooooooooooooooooooooooooooooooddddddddddddddddddd ttttttttechnique
+ static int getNode(SinglyLinkedListNode head, int positionFromTail) {
+    int index = 0;
+    SinglyLinkedListNode current = head;
+    SinglyLinkedListNode result = head;
+    while(current!=null)
+    {
+        current=current.next;
+        if (index++>positionFromTail)         ///just increasing second one till we get difference
+        {
+            result=result.next;
+        }
+    }
+    return result.data;
+    }
+
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------------
+// from even ones and maintaining their relative order.
+	// This approach do not use any dummy node.
+	public static Node rearrangeEvenOdd(Node head)
+	{
+		Node odd = null, oddTail = null;
+		Node even = null, evenTail = null;
+		Node curr = head;
+
+		while (curr != null)
+		{
+			if ((curr.data & 1) != 0) // current node is odd
+			{
+				// handle head for first odd node
+				if (odd == null) {
+					odd = oddTail = curr;
+				}
+				else
+				{
+					oddTail.next = curr;
+					oddTail = oddTail.next;
+				}
+			}
+			else // current node is even
+			{
+				// handle head for first even node
+				if (even == null) {
+					even = evenTail = curr;
+				}
+				else
+				{
+					evenTail.next = curr;
+					evenTail = curr;
+				}
+			}
+			curr = curr.next;
+		}
+
+		// if list contains at-least one even node
+		if (even != null)
+		{
+			head = even;
+			evenTail.next = odd;
+		}
+		// special case - list contains all odd nodes
+		else {
+			head = odd;
+		}
+
+		// null to terminate the list, 
+		// else it will go in infinite loop
+		if (oddTail != null) {
+			oddTail.next = null;
+		}
+
+		return head;
+	}
+---------------------------------------------------------------------------------------------------------------------------
+Inserting Node in Sorted LInkedList==>
+
+/* function to insert a new_node in a list. */
+    void sortedInsert(Node new_node) 
+    { 
+         Node current; 
+  
+         /* Special case for head node */
+         if (head == null || head.data >= new_node.data) 
+         { 
+            new_node.next = head; 
+            head = new_node; 
+         } 
+         else { 
+  
+            /* Locate the node before point of insertion. */
+            current = head; 
+  
+            while (current.next != null && 
+                   current.next.data < new_node.data) 
+                  current = current.next; 
+  
+            new_node.next = current.next; 
+            current.next = new_node; 
+         } 
+     } 
+---------------------------------------------------------------------------------------------------------------------------
+Reverse Doubley Linked List==>
+
+Some how different from linked list==>
+in this we r setting previous not next==> AS DOUBLY ALWAYS HAVE TWO POINTERS
+
+Node Reverse(Node head) {
+    Node current = head;
+    Node newHead = head;
+    while (current != null) {
+        Node prev = current.prev;    //understand it carefully///first save previous of list
+        current.prev = current.next;    //now as we reversing set prev to its next
+        current.next = prev;         //seting next as previous element
+        newHead = current;           //setting new head
+        current = current.prev;         //increasing one step
+    }
+    return newHead;
+}
+----------------------------------------------------------------------------------------------------------------------------
+
+----------------------------------------------------------------------------------------------------------------------------
+https://www.techiedelight.com/recursion-practice-problems-with-solutions/

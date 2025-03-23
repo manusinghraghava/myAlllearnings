@@ -1,0 +1,575 @@
+SmS Template--->
+
+Objective---> we have to use sms feature same like the email one. so we are going to send sms while registration.
+
+a)we can use the renderer template same like email one to define context and vm files.
+
+<itemtype code="IbmSmsRendererTemplate" extends="RendererTemplate"
+				  autocreate="true" generate="true" jaloclass="com.ibmsmsasset.jalo.sms.IbmSmsRendererTemplate">
+			<description>Ibm Sms Renderer Template with Some Basic Attribute</description>
+			<attributes>
+				<attribute qualifier="sender" type="java.lang.String">                // extra attribute for sender
+					<description>Contains Sender Name</description>
+					<modifiers />
+					<persistence type="property" />
+				</attribute>
+			</attributes>
+		</itemtype>
+		
+
+sample impex-->
+
+UPDATE GenericItem[processor = de.hybris.platform.commerceservices.impex.impl.ConfigPropertyImportProcessor]; pk[unique = true]
+$smsContextPackageName = com.ibmsmsasset.context
+
+
+UPDATE GenericItem[processor = de.hybris.platform.commerceservices.impex.impl.ConfigPropertyImportProcessor]; pk[unique = true]
+$smsResource = jar:com.fabindia.core.setup.CoreSystemSetup&/fabindiacore/import/sms
+
+INSERT_UPDATE IbmSmsRendererTemplate; code[unique = true]; sender ; contextClass; rendererType(code)[default = 'velocity']; templateScript[lang = en, translator = de.hybris.platform.commerceservices.impex.impl.FileLoaderValueTranslator]
+
+; CustomerRegistrationSmsTemplate ; FABIND ; $smsContextPackageName.IbmSmsCustomerContext ;; $smsResource/fab-user-registration.vm
+
+----------------------------
+
+b)here we use template which we use to do same in email  fab-user-registration.vm
+
+sample-->
+Dear ${ctx.firstName}, Thanks for registering on https://www.fabindia.com with ID:${ctx.email}, to serve you better update your profile Regards, Fabindia Team
+
+
+
+so now we required a context to fill sms and action to send sms and everything.
+
+we need some model changes also..
+
+<enumtypes>
+		<enumtype code="IbmSmsStatus" autocreate="true" generate="true" dynamic="true">
+			<value code="SENT"/>
+			<value code="FAILED"/>
+			<value code="CREATED"/>
+		</enumtype>
+	</enumtypes>
+	<itemtypes>
+		<itemtype code="IbmSmsMessage" autocreate="true"
+					  generate="true" extends="GenericItem"
+					  jaloclass="com.ibmsmsasset.jalo.sms.SmsMessage">
+				<description>Sms Message model to save created sms
+				</description>
+				<deployment table="SmsMessage" typecode="28376"/>
+				<attributes>
+					<attribute type="java.lang.String" qualifier="phoneNumber">
+						<persistence type="property"/>
+						<description>Customer Mobile</description>
+					</attribute>
+					<attribute type="java.lang.String" qualifier="templateName">
+						<persistence type="property"/>
+						<description>Type of template used while creating sms</description>
+					</attribute>
+					<attribute type="java.lang.String" qualifier="text">
+						<persistence type="property">
+							<columntype>
+								<value>HYBRIS.LONG_STRING</value>
+							</columntype>
+						</persistence>
+						<modifiers search="false"/>
+						<description>Text Message of Customer</description>
+					</attribute>
+					<attribute type="IbmSmsStatus" qualifier="status">
+						<persistence type="property"/>
+						<description>Sms Status</description>
+					</attribute>
+					<attribute type="java.lang.String" qualifier="sender">
+						<persistence type="property"/>
+						<description>Sender Name</description>
+					</attribute>
+				</attributes>
+			</itemtype>
+
+		<itemtype code="BusinessProcess" autocreate="false" generate="false">
+			<attributes>
+				<attribute qualifier="sms" type="IbmSmsMessage">
+					<persistence type="property"/>
+					<modifiers optional="true"/>
+				</attribute>
+			</attributes>
+		</itemtype>
+		
+i)sms statuses like email sent failed etc.
+ii)Ibm sms message same like email message which will hold phone number(sender) , template name (to fetch context) , text .... to put update text after render
+iii) we have to update business process also to put sms in it.
+
+--------------------------------
+
+c) we will create a IbmAbstractsSmsVelocityContext which we will use to init basic values for a context...
+
+public abstract class IbmAbstractsSmsVelocityContext<T extends BusinessProcessModel> extends AbstractHybrisVelocityContext {
+
+
+    private static final Logger LOG = LogManager.getLogger(IbmAbstractsSmsVelocityContext.class);
+    public static final String TITLE = "title";
+    public static final String DISPLAY_NAME = "displayName";
+    public static final String FROM_SMS = "from";
+    public static final String TO_USER = "to";
+
+    /**
+     * Initialize SMS context
+     */
+    public void init(final T businessProcessModel,
+                     final IbmSmsRendererTemplateModel renderTemplate) {
+        super.setBaseSite(getSite(businessProcessModel));
+        if (Objects.nonNull(renderTemplate)) {
+            put(FROM_SMS, renderTemplate.getSender());
+        }
+        final CustomerModel customerModel = getCustomer(businessProcessModel);
+        if (customerModel != null) {
+            put(TITLE, (customerModel.getTitle() != null && customerModel.getTitle().getName() != null)
+                    ? customerModel.getTitle().getName() : "");
+            put(DISPLAY_NAME, customerModel.getDisplayName());
+            put(TO_USER, customerModel.getContactNumber());
+        }
+
+    }
+
+    public String getTITLE() {
+        return (String) get(TITLE);     /// use it as it is a map
+    }
+
+    public String getDisplayName() {
+		return (String) get(DISPLAY_NAME);
+    }
+
+    public String getFromSms() {
+        return (String) get(FROM_SMS);
+    }
+
+    public String getToUser() {
+        return (String) get(TO_USER);
+    }
+
+    protected abstract BaseSiteModel getSite(final T businessProcessModel);
+
+    protected abstract CustomerModel getCustomer(final T businessProcessModel);
+}
+
+
+-----------------------------------------
+
+d)Now we need a basic context factory which will fetch context according to rederer template..
+
+1)create a interface
+
+public interface IbmSmsContextFactory<T extends BusinessProcessModel>
+{
+	/**
+	 * @param businessProcessModel,
+	 *           SMS Parameters
+	 * @param renderTemplate
+	 *           the renderer template
+	 * @return the velocity context
+	 */
+	IbmAbstractsSmsVelocityContext<T> create(final T businessProcessModel, final IbmSmsRendererTemplateModel renderTemplate);
+}
+
+
+now implement it
+
+
+/**
+ * Factory used to create the velocity context for rendering SMS
+ */
+public class IbmSmsContextFactoryImpl implements IbmSmsContextFactory<BusinessProcessModel>
+{
+	private static final Logger LOG = LogManager.getLogger(IbmSmsContextFactoryImpl.class);
+
+	private IbmAbstractsSmsVelocityContext defaultContext;
+
+	/**
+	 * @param businessProcessModel,
+	 *           SMS Parameters
+	 * @param renderTemplate
+	 *           the renderer template
+	 * @return the velocity context
+	 */
+	@Override
+	public IbmAbstractsSmsVelocityContext<BusinessProcessModel> create(final BusinessProcessModel businessProcessModel,
+			final IbmSmsRendererTemplateModel renderTemplate)
+	{
+		//Create SMS context
+		final IbmAbstractsSmsVelocityContext<BusinessProcessModel> smsContext = resolveSMSContext(renderTemplate);
+		//initialize SMS context
+		smsContext.init(businessProcessModel,renderTemplate);
+		return smsContext;
+	}
+
+	/**
+	 * Create SMS Context
+	 *
+	 * @param renderTemplate
+	 * @return sms context
+	 */
+	private IbmAbstractsSmsVelocityContext resolveSMSContext(
+			final IbmSmsRendererTemplateModel renderTemplate)
+	{
+		try
+		{
+			final Class contextClass = Class.forName(renderTemplate.getContextClass());    // fetching from template
+
+			final Map<String, IbmAbstractsSmsVelocityContext> smsContexts = Registry.getApplicationContext()
+					.getBeansOfType(contextClass);
+			return MapUtils.isNotEmpty(smsContexts) ? smsContexts.entrySet().iterator().next().getValue() : defaultContext;
+		}
+		catch (final ClassNotFoundException e)
+		{
+			LOG.error("Error while creating context", e);
+			throw new IllegalStateException("No sms context found", e);
+		}
+	}
+
+	/**
+	 * @param defaultContext
+	 *           the defaultContext to set
+	 */
+	@Required
+	public void setDefaultContext(final IbmAbstractsSmsVelocityContext defaultContext)
+	{
+		this.defaultContext = defaultContext;   /// setting default
+	}
+}
+
+
+
+-------------------------------------------------------------------------------
+e) define all the three in spring.xml
+
+<alias name="ibmAbstractsSmsVelocityContext" alias="abstractsSMSVelocityContext" />
+
+	<bean id="ibmAbstractsSmsVelocityContext"
+
+		  class="com.ibmsmsasset.context.IbmAbstractsSmsVelocityContext"
+
+		  abstract="true" scope="prototype" />            /////as it is abstract
+
+
+	<alias name="ibmSmsVelocityContext" alias="smsVelocityContext" />
+
+	<bean id="ibmSmsVelocityContext" class="com.ibmsmsasset.context.IbmSmsCustomerContext"
+
+		  parent="ibmAbstractsSmsVelocityContext" scope="prototype" />
+
+
+	<alias name="ibmSmsContextFactoryImpl" alias="smsContextFactory" />
+
+	<bean id="ibmSmsContextFactoryImpl"
+
+		  class="com.ibmsmsasset.context.impl.IbmSmsContextFactoryImpl"
+
+		  scope="prototype" >
+
+		<property name="defaultContext" ref="smsVelocityContext"/>
+
+	</bean>
+
+
+-----------------------------------
+
+f)Now like email service we will be needing sms generation service which will generate sms messagemodel via renderer template.
+
+public class DefaultIbmSmsGenerationService implements IbmSmsGenerationService {
+    private static final Logger LOG = LogManager.getLogger(DefaultIbmSmsGenerationService.class);
+    private RendererService rendererService;
+    private ModelService modelService;
+    private IbmSmsContextFactory smsContextFactory;
+
+    /**
+     * generate sms on base of template
+     *
+     * @param businessProcessModel    SMS Parameters
+     * @param bodyRenderTemplateCode, templateCode, based on template code SMS needs to be created
+     * @return
+     */
+    @Override
+    public IbmSmsMessageModel generate(BusinessProcessModel businessProcessModel, String bodyRenderTemplateCode) {
+        String smsMessage = null;
+        try {
+            final IbmSmsRendererTemplateModel bodyRenderTemplate = (IbmSmsRendererTemplateModel) getRendererService().getRendererTemplateForCode(bodyRenderTemplateCode);
+            Assert.notNull(bodyRenderTemplate,
+                    "Body cannot be null for template" + bodyRenderTemplateCode);
+
+
+            //This call creates the context to be used for rendering of SMS templates.
+            final IbmAbstractsSmsVelocityContext<BusinessProcessModel> smsContext = getSmsContextFactory().create(businessProcessModel, bodyRenderTemplate);
+
+            if (smsContext == null) {
+                LOG.info("Error while creating SMS context ");
+                throw new IllegalStateException("Error while creating SMS context for template code:" + bodyRenderTemplateCode
+                        + " with SMS Parameters: " + businessProcessModel);
+            } else {
+                final StringWriter smsWriter = new StringWriter();
+                getRendererService().render(bodyRenderTemplate, smsContext, smsWriter);
+                smsMessage = smsWriter.toString().trim();
+                return createMessage(smsMessage, smsContext, bodyRenderTemplateCode);
+            }
+        } catch (Exception ex) {
+            LOG.info(ex.getMessage());
+            throw new IllegalStateException("Error while generating Sms");
+        }
+    }
+
+    /**
+     * creating message
+     *
+     * @param smsText
+     * @param smsContext
+     * @param bodyRenderTemplateCode
+     * @return
+     */
+    private IbmSmsMessageModel createMessage(String smsText, IbmAbstractsSmsVelocityContext<BusinessProcessModel> smsContext, String bodyRenderTemplateCode) {
+        IbmSmsMessageModel message = modelService.create(IbmSmsMessageModel.class);
+        message.setPhoneNumber(smsContext.getToUser());
+        message.setText(smsText);
+        message.setTemplateName(bodyRenderTemplateCode);
+        message.setStatus(IbmSmsStatus.CREATED);
+        message.setSender(smsContext.getFromSms());
+        getModelService().save(message);
+        return message;
+    }
+
+    public RendererService getRendererService() {
+        return rendererService;
+    }
+
+    public void setRendererService(RendererService rendererService) {
+        this.rendererService = rendererService;
+    }
+
+    public ModelService getModelService() {
+        return modelService;
+    }
+
+    public void setModelService(ModelService modelService) {
+        this.modelService = modelService;
+    }
+
+
+    public IbmSmsContextFactory getSmsContextFactory() {
+        return smsContextFactory;
+    }
+
+    public void setSmsContextFactory(IbmSmsContextFactory smsContextFactory) {
+        this.smsContextFactory = smsContextFactory;
+    }
+
+
+}
+
+<bean id="ibmSMSGenerationService" class="com.ibmsmsasset.service.impl.DefaultIbmSmsGenerationService" >
+		<property name="rendererService" ref="rendererService"/>
+		<property name="smsContextFactory" ref="smsContextFactory"/>
+		<property name="modelService" ref="modelService"/>
+	</bean>
+	
+
+-----------------------------------------------
+
+g)Now we have wriiten a whole logic to generate sms using template now we have to send the sms using any service....
+but every organisation having own logic or rest services to send sms so we will create some generic one.
+
+public interface IbmSmsService {
+    /**
+     * method to create sms
+     * @param sms
+     */
+    void sendSMS(IbmSmsMessageModel sms) throws Exception;
+}
+
+impl--->
+
+public class IbmSmsServiceImpl implements IbmSmsService {
+    @Override
+    public void sendSMS(IbmSmsMessageModel sms) throws Exception {
+        throw new Exception("No Api Found for Sending sms");
+    }
+}
+
+<alias name="ibmAssetSmsService" alias="smsService"/>
+	<bean id="ibmAssetSmsService" class="com.ibmsmsasset.service.impl.IbmSmsServiceImpl">
+	</bean>
+	
+	
+now this is the generic one , whatever extension who will extend our sms extension will extend our  IbmSmsServiceImpl and give the same alias.....
+
+
+----------------------------------------------------------
+
+Now everything is done we will be needing same action nodes like email to generate ,sent and delete sms....
+
+1)public class GenerateSmsAction extends AbstractSimpleDecisionAction
+{
+    private static final Logger LOG = Logger.getLogger(GenerateSmsAction.class);
+    private String smsTemplateName;
+    private IbmSmsGenerationService smsGenerationService;
+    private ModelService modelService;
+
+    /**
+     *
+     * @param businessProcessModel
+     * @return
+     * @throws RetryLaterException
+     */
+    @Override
+    public Transition executeAction(final BusinessProcessModel businessProcessModel) throws RetryLaterException
+    {
+
+        final IbmSmsMessageModel smsMessageModel = getSmsGenerationService().generate(businessProcessModel, smsTemplateName);
+        if (smsMessageModel == null)
+        {
+            LOG.warn("Failed to generate sms message");
+            return Transition.NOK;
+        }
+
+        businessProcessModel.setSms(smsMessageModel);
+
+        getModelService().save(businessProcessModel);
+
+        LOG.info("Sms message generated");
+        return Transition.OK;
+    }
+
+    public String getSmsTemplateName() {
+        return smsTemplateName;
+    }
+
+    public void setSmsTemplateName(String smsTemplateName) {
+        this.smsTemplateName = smsTemplateName;
+    }
+
+    public IbmSmsGenerationService getSmsGenerationService() {
+        return smsGenerationService;
+    }
+
+    public void setSmsGenerationService(IbmSmsGenerationService smsGenerationService) {
+        this.smsGenerationService = smsGenerationService;
+    }
+
+    @Override
+    public ModelService getModelService() {
+        return modelService;
+    }
+
+    @Override
+    public void setModelService(ModelService modelService) {
+        this.modelService = modelService;
+    }
+
+}
+
+
+2)public class RemoveSentMsgAction extends AbstractProceduralAction
+{
+	@Override
+	public void executeAction(final BusinessProcessModel businessProcessModel)
+	{
+		IbmSmsMessageModel sms = businessProcessModel.getSms();
+		if (Objects.nonNull(sms)&& StringUtils.equalsIgnoreCase(sms.getStatus().getCode(),IbmSmsStatus.SENT.getCode()))
+			{
+				//remove the sms Message Model
+				getModelService().remove(sms);
+			}
+	}
+}
+
+
+3)public class SendSmsAction extends AbstractSimpleDecisionAction
+{
+    private static final Logger LOG = Logger.getLogger(SendSmsAction.class);
+    private IbmSmsService smsService;
+    private ModelService modelService;
+    @Override
+    public Transition executeAction(final de.hybris.platform.processengine.model.BusinessProcessModel businessProcessModel)
+            throws RetryLaterException
+    {
+        Transition status = Transition.NOK;
+        IbmSmsMessageModel sms=businessProcessModel.getSms();
+        if(Objects.nonNull(sms))
+        {
+            try {
+                getSmsService().sendSMS(businessProcessModel.getSms());
+                sms.setStatus(IbmSmsStatus.SENT);
+                LOG.error("Message Sent Successfully");
+                status = Transition.OK;
+            }
+            catch(Exception e)
+            {
+                LOG.error(e.getMessage());
+                sms.setStatus(IbmSmsStatus.FAILED);
+            }
+            modelService.save(sms);
+        }
+        return status;
+    }
+
+    public IbmSmsService getSmsService() {
+        return smsService;
+    }
+
+    public void setSmsService(IbmSmsService smsService) {
+        this.smsService = smsService;
+    }
+
+    @Override
+    public ModelService getModelService() {
+        return modelService;
+    }
+
+    @Override
+    public void setModelService(ModelService modelService) {
+        this.modelService = modelService;
+    }
+
+}
+
+
+<bean id="abstractGenerateSmsAction" class="com.ibmsmsasset.actions.GenerateSmsAction" parent="abstractAction" abstract="true">
+		<property name="modelService" ref="modelService"/>
+		<property name="smsGenerationService" ref="smsGenerationService"/>
+	</bean>
+	<bean id="sendSms" class="com.ibmsmsasset.actions.SendSmsAction" parent="abstractAction">
+		<property name="modelService" ref="modelService"/>
+		<property name="smsService" ref="smsService"/>
+	</bean>
+	<bean id="removeSentSms" class="com.ibmsmsasset.actions.RemoveSentMsgAction" parent="abstractAction">
+		<property name="modelService" ref="modelService"/>
+	</bean>
+	
+------------------------------------------------------------------------------------------------------
+
+a)now same as email we create a action with frontend template name same as email as our generate action is abstract
+
+<bean id="generateCustomerRegistrationMessage" parent="abstractGenerateSmsAction">
+		<property name="smsTemplateName" value="CustomerRegistrationSmsTemplate"/>
+	</bean>
+	
+	
+now we will use it as in process.xml
+
+<transition name="OK" to="generateCustomerRegistrationMessage"/>
+		<transition name="NOK" to="error"/>
+	</action>
+
+	<action id="generateCustomerRegistrationMessage" bean="generateCustomerRegistrationMessage">
+		<transition name="OK" to="sendSms"/>
+		<transition name="NOK" to="error"/>
+	</action>
+
+	<action id="sendSms" bean="sendSms">
+		<transition name="OK" to="removeSentSms"/>
+		<transition name="NOK" to="failed"/>
+	</action>
+
+	<action id="removeSentSms" bean="removeSentSms">
+		<transition name="OK" to="success"/>
+		<transition name="NOK" to="error"/>
+	</action>
+
+

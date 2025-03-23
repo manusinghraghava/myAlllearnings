@@ -1,0 +1,632 @@
+Linux-->
+It is an Os.(code to interact with hardware)
+
+It is a cli (command line interface) and give us better control so that it can be used on common platform.
+It is more secured and open source
+
+scenario-->
+we have to create a file of 2mb.
+
+so size is given to us by hardware.
+to create a file we will use the command which is done by terminal.
+so shell is like a compiler who converts commands to machine understandable.
+now kernel will instruct hardware to allow 2 mb of space for the file.like admin
+
+commands-->sudo only can be used when the user has admin access.
+
+Sudo apt-get update   // it tells linux that i am a super user and update my system. in ubuntu // should do first
+
+Sudo yum update   // it tells linux that i am a super user and update my system. in red hat/amazon linux
+-----------------
+user specific-->
+
+$ whoami --> to check who is the current user using the command
+$ sudo whoami ---> will give the root user
+
+$ who   ----> it will tell who is currently logged in and how many terminal is on.
+
+$ man [command name]  /// it will give doc for this command.
+
+create user and give admin access-->
+When you run adduser, it creates a home directory, assigns a default shell, and sets up various user-specific configuration files.
+
+Next, make sure that you create a password for your newly created user by running:
+
+sudo passwd userName
+
+adduser {UserNameHere} sudo
+## add user named 'shelly' to sudo group ##
+sudo adduser shelly 
+sudo passwd shelly    // add new password
+
+ add  user to sudo group also
+
+sudo usermod -aG sudo(wheel) [UserNameHere]                 // use wheel in case of amazon linux.
+
+id shelly              // use this command to check what groups are assign to your user.
+
+
+now login into that user using su command.
+su username
+in some cases we have to edit sudoers file. You can jump to this step right after creating a new user and password. 
+
+Begin editing this file by running the following command:
+
+sudo visudo
+
+This command, unlike other Linux text editors, presents you from corrupting the sudoers file.
+
+Within this sudoers file, locate the line:
+
+## Allow root to run any commands anywhere
+root ALL=(ALL) ALL
+
+Add the new line just below that line:
+
+shelly   ALL=(ALL:ALL) ALL
+
+
+Let’s break down what we placed in the sudoers file:
+
+​​shelly : This is the username or user alias to which the sudo privileges apply.
+
+ALL=(ALL:ALL): This represents the hosts and users to which the sudo privileges apply. The first “ALL” indicates that the sudo privileges apply to all hosts, and the second “ALL” defines that our jumpcloud user can run commands as any user. The third “ALL” defines that this user can run commands as any group.
+
+ALL: The last “ALL” in this line allows this user to run any command with sudo administrative privileges. This also gives the user full administrative access to the system.
+
+To log out a user, use the pkill command with the -u option. The -u option specifies we are using the UID or username. This process will kill all processes that are owned by the specified user. We also use -SIGKILL as this will ensure that the system kills the process.
+
+sudo pkill -SIGKILL -u newUser
+
+to delete a user-->
+sudo userdel -r shelly
+
+disconnect from ec2 instance use exit follow with logout
+
+to check user details we cat /etc/shadow or cat /etc/passwd
+
+/etc/passwd: This file stores basic user account information, including the user's username, user ID (UID), group ID (GID), home directory, and login shell. 2. /etc/shadow: This file stores the encrypted password hashes for user accounts on the system.
+---------------------------------------
+Echo Command--> same like print command
+
+$ echo "print hello"
+
+clear command---> it like cls
+$ clear
+
+history command--> to check commands we have already used
+$ history
+
+
+------------------------
+File creation-->
+touch command ///it is used to create a file
+
+touch manu.txt              // if already exist it will override
+
+now how to see file is created or not 
+we use listing out command.
+
+ls command    // will list out all the files
+or 
+ls -lrt       // it will show all the details of all the files like access , size
+
+-l	known as a long format that displays detailed information about files and directories.
+-a	Represent all files Include hidden files and directories in the listing.
+-t	Sort files and directories by their last modification time, displaying the most recently modified ones first.
+-r	known as reverse order which is used to reverse the default order of listing.
+
+-rw-r--r-- 1 webmaster webmaster     0 Apr 20 16:52 manu.txt
+access         user      ugroup       creation time            file name
+
+ -rw-rw-r– 1 1st Character – File Type: First character specifies the type of the file. In the example above the hyphen (-) in the 1st character indicates that this is a normal file. Following are the possible file type options in the 1st character of the ls -l output. 
+
+Field Explanation
+
+– normal file
+d : directory
+s : socket file
+l : link file
+
+ls -lh (h stands for human readable form) : To display file size in easy-to-read format. i.e i.e M for MB, K for KB, G for GB. 
+
+we can also use echo command to print some data in file.
+
+echo "hello i am manu" > manu.txt    // >(insertion operator) use to insert it into file
+
+to see content of the file we can use
+cat command
+cat manu.txt
+
+if we want to open it editor we use nano command (like vim)
+sudo nano manu.txt                     // if file is not there it will create.
+ctrl + s // to save
+ctrl +x  // to exit
+
+move and copy of file-->
+we will use cp command
+
+cp source target           // copy paste
+cp manu.txt shelly.txt   /// it will copy the data if it is not there target one it will create
+
+mv source target           // cut paste
+mv manu.txt shelly.txt   /// it will cut the data if it is not there target one it will create and delete source one(like rename)
+
+directory commands-->
+mkdir name     // for create directory
+cd dir_name/    // to go inside the directory
+pwd            // see path of directory
+
+get back from directory
+
+cd             // it will moved out from all directory
+cd..           // one step back 
+
+To move inside the subdirectory, use the command cd [directory]
+For moving inside the Root, the command cd / will be used.
+For moving from one directory to another directory, use the command cd dir_1/dir_2/dir_3.
+To directly come inside the home directory, the command cd ~ will be used.
+To go inside the Parent Directory, the cd .. command will be used.
+
+if we use to find some file or directory inside 
+we can use find command.
+
+find fileordirectory
+
+to remove file/directory
+
+rm -r file/directoryName      //// r stands for recursively.  use space for multiple
+
+
+File permissions-->
+r     //read       -->4
+w     //write      -->2
+x     //execute    -->1                    // we have numbers for this permission // if we dont want to give just put 0
+
+when we do ls -lrt we can see this in starting
+
+-rw-r--r--
+we can see three here
+a)rw-         // user
+b)r--         // group
+c)r--         //process
+
+like we have a file manu .txt we have to provide some permissions.
+we will use sudo chmod (change modularity command)
+
+user can execute/write but not read
+group can only read nothing else
+process can do anything
+
+now but it has number logic
+
+user    group   process
+rwx      rwx     rwx
+0+2+1    4+0+0   4+2+1
+3         4        7
+
+now we get the combination
+
+sudo chmod 347 manu.txt
+------------------------------------------------------------------------------------
+ How can I store the current working directory in a variable for use in a Linux script?
+You can store the current working directory in a variable in a Linux script by using the following syntax:
+
+current_directory=$(pwd)
+echo "The current working directory is: $current_directory"
+
+
+ `-v` or `–verbose` Option in to Create Directory in Linux
+ It displays a message for every directory created. 
+Syntax: 
+
+mkdir -v [directories]
+
+mkdir -p first/second/third
+
+If the first and second directories do not exist, due to the -p option, mkdir will create these directories for us.
+
+This option is used to set the file modes, i.e. permissions, etc. for the created directories. The syntax of the mode is the same as the chmod command. 
+Syntax: 
+
+mkdir -m a=rwx [directories]
+
+The above syntax specifies that the directories created give access to all the users to read from, write to and execute the contents of the created directories. You can use ‘a=r’ to only allow all the users to read from the directories and so on. 
+-----------------------------------------------------------------------------------------
+
+How to Copy the Contents of One File to Another File in Linux
+As the name suggests, ‘cat’ can concatenate multiple files into a single file.This example illustrates how to copy the entire content of “file1” into “file2” using the cat command along with redirection (>).
+
+Syntax:
+
+cat file1.txt file2.txt > merged_file.txt 
+
+
+If you want to add the content of one file to another, ‘cat’ can be used along with the append (>>) operator:
+
+Syntax: 
+
+cat file_name1 >> file_name2
+
+
+Example:
+
+cat file1 >> file2
+
+--------------------------------------------------
+How to Display Content in Reverse Order Using `tac` Command in Linux 
+The ‘tac’ command is the reverse of ‘cat’ and is used to display the content of a file in reverse order. The syntax is simple:
+
+Syntax:
+
+tac file_name
+
+
+Example:
+
+This command will print the content of ‘file2’ in reverse order, displaying the last line first, followed by the second-to-last line, and so on.
+
+tac file2
+---------------------------------------------------
+grep command in Unix/Linux
+The grep command in Unix/Linux is a powerful tool used for searching and manipulating text patterns within files. Its name is derived from the ed (editor) command g/re/p (globally search for a regular expression and print matching lines)
+
+Consider the below file as an input. 
+
+cat > geekfile.txt
+
+unix is great os. unix was developed in Bell labs.
+
+learn operating system.
+
+Unix linux which one you choose.
+
+uNix is easy to learn.unix is a multiuser os.Learn unix .unix is a powerful.
+
+=========
+Case insensitive search
+The -i option enables to search for a string case insensitively in the given file. It matches the words like “UNIX”, “Unix”, “unix”. 
+
+grep -i "UNix" geekfile.txt             // in output it will give whole line with the search result highlighted.
+========
+Displaying the Count of Number of Matches Using grep
+We can find the number of lines that matches the given string/pattern 
+
+grep -c "unix" geekfile.txt //2
+
+==========
+Display the File Names that Matches the Pattern Using grep
+We can just display the files that contains the given string/pattern. 
+
+grep -l "unix" *
+
+or
+
+grep -l "unix" f1.txt f2.txt f3.xt f4.txt
+
+===========
+Checking for the Whole Words in a File Using grep
+By default, grep matches the given string/pattern even if it is found as a substring in a file. The -w option to grep makes it match only the whole words. 
+
+grep -w "unix" geekfile.txt
+
+============
+
+Show Line Number While Displaying the Output Using grep -n
+To show the line number of file with the line matched. 
+
+grep -n "unix" geekfile.txt
+
+===========
+Matching the Lines that Start with a String Using grep
+The ^ regular expression pattern specifies the start of a line. This can be used in grep to match the lines which start with the given string or pattern. 
+
+grep "^unix" geekfile.txt
+
+
+use $ to check end with
+
+------------------------------------------------------------------------
+installing /removing software
+
+we use yum command here.
+
+example-->
+
+yum install git
+=============================================================
+
+Head-->
+
+The head command, as the name implies, print the top N number of data of the given input. By default, it prints the first 10 lines of the specified files. If more than one file name is provided then data from each file is preceded by its file name. 
+
+$ head state.txt
+
+print first 10 line of file....
+
+n num: Prints the first ‘num’ lines instead of first 10 lines. num is mandatory to be specified in command otherwise it displays an error. 
+ 
+$ head -n 5 state.txt
+
+-----
+
+-c num: Prints the first ‘num’ bytes from the file specified. Newline count as a single character, so if head prints out a newline, it will count it as a byte. num is mandatory to be specified in command otherwise displays an error. 
+ 
+
+$ head -c 6 state.txt
+Andhra
+
+----------
+Tail is opposite of head
+Print line between M and N lines(M>N)
+
+head -n 20 state.txt | tail -10  ///////-10 <==> -n 10
+
+here first we will fetch top 20 rows than tail will come in action and give last -10.
+---------
+Cut three most recently used file.
+$ ls -t | head -n 3
+e.txt
+d.txt
+c.txt
+
+---------
+How to Sort Lines in Text Files in Linux Using sort Command
+
+To sort the lines alphabetically, you can use the following command:
+
+sort file.txt
+
+sort -r example.txt       // reverse sort
+
+if we have data in tabular form 
+
+sort -k3 employee_data.txt
+Explanation:
+
+-k3: This option indicates that the sorting should be done based on the third column (Department).
+
+----------------
+
+Awk is a scripting language used for manipulating data and generating reports. The awk command programming language requires no compiling and allows the user to use variables, numeric functions, string functions, and logical operators. 
+
+Awk is a utility that enables a programmer to write tiny but effective programs in the form of statements that define text patterns that are to be searched for in each line of a document and the action that is to be taken when a match is found within a line. Awk is mostly used for pattern scanning and processing. It searches one or more files to see if they contain lines that matches with the specified patterns and then perform the associated actions
+
+Default behavior of Awk: By default Awk prints every line of data from the specified file.  
+
+$ awk '{print}' employee.txt
+Output:  
+
+ajay manager account 45000
+sunil clerk account 25000
+varun manager sales 50000
+amit manager account 47000
+tarun peon sales 15000
+deepak clerk sales 23000
+sunil peon sales 13000
+satvik director purchase 80000 
+
+---
+
+Print the lines which match the given pattern. 
+
+$ awk '/manager/ {print}' employee.txt 
+Output:  
+
+ajay manager account 45000
+varun manager sales 50000
+amit manager account 47000 
+
+-----
+
+Splitting a Line Into Fields : For each record i.e line, the awk command splits the record delimited by whitespace character by default and stores it in the $n variables. If the line has 4 words, it will be stored in $1, $2, $3 and $4 respectively. Also, $0 represents the whole line.  
+
+$ awk '{print $1,$4}' employee.txt 
+Output:  
+
+ajay 45000
+sunil 25000
+varun 50000
+amit 47000
+
+-------------------------------
+Use of NF built-in variables (Display Last Field)  
+
+$ awk '{print $1,$NF}' employee.txt 
+Output:  
+
+ajay 45000
+sunil 25000
+varun 50000
+amit 47000
+
+-----------------------------
+
+Use of NR built-in variables (Display Line Number)  
+
+$ awk '{print NR,$0}' employee.txt 
+Output:  
+
+1 ajay manager account 45000
+2 sunil clerk account 25000
+3 varun manager sales 50000
+
+
+Another use of NR built-in variables (Display Line From 3 to 6)  
+
+$ awk 'NR==3, NR==6 {print NR,$0}' employee.txt 
+Output:  
+
+3 varun manager sales 50000
+4 amit manager account 47000
+5 tarun peon sales 15000
+6 deepak clerk sales 23000 
+
+----------------------------
+
+4) To find the length of the longest line present in the file:  
+
+$ awk '{ if (length($0) > max) max = length($0) } END { print max }' geeksforgeeks.txt
+13
+5) To count the lines in a file:  
+
+$ awk 'END { print NR }' geeksforgeeks.txt 
+3
+6) Printing lines with more than 10 characters:  
+
+$ awk 'length($0) > 10' geeksforgeeks.txt 
+Tarun    A12    1
+Praveen    M42    3
+7) To find/check for any string in any specific column:  
+
+$ awk '{ if($3 == "B6") print $0;}' geeksforgeeks.txt
+8) To print the squares of first numbers from 1 to n say 6:  
+
+$ awk 'BEGIN { for(i=1;i<=6;i++) print "square of", i, "is",i*i; }' 
+square of 1 is 1
+square of 2 is 4
+square of 3 is 9
+square of 4 is 16
+square of 5 is 25
+
+======================================================
+======================================================
+top or htop command  // it is same as task manager.
+
+How to install htop on Amazon Linux AMI using yum
+The procedure for installing htop Amazon Linux AMI is as follows:
+
+Open the terminal window.
+For remote Amazon Linux AMI server login using ssh command.
+Execute yum search htop command to search for htop on Amazon Linux AMI
+Run sudo yum install htop to install htop in Amazon Linux AMI
+Want to update htop? Run sudo yum update htop
+
+
+
+if you want to close any task from there just copy pid from there than
+
+kill -9 pid_task
+
+------------------------
+
+ping command-->
+
+it is used to ping a certain url and get response back
+
+example 
+ping google.com     
+
+--------------------------
+Alias command-->
+
+it is used to write shortcuts in terminal.
+
+alias pinggoogle="ping google.com" 
+$ sudo pinggoogle   // will ping google
+
+but it is temporary to make it permanent we have to define it a file name ~/.bashrc
+
+so edit it using nano and reload it using source.
+
+--------------------------
+Wget command-->
+
+it is used to download the file from web 
+
+wget linkfor download...
+
+---------------------------
+shutdown command-->
+ it is used to shutdown reboot the machine
+ 
+shutdown -P now                   
+-P power off                // mainly use for aws
+-r reboot
+
+----------------------------
+crontab command-->
+
+it is used to run the command in background and periodically.
+
+crontab cronexpression command       /// it will run that command according to cron expression after putting in crontab file
+
+first 
+
+crontab -e   // to open crontab file
+
+To view your crontab entries type crontab -l from your unix account.
+
+---------------------------
+date command give current date.
+
+----------------------------
+
+chkconfig
+
+chkconfig is a simple command-line for handling the services at each running stage in the Linux command line. It is used to update and show the run level configuration for all available services.
+
+In other words, it is used to update the services, current startup information, add or remove the service from management, update the runway settings of the service, and list of a particular service.
+
+chkconfig --list     // show all services
+
+ Current status of all services in alphabetic order
+# chkconfig --list | sort  
+
+Current status of particular services
+This command shows the status of the starting and stopping of particular services. The command given below shows the startup configuration for a particular service. It is showing that HTTP services are closed in all run levels.
+
+# chkconfig --list | grep httpd     //greping from list
+
+Enable (start) a particular service on run levels
+This chkconfig command displays how you can start HTTP services at run level 3 parameters only. The "chkconfig -level 4 httpd on" command enables httpd services at run level 4.
+
+# chkconfig --level 4 httpd on  
+
+The "chkconfig -list | grep httpd" command validates the status of httpd services running at the run level.
+chkconfig command in Linux
+5. Disable (stop) a particular service on run levels
+This chkconfig command displays how you can stop HTTP services at run level 4 parameters only.
+
+# chkconfig --level 4 httpd off  
+
+----------------------------------------
+A runlevel is a preset operating state, defined as a single integer that could range from zero to six, in a Unix or Linux-based OS. In those systems, runlevels determine which programs can execute after the OS boots up
+
+In particular, runlevel 1 is used for system maintenance and repair. Runlevels 3 and 5 are used to run the system in multiuser mode with networking -- and check that it is running properly in this mode -- and runlevels 0 and 6 are used to shut down and reboot the system, respectively.
+
+
+===============================
+lsblk -f      /// f to show filesystem with other details also.
+
+The 'lsblk' stands for 'list block devices', and as the name suggests, it is used to list out all block devices in a tree-like format. This powerful command can help you gather comprehensive information about each block device connected to your Linux system, including the disk partitions and their respective sizes.
+
+=================================
+
+df -h    // command we will use to see all file system present in system.
+
+=======================================================
+mkfs -t   //command to create a file system on the volume.
+
+sudo mkfs -t xfs /dev/xvdf(this is our ebs volume)      
+
+=======================================================================
+sha1sum command-->command to compute and check a SHA-1 message digest.
+The sha1sum is a computer program that verifies the integrity of files by calculating and verifying SHA1 hashes. It ships with most Linux distributions. To use the utility, we can use the reading from /dev/zero to keep the sha1sum utility running. We can pipe the output of the first instance to the second instance:
+
+$ sha1sum /dev/zero | sha1sum /dev/zero
+
+As usual, we can press <CTRL-C> to kill the processes.
+
+/dev/zero is a character pseudo-device in Linux that returns an infinite stream of null characters when read. A null character is a byte consisting of 8 bits equal to zero, so /dev/zero is a stream of zeros.
+
+=========
+create process / top
+stress utility
+sudo su
+loop in linux
+ll command
+
+sud0 apt-get vs install
+Vim is a mode-based editor. Nano is a WYSIWYG (What You See Is What You Get) command-line editor
+===========================

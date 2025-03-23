@@ -1,0 +1,91 @@
+How many components?-->image,paragraph,banner,jspinclude,simplecmscomponent,linkcomponent,ProductCarouselComponent
+how many page ?   --->product,category,contentpage
+
+
+The template defines the shape and the structure of the pages, it’s composed of many sections (PageSlots).
+
+Every template is a Model and a JSP :
+
+Model : is an instance of PageTemplateModel that hold different information about the template : uid, name, catalogVersion, contentSlots, and a frontendTemplateName which is the reference to the JSP file.
+JSP : the structure of the template is defined by this JSP file.
+
+
+INSERT_UPDATE CategoryPage;$contentCV[unique=true];uid[unique=true];name;masterTemplate(uid,$contentCV);defaultPage;approvalStatus(code)[default='approved']
+;;productList;Product List;ProductListPageTemplate;true;     //different template for different page
+;;productGrid;Product Grid;ProductGridPageTemplate;false;
+;;category;Default Category Page;CategoryPageTemplate;false;
+=================================
+$contentCatalog=electronicsContentCatalog
+$contentCV=catalogVersion(CatalogVersion.catalog(Catalog.id[default=$contentCatalog]),CatalogVersion.version[default=Staged])[default=$contentCatalog:Staged]
+$picture=media(code, $contentCV);
+$lang=en
+$siteResource=jar:de.hybris.platform.electronicsstore.constants.ElectronicsstoreConstants&/electronicsstore/import/sampledata/contentCatalogs/$contentCatalog
+
+$productCatalog=electronicsProductCatalog
+$productCV=catalogVersion(catalog(id[default=$productCatalog]),version[default='Staged'])[unique=true,default=$productCatalog:Staged]
+
+INSERT_UPDATE PageTemplate;$contentCV[unique=true];uid[unique=true];name;frontendTemplateName;restrictedPageTypes(code);active[default=true]
+;;TrainingPageTemplate;Training Page Template;training/trainingLayoutPage;ContentPage  //restriction on pages to use template
+
+
+INSERT_UPDATE ContentPage;$contentCV[unique=true];uid[unique=true];name;masterTemplate(uid,$contentCV);label;defaultPage[default='true'];approvalStatus(code)[default='approved'];homepage[default='false']
+;;trainingContentPage;Training Content Page;TrainingPageTemplate;trainingCMSPage
+
+INSERT_UPDATE ContentPage;$contentCV[unique=true];uid[unique=true];name;masterTemplate(uid,$contentCV);label;defaultPage[default='true'];approvalStatus(code)[default='approved'];homepage[default='false']
+;;trainingContentPage2;Training Content Page2;TrainingPageTemplate;trainingCMSPage2
+
+INSERT_UPDATE ContentPage;$contentCV[unique=true];uid[unique=true];name;masterTemplate(uid,$contentCV);label;defaultPage[default='true'];approvalStatus(code)[default='approved'];homepage[default='false']
+;;trainingContentPage3;Training Content Page3;TrainingPageTemplate;trainingCMSPage3
+
+INSERT_UPDATE ContentSlotName;name[unique=true];template(uid,$contentCV)[unique=true][default='OffersPageTemplate'];validComponentTypes(code);compTypeGroup(code)
+;SiteLogo;;;logo
+;HeaderLinks;;;headerlinks
+;SearchBox;;;searchbox
+;MiniCart;;;minicart
+;NavigationBar;;;navigation
+;Footer;;;footer
+;TopHeaderSlot;;;wide
+;offersParagraph;;;wide
+;offersBanner;;;wide
+INSERT_UPDATE Media;$contentCV[unique=true];code[unique=true];@media[translator=de.hybris.platform.impex.jalo.media.MediaDataTranslator];mime[default='image/png'];folder(qualifier)[default='images'];altText
+;;training.jpg;$siteResource/images/banners/training/training.jpg;image/jpg;;"Grab the Offer 1 soon"
+
+INSERT_UPDATE Media;$contentCV[unique=true];code[unique=true];@media[translator=de.hybris.platform.impex.jalo.media.MediaDataTranslator];mime[default='image/png'];folder(qualifier)[default='images'];altText
+;;training.jpg;$siteResource/images/banners/training/training.jpg;image/jpg;;"Grab the Offer 1 soon"
+
+# Banner Component 
+INSERT_UPDATE SimpleBannerComponent;$contentCV[unique=true];uid[unique=true];name;&componentRef;urlLink
+;;myBanner1;My Banner;myBanner;;;;"/p"
+ 
+
+UPDATE SimpleBannerComponent;$contentCV[unique=true];uid[unique=true];$picture[lang=$lang]
+;;myBanner1;training.jpg
+
+
+INSERT_UPDATE CMSParagraphComponent;$contentCV[unique=true];uid[unique=true];name;&componentRef;;;;content;
+;;trainingHeadingComponent;Training Heading information;trainingHeadingComponent;;;;Special training for you CDAC;
+;;trainingHeadingComponent2;Training Heading information2;trainingHeadingComponent2;;;;Special training for you CDAC2;
+;;trainingHeadingComponent3;Training Heading information3;trainingHeadingComponent3;;;;Special training for you CDAC3;
+;;trainingHeadingComponent4;Training Heading information4;trainingHeadingComponent4;;;;Special training for you CDAC4;
+;;trainingHeadingComponent5;Training Heading information5;trainingHeadingComponent5;;;;Special training for cdac is over;
+;;trainingHeadingComponent6;Training Heading information6;trainingHeadingComponent6;;;;now time to do assignment;
+
+INSERT_UPDATE ProductCarouselComponent;$contentCV[unique=true];uid[unique=true];products(code,$productCV);&componentRef
+;;testProductCarouselComponent2;23191,23210,23213,23231,23355,29925,107701,65652;testProductCarouselComponent2
+
+#use of this =>because we are doing functionality on products we also use for it pdp and dont forget to synchronize
+
+INSERT_UPDATE ContentSlot;$contentCV[unique=true];uid[unique=true];name;active;cmsComponents(uid,$contentCV)
+;;trainingParagraphSlot;training Paragraph Slot;true;trainingHeadingComponent,trainingHeadingComponent2,trainingHeadingComponent3,trainingHeadingComponent4
+;;trainingBannerSlot1;training banner slot;true;myBanner1
+;;tariningcarouselslot;training carousel slot;true;testProductCarouselComponent2
+;;tariningparaslot;training para slot;true;trainingHeadingComponent5,trainingHeadingComponent6
+
+INSERT_UPDATE ContentSlotForTemplate;$contentCV[unique=true];uid[unique=true];position[unique=true];pageTemplate(uid,$contentCV)[unique=true][default='TrainingPageTemplate'];contentSlot(uid,$contentCV)[unique=true];allowOverwrite
+;;offersParagraphSlot-offersPage;TrainingParagraph;;trainingParagraphSlot;true
+;;banenrSlot2;TrainingBanner2;;trainingBannerSlot1;true
+;;carouselSlot2;Trainingcaraousel;;tariningcarouselslot;true
+
+INSERT_UPDATE ContentSlotForPage;$contentCV[unique=true];uid[unique=true];position[unique=true];page(uid,$contentCV)[unique=true][default='search'];contentSlot(uid,$contentCV)[unique=true]
+;;trainingParagraphSlot;TrainingParagraph;trainingContentPage2;tariningparaslot
+

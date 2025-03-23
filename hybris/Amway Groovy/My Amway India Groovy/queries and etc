@@ -1,0 +1,1748 @@
+======================================================ORDER STATUS===================================================================================
+
+Created    ---------------------------->Initial status when order is created
+
+Payment Captured----------------------->Once Payment is Captured
+
+PAYMENT NOT CAPTURED------------------->Payment is not captured and waiting for retry or delayed payment
+
+PAYMENT FAILED------------------------->Payment is failed
+
+Invoiced------------------------------->Order is Invoiced
+
+Partially Packaged--------------------->At least one shipment is received from RP
+
+Packaged------------------------------->All shipment are received from RP
+
+Partially Shipped---------------------->At least one shipment is shipped from Fareye
+
+Shipped-------------------------------->All shipment are shipped from Fareye
+
+Partially Delivered-------------------->At least one shipment is delivered from Fareye
+
+Delivered------------------------------>All shipment are delivered from Fareye
+
+Completed------------------------------>Order is completed
+
+Cancelled ----------------------------->Order is cancelled
+
+Returned ------------------------------>order is completely returned
+
+PARTIAL RETURNED----------------------->Order is  partially returned
+
+
+===================================================================================================================================================
+Scripting job ===>
+
+a)create script first through backoffice.
+b)create scripting job with refrence model://removePromoApplicationScript(script refrence)
+c)than go to cronjob---create new and add it and its trigger.
+
+====================================================================================================================================================
+fetching event for particular orders==>
+
+select {key} from {AmwayEventStagingEntry} where {creationTime} >= '2020-01-24 00:01:00' and {key} IN ({{select {o.code} from {Order as o join OrderStatus as os ON  {os.pk}={o.status}} where {os.code}='PACKAGED' And {o.creationTime} >= '2020-01-24 21:18:00' and {o.code} IN ({{select {key} from {AmwayEventStagingEntry} where {eventName} IN ('8796131033179') and {creationTime} >= '2020-01-24 00:01:00'}})}}) AND {eventName} = '8796131098715'
+
+---------------------------------------------------------------------------------------------------------------------------------------
+select key and order no for events=>
+
+select {e.key}, {o.code} from {AmwayEventStagingEntry as e join Order as o on {o.code} like  CONCAT(SUBSTR({e.key}, 1, 9), '%')} where {o.code} in
+---------------------------------------------------------------------------------------------------------------------------------------
+
+for order which are shipped not updated on ebs==>
+select {en.code},{o.code} from {AmwayEventStagingEntry as e join Order as o on {o.code} like  CONCAT(SUBSTR({e.key}, 1, 9), '%') JOIN EventName as en on {e.eventName} = {en.pk}}where {e.eventName} IN ('8796131229787','8796131098715') and {o.code} in
+
+---------------------------------------------------------------------------------------------------------------------------------------
+
+process repair groovy==>
+
+import de.hybris.platform.processengine.BusinessProcessService
+import de.hybris.platform.processengine.model.BusinessProcessModel;
+import de.hybris.platform.servicelayer.search.FlexibleSearchService
+import de.hybris.platform.orderprocessing.model.OrderProcessModel
+ 
+def orderProcesses = flexibleSearchService.search("SELECT {pk} from {OrderProcess as op} where {op.processDefinitionName} = 'order-process-v1' and {op.order} IN ({{SELECT {pk} from {Order as o} where {o.code} IN ('yourOrderNumber1',’yourOrderNumber2’)}})").getResult()
+orderProcesses.each{
+              BusinessProcessModel process = (BusinessProcessModel)it;
+              businessProcessService.restartProcess(it, "generateOrderShippedEvent");
+			  
+}
+
+
+---------------------------------------------------------------------------------------------------------------------------------------
+
+-- To get the available stocks for a product using pincode/dropcode ===>
+
+.pincode has warehouse.warehouse has multiple stock levels.stock level has product.
+
+SELECT {productCode} as Product_ID,{w.code} as Warehouse , {s1.available} from  
+
+{StockLevel as sl JOIN Warehouse as w ON {sl.warehouse} = {w.pk}} where {warehouse} IN  
+
+({{SELECT {warehouse} from {INDDropCodeWareHouseMapping as IDC JOIN INDDropCode as DC on {IDC.dropcode} = {DC.PK}} where {DC.code} = '560037'}})  
+
+and {productCode} = '120524ID' 
+----------------------------------------------------------------------------------------------------------------------------
+checking shipped code is null or not  =>
+
+select {o.code} from {AmwayEventStagingEntry as e join Order as o on {o.code} like  CONCAT(SUBSTR({e.key}, 1, 9), '%') JOIN EventName as en on {e.eventName} = {en.pk}}where {e.eventName} IN ('8796131033179') and {o.date} >'2020-02-01 00:01:00' and {o.pk} IN ({{SELECT {o:PK} FROM{
+    Order as o JOIN IndShipmentOrderRel as rel
+    ON {o:PK} = {rel:target}
+    JOIN Consignment AS c
+    ON {rel:source} = {c:PK}} where {c:CODE} IS NULL}})
+
+
+----------------------------------------------------------------------------------------------------------------------------------
+payment transactions will be multiple if you do partial payment.
+
+//report query
+fetching all paymentTransaction entry from paymentTransaction whose order is not null and which are placed by web and pos on dates.
+salesApplication has many orders.
+order can have many transactions
+transaction can have many transaction entries(useful for time{transaction})
+
+SELECT {pte.PK} FROM {PaymentTransactionEntry as pte   left join PaymentTransaction as pt on {pte.paymentTransaction} = {pt.pk}   left join Order as o on {o.pk}={pt.order}    left join SalesApplication as sa on {sa.pk}={o.salesApplication}} WHERE {pt.order} IS NOT NULL  AND  {sa.code} in ('Web', 'pos') AND  {pte.time} > '2020-01-28 00:01:00' AND  {pte.time} < '2020-01-28 23:59:59'
+
+------------------------------------------------------------------------------------------------------------------------------------------
+///bank transfer query
+fetching all payment transaction entry which has transaction mode 'BANK_TRANSFER' and PaymentTransactionType 'REFUND_STANDALONE' and 
+transactionStatus IN 'REFUND_REQUESTED'.
+
+every paymentTransaction has transaction mode(enum),paymentTransaction can have many transaction entries.
+transaction entries has PaymentTransactionType and transaction status.
+
+SELECT {pte.PK} FROM {PaymentTransactionEntry as pte JOIN PaymentTransactionType as ptt ON {pte.type} = {ptt.pk}} WHERE  {ptt.code}='REFUND_STANDALONE' AND {pte.transactionStatus} IN ('REFUND_REQUESTED') AND {pte.paymentTransaction} IN ({{ SELECT {paytrn.pk} FROM {PaymentTransaction as paytrn JOIN INDTransactionModeEnum as tme ON {paytrn.transactionMode} = {tme.pk}} WHERE {tme.code}='BANK_TRANSFER'}})AND  {pte.time} > '2020-01-28 00:01:00' AND  {pte.time} < '2020-01-29 00:01:00'
+
+
+using sub query=>
+SELECT count({pte.transactionStatus}) FROM {PaymentTransactionEntry as pte JOIN PaymentTransactionType as ptt ON {pte.type} = {ptt.pk}} WHERE {pte.paymentTransaction} IN ({{ SELECT {paytrn.pk} FROM {PaymentTransaction as paytrn JOIN INDTransactionModeEnum as tme ON {paytrn.transactionMode} = {tme.pk}} WHERE {tme.code}='BANK_TRANSFER'}})AND  {pte.time} > '2020-01-27 00:01:00' AND  {pte.time} < '2020-01-29 00:01:00'
+
+------------------------------------------------------------------------------------
+order   has payinfo /paymentmode/paymentstatus
+and transaction  has payinfo /paymentmode.
+
+
+paymentmode is model and transaction mode is enum.
+
+
+--------------------------------------------------------------------------------------------------------------------------------------
+Trade Discount==>
+
+
+final Optional<Double> additionalDiscount = productModel.getEurope1Prices().stream()
+						.filter(pr -> pr.getUg() == UserPriceGroup.valueOf(ABO_USER_PRICE_GROUP))
+						.map(pr -> Optional.ofNullable(pr.getTradeDiscount())).findFirst().orElse(null);
+				if (additionalDiscount.isPresent())
+				{
+					saveAdditionalDiscountToOrderEntry(entry, additionalDiscount.get());
+				}
+
+for Every entry we r fetching product.				
+every product has pricerows(Europe1Prices) and from them we r checking their userGroup(ug) and taking first price row of usergroup.
+we r fetching trade discount asscoiated with product which is known as additionalDiscount.
+
+than we r checking AmwayBusinessNature.AMWAYBUSINESSNATURE_1.getCode().equals(entry.getOrder().getAccount().getBusinessNature().getCode() equals abo
+than 
+{
+totalAdditionalDiscount = Double.valueOf(additionalDiscount.doubleValue() * totatPrice.doubleValue());
+totalAdditionalDiscount = Double.valueOf(totalAdditionalDiscount.doubleValue() / 100);
+indAdditionalDiscount.setDiscountType(IndAdditionalDiscountType.TRADE_DISCOUNT);
+}
+
+else if pc
+{
+we r fetching totalLoyaltyForEntry from enrty
+entry.getLoyaltyAccumulateAmount() if present ok else setting 0.0
+totalAdditionalDiscount = Double.valueOf(additionalDiscount.doubleValue() * totatPrice.doubleValue());
+totalAdditionalDiscount = Double.valueOf(totalAdditionalDiscount.doubleValue() / 100);
+totalAdditionalDiscount = Double.valueOf(totalAdditionalDiscount.doubleValue() - totalLoyaltyForEntry.doubleValue());
+
+if(totalAdditionalDiscount>0) than ok else setting 0.0.
+indAdditionalDiscount.setDiscountType(IndAdditionalDiscountType.PC_DISCOUNT);
+
+}
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+IndFailedOrdersStockRelease==>
+
+max time out for retry=900000  //15 min
+making cut off date by sub curdate()-15.
+
+Fetching Orders with OrderStatus PAYMENT_NOT_CAPTURED and PaymentStatus NOTPAID after order cutOffDate:
+
+SELECT {o.pk} FROM {Order as o join OrderStatus as os on {o.status}={os.pk} join PaymentStatus as ps on {o.paymentStatus}={ps.pk} } WHERE {os.code}='PAYMENT_NOT_CAPTURED' AND {ps.code}='NOTPAID' AND {o.creationtime} <= 'Cut off date'
+
+for every order we find==>
+a)setting status PAYMENT_FAILED
+b)releasing stock and coupon for order
+c)order.setReserve(false);
+------------------------------------------------------------------------------------------------------------------------------------------------
+IndPBCManualConfirmationUpdateJob
+
+if PaymentModes.PAY_BY_CHALLAN and OrderStatus.CREATED or OrderStatus.PAYMENT_NOT_CAPTURED or PaymentStatus.DELAYED_PAYMENT
+
+//check code on sat
+
+
+ order.setPaymentStatus(PaymentStatus.PAID);
+								 order.setStatus(OrderStatus.PAYMENT_CAPTURED);
+								 modelService.save(order);
+
+								 eventService.publishEvent(new IndSubmitOrderEvent(order));
+
+
+=================================================================================================================================================
+------------------------------------------------------------------------------------------------------------------------------------------------
+"Starting IndOrderPaymentStatusUpdateJob for updating the payment status for Aborted Payment Entries"
+
+a)fetching all aborted entries
+
+Select {entry:pk} from {PaymentTransactionEntry as entry join PaymentTransaction as pt on {entry.paymentTransaction}={pt.pk}} where {entry:transactionStatus}="Aborted" AND {pt.order} IS NOT NULL
+
+for every entry we r checking its PaymentTransactionType.CAPTURE and IndPaymentConfirmationType.ONLINE and-->
+
+creating indHOPPaymentRequestData
+
+indHOPPaymentRequestData.setPaymentMode(paymentMode);
+								indHOPPaymentRequestData.setPaymentProvider(entry.getPaymentTransaction().getPaymentProvider());
+								indHOPPaymentRequestData.setOrderNumber(order.getCode());
+								
+
+indPaymentService.checkPaymentStatus(entry.getPaymentTransaction(),
+										indHOPPaymentRequestData);    //continue after clarification
+
+=======================================================================================================================================================
+
+<modifiers read="true" write="true" search="true"
+                            initial="true" optional="true" unique="false" />
+							
+							initial use mtlb kuch final values de do model creation me jo baad me change ni ho ske
+setter se jb  bad me change krne jaega to ni krne dega
+
+=========================================
+How to export impex in csv
+
+INSERT_UPDATE B2BCustomer;uid[unique=true]   ///whatever fields we write here they will export
+"#% impex.exportItemsFlexibleSearch(""select {c.pk} from {B2BCustomer as c} where {c.dist_Type}='D' and {c.encodedPassword}='' and {c.active}=true"");"
+
+INSERT_UPDATE Order;code[unique=true];creationtime;totalPrice;deliveryCost;
+"#% impex.exportItemsFlexibleSearch(""select {od.pk} from {order as od join deliverymode as dm on {od.deliverymode}={dm.pk} join ZoneDeliveryModeValue as zdm on {zdm.pk}={od.ZoneDeliveryModeValue} join zone as zn on {zdm.zone}={zn.pk} } where {dm.deliverytype}='8796154855515' and {od.lynxgrandtotalprice}>'4000' and {od.creationtime} >='2020-02-01' and {od.deliverycost}!='0E-8' and {zn.code}='Local'"");"
+
+
+REMEMBER===>Always select pk in query
+
+https://stackoverflow.com/questions/45508160/exporting-collection-types-using-impex-in-hybris
+=======================================================================================================================================================
+fetch orderCode through transaction ID.
+
+SELECT {o.code} as OrderCode FROM {PaymentTransactionEntry as pte join PaymentTransaction as pt on {pte.paymentTransaction} = {pt.pk} join Order as o on {o.pk}={pt.order}} WHERE ({o.lynxGroupNumber} is null or {o.lynxGroupNumber}={o.code}) and {pte.transactionId} in (//puttransactioId here)
+
+
+same as below
+
+
+
+==============================================================================================================================================
+Query for the order whose status is failed ==>.
+
+SELECT {o.code}, {os.code}, {dm.code}
+
+Select {SL.pk} from {INDDropCodeWareHouseMapping as IDCWP join INDDropCodeWareHouseMappingToChannel as mappingRel on {mappingRel.source}={IDCWP.pk} join SalesApplication as SAP on {mappingRel.target}={SAP.PK} join INDDropCode as IDC on {IDCWP.dropcode}={IDC.PK}  join StockLevel as SL on {SL.warehouse}={IDCWP.warehouse}} where {IDC.code}=('682019') AND {SL.productCode}=('282128ID') AND {SAP.code}=('Web') ORDER BY {IDCWP.priority} ASC LIMIT 3
+
+	FROM {
+			
+        	Order as o  
+		JOIN	
+			OrderStatus as os ON  {os.pk}={o.status}
+        JOIN	
+			DeliveryMode as dm on {dm.pk} = {o.deliveryMode}
+
+        } 
+		
+       WHERE 
+			{o.code} in 
+
+=================================================================================================================
+select {pk},{mobileNo},{creationTime},{templateCode},{responseId}  from {SMSProcessResult} where {creationTime} > '2020-07-01 03:00:59'
+ 
+for sms ===>particular mobile no.
+
+
+==================================================================================================================
+
+to find  customer having multiple cart===>
+
+SELECT ({c.pk}) FROM {Cart as c join CartEntry as ce on {c.pk}={ce.order} join Customer as cu on {c.user}={cu.pk}}  where {cu.uid}!='anonymous' group by ({c.pk}) having COUNT(*)>1
+
+========================================================================================================================
+XSSFilterUtil.filter(String s)==>
+Filter String to prevent cross-site-scripting.
+
+internally
+
+public static String filter(final String value)
+	{
+		if (value == null)
+		{
+			return null;
+		}
+		String sanitized = value;
+		sanitized = sanitized.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+		sanitized = sanitized.replaceAll("\\(", "&#40;").replaceAll("\\)", "&#41;");
+		sanitized = sanitized.replaceAll("'", "&#39;");
+		sanitized = sanitized.replaceAll("eval\\((.*)\\)", "");
+		sanitized = sanitized.replaceAll("[\\\"\\\'][\\s]*javascript:(.*)[\\\"\\\']", "\"\"");
+		return sanitized;
+	}
+	
+==========================================================================================================================
+IOUtils.closeQuietly(inputStream);/////to close streams in finally block,inputstream mainly use to read data.
+=========================================================================================================================
+
+to select multiple classes in query search==>
+
+activeOrderSearchQuery.setResultClassList(Arrays.asList(WarehouseModel.class, OrderModel.class));
+		final SearchResult<List<Object>> searchResult = flexibleSearchService.search(activeOrderSearchQuery);
+		
+============================================================================================================================
+
+/psdtocache/project.properties===>we use to cache populator
+
+============================================================================================================================
+
+Here we convert cart into Order using this method==>
+
+getCheckoutFacade().placeOrderWithoutConversion();
+
+which call internally==>createCartFRomOrder(CartModel);
+==============================================================================================================================
+in.getNumber().stream().filter(s->inf.getNumber().contains(s)).forEach(System.out::println); ///fetching common elements from lists.
+==============================================================================================================================
+
+FlexibleSearch is able of retrieving raw data as well as items. Furthermore, it is possible to select multiple attributes or columns. The result of multi-attribute selections is a list of lists.
+
+ String query = "SELECT {" + UnitModel.PK + "}, LOWER({" + UnitModel.CODE + "}), {" + UnitModel.NAME + "} FROM {"
+                + UnitModel._TYPECODE + "}";
+ final FlexibleSearchQuery fQuery = new FlexibleSearchQuery(query);
+ fQuery.setResultClassList(Arrays.asList(UnitModel.class, String.class, String.class));
+ final SearchResult<List<?>> result = flexibleSearchService.search(fQuery);
+ final List<List<?>> resultList = result.getResult();
+ 
+ for (final List<?> list : result)
+ {
+        final UnitModel unit = (UnitModel) list.get(0);
+        final String code = (String) list.get(1);
+        final String name = (String) list.get(2);
+ 
+        // ....
+ }
+=============================================================================================================================
+SiteMapController==>MIscRobotsPage.jsp/////we use them for google bot in hybris.
+
+https://help.sap.com/viewer/4c33bf189ab9409e84e589295c36d96e/1811/en-US/8adb25b386691014af16eb036124f349.html
+=============================================================================================================================
+Instant start = Instant.now();     //current time
+Duration timeElapsed = Duration.between(start, end);   //to check difference
+
+The toinstant() method is used to convert Date object to an Instant.
+
+Duration – Measures time in seconds and nanoseconds.
+Period – Measures time in years, months and days.
+
+// Creating Durations
+        System.out.println("--- Examples --- ");
+
+        Duration oneHours = Duration.ofHours(1);
+        System.out.println(oneHours.getSeconds() + " seconds");
+
+        Duration oneHours2 = Duration.of(1, ChronoUnit.HOURS);
+        System.out.println(oneHours2.getSeconds() + " seconds");
+
+		// Test Duration.between
+        System.out.println("\n--- Duration.between --- ");
+
+        LocalDateTime oldDate = LocalDateTime.of(2016, Month.AUGUST, 31, 10, 20, 55);
+        LocalDateTime newDate = LocalDateTime.of(2016, Month.NOVEMBER, 9, 10, 21, 56);
+
+        System.out.println(oldDate);
+        System.out.println(newDate);
+
+        //count seconds between dates
+        Duration duration = Duration.between(oldDate, newDate);
+
+        System.out.println(duration.getSeconds() + " seconds");
+
+    }
+}
+Output
+
+--- Examples ---
+3600 seconds
+3600 seconds
+
+--- Duration.between ---
+2016-08-31T10:20:55
+2016-11-09T10:21:56
+6048061 seconds
+
+
+
+
+
+Period Example--->
+
+ System.out.println("--- Examples --- ");
+
+        Period tenDays = Period.ofDays(10);
+        System.out.println(tenDays.getDays()); //10
+
+        Period oneYearTwoMonthsThreeDays = Period.of(1, 2, 3);
+        System.out.println(oneYearTwoMonthsThreeDays.getYears());   //1
+        System.out.println(oneYearTwoMonthsThreeDays.getMonths());  //2
+        System.out.println(oneYearTwoMonthsThreeDays.getDays());    //3
+
+        System.out.println("\n--- Period.between --- ");
+        LocalDate oldDate = LocalDate.of(1982, Month.AUGUST, 31);
+        LocalDate newDate = LocalDate.of(2016, Month.NOVEMBER, 9);
+
+        System.out.println(oldDate);
+        System.out.println(newDate);
+
+        // check period between dates
+        Period period = Period.between(oldDate, newDate);
+
+        System.out.print(period.getYears() + " years,");
+        System.out.print(period.getMonths() + " months,");
+        System.out.print(period.getDays() + " days");
+
+    }
+}
+Output
+
+--- Examples ---
+10
+1
+2
+3
+
+--- Period.between ---
+1982-08-31
+2016-11-09
+34 years,2 months,9 days
+
+
+
+3. ChronoUnit Example
+Alternatively, you can use ChronoUnit.{unit}.between to find out the difference between dates, review the following example :
+
+ChronoUnitExample.java
+package com.mkyong.time;
+
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.time.temporal.ChronoUnit;
+
+public class ChronoUnitExample {
+
+    public static void main(String[] args) {
+
+        LocalDateTime oldDate = LocalDateTime.of(1982, Month.AUGUST, 31, 10, 20, 55);
+        LocalDateTime newDate = LocalDateTime.of(2016, Month.NOVEMBER, 9, 10, 21, 56);
+
+        System.out.println(oldDate);
+        System.out.println(newDate);
+
+        // count between dates
+        long years = ChronoUnit.YEARS.between(oldDate, newDate);
+        long months = ChronoUnit.MONTHS.between(oldDate, newDate);
+        long weeks = ChronoUnit.WEEKS.between(oldDate, newDate);
+        long days = ChronoUnit.DAYS.between(oldDate, newDate);
+        long hours = ChronoUnit.HOURS.between(oldDate, newDate);
+        long minutes = ChronoUnit.MINUTES.between(oldDate, newDate);
+        long seconds = ChronoUnit.SECONDS.between(oldDate, newDate);
+        long milis = ChronoUnit.MILLIS.between(oldDate, newDate);
+        long nano = ChronoUnit.NANOS.between(oldDate, newDate);
+
+        System.out.println("\n--- Total --- ");
+        System.out.println(years + " years");
+        System.out.println(months + " months");
+        System.out.println(weeks + " weeks");
+        System.out.println(days + " days");
+        System.out.println(hours + " hours");
+        System.out.println(minutes + " minutes");
+        System.out.println(seconds + " seconds");
+        System.out.println(milis + " milis");
+        System.out.println(nano + " nano");
+
+    }
+}
+Output
+
+1982-08-31T10:20:55
+2016-11-09T10:21:56
+
+--- Total ---
+34 years
+410 months
+1784 weeks
+12489 days
+299736 hours
+17984161 minutes
+1079049661 seconds
+1079049661000 milis
+1079049661000000000 nano
+=============================================================================================================================
+Points to remember for wrirting a util class...
+
+class should be final..
+meyhods should be static.
+
+==============================================================================================================================
+use Objects.nonNull(warehouse)==>to check object is null or not..
+
+CollectionUtils.emptyIfNull(Collection<T> collection)   ///use to return empty collection if null..
+
+Localization.getLocalizedString()///used for error display in localized.
+
+
+Popular methods of CollectionUtils===>
+ have two sets, A and B, of the same type.
+
+I have to find if A contains any element from the set B.
+
+1==>Collections.disjoint(A, B) work? From the documentation:
+
+Returns true if the two specified collections have no elements in common.
+
+Thus, the method returns false if the collections contains any common elements.
+
+
+2==>setA.stream().anyMatch(setB::contains)
+
+
+3==>CollectionUtils.containsAny(someCollection1, someCollection2)
+That is All! Returns true if at least one element is in both collections.
+Simple to use, and the name of the function is more suggestive.
+
+
+ // replace oldValue with square of oldValue 
+        // using replaceAll method 
+        map1.replaceAll((key, oldValue) 
+                            -> oldValue * oldValue); 
+
+
+	
+Set<Map.Entry<String, Integer>> entries = someMap.entrySet(); ///fetching entryset
+
+Map.entrySet().stream()
+					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)); ///new collection
+					
+
+list.removeIf(string -> string.endsWith("suffix"));
+
+list.stream().limit(1);   //for first element
+
+
+Another Example==>
+paymentModesToPass.removeIf(paymentModeData -> codes.contains(paymentModeData.getCode())); //here paymentModeData check for every ele in lost.
+ method in lIST.
+
+---------------------------------------------------------------------
+List<Integer> list1 = new ArrayList<>(Arrays.asList(1,5,10,30,4,8,11));
+List<Integer> list2 = new ArrayList<>(Arrays.asList(1,5,10,30,4,8,11));
+
+/* Retains all elements in list that have a value > 5 */
+CollectionUtil.retainIf(list1, element -> element > 5);
+
+System.out.println("List 1");
+list1.forEach(System.out::println);
+
+/* Removes all elements in list that have a value > 5 */
+CollectionUtil.removeIf(list2, element -> element > 5);
+
+System.out.println("\nList 2");
+list2.forEach(System.out::println);
+Output
+
+List 1
+10
+30
+8
+11
+
+List 2
+1
+5
+4
+
+-------------------------
+
+public void testExists() {
+  List list = new ArrayList();
+  assertEquals(false, CollectionUtils.exists(null, null));
+  assertEquals(false, CollectionUtils.exists(list, null));
+  assertEquals(false, CollectionUtils.exists(null, EQUALS_TWO));
+  assertEquals(false, CollectionUtils.exists(list, EQUALS_TWO));
+  list.add("One");
+  list.add("Three");
+  list.add("Four");
+  assertEquals(false, CollectionUtils.exists(list, EQUALS_TWO));
+  list.add("Two");
+  assertEquals(true, CollectionUtils.exists(list, EQUALS_TWO));
+}
+
+Answers true if a predicate is true for at least one element of a collection.
+A null collection or predicate returns false.
+
+
+--------------------------------------------
+
+We can use CollectionUtils's addIgnoreNull method to add only non-null elements to a provided collection.
+
+boolean isNotEmpty = (list != null && list.size() > 0); /////for atleast one Element.
+
+-----------------------------------------------
+groupingBy()==>The groupingBy() method of Collectors class in Java are used for grouping objects by some property and storing results in a Map instance. In order to use it, we always need to specify a property by which the grouping would be performed. This method provides similar functionality to SQL’s GROUP BY clause.
+
+
+ // Get the List 
+        List<String> g 
+            = Arrays.asList("geeks", "for", "geeks"); 
+  
+        // Collect the list as map 
+        // by groupingBy() method 
+        Map<String, Long> result 
+            = g.stream().collect( 
+                Collectors.groupingBy( 
+                    Function.identity(), 
+                    Collectors.counting())); 
+  
+        // Print the result 
+        System.out.println(result); 
+		
+out--->{geeks=2, for=1}
+
+-----------------------------------------------------
+ Function<Integer, Integer> identityFunction = Function.identity();
+    Function<Integer, Integer> intFunction = e -> e;                                      //defining interface
+    
+    System.out.println(identityFunction.apply(10)); // 10 
+    System.out.println(intFunction.apply(10)); // 10
+
+ List<String> names = Arrays.asList(
+         "Peter",
+         "Martin",
+         "John",
+         "Vijay",
+         "Arthur"
+        );
+    
+    // Just for example
+    System.out.println("----- Function.identity() -----");
+    names.stream().map(Function.identity()).forEach(System.out::println);
+    
+    System.out.println("----- Function(e-> e) -----");
+    names.stream().map(e->e).forEach(System.out::println);
+  }
+}
+Output :
+
+10
+10
+----- Function.identity() -----
+Peter
+Martin
+John
+Vijay
+Arthur
+----- Function(e-> e) -----
+Peter
+Martin
+John
+Vijay
+Arthur
+
+
+>>>>>>>>>>Function.identity()==e->e ////true
+========================================================================================================================
+Speed up hybris server start
+
+1)	Extract “hawkeye.rar” using 7 Zip in your local machine. Like in C drive.
+2)	Update your hybris setup “local.properties” file  by adding/updating below properties:-
+(i)		installed.tenants=
+(ii)	task.engine.loadonstartup=false
+(iii)	cronjob.timertask.loadonstartup=false
+(iv)	tomcat.debugjavaoptions=-Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,server=y,address=8000,suspend=n -Dfile.encoding=UTF8 -javaagent:"C://hawkeye//hawkeye.jar"
+3)	Run ant clean all.
+4)	Run hybrisserver.bat.
+
+=============================================================================================================================
+Lock 
+
+
+--------------------------
+Volatile vs atomic
+==============================================================================================================================
+
+for occ==> commercewebservices.rootcontext=/myws/v1/     for urls
+
+ant addoninstall -Daddonnames="occaddon" -DaddonStorefront.ycommercewebservices="mycommercewebservices  //installing occ addon 
+
+Populating data from the commerce layer to web services DTO is done with the help of Orika - a popular Java Bean mapper framework
+ 
+ 
+
+As you already mentioned, you could change the dto-level-mappings-v2-spring.xml so that for all levels (BASIC, DEFAULT, FULL) only the uid is returned.
+
+///this is for what values we have to map only
+
+
+<bean parent="fieldSetLevelMapping" id="b2bunitWsDTOFieldSetLevelMapping">
+    <property name="dtoClass"
+              value="de.hybris.platform.b2boccaddon.dto.pricerow.B2bUnitWsDTO"/>
+    <property name="levelMapping">
+        <map>
+            <entry key="BASIC" value="PointOfServiceData(uid)" />
+            <entry key="DEFAULT" value="PointOfServiceData(uid)" />
+            <entry key="FULL" value="PointOfServiceData(uid)" />
+        </map>
+    </property>
+</bean>
+Beware, the fieldSetLevelMapping beans only define how your response looks like!   ////*****
+
+
+ ==>in this we declare what value is mapp to what value of wsdto..
+  
+  <bean id="b2bUnitFieldMapper" parent="fieldMapper">
+    <property name="sourceClass"
+              value="de.hybris.platform.b2bcommercefacades.company.data.B2BUnitData"/>
+    <property name="destClass"
+              value="com.customer.some.package.B2bUnitWsDTO"/>
+    <property name="fieldMapping">
+        <map>
+            <entry key="PointOfServiceData.uid" value="pointOfServiceUID"/>
+        </map>
+    </property>
+</bean>
+
+  V2 is the default version after hybris 5.4.
+● Calls in V2 are stateless whereas in V1 calls are stateful.
+
+
+What are the filters a new V2 request passes through.?
+1. Session Filter
+2. Site Matching Filter
+3. Spring security filter chain
+4. User matching Filter
+5. Cart matching Filter
+
+
+=================================================================================================================================
+We did following approach for alternate data source, this should work here.
+
+Step 1:  Configure master and alternate datasources in local.properties file.
+db.url=jdbc:mysql://<hostname>/<dbname>?useConfigs=maxPerformance&characterEncoding=utf8
+db.driver=com.mysql.jdbc.Driver
+db.username=<username>
+db.password=<password>
+ 
+alt.datasource.alt1.active=true
+alt.datasource.alt1.db.url=jdbc:mysql://<hostname>/<dbname>?useConfigs=maxPerformance&characterEncoding=utf8
+alt.datasource.alt1.db.driver=com.mysql.jdbc.Driver
+alt.datasource.alt1.db.username=<username>
+alt.datasource.alt1.db.password=<password>
+
+Step 2: Create custom code to query alternate data base
+        final Tenant tenant = Registry.getCurrentTenantNoFallback();
+        ((AbstractTenant) tenant).cancelForceMasterMode();// don’t remember if this is needed
+        tenant.activateAlternativeMasterDataSource("alt1");
+      // DB call in the code here
+        tenant.deactivateAlternativeDataSource();
+        return result;
+    }
+ 
+    
+
+===================================================================================================================
+ </attributes>                
+                <indexes>
+                    <index name="lynxTnaUserProductIDX" unique="true">          //for faster result while fetching in where from coloumn
+                        <key attribute="user"/>
+                        <key attribute="product"/>
+                    </index>
+                </indexes>        
+
+========================================================================================================================
+ //Converting the Object to JSONString
+      String jsonString = mapper.writeValueAsString(eventData.getEventPayload());   ////object mapper
+	   
+println StringEscapeUtils.unescapeJava(jsonString);                            ///not to remove null objects
+
+
+========================================================================================================
+select * from sys.indexes where name like 'index_name'
+
+//to see index in hsql
+
+======================================================================================================================================
+Same site cookie-->
+
+ist party cookie-->created by domain
+3rd party cookie-->created by advertisement
+
+sometimes when we login in bank accounts or any accounts like gmail...jssesion id saves in cookie...and if any advertisement or link
+we click which redirect to these sites cookies will also sent....which is use for csrf...
+
+to control this chrome introduce new property in cookies sameSite...
+
+1)sameSite=strict--->if we use it cookie will only be send if you are on same site or domain.....not by any link or url from 3rd party.and also not allow any 3rd party to fetch any data from your site.
+
+2)sameSite=lax ----->it will not allow to fetch 3rd party any data from your site...but will sent cookie if u r redirected to your site by any link or url.
+
+3)sameSite=none----->no security...will always send cookie from everywhere.
+
+
+
+
+--------------------------------=======================================------------------------
+select {oe.pk}, {oe.info} FROM {Order as o LEFT JOIN OrderEntry as oe on {o.pk}= {oe.order}} where {o.code} IN ('702248701') and {oe.product} is null
+
+when someone delete product.
+
+update orderentries set p_product = '8798911201281' where pk IN ('8824994431022')
+
+
+=========================================================================================================================================
+When using singleton-scoped beans that have dependencies on beans that are scoped as prototypes, please be aware that dependencies are resolved at instantiation time. This means that if you dependency inject a prototype-scoped bean into a singleton-scoped bean, a brand new prototype bean will be instantiated and then dependency injected into the singleton bean... but that is all. That exact same prototype instance will be the sole instance that is ever supplied to the singleton-scoped bean, which is fine if that is what you want.
+
+However, sometimes what you actually want is for the singleton-scoped bean to be able to acquire a brand new instance of the prototype-scoped bean again and again and again at runtime. In that case it is no use just dependency injecting a prototype-scoped bean into your singleton bean, because as explained above, that only happens once when the Spring container is instantiating the singleton bean and resolving and injecting its dependencies. If you are in the scenario where you need to get a brand new instance of a (prototype) bean again and again and again at runtime, you are referred to the section entitled Section 4.3.7, “Method Injection”
+
+Soln==>
+
+public class MySingletonBean {
+
+    @Autowired
+    private ApplicationContext applicationContext;
+
+    public void showMessage(){
+        MyPrototypeBean bean = applicationContext.getBean(MyPrototypeBean.class);
+        System.out.println("Hi, the time is "+bean.getDateTime());        //use this
+    }
+}
+=========================================================================================================================================
+I ran into this issue on a Macbook Pro running Hybris 6.5.0.2, Java 1.8.0_151, and JRebel 7.1.2. Given that it seems intermittent (based on earlier comments), it's difficult to prove that this is really "fixed", but I got around it by increasing the stack size to 512k, up from 256k: -Xss512K. This is set in the tomcat.generaloptions property.
+=========================================================================================================================================
+<itemtype code="AmwayProductSerialNumber" generate="true"
+autocreate="false">
+<description>Serial number for order entry</description>
+<attributes>
+<attribute qualifier="serialType" type="IndSerialTypeEnum">
+<description>Serial type</description>
+<modifiers read="true" write="true" search="true"
+optional="false" />
+<defaultvalue>em().getEnumerationValue("IndSerialTypeEnum", "ROC")</defaultvalue>  ///way to put enumeration values
+<persistence type="property" />
+</attribute>
+</attributes>
+<indexes>
+<index name="AmwayProductSerialNumberIDX" >
+<key attribute="serialNumber" />
+<key attribute="consignmentEntry" />
+<key attribute="serialType" />
+</index>
+</indexes>
+</itemtype>
+
+
+===========================================================================================================================================
+recurrencyLevel - define how many recurrency level builder should support (it is case when object have it's own type field e.g. VariantMatrixElementData have elements which are also VariantMatrixElementData type)
+
+
+
+<bean id="defaultFieldSetBuilder"
+      class="de.hybris.platform.webservicescommons.mapping.impl.DefaultFieldSetBuilder">
+   <property name="defaultRecurrencyLevel" value="4"/>
+   <property name="defaultMaxFieldSetSize" value="50000"/>
+   <property name="fieldSetLevelHelper" ref="fieldSetLevelHelper"/>
+</bean>
+
+
+========================================================================================================================================
+<model>
+                        <getter default="true" name="calculated">
+                            <nullDecorator>Boolean.valueOf(false)</nullDecorator>
+                        </getter>
+                    </model>
+					
+					itm.xml-->
+					
+				wo bas isliye ki aapka value null ni aaye.. default value works only for new instances
+				anytime if we fetch the value will not be null..if someone removes it...u still get default value.
+				
+===========================================================================================================================================
+Because there is relation between paymentTransaction and paymentTransactionEntry, also paymentTransaction and Order
+
+modelService.saveAll(paymentTransactionEntry) se teeno save ho jaane chahiye
+
+
+=============================================================================================================================================
+Once you execute the following command :
+
+ant addoninstall -Daddonnames="myAddOn" -DaddonStorefront.yacceleratorstorefront="myStorefront"
+ant addoninstall will :
+
+Add myAddOn into extensioninfo.xml as required for myStorefront extension
+Add myAddOn to addons.less for myStorefront
+Generate a new project.properties file from the project.properties.template inside myAddOn.
+Configure the myAddOn web spring configuration myAddOn-web-spring.xml into myStorefront.additionalWebSpringConfigs
+When need to uninstall an addon, does it need to use the uninstall command?
+
+Yes, you need to execute ant addonuninstall in order to rollback the actions listed in the second response.
+
+
+
+===========================================================================
+Add the new extensions generated by modulegen to the “localextensions.xml” file
+
+     <extension name="mystorefulfilmentprocess"/>
+     <extension name="mystorecockpits"/>
+     <extension name="mystorecore"/>
+     <extension name="mystorefacades"/>
+     <extension name="mystoretest"/>
+     <extension name="mystoreinitialdata"/>
+     <extension name="mystorestorefront"/>
+	 
+	 
+====================================================================================================
+Make custom extension as Extension Template
+
+We can make our custom extension also as extension template so that it appears in the list of extension templates during ant extgen command
+
+To achieve this , we need to define the below tag in extensioninfo.xml
+
+
+meta key="extgen-template-extension" value="true"
+
+Adding this enables our extension to appear in the ant extgen command templates list.
+	 
+============================================================================================================
+
+How Collection Stores Values :
+
+If CollectionType contains AtomicTypes, the values are stored as binary fields in the database.
+If CollectionType stores collection of items, then items' Primary Keys (PKs) are stored in the database in string form (list of PKs).
+enter image description here
+
+Advantage :
+
+As all the values of one CollectionType instance are stored as one single field, reading in and writing the values is quite fast as it is done in a single database access (especially with caching).
+Disadvantage :
+
+If a collection contains a lot of PKs, the field value may reach the maximum length of field for the database implementation and entries may get truncated.
+
+As the database entry only contains the PKs, not the items, you cannot run database searches on the entries directly. Instead, you need to run searches in memory via Java, which is often slower than searching on the database directly.	 
+
+
+
+===============================================================
+Items.xml file is evaluated in one pass unlike impex which is multi pass processed.
+
+Because of single pass,we need to specify the item types in the order of inheritance.
+
+More abstract types has to be defined at the beginning of the items.xml file
+More concrete types has to be defined at the end of the items.xml file
+
+
+ 
+If we reverse the above item type definition as below, build will fail.
+
+====================================================================================
+
+Classes generated after build
+
+1) Generated*.java source files for all item types of an extension to the gensrc directory of your extension.
+
+2) *Model.java model classes for all item types of an extension to the bootstrap/gensrc directory
+
+where * has to be replaced with item type code.
+
+for item type SampleType1, GeneratedSampleType1.java and SampleType1Model.java files are generated once the build is done.
+
+
+========================================================================================
+
+autocreate=true at the item type level
+It hints hybris to create a new database entry for this type at initialization/update process
+If we set it to false,build will fail.
+We should set it to true for the first definition of item type.
+
+
+generate=true at the item type level
+It hints hybris to generate a new jalo class for this type during build time.
+If we set it to false,then jalo class will not be generated however model class will always be generated.
+We should set it to true for the first definition of item type.
+
+
+
+================================================================================================
+1) If we don’t specify deployment for the above scenarios then build will fail.
+If we want to pass the build and let items to be stored in GenericItem table then define below property in the local.properties file
+
+
+build.development.mode=false
+This is not advisable because storing many item types in GenericItem table will decrease the performance and possibility of data truncation due to columns limit in the table.
+
+
+
+====================================================================================================
+
+All map are save in MapType in hybris
+
+====================================================================================================
+
+There are 5 main interceptors provided by Hybris
+
+1) Init Defaults interceptor    //create
+2) Prepare interceptor          //This is called before a model is saved to the database and before it is validated by Validate interceptors.
+                                We can use this to add values to the model or modify existing ones before they are saved. 
+3) Validate interceptor         //This is called before a model is saved to the database after is been prepared by the Prepare interceptors.
+4) Load interceptor             //This is called when we retrieve the model from the database.
+                                We can use load interceptor if we want to change the values of the model after loading it. 
+5) Remove interceptor
+'
+
+Requirement :
+Save consignment carrier code to Consignment model while saving it.
+Carrier code is available in CarrierModel
+
+public class ConsignmentPrepareInterceptor implements PrepareInterceptor<ConsignmentModel>
+{
+ 
+    @Override
+    public void onPrepare(ConsignmentModel consignment, InterceptorContext ctx) throws InterceptorException
+    {
+        final CarrierModel carrier = consignment.getCarrierDetails();
+        final String carrierCode = carrier == null ? null : carrier.getCode();
+        consignment.setCarrier(carrierCode);
+    }
+ 
+}
+
+
+<bean id="consignmentPrepareInterceptor" class="de.hybris.platform.consignmenttrackingservices.interceptor.ConsignmentPrepareInterceptor"/>
+
+Step 3
+Map this interceptor with corresponding model
+
+
+<!-- Mapping Interceptor and model class-->
+<bean id="consignmentPrepareInterceptorMapping" class="de.hybris.platform.servicelayer.interceptor.impl.InterceptorMapping">
+        <property name="interceptor" ref="consignmentPrepareInterceptor"/>
+        <property name="typeCode" value="Consignment"/>
+    </bean>
+	===================================
+	
+	TaskEngine: For every trigger there is always one Task item gets created in Hybris.
+
+TaskEngine will keep on polling the Tasks for every X seconds which we configure in the local.properties file as below
+
+
+cronjob.trigger.interval=30
+
+
+
+We can also run the cron job using Ant command as below
+
+ant runcronjob -Dcronjob=myCronJob -Dtenant=master
+
+
+The core-spring. xml file of the core extension adds a special scope named tenant to the global ApplicationContext. The tenant scope makes sure that the bean is instantiated individually for each individual tenant of the hybris, whereas singleton would create only one instance for all tenants to use.
+
+
+
+How much overdue time we can allow for the triggers to get fired during the server startup ?
+This can be done by setting maxAcceptableDelay attribute to the Trigger.
+This attribute should have the value in seconds
+
+If its value is set as 300, then delay of 5 minutes is allowed for the overdue triggers to be fired at the server startup.
+
+So if the trigger defines the cron expression to run the job at 5 PM , server started at 5:05 PM then above trigger will be fired(as 5 minutes of delay is accepted).
+
+If the server started at 5:06 PM then trigger will not be fired as it does not allow the delay of more than 5 minutes.
+
+
+=================================================================================================================
+
+
+@SystemSetup(extension = TrainingCoreConstants.EXTENSIONNAME)
+public class CoreSystemSetup extends AbstractSystemSetup
+{
+    public static final String IMPORT_ACCESS_RIGHTS = "accessRights";
+ 
+    @SystemSetup(type = Type.ESSENTIAL, process = Process.ALL)
+    public void createEssentialData(final SystemSetupContext context)
+    {
+        importImpexFile(context, "/trainingcore/import/common/essential-data.impex");
+        importImpexFile(context, "/trainingcore/import/common/countries.impex");
+        importImpexFile(context, "/trainingcore/import/common/delivery-modes.impex");
+        importImpexFile(context, "/trainingcore/import/common/themes.impex");
+        importImpexFile(context, "/trainingcore/import/common/user-groups.impex");
+    }
+ 
+       @SystemSetup(type = Type.PROJECT, process = Process.ALL)
+    public void createProjectData(final SystemSetupContext context)
+    {
+        final boolean importAccessRights = getBooleanSystemSetupParameter(context,  
+                                                                        IMPORT_ACCESS_RIGHTS);
+        final List<String> extensionNames = getExtensionNames();
+        if (importAccessRights && extensionNames.contains("cmscockpit"))
+        {
+            importImpexFile(context, "/trainingcore/import/cockpits/cmscockpit
+                                                                    /cmscockpit-users.impex");
+            importImpexFile(context, "/trainingcore/import/cockpits/cmscockpit
+                                                             /cmscockpit-access-rights.impex");
+        }
+         }
+}
+
+
+We should add a method annotated with @SystemSetupParameterMethod inside a SystemSetup annotated class.
+
+This method returns a list of parameters to be added
+
+
+@SystemSetupParameterMethod
+    public List<SystemSetupParameter> getCustomSystemSetupParameters()
+    {
+        final List<SystemSetupParameter> params = new ArrayList<SystemSetupParameter>();
+//Adding boolean field
+        final SystemSetupParameter customDataParameter = new
+                                                        SystemSetupParameter("createCustomData");
+        customDataParameter.setLabel("Do you want to create custom data?");
+        customDataParameter.addValue("true");
+        customDataParameter.addValue("false", true);
+        params.add(customDataParameter);
+//Adding multi select drop down box
+        final SystemSetupParameter imports = new SystemSetupParameter("imports");
+        imports.setMultiSelect(true);
+        imports.setLabel("Custom data to import : ");
+        imports.addValues(new String[]
+        { "marketingGroups", "specialUsers" });
+        params.add(imports);
+ 
+        return params;
+    }
+	
+	
+================================================================================================================
+
+"#% impex.setDumpingAllowed( true )";
+$productCatalog=apparelProductCatalog
+$catalogVersion=catalogversion(catalog(id[default=$productCatalog]),version[default='Staged'])[unique=true,default=$productCatalog:Staged]
+UPDATE Product;code[unique=true];$catalogVersion;name;
+;29531;;"Snowboard Ski Tool Toko Side Edge Angle Pro 88 Grad 1";
+;29532;;"Snowboard Ski Tool Toko Side Edge Tuning Angle Pro 87 Grad 1";
+;invalid_code;;"Snowboard Ski Tool Toko Side Edge Angle Pro 88 Grad 1";
+;29533;;"Snowboard Ski Tool Toko Ergo Multi Guide yellow 1";
+
+
+ignoring values
+
+
+================================================================================================================
+
+INSERT_UPDATESearchRestriction;code[unique=true];name[lang=en];query;principal(UID);restrictedType(code);active;generate
+;employee_restriction;Restrict employees visibility;EXISTS ({{ SELECT {pk} FROM {PrincipalGroupRelation} WHERE {source}={item:pk} AND {target} IN ( ?session.branch ) }} ) AND ( {item:active} = 1 OR EXISTS ( {{ select {ug:PK} from {UserGroup as ug} where {ug:PK} IN (?session.user.groups) and {ug:uid} = 'b2badmingroup' }} ));b2bgroup;B2BCustomer;true;true
+
+===================================================================================================================================
+
+How to run multiple hybris instances in one machine?
+Ans. Basically, Hybris runs on a tomcat instance. Hybris is shipped with a bundled tomcat. So the question here is actually, how to run multiple tomcats in one machine.
+
+We can run as much hybris we want, till our machine memory permits. To do so, we need to make each instance of tomcat have its own ports to use. Make the below ports unique for each instance. We should add the below properties in the local property file of each instance with unique values...
+
+tomcat.http.port=7001
+
+
+================================================================================================================================
+
+What is the role of the jalo session?
+
+Whenever a request comes to Hybris, the filter HybrisInitFilter creates an object of JaloSession. Every JaloSession object is associated with a SessionContext object, which has the current user, language, currency, etc and the current HTTP session object.
+
+Cron jobs also run in a JaloSession.
+Each JaloSession is bound to a tenant. This cannot be changed after the instance of JaloSession is created.
+JaloSession is never made persistent in the database.  
+
+
+=================================================================================================================================
+
+Model service creates method vs new operator:
+
+When we try to create a new instance of an item type programmatically, we have two options, using the java way, using a new operator or the hybris way, using the model service.
+
+ProductModel product1 = new ProductModel();
+ProductModel product2 = model service.create(ProductModel.class);
+The advantages of using a model service method are below:
+The model service creates method will generate and assign the pk for the product object.
+The create method will initialize the default values, defined in items.xml for mandatory attributes.
+While calling save all methods, the object is already attached to the context and will be saved. While product1 needs to attach explicitly.
+So we should always go for a model service way in hybris.
+
+====================================================================================================================================
+How to split an order into multiple consignments?
+
+By default, hybris creates only one consignment for an order. This is done by the following service.
+
+order splitting service.
+
+====================================================================================================================================
+
+Their is a customize folder in the config folder generated when we run ant all at the first time, and this one is used specially to replace native SAP Hybris resources by adding custom resources in the customize folder with the same path, which means if you want to customize a file like HYBRIS_DIR/bin/platform/build.xml you need to add your custom build.xml in the following folder HYBRIS_DIR/config/customize/platform/ and then run ant customize before ant all.
+
+
+To add new database external dependency properly in the platform extension, we need to replace platform HYBRIS_DIR/bin/platform/lib/dbdriver/external-dependencies.xml by a new one where the database dependency should be added to the dependencies tag.
+
+Steps :
+
+1 – Copy HYBRIS_DIR/bin/platform/lib/dbdriver/external-dependencies.xml in HYBRIS_DIR/config/customize/platform/lib/dbdriver/external-dependencies.xml
+
+2 – Add the new dependency to HYBRIS_DIR/config/customize/platform/lib/dbdriver/external-dependencies.xml file
+
+Should look like that :
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    .....
+    <dependencies>
+        ......
+        <!--MySQL dependency-->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.43</version>
+        </dependency>
+    </dependencies>
+</project>
+3 – Run customize target
+
+/hybris/bin/platform$ ant customize
+
+=========================================================================================================================
+
+Hybris Run Time Config File
+Starting from SAP COMMERCE 1808 Release, Hybris comes with a new tip to make properties update much easier when the server is already up and running. It’s useful most of the time for dev environment where we need to update a bunch of properties at once.
+
+You need to add the following lines to your local.properties :
+
+#Required (put path of your properties file)
+runtime.config.file.path=/..../hybris/config/your_runtime_update_config.properties
+If you want to check either your properties file is loaded or not you have to enable debug log on de.hybris.platform.util.config.FileBasedConfigLoader
+
+#Optional
+log4j2.logger.FileBasedConfigLoader.name=de.hybris.platform.util.config.FileBasedConfigLoader
+log4j2.logger.FileBasedConfigLoader.level=DEBUG
+
+==========================================================================================================================
+1. Create two instances of the CompositeEntryModel :
+
+INSERT_UPDATE CompositeEntry  ;code[unique=true]  ;executableCronJob(code)
+                              ;totoCronJobEntry   ;totoCronJob
+                              ;fooCronJobEntry    ;fooCronJob
+2. Create an instance of the CompositeCronJobModel and attach the composite entries to it.
+
+INSERT_UPDATE CompositeCronJob  ;code[unique=true]    ;job(code)              ;compositeEntries(code)           ;sessionUser(uid)[default=admin]  ;sessionLanguage(isocode)[default=en]
+                                ;helloCompositeCronJob;compositeJobPerformable;totoCronJobEntry, fooCronJobEntry
+3. Run your composite cronJob from HMc.
+
+==============================================================================================================================
+
+occ-->
+
+<bean parent="fieldMapper">
+        <property name="sourceClass" value="de.hybris.platform.commerceservices.search.pagedata.SearchPageData"/>
+        <property name="destClass"
+                  value="com.amway.indmobileoccaddon.dto.IndMobOrderHistoryPageWsDTO"/>
+        <property name="fieldMapping">
+            <map>
+                <entry key="results" value="orders"/>             //if value is different
+            </map>
+        </property>
+    </bean>
+	
+	
+	 <bean parent="fieldSetLevelMapping" id="priceWsDTOFieldSetLevelMapping">
+		<property name="dtoClass"
+		          value="de.hybris.platform.commercewebservicescommons.dto.product.PriceWsDTO"/>
+		<property name="levelMapping">
+			<map>
+				<entry key="BASIC" value="value,currencyIso"/>
+				<entry key="DEFAULT"
+				       value="currencyIso,priceType,value,maxQuantity,minQuantity,formattedValue,amwayValue(DEFAULT)"/>
+				<entry key="FULL"
+				       value="currencyIso,priceType,value,maxQuantity,minQuantity,formattedValue,amwayValue(FULL)"/>
+			</map>
+		</property>
+	</bean>\\ for different scopes.
+	
+	
+===========================================
+how to call web bean in groovy-->
+https://www.stackextend.com/hybris/getting-bean-from-any-context-using-groovy-script-in-hybris/
+
+def f = ContextLoader.getDeclaredField("currentContextPerThread")
+f.setAccessible(true)
+
+
+ContextLoader.getDeclaredField("currentContextPerThread")
+currentContextPerThread is an attribute of ContextLoader of type Map<ClassLoader, WebApplicationContext>, containing all the web application contexts.
+
+def appContext = contexts.find {STOREFRONTCONTEXT.equals(it.key.getContextName())}
+//When the context is found, we are ready to get our beans
+if (appContext ==null) println "Impossible to retrieve application context"
+else {
+    defaultSyncService = appContext.value.getBean("synchronizationService")
+}
+
+=======================================================================================
+
+Sometimes, it is required to define our custom item types as Catalog aware item types in order to make them eligible for synchronization.
+
+It means we need to associate these custom item types with a catalog (content or product)
+
+We can achieve this either in HMC/Backoffice or by defining required attributes in items.xml file.
+
+
+
+<itemtype code="MyCustomItemType" autocreate=”true” generate=”true”>
+<deployment table=" MyCustomItemType " typecode="12500"/>
+   <custom-properties>
+      <!-- Defining the type as synchronizing capable here: -->
+      <property name="catalogItemType">
+         <value>java.lang.Boolean.TRUE</value>
+      </property>
+ 
+      <!-- defining catalog version attribute here: -->
+      <property name="catalogVersionAttributeQualifier">
+         <value>"catalogVersion"</value>
+      </property>
+       
+      <!-- defining unique key attributes here; separate multiple attribute qualifiers by commas: -->
+      <property name="uniqueKeyAttributeQualifier">
+         <value>"code"</value>
+      </property>
+   </custom-properties>
+   <attributes>
+      <attribute qualifier="code" type="java.lang.String">
+         <modifiers read="true" write="true" search="true" optional="false" unique=”true”/>
+         <persistence type="property"/>
+      </attribute>
+   
+      <attribute qualifier="catalogVersion" type="CatalogVersion">
+         <modifiers read="true" write="true" search="true" optional="false"/>
+         <persistence type="property"/>
+      </attribute>
+   </attributes>
+ 
+</itemtype>
+
+
+=================================================
+in custom component we have to define this on controller to pick it.
+
+@RequestMapping(value = ControllerConstants.Actions.Cms.CustomOffersComponent)
+public class CustomOffersComponentController extends AbstractCMSComponentController<CustomOffersComponentModel>
+
+
+
+=============================================================================
+$contentCatalog=myStoreContentCatalog
+$contentCV=catalogVersion(CatalogVersion.catalog(Catalog.id[default=$contentCatalog]),CatalogVersion.version[default=Staged])[default=$contentCatalog:Staged]
+INSERT_UPDATE CMSUserRestriction;$contentCV[unique=true];uid[unique=true];name;users(uid);components(&componentRef);&componentRef
+;;AnonymousUserRestriction;Anonymous User Restriction;anonymous;LoginLink;AnonymousUserRestriction
+
+
+
+===============================================================================
+
+You can disable interceptor through code and Impex.
+
+Using code
+You can run your save model code using sessionService.executeInLocalViewWithParams and you can use parameters to avoid to use interceptors.
+
+There are 3 types of policies :
+
+InterceptorExecutionPolicy.DISABLED_INTERCEPTOR_BEANS : to disable a list of beans
+InterceptorExecutionPolicy.DISABLED_INTERCEPTOR_TYPES : to disable a kind of interceptor - validator for example
+InterceptorExecutionPolicy.DISABLED_UNIQUE_ATTRIBUTE_VALIDATOR_FOR_ITEM_TYPES : to disable UniqueAttributesValidatoron a set of type
+Example 1 - Disable beans
+
+final Map<String, Object> params = ImmutableMap.of(InterceptorExecutionPolicy.DISABLED_INTERCEPTOR_BEANS, ImmutableSet.of("yourDataInterceptorToDisable"));
+
+sessionService.executeInLocalViewWithParams(params, new SessionExecutionBody()
+{
+    @Override
+    public void executeWithoutResult()
+    {
+        //Do your stuff  
+        modelService.save(something);   // save successful - yourDataInterceptor interceptor is disabled
+    }
+});
+Example 2 - Disable interceptors type
+
+final Map<String, Object> params = ImmutableMap.of(InterceptorExecutionPolicy.DISABLED_INTERCEPTOR_TYPES,
+                ImmutableSet.of(InterceptorExecutionPolicy.DisabledType.VALIDATE));
+sessionService.executeInLocalViewWithParams(params, new SessionExecutionBody()
+{
+    @Override
+    public void executeWithoutResult()
+    {
+        //Do your stuff  
+        modelService.save(something);    // save successful - all validate interceptors are disabled
+    }
+});
+Example 3 - Disable by type
+
+final Map<String, Object> params = ImmutableMap.of(InterceptorExecutionPolicy.DISABLED_UNIQUE_ATTRIBUTE_VALIDATOR_FOR_ITEM_TYPES, ImmutableSet.of("YourType"));
+
+sessionService.executeInLocalViewWithParams(params, new SessionExecutionBody()
+{
+    @Override
+    public void executeWithoutResult()
+    {
+        //Do your stuff  
+        modelService.save(something);   // save successful - UniqueAttributesValidator not called
+    }
+});
+Using Impex
+It's the same thing with impex you can add 3 parameters to achieve the same thing as code
+
+Example 1 - Disable beans [disable.interceptor.beans='yourDataInterceptorToDisable']
+
+INSERT_UPDATE YourType[disable.interceptor.beans='yourDataInterceptorToDisable'];isocode[unique=true];toto;titi;
+;something;toto;titi;
+Example 2 - Disable interceptors type [disable.interceptor.types=validate]
+
+INSERT_UPDATE YourType[disable.interceptor.types=validate];isocode[unique=true];toto;titi;
+;something;toto;titi;
+Example 3 - Disable by type [disable.UniqueAttributesValidator.for.types='YourType']
+
+INSERT_UPDATE YourType[disable.UniqueAttributesValidator.for.types='YourType'];isocode[unique=true];toto;titi;
+;something;toto;titi;
+
+How to disable all cron jobs running automatically in Hybris ?
+
+We just need to add below key value pair in local.properties file
+
+Copy this code
+cronjob.timertask.loadonstartup=false
+
+If its already there, make sure it is set to false.
+
+
+ 
+Setting it to false will not allow the system to start the cron jobs automatically after server restart and thus increases the system performance.
+
++sign in hot folder it is mandatory.
+
+
+
+=========================================================================================================================
+
+The following code snippet shows how to disable all validate interceptors so that you can save the data successfully. Currently, this method only supports the validator type interceptors:
+final Map<String, Object> params = ImmutableMap.of(InterceptorExecutionPolicy.DISABLED_INTERCEPTOR_TYPES,
+                ImmutableSet.of(InterceptorExecutionPolicy.InterceptorType.VALIDATE));
+sessionService.executeInLocalViewWithParams(params, new SessionExecutionBody()
+{
+    @Override
+    public void executeWithoutResult()
+    {
+        final CurrencyModel currency = modelService.create(CurrencyModel.class);
+        currency.setSymbol("$");
+        currency.setIsocode("Dollar");
+        currency.setDigits(-1);
+         
+        modelService.save(currency);    // save successful - all validate interceptors are disabled
+    }
+});
+
+==========================================================================================================================
+develop: This template is optimized for use in a development environment, where you use your SAP Commerce installation internally only, and it undergoes frequent changes. In such an environment, performance and debugging aspects generally rank higher than security.
+
+production: This template is optimized for use in a production environment, where your SAP Commerce installation is available to external users. In this environment, security is the priority, and the installation requires more system memory than it does in a development configuration. Changes are few in number, usually when deploying software updates. This template does not contain configuration files for debugging operations in your application server.
+
+
+
+===========================================================================
+Insert_update Employee;sessionLanguage(isocode)
+;en
+
+here sessionLanguage(isocode) it is a foreign key which will fetch object of language whose isocode is en and attach to employee.
+
+
+when we use mode=append in impex dont forget to use oldvalue,newvalue ---//otherwise it will replace
+
+----------
+inserting map values via impex...-->
+
+INSERT_UPDATE SolrIndexedProperty;solrIndexedType(identifier)[unique = true];name[unique = true];valueProviderParameters[map-delimiter=|]
+
+;lynxContentPageType; content_segmentationleveltypeenum_9 ; businessNature->AMWAYBUSINESSNATURE_1|segmentationLevel->SEGMENTATIONLEVELTYPEENUM_9 
+
+
+here valueprovider parametre is a map
+<maptype code="ValueProviderParametersMapping" argumenttype="java.lang.String" returntype="java.lang.String" />
+
+we r using delimiter to insert multiple values....
+
+----------
+for impex export we can take help of script generator in backoffice and copy the required code.
+
+
+-------------------------------------------------------------------------------------------
+if we are creating extension and we want to create it on a particular path.
+
+just change this property.
+
+extgen.extension.path=${HYBRIS_BIN_DIR}/custom/training
+
+either in local or project.properties inside extgen of platform folder.
+
+also u can change default extension in this properties file.
+
+-----------------------------------------------------------------------------------
+to check the hybris version just go to any extension resources and open file with name like trainingocc.build.number.
+
+-------------------------------------------------------------------------------------
+
+Make custom extension as Extension Template
+
+We can make our custom extension also as extension template so that it appears in the list of extension templates during ant extgen command
+
+To achieve this , we need to define the below tag in extensioninfo.xml
+
+meta key="extgen-template-extension" value="true"
+
+Adding this enables our extension to appear in the ant extgen command templates list.
+
+-----------------------------------------------------------------------------------------------
+addon-->
+addon always have extra folder name as acceleratoraddon.which will be copied in storefront addonsrc inside web.
+
+ant addoninstall -Daddonnames="trainingaddon" -DaddonStorefront.storefrontTemplateName="trainingstorefront"
+
+--------------------------------------------------------------------------------------------------
+items.xml-->
+
+autocreate = true--->while initializtion this type will insert into database automatically.
+generate = true ---->corrosponding jalo class will create automatically.
+localized =true  --->will be available in multiple languages.
+persistence=dynamic ---->it will store in hybris memory and when server is down it got washed.
+part-of=true        ---->Cascade delete,Defines if the assigned attribute value only belongs to the current instance of this type. Default is 'false'.
+removable = true    ---->Defines if this attribute is removable. Default is 'true'.
+isSelectionOf="string" [0..1]  --->References an attribute of the same type. Only values of the referenced attribute can be selected as values for this attribute. Typical example: the default delivery address of a customer must be one of the addresses set for the customer. 
+Default is 'false'.
+
+Example-->
+ <attribute autocreate="true" qualifier="shippingAddresses" type="AddressCollection">
+               <modifiers read="true" write="false" search="false" optional="true" partof="true"/>
+               <persistence type="dynamic"/>
+            </attribute>
+				<attribute qualifier="shippingAddress" type="Address" isSelectionOf="shippingAddresses">
+					<description>Shipping address of this company</description>
+					<modifiers read="true" write="true" search="true" optional="true"/>
+					<persistence type="property"/>
+				</attribute>
+
+
+initial="boolean"--->If 'true', the attribute will only be writable during the item creation. Setting this to 'true' is only useful in combination with write='false'. Default is 'false'.
+
+
+
+
+<attribute autocreate="true" qualifier="calculated" type="java.lang.Boolean" generate="true">
+    <custom-properties>
+        <property name="modelPrefetchMode">
+            <value>java.lang.Boolean.TRUE</value>
+        </property>
+    </custom-properties>
+    <defaultvalue>java.lang.Boolean.FALSE</defaultvalue>
+    <persistence type="property"/>
+    <modifiers read="true" write="true" search="true" optional="true"/>
+    <model>
+        <getter default="true" name="calculated">
+            <nullDecorator>Boolean.valueOf(false)</nullDecorator>
+        </getter>
+    </model>
+</attribute>
+You can use the nullDecorator tag to specify an expression that is put inside the generated method of the AbstractOrderModel class. In this case, we prefer to get false instead of null. If you generate model classes, you can verify the code of the getCalculated method of the AbstractOrderModel class:
+public Boolean getCalculated()
+{
+   final Boolean value = getPersistenceContext().getPropertyValue(CALCULATED);
+   return value != null ? value : Boolean.valueOf(false);
+}
+
+
+
+
+attribute-level custom-properties: they are used to mark a specific behaviour of the attribute e.g.
+
+ <attribute qualifier="internalURL" type="java.lang.String">
+     <custom-properties>
+         <property name="hiddenForUI">
+             <value>Boolean.TRUE</value>
+         </property>
+     </custom-properties>
+     <modifiers read="true" write="true" search="false" optional="true"/>
+     <persistence type="property">
+         <columntype>
+             <value>HYBRIS.LONG_STRING</value>
+         </columntype>
+     </persistence>
+ </attribute>
+Due to the configuration of hiddenForUI, the attribute, internalURL of the itemtype, Media is not visible in the backoffice.
+Backoffice Custom Attributes- Backoffice would allow to display all attributes of any type (out of the box), nevertheless there are some special (let's say technical) attributes that definitely should not be visible in the UI or should at least be readonly in the UI (no matter what the access rights they have). For those very rare case hybris have introduced two custom attributes that we interprete when the typesystem is scanned
+    <property name="readOnlyForUI">
+       <value>Boolean.TRUE</value>
+    </property>
+    <property name="hiddenForUI">
+       <value>Boolean.TRUE</value>
+    </property>
+
+'
+<relation code="User2Addresses" generate="true" localized="false" autocreate="true">
+    <sourceElement type="User" cardinality="one" qualifier="owner">
+        <modifiers read="true" write="true" search="true" optional="true" initial="false"/>
+    </sourceElement>
+    <targetElement type="Address" cardinality="many" qualifier="addresses">
+        <modifiers read="true" write="true" search="true" optional="true" partof="true"/>
+        <custom-properties>
+            <property name="condition.query">
+                <value>"{original} is null"</value>
+            </property>
+        </custom-properties>
+    </targetElement>
+</relation>
+
+The property holds a string that is later added to the 'where' part of the select query generated for a one-to-many or many-to-one relation.
+
+
+
+===================================================================================================================================
+Flexible search-->
+We dont use TableName in flexible search we just use item type code.
+
+flexible search query has an advantage over mysql it will not hit database again on a particular interval if we hit same query.
+
+select {name[de]} from {Product}
+
+will give particular local specific name.
+
+select * from {Product!}   it will not give child.
+
+
+=======================================================================================================================================
+business process points-->
+
+order process call from submit order event..
+it go to wait in splitorderaction.
+in this consignment process start and trigger the event from sub process end action.
+
+<timeout delay ="121212" then="timeout">   /////it will timeout and redirect to node if wait fails in tme.
+=======================================================================================================================================
+Some points on hotfolder-->
+
+we can change our comparator also we can set priority.
+
+<bean id="marketplaceFileOrderComparator" class="de.hybris.platform.acceleratorservices.dataimport.batch.FileOrderComparator">
+		<property name="prefixPriority">
+			<map>
+				<!-- default priority is 0 -->
+				<entry key="marketplace_base_product" value="2" />
+				<entry key="marketplace_apparel_base_product" value="2" />
+			</map>
+		</property>
+	</bean>
+
+
+
+<bean id="batchStyleVariantConverter" class="de.hybris.platform.acceleratorservices.dataimport.batch.converter.impl.DefaultImpexConverter">
+		<property name="header">
+			<value>#{defaultImpexProductHeader}
+				$baseProduct=baseProduct(code,$catalogVersion)  //seetting headres
+				# Insert style variant specific data
+				INSERT_UPDATE ApparelStyleVariantProduct;$baseProduct;code[unique=true];variantType(code);style[lang=$lang];sequenceId[translator=de.hybris.platform.acceleratorservices.dataimport.batch.converter.SequenceIdTranslator];$catalogVersion;$approved
+			</value>
+		</property>
+		<property name="impexRow">
+			<value>;{+0};{+1};{2};{3};{S}</value>
+			//+ sign madatory  ,S means it will append some value on file after processing or error
+		</property>
+		<property name="rowFilter">
+			<bean class="de.hybris.platform.acceleratorservices.dataimport.batch.converter.impl.DefaultImpexRowFilter">
+				<property name="expression" value="row[2] == 'ApparelStyleVariantProduct' || (!row[2] &amp;&amp; !row[4])"/>
+			</bean>
+		</property>
+	</bean>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+=====================================================================================================================
+final FlexibleSearchQuery ewayBillQuery = new FlexibleSearchQuery(ewayQuery.toString(), queryParams);
+		ewayBillQuery.setResultClassList(Arrays.asList(OrderModel.class, String.class, AddressModel.class, Double.class, Double.class));
+		final SearchResult<List<Object>> result = flexibleSearchService.search(ewayBillQuery);
+
+		final FlexibleSearchQuery ewayBillInvoiceQuery = new FlexibleSearchQuery(ewayInvoiceQuery.toString(), queryParams);
+		ewayBillInvoiceQuery.setResultClassList(Arrays.asList(AmwayInvoiceModel.class, Date.class, AmwayInvoiceEntryModel.class));
+		final SearchResult<List<Object>> invoiceResult = flexibleSearchService.search(ewayBillInvoiceQuery);
+
+		final Map<String, Double> finalRecord = new LinkedHashMap<>();
+		final Map<String, List<AmwayInvoiceEntryModel>> validRecords = new LinkedHashMap<>();
+		final Map<RegionModel, IndEwayBillConfigModel> configMapping = new LinkedHashMap<>();
+
+		List<List<Object>> records = result.getResult();
+		List<List<Object>> invoiceRecords = invoiceResult.getResult();
+		List<List<Object>> collaboratedResults = new ArrayList<>();
+		
+		
+object in flexible search....
+=========================
+
+===========
+INSERT DynamicProcessDefinition; code;content; active[default=true]
+;consignment-process-rdpickup-my-v3;"<process xmlns='http://www.hybris.de/xsd/processdefinition' start='checkState' name='consignment-process-rdpickup-my-v3' processClass='de.hybris.platform.ordersplitting.model.ConsignmentProcessModel'> <action id='checkState' bean='lynxCheckStateAction'> <transition name='OK' to='sendConsignmentToWarehouse'/> <transition name='SHIPPED' to='shipConsignment' /> <transition name='LINE_DISPOSITION' to='triggerOrderComplete' /> <transition name='WAIT' to='waitForRelease' /> <transition name='NOK' to='failed' /> <transition name='VDS' to='sendEmailToVendor'/> <transition name='CANCELLED' to='success'/> </action> <wait id='waitForRelease' then='checkState' prependProcessCode='false'> <event>${process.consignment.code}_WaitForRelease</event> </wait> <action id='sendConsignmentToWarehouse' bean='lynxSendConsignmentToWarehouseAction'> <transition name='OK' to='waitForWarehouse'/> <transition name='NOK' to='failed' /> </action> <action id='consignmentRDReadyForPickupSMSNotification' bean='lynxConsignmentRDReadyForPickupSMSNotificationAction'> <transition name='OK' to='changeOrderStatus'/> </action> <wait id='waitForWarehouse' then='checkState' prependProcessCode='false'> <event>${process.consignment.code}_WaitForWarehouse</event> </wait> <action id='sendEmailToVendor' bean='lynxSendEmailToVendorAction'> <transition name='OK' to='shipConsignment'/> <transition name='NOK' to='failed'/> </action> <action id='shipConsignment' bean='lynxShipConsignmentAction'> <transition name='OK' to='consignmentRDReadyForPickupSMSNotification' /> <transition name='NOK' to='failed' /> </action> <action id='changeOrderStatus' bean='lynxChangeOrderStatusAction'> <transition name='OK' to='generateMasterCode' /> <transition name='NOK' to='failed' /> </action> <action id='generateMasterCode' bean='lynxGenerateMasterCodeAction'> <transition name='OK' to='sendShipmentEvent'/> <transition name='NOK' to='failed' /> </action> <action id='sendShipmentEvent' bean='lynxSendShipmentEventAction'> <transition name='OK' to='invoiceConsignment'/> <transition name='NOK' to='failed' /> </action> <action id='invoiceConsignment' bean='lynxMSBInvoiceConsignmentAction'> <transition name='OK' to='triggerOrderComplete'/> <transition name='NOK' to='failed' /> </action> <action id='triggerOrderComplete' bean='lynxTriggerOrderCompleteAction'> <transition name='OK' to='success'/> </action> <end id='success' state='SUCCEEDED'>Consignment Process Successful.</end> <end id='failed' state='FAILED'>Consignment Process Failed.</end> <end id='error' state='ERROR'>Consignment Process In Illegal State.</end> </process>";
+
+use to make a dynamic process if we want to change something just add in content and repair business process.
+
+
+
+
+=======================================================================================
+properties to add server in debug mode 
+
+tomcat.javaoptions=-Dorg.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true -Dorg.apache.cxf.Logger=org.apache.cxf.common.logging.Log4jLogger -Djava.net.preferIPv4Stack=true -Djava.net.preferIPv4Addresses=true -Djava.net.preferIPv6Stack=false -Djava.net.preferIPv6Addresses=false
+
+tomcat.debugjavaoptions=-Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,server=y,address=8787,suspend=n ${tomcat.javaoptions}
+
+tomcat.generaloptions=-Xmx3G -XX:MaxPermSize=1024M -ea -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dorg.tanukisoftware.wrapper.WrapperManager.mbean=true -Djava.endorsed.dirs="%CATALINA_HOME%/lib/endorsed" -Dcatalina.base=%CATALINA_BASE% -Dcatalina.home=%CATALINA_HOME% -Dfile.encoding=UTF-8 -Dlog4j.configuration=log4j_init_tomcat.properties -Djava.util.logging.config.file=jdk_logging.properties -Djava.io.tmpdir="${HYBRIS_TEMP_DIR}" -Xverify:none -Dtomcat.minimal.webapps=hmc
+
+
+
+
+===============================================
+https://help.sap.com/viewer/d0224eca81e249cb821f2cdf45a82ace/1905/en-US/8b6ded0d86691014a6fab18e171c1f91.html
+
+https://help.sap.com/viewer/b490bb4e85bc42a7aa09d513d0bcb18e/1905/en-US/8b89e9f986691014a915c84d1067b6ee.html

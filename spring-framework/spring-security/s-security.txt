@@ -1,0 +1,1654 @@
+ SwScAS#$%698
+What is Oauth2.....?
+
+It is a open standard for Access Delegation..
+
+what is Access Delegation?
+
+Delegation is the process of a computer user handing over their authentication credentials to another user.
+In role-based access control models, 
+delegation of authority involves delegating roles that a user can assume or the set of permissions that he can acquire, to other users.
+
+It also provide a secure dellegated access..
+
+For Example:we r surfing any site it ask access for google account..
+
+As it does not have our username and password..
+so it redirect to google home page where u willlogin..
+than authentication is done but google will ask site what what access or authorization they only required..
+
+So how this all process works-->
+
+Lets we open citibank account an citibank wants to authenticate user through its facebook account..
+
+Lets think citibank server as Oauthclient and facebook as Oauth server..
+
+a)OauthClient-------------->request goes client to server Oauth/authorize?client=client_id-------------->OauthServer
+                            &redirect me to the uri client.com/accept?   ///  pop up like agree and disagree or continue
+
+and here we will authenticate what what stuff citibank can use for facebook.. 
+
+
+
+b)OauthClient<--------------code=Token<--------------OauthServer
+   
+It is an access to authorization token..means we give access to our facebook account
+
+
+
+
+Now when first request is succeed we authorized ourself through facebook..
+Now citibank will send the same authorization token to facebook and ask for authentication to *itsel* through access_token? 
+c)OauthClient-------------->Oauth/access_token?-------------->OauthServer
+                         
+So it will send the client_id and client_secrets + token --> this is nothing but the registered information of citibank with facebook..
+It is because if there is no fraud it is to authenticate itself..no fake site     
+
+
+
+
+d)OauthClient<--------------access_token+refresh_token<--------------OauthServer.
+
+Now facebook will send a access_token and it is nothing it is access for citibank for a particular user 
+for a particular time...
+And we have to save the refresh_token..when our access-token expires we need refresh_token to regenerate access token..
+
+citibank now will every time use this access token to access the information of user from facebook to a certain time..
+
+e)OauthClient-------------->/account?access_token=sometoken-------------->OauthServer.
+                                                  
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+Errors in security-->
+a)403-->The 403 Forbidden error is an HTTP status code which means that accessing the page or resource you were trying to reach is absolutely forbidden for some reason.
+
+This article contains basic troubleshooting instructions for 403 Forbidden errors.
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+*)SECURITY_CONTEXT=>The SecurityContext is used to store the details of the currently authenticated user, also known as a principle. 
+So, if you have to get the username or any other user details, you need to get this SecurityContext first
+
+*)SECURITY_CONTEXT_HOLDER=>SecurityContextHolder is a helper class, which provide access to the security context. 
+By default, it uses a ThreadLocal object to store security context, 
+which means that the security context is always available to methods in the same thread of execution, even if you don't pass the SecurityContext object around
+
+Example=>
+Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+The object returned by getContext() is an instance of the SecurityContext interface. This is the object that is stored in a thread-local storage.
+
+getAuthentication()=>returns The object of Authentication.
+
+=>
+Authentication Interface->It is one of the most core interface available in the Spring Security framework. There are different uses (implementations) of Authentication interface
+
+a) Submitting the Authentication request for the AuthenticationManager=>
+
+*)authenticate( ) method of the AuthenticationManager, requires an Authentication object as its method parameter. 
+This will be the authentication request submitted for the AuthenticationManager. 
+There are several implementations available to represent this Authentication request and the most popular implementation is UsernamePasswordAuthenticationToken.
+
+b) Returning the Authentication response from the AuthenticationManager=>
+
+*)Again you can notice that the return type of the authenticate() method of the AuthenticationManager is, in the form of Authentication interface. 
+Therefore the authenticated response will also be represented by Authentication interface.
+
+c)3. Storing the Authenticated Principal in the SecurityContext.=>
+
+*)Authenticated Response will be stored in the SecurityContext using the Authentication interface.
+SecurityContextHolder.getContext().setAuthentication(authentication);
+
+What what Authentication contains==>all related data of a current user-->principal,authorities,credentials,is authorized or not(attribute authenticated)?
+
+
+The Authentication object created as the authentication request contains only the username and password. (sending to manager)
+it does not contain the authorities and authenticated attribute is set as FALSE.
+
+but in the Authenticated response, authenticated attribute is set as TRUE. 
+In addition, it contains the list of authorities granted/available for the authenticated principal.(getting back from manager)
+-----------------------------------------------------------------------------------------------------------------------------------------------
+<intercept-url pattern="/" access="permitAll" />   to permit all
+
+<intercept-url pattern="/admin**" access="hasRole('ADMIN')" />
+
+works  through authentication-manager
+
+<authentication-provider>
+            <user-service>
+                <user name="bill"  password="abc123"  authorities="ROLE_USER" />  //////authorities<->access
+
+we can then access /url through controller
+
+  @RequestMapping(value = "/admin", method = RequestMethod.GET)
+    public String adminPage(ModelMap model) {
+        model.addAttribute("user", getPrincipal());
+        return "admin";
+    }
+  
+we can also use security tag lib--->
+
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
+
+ <sec:authorize access="hasRole('ADMIN') and hasRole('DBA')">
+            <label><a href="#">Start backup</a> | This part is visible only to one who is both ADMIN & DBA</label>
+        </sec:authorize>
+
+
+**>explores Spring Security’s role based login. 
+That means redirecting users to different URLs upon login according to their assigned roles.
+
+Basically what we have to do is to create a custom Success-Handler which will be responsible for redirecting the logged-in user 
+to appropriate URL based on his/her role. 
+Spring Security already provides SimpleUrlAuthenticationSuccessHandler which contains the generic logic for success handler. 
+
+
+We will just extend this with our own redirect logic to achieve our goal.
+
+Example-->
+
+authentication-success-handler-ref="customSuccessHandler"
+<beans:bean id="customSuccessHandler" class="com.websystique.springsecurity.configuration.CustomSuccessHandler" />
+
+
+package com.websystique.springsecurity.configuration;
+ 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+ 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+ 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.web.DefaultRedirectStrategy;
+import org.springframework.security.web.RedirectStrategy;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
+import org.springframework.stereotype.Component;
+ 
+@Component
+public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
+ 
+    private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();     //it has handle method to redirect target-url..
+ 
+    @Override
+    protected void handle(HttpServletRequest request, HttpServletResponse response, Authentication authentication)
+            throws IOException {
+        String targetUrl = determineTargetUrl(authentication);
+ 
+        if (response.isCommitted()) {
+            System.out.println("Can't redirect");                             ...///if already committed dont work
+            return;
+        }
+ 
+        redirectStrategy.sendRedirect(request, response, targetUrl);
+    }
+ 
+    /*
+     * This method extracts the roles of currently logged-in user and returns
+     * appropriate URL according to his/her role.
+     */
+    protected String determineTargetUrl(Authentication authentication) {
+        String url = "";
+ 
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();           /////extracting all roles through authentication.getAuthorities()
+ 
+        List<String> roles = new ArrayList<String>();
+ 
+        for (GrantedAuthority a : authorities) {
+            roles.add(a.getAuthority());
+        }
+ 
+        if (isDba(roles)) {
+            url = "/db";
+        } else if (isAdmin(roles)) {
+            url = "/admin";
+        } else if (isUser(roles)) {
+            url = "/home";
+        } else {
+            url = "/accessDenied";
+        }
+ 
+        return url;
+    }
+ 
+    private boolean isUser(List<String> roles) {
+        if (roles.contains("ROLE_USER")) {
+            return true;
+        }
+        return false;
+    }
+ 
+    private boolean isAdmin(List<String> roles) {
+        if (roles.contains("ROLE_ADMIN")) {
+            return true;
+        }
+        return false;
+    }
+ 
+    private boolean isDba(List<String> roles) {
+        if (roles.contains("ROLE_DBA")) {
+            return true;
+        }
+        return false;
+    }
+ 
+    public void setRedirectStrategy(RedirectStrategy redirectStrategy) {
+        this.redirectStrategy = redirectStrategy;
+    }
+ 
+    protected RedirectStrategy getRedirectStrategy() {
+        return redirectStrategy;
+    }
+ 
+}
+Notice how we are extending Spring SimpleUrlAuthenticationSuccessHandler class and overriding handle() method which simply 
+invokes a redirect using configured RedirectStrategy [default in this case] with the URL returned by the user 
+defined determineTargetUrl method. This method extracts the Roles of currently logged in user from Authentication object and 
+then construct appropriate URL based on there roles. Finally RedirectStrategy , 
+which is responsible for all redirections within Spring Security framework , 
+redirects the request to specified URL.
+
+
+AbstractAuthenticationTargetUrlRequestHandler-->
+
+Base class containing the logic used by strategies which handle redirection to a URL and 
+are passed an Authentication object as part of the contract. See AuthenticationSuccessHandler and LogoutSuccessHandler, for example.
+
+Uses the following logic sequence to determine how it should handle the forward/redirect
+
+-->If the alwaysUseDefaultTargetUrl property is set to true, the defaultTargetUrl property will be used for the destination.
+
+-->If a parameter matching the value of targetUrlParameter has been set on the request, 
+the value will be used as the destination. 
+If you are enabling this functionality, 
+then you should ensure that the parameter cannot be used by an attacker to redirect the user to a malicious site 
+(by clicking on a URL with the parameter included, for example). 
+Typically it would be used when the parameter is included in the login form and submitted with the username and password.
+
+-->If the useReferer property is set, the "Referer" HTTP header value will be used, if present.****
+  As a fallback option, the defaultTargetUrl value will be used.
+
+
+
+All Methods
+
+*)protected java.lang.String	determineTargetUrl(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response)
+Builds the target URL according to the logic defined in the main class Javadoc.
+
+*)protected java.lang.String	getDefaultTargetUrl()
+Supplies the default target Url that will be used if no saved request is found or the alwaysUseDefaultTargetUrl property is set to true.
+
+*)protected RedirectStrategy	getRedirectStrategy() 
+
+*)protected java.lang.String	getTargetUrlParameter() 
+
+*)protected void	handle(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response, Authentication authentication)
+Invokes the configured RedirectStrategy with the URL returned by the determineTargetUrl method.
+
+*)protected boolean	        isAlwaysUseDefaultTargetUrl() 
+
+*)void	setAlwaysUseDefaultTargetUrl(boolean alwaysUseDefaultTargetUrl)
+If true, will always redirect to the value of defaultTargetUrl (defaults to false).
+
+*)void	setDefaultTargetUrl(java.lang.String defaultTargetUrl)
+Supplies the default target Url that will be used if no saved request is found in the session, or the alwaysUseDefaultTargetUrl property is set to true.
+
+*)void	setRedirectStrategy(RedirectStrategy redirectStrategy)
+Allows overriding of the behaviour when redirecting to a target URL.
+
+*)void	setTargetUrlParameter(java.lang.String targetUrlParameter)
+If this property is set, the current request will be checked for this a parameter with this name and the value used as the target URL if present.
+
+*)void	setUseReferer(boolean useReferer)
+If set to true the Referer header will be used (if available).
+
+<======================================================================================================================================================================================>
+
+If not using your custom success handler
+
+<http use-expressions="true">
+    <intercept-url pattern="/**" access="permitAll" />
+    <form-login authentication-success-handler-ref="simpleUrlAuthenticationSuccessHandler"/>
+</http>
+
+<beans:bean id="simpleUrlAuthenticationSuccessHandler" class="org.springframework.security.web.authentication.**SimpleUrlAuthenticationSuccessHandler**">
+     <beans:property name="defaultTargetUrl" value="/"/>
+     <beans:property name="targetUrlParameter" value="redirect"/>     /// /spring_security_login?redirect=/item5   useful for redirection
+     <beans:property name="useReferer" value="true"/>
+</beans:bean>
+
+==========================================================================================================================================================================================
+access-denied-handler ref=>customize the access denied page in a Spring Security project.==>403 ERROR
+
+steps followed==>
+
+*)Custom JSP=>Whenever a user attempts to access a page that is restricted to roles they do not have, 
+the application will return a status code of 403, which means Access Denied.
+
+*)By default, Spring Security has an **ExceptionTranslationFilter** defined which handles exceptions of type AuthenticationException and AccessDeniedException. 
+The latter is done through a property called accessDeniedHandler, which uses the AccessDeniedHandlerImpl class.
+
+*)Entry in the web.xml
+<http use-expressions="true">
+    <access-denied-handler error-page="/accessDenied"/>      // if we have our jsp page
+ </http>
+
+            -------OR-------
+
+==>Using an access denied handler(ref) instead of a page has the advantage that we can define custom logic to be executed before redirecting to the 403 page. 
+For this, we need to create a class that implements the **AccessDeniedHandler interface** and overrides the handle() method.
+
+Example==>
+
+public class CustomAccessDeniedHandler implements AccessDeniedHandler {
+ 
+    public static final Logger LOG
+      = Logger.getLogger(CustomAccessDeniedHandler.class);
+ 
+    @Override
+    public void handle(
+      HttpServletRequest request,
+      HttpServletResponse response, 
+      AccessDeniedException exc) throws IOException, ServletException {
+         
+        Authentication auth 
+          = SecurityContextHolder.getContext().getAuthentication();           //getting current user details
+        if (auth != null) {
+            LOG.warn("User: " + auth.getName() 
+              + " attempted to access the protected URL: "
+              + request.getRequestURI());
+        }
+ 
+        response.sendRedirect(request.getContextPath() + "/accessDenied");
+    }
+}
+
+*)Now enter a Entry=>
+<bean name="customAccessDeniedHandler"
+  class="org.baeldung.security.CustomAccessDeniedHandler" />
+ 
+<http use-expressions="true">
+    <access-denied-handler ref="customAccessDeniedHandler"/>
+</http>
+
+
+**)Another Way
+ put a entry in web.xml
+
+<error-page>
+    <error-code>403</error-code>
+    <location>/accessDenied</location>
+</error-page>
+
+****)ACCESS DENIED HANDELER is some how diiferent from AUTHENTICATION FAILURE URL
+AUTHENTICATION FAILURE URL-->when authentication failed-->
+ACCESS DENIED HANDELER--> authentication success but you dont have access to some urls.
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Spring Security 4 Hibernate Password Encoder Bcrypt Example-->
+
+Any application, which takes Security seriously, should NEVER store passwords in plain text format. 
+Passwords should always be encoded using a secure hashing algorithm. 
+There are many standard algorithms like SHA or MD5 which combined with a proper SALT can be a good choice for password encoding. 
+Spring Security provides BCryptPasswordEncoder, and implementation of Spring’s PasswordEncoder interface that uses the BCrypt strong hashing function to encode the password.
+
+Where all possibly do we need Password Encoding in application?
+
+ 
+1. During password comparison. Encode input password before comparing with the one stored in database(which is encoded)
+2. During New user creation/existing user password updation. Encode the new input password before saving/updating in database.
+
+===>
+. Create & Inject PasswordEncoder into AuthenticationProvider & set it as authentication provider on AuthenticationManagerBuilder
+
+<authentication-manager >
+        <authentication-provider user-service-ref="customUserDetailsService">
+            <password-encoder ref="bcryptEncoder"/>
+        </authentication-provider>
+    </authentication-manager>
+      
+    <beans:bean id="bcryptEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" />
+ 
+    <beans:bean id="customUserDetailsService" class="com.websystique.springsecurity.service.CustomUserDetailsService" />
+     
+</beans:beans>
+
+
+Update UserService to include password encoding before saving new password in database.
+
+@Service("userService")
+@Transactional
+public class UserServiceImpl implements UserDetailService{
+ 
+    @Autowired
+    private UserDao dao;
+     
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+ 
+     
+    public void save(User user){
+        user.setPassword(passwordEncoder.encode(user.getPassword()));                        ////to encrypt
+        dao.save(user);
+    }
+     
+    public User findById(int id) {
+        return dao.findById(id);
+    }
+ 
+    public User findBySso(String sso) {
+        return dao.findBySSO(sso);
+    }
+     
+}
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Now understanding user-service-ref in authentication provider...-->
+
+UserDetailsService interface is used in order to lookup the username, password and GrantedAuthorities for any given user.
+
+This interface provide only one method which implementing class need to implement-
+
+UserDetails loadUserByUsername(String username) throws UsernameNotFoundException;
+
+
+
+
+**>I am taking forward the code base as written in Spring login form based security. In the application-security.xml file, 
+I will update the configuration to use EmployeeDao as custom user detail service.
+
+
+    <http auto-config="true"  use-expressions="true">
+        <intercept-url pattern="/login" access="permitAll"></intercept-url>
+        <intercept-url pattern="/logout" access="permitAll"></intercept-url>
+        <intercept-url pattern="/accessdenied" access="permitAll"></intercept-url>
+        <intercept-url pattern="/**" access="hasRole('ROLE_USER')"></intercept-url>
+        <form-login login-page="/login" default-target-url="/list" authentication-failure-url="/accessdenied"></form-login>
+        <logout logout-success-url="/logout"></logout>
+    </http>
+ 
+    <authentication-manager alias="authenticationManager">
+        <authentication-provider user-service-ref="employeeDAO" />
+    </authentication-manager>
+
+Now we have to update the EmployeeDaoImpl.java to implement UserDetailsService interface and override method loadUserByUsername().
+
+ @Override
+    public UserDetails loadUserByUsername(String username)                                //locate the user base on usrname
+            throws UsernameNotFoundException, DataAccessException
+    {
+        System.out.println("Getting access details from employee dao !!");
+
+ 
+        // Ideally it should be fetched from database and populated instance of
+        // #org.springframework.security.core.userdetails.User should be returned from this method
+        UserDetails user = new User(username, "password", true, true, true, true, new GrantedAuthority[]{ new GrantedAuthorityImpl("ROLE_USER") });  // hardcoded returning dont try
+        return user;
+    }
+}
+
+
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+csrf----> what is csrf first learn it through this===>http://spring.io/blog/2013/08/21/spring-security-3-2-0-rc1-highlights-csrf-protection/
+
+One solution is to use the Synchronizer Token Pattern. 
+This solution is to ensure that each request requires, in addition to our session cookie, 
+a randomly generated token as an HTTP parameter. When a request is submitted, 
+the server must look up the expected value for the parameter and compare it against the actual value in the request. 
+If the values do not match, the request should fail.
+
+as post is not idempotence we need to add token every time in this not for get...as get never change its state
+
+Configuring CSRF Protection
+The next step is to include Spring Security's CSRF protection within your application. 
+If you are using the XML configuration, this can be done using the <csrf /> element:
+
+<http ...>
+    ...
+    <csrf />
+</http>
+CSRF protection is enabled by default with Java configuration. 
+
+Include CSRF token
+Form Submissions
+If you are using Spring MVC <form:form> tag, 
+the CsrfToken is automatically included for you using the CsrfRequestDataValueProcessor.
+
+Also of interest is that once issue 7 is resolved, Thymeleaf should have automatic integration.
+
+The last step is to ensure that you include the CSRF token in all PATCH, POST, PUT, and DELETE methods. 
+This can be done using the _csrf request attribute to obtain the current CsrfToken. An example of doing this with a JSP is shown below:
+
+
+<c:url var="logoutUrl" value="/logout"/>
+<form action="${logoutUrl}"
+    method="post">
+  <input type="submit"
+    value="Log out" />
+  <input type="hidden"
+    name="${_csrf.parameterName}"
+    value="${_csrf.token}"/>
+
+
+AJAX Requests
+If you using JSON, then it is not possible to submit the CSRF token within an HTTP parameter. 
+Instead you can submit the token within a HTTP header. A typical pattern would be to include the CSRF token within your meta tags:
+
+<html>
+  <head>
+    <meta name="_csrf" content="${_csrf.token}"/>
+    <!-- default header name is X-CSRF-TOKEN -->
+    <meta name="_csrf_header" content="${_csrf.headerName}"/>
+    ...
+  </head>
+  ...
+You can then include the token within all your AJAX requests. If you were using JQuery, this could be done with the following:
+
+$(function () {
+    var token = $("meta[name='_csrf']").attr("content");
+    var header = $("meta[name='_csrf_header']").attr("content");
+    $(document).ajaxSend(function(e, xhr, options) {
+        xhr.setRequestHeader(header, token);
+    });
+});
+
+
+Disadvantage-->
+
+One issue is that the expected CSRF token is stored in the HttpSession, 
+so as soon as the HttpSession expires your configured AccessDeniedHandler will receive a InvalidCsrfTokenException. 
+If you are using the default *AccessDeniedHandler*, the browser will get an HTTP 403 and display a poor error message.
+
+A simple way to mitigate an active user experiencing a timeout is to have some JavaScript that 
+lets the user know their session is about to expire. The user can click a button to continue and refresh the session.
+
+Alternatively, specifying a custom AccessDeniedHandler allows you to process the InvalidCsrfTokenException anyway you like.
+
+Cross Site Request Forgery (CSRF) Protection
+If CSRF is enabled, you have to include a _csrf.token in the page you want to login or logout. Refer to below login.jsp 
+and admin.jsp (logout form). Otherwise, both login and logout function will be failed.
+
+
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@page session="true"%>
+<html>
+<body>
+	<h1>Title : ${title}</h1>
+	<h1>Message : ${message}</h1>
+
+	<c:url value="/j_spring_security_logout" var="logoutUrl" />
+
+	<!-- csrt for log out-->
+	<form action="${logoutUrl}" method="post" id="logoutForm">
+	  <input type="hidden" 
+		name="${_csrf.parameterName}"
+		value="${_csrf.token}" />
+	</form>
+	
+	<script>
+		function formSubmit() {
+			document.getElementById("logoutForm").submit();
+		}
+	</script>
+
+	<c:if test="${pageContext.request.userPrincipal.name != null}">
+		<h2>
+			Welcome : ${pageContext.request.userPrincipal.name} | <a    ///////fetching user name..
+				href="javascript:formSubmit()"> Logout</a>
+		</h2>
+	</c:if>
+
+</body>
+</html>
+so how _csrf works==> when user logged in automatic csrf will be created for it...
+                  ==> and stored in session ..
+                  ==> till when the session expires we will match the token if they match then there is succession of redirection 
+                  ==> otherwise redirection fail...
+                  ==>it always use filter for csrf checking..
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------
+
+
+when to use user-service-ref when we want to do some operations on our custom user service...
+
+steps-->
+
+1)we create UserService class that handles the retrieval of user information.
+
+UserService.java
+
+
+@Service("userService")
+public class UserService {
+ 
+    public Map<String, Object> getUserByUsername(String username) {
+        Map<String, Object> userMap = null;
+        //logic here to get your user from the database
+        
+	if (username.equals("admin") || username.equals("user")) {
+            userMap = new HashMap<>();
+            userMap.put("username", "admin");
+            userMap.put("password", "password");
+            //if username is admin, role will be admin, else role is user only
+            userMap.put("role", (username.equals("admin")) ? "admin" : "user");
+            //return the usermap
+            return userMap;
+        }
+        //if username is not equal to admin, return null
+        return null;
+    }
+}
+In this class, we can add the logic of getting the user information from the database. For our example, the user information are just hard coded for simplicity. It only contains the user admin and user.
+
+ 
+2) Create your Custom UserDetailsService Class
+Create a class that will implements UserDetailsService.
+
+@Service
+public class CustomUserDetailsService implements UserDetailsService {
+ 
+    @Autowired
+    private UserService userService;
+ 
+    static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+ 
+    @Override
+    public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
+        Map<String, Object> userMap = userService.getUserByUsername(s);
+ 
+        //check if this user with this username exist, if not, throw an exception
+        // and stop the login process
+        if (userMap == null) {
+            throw new UsernameNotFoundException("User details not found with this username: " + s);
+        }
+ 
+        String username = (String) userMap.get("username");
+        String password = (String) userMap.get("password");
+        String role = (String) userMap.get("role");
+ 
+        List<SimpleGrantedAuthority> authList = getAuthorities(role);   //////to check authorization
+ 
+        //get the encoded password
+        String encodedPassword = passwordEncoder.encode(password);
+ 
+        User user = new User(username, encodedPassword, authList);     ///returning object
+ 
+        return user;
+    }
+ 
+    private List<SimpleGrantedAuthority> getAuthorities(String role) {
+        List<SimpleGrantedAuthority> authList = new ArrayList<>();
+        authList.add(new SimpleGrantedAuthority("ROLE_USER"));
+ 
+        //you can also add different roles here
+        //for example, the user is also an admin of the site, then you can add ROLE_ADMIN
+        //so that he can view pages that are ROLE_ADMIN specific
+        if (role != null && role.trim().length() > 0) {
+            if (role.equals("admin")) {
+                authList.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+            }
+        }
+ 
+        return authList;
+    }
+}
+
+ 
+=>The method loadUserByUsername is the method that Spring uses to retrieve user information. 
+Here in this method, you can add your own logic how you will get your user information for login process.
+
+=>The getAuthorities method is a method that we have created to return a list of authorities that the user has. 
+For example, if the user is also an admin of the site, in addition to ROLE_USER, 
+we can also add ROLE_ADMIN so that the user can also access pages that are admin specific.
+
+
+    <authentication-manager>
+        <authentication-provider user-service-ref="customUserDetailsService">   ////custom user-service
+            <password-encoder ref="encoder" />
+        </authentication-provider>
+    </authentication-manager>
+ 
+    <beans:bean id="encoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" />
+    <beans:bean id="customUserDetailsService" class="com.javapointers.custom.CustomUserDetailsService" />
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+**>LDAP////////////
+
+ LDAP is – it stands for Lightweight Directory Access Protocol and it’s an open, 
+
+Now, let’s take a look at corresponding XML configuration:
+
+<authentication-manager>
+    <ldap-authentication-provider
+      user-search-base="ou=people"
+      user-search-filter="(uid={0})"
+      group-search-base="ou=groups"
+      group-search-filter="(member={0})">
+    </ldap-authentication-provider>
+</authentication-manager>
+    
+<ldap-server root="dc=baeldung,dc=com" ldif="users.ldif"/>   /////////this is the name of ldif into which we save the details..
+
+LDAP Data Interchange Format
+LDAP data can be represented using the LDAP Data Interchange Format (LDIF) – here’s an example of our user data:
+
+dn: ou=groups,dc=baeldung,dc=com
+objectclass: top
+objectclass: organizationalUnit
+ou: groups
+ 
+dn: ou=people,dc=baeldung,dc=com
+objectclass: top
+objectclass: organizationalUnit
+ou: people
+ 
+dn: uid=baeldung,ou=people,dc=baeldung,dc=com
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+cn: Jim Beam
+sn: Beam
+uid: baeldung
+userPassword: password
+ 
+dn: cn=admin,ou=groups,dc=baeldung,dc=com
+objectclass: top
+objectclass: groupOfNames
+cn: admin
+member: uid=baeldung,ou=people,dc=baeldung,dc=com
+ 
+dn: cn=user,ou=groups,dc=baeldung,dc=com
+objectclass: top
+objectclass: groupOfNames
+cn: user
+member: uid=baeldung,ou=people,dc=baeldung,dc=com
+
+
+sometimes it is useful---->https://docs.spring.io/spring-security/site/docs/3.0.x/reference/ns-config.html
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Oauth2 in spring security.....===>
+
+
+first learn some topics-->
+
+==><intercept-url pattern="/css/**" filters="none"/>
+This is a pre-Spring 3.1 feature that has been deprecated and replaced in Spring 3.1.
+
+filters---->The filters attribute disables the Spring Security filters chain entirely on that particular request path.
+It is depreciated now
+use this--><http pattern="/resources/**" security="none"/>
+
+==><intercept-url pattern="/login.jsp*" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
+
+IS_AUTHENTICATED_ANONYMOUSLY------------------> can be access by anynomous user
+
+
+==>If your application supports both HTTP and HTTPS, and you require that particular URLs can only be accessed over HTTPS, 
+then this is directly supported using the requires-channel attribute on <intercept-url>:
+
+  <http>
+    <intercept-url pattern="/secure/**" access="ROLE_USER" requires-channel="https"/>
+    <intercept-url pattern="/**" access="ROLE_USER" requires-channel="any"/>
+    ...
+  </http>
+        
+With this configuration in place, if a user attempts to access anything matching the "/secure/**" pattern using HTTP, 
+they will first be redirected to an HTTPS URL. The available options are "http", "https" or "any". Using the value "any" means that either HTTP or HTTPS can be used.
+
+If your application uses non-standard ports for HTTP and/or HTTPS, you can specify a list of port mappings as follows:
+
+  <http>
+    ...
+    <port-mappings>
+      <port-mapping http="9080" https="9443"/>
+    </port-mappings>
+  </http>
+
+difference between http vs https--->https is secured needs lot of authentication
+
+==>entry-point-ref----->
+If you aren't using form login, OpenID or basic authentication through the namespace, 
+you may want to define an authentication filter and entry point using a traditional bean syntax and link them into the namespace, as we've just seen. 
+The corresponding AuthenticationEntryPoint can be set using the entry-point-ref attribute on the <http> element.
+
+Means--> as when we r using our own whenever we try to access unathaurized it will redirect us to login-page but what in the case of rest ...
+so we use it for rest-api to control unauthorized access
+
+Example--><security:http auto-config="true" use-expressions="true" entry-point-ref="appAuthenticationEntryPoint">
+ <!-- Observe entry-point-ref is configured and all the request /** should be authenticated,
+ if any request is not authenticated then entry point will be invoked which intern redirect to login page  -->    /***************************vip/////
+ <!-- Interceptor urls -->
+        <security:intercept-url pattern="/" access="isAuthenticated()"/>
+        <security:intercept-url pattern="/**" access="isAuthenticated()"/>
+        <security:intercept-url pattern="/user**" access="hasRole('USER')" />
+        <security:intercept-url pattern="/admin**" access="hasRole('ADMIN')" />
+
+        <security:form-login login-page="/login"
+                             login-processing-url="/j_spring_security_check"
+                             authentication-success-handler-ref="successHandler"
+                             authentication-failure-handler-ref="failureHandler"
+                             username-parameter="username"
+                             password-parameter="password"
+                />
+
+        <!-- disabling csrf protection -->
+        <security:csrf disabled="true"/>
+    </security:http>
+
+We need to create a class that will extend Spring’s AuthenticationEntryPoint class
+and override its method commence to redirect when authentication header is not present in the request.
+By default This method will reject every unauthenticated request and send error code 401.
+
+
+Example-->
+public class AppAuthenticationEntryPoint extends LoginUrlAuthenticationEntryPoint {
+
+    private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
+
+    public AppAuthenticationEntryPoint(final String loginFormUrl) {
+        super(loginFormUrl);
+    }
+
+    /**
+     * Performs the redirect (or forward) to the login form URL.
+     */
+    public void commence(HttpServletRequest request, HttpServletResponse response,
+                         AuthenticationException authException) throws IOException, ServletException {
+
+        // redirect to login page. Use https if forceHttps true
+        String redirectUrl = buildRedirectUrlToLoginPage(request, response, authException);      //redirecting to login-page
+        redirectStrategy.sendRedirect(request, response, redirectUrl);
+    }
+
+}
+
+we can also do this--->
+This entry point is called whenever the request is missing the authentication or having invalid authentication.
+and in that case, we are sending the unauthorized response to the client.
+
+ public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception)
+            throws IOException, ServletException {
+        System.out.println("Executing commence method due to failed Authentication");
+        response.sendError( HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized Access!!" );
+
+**Remember**Pattern on http vs intercept-url pattern-->the thing will declare below will work on whole http
+---->
+==><anonymous enabled="false" />===>If one does not need anonymous operations
+
+==>request-matcher Defines the RequestMatcher strategy used in the FilterChainProxy 
+and the beans created by the intercept-url to match incoming requests. 
+Options are currently mvc, ant, regex and ciRegex, for Spring MVC, ant, regular-expression and case-insensitive regular-expression respectively.
+
+
+request-matcher-ref A reference to a bean that implements RequestMatcher that will determine if this FilterChain should be used. This is a more powerful alternative to pattern.
+
+Example--><csrf request-matcher-ref="excludeUrlRequestMatcher" />
+
+than we will make a bean -------> for request matcher to include or exlude whatever u want to perform operation on it..
+
+public class ExcludeUrlRequestMatcher implements RequestMatcher
+{
+	private static final Logger LOG = Logger.getLogger(ExcludeUrlRequestMatcher.class);
+
+	private Set<String> excludeUrlSet;
+	private PathMatcher pathMatcher;
+
+	@Override
+	public boolean matches(final HttpServletRequest request)
+	{
+		// Do not match patterns specified in the excludeUrlSet to the servletPath
+		for (final String excludeUrl : getExcludeUrlSet())
+		{
+			if (getPathMatcher().match(excludeUrl, request.getServletPath()))
+			{
+				// Found an exclude pattern
+				return false;
+			}
+		}
+
+		// Not found an exclude URL that matched therefore ok to proceed
+		return true;
+	}
+
+	protected Set<String> getExcludeUrlSet()
+	{
+		return excludeUrlSet;
+	}
+
+	@Required
+	public void setExcludeUrlSet(final Set<String> excludeUrlSet)
+	{
+		final Set<String> validUrls = new HashSet<String>();
+
+		// Ensure only valid urls are added to the excludeUrlSet
+		for (final String url : excludeUrlSet)
+		{
+			if (url.charAt(0) == '/')
+			{
+				validUrls.add(url);
+			}
+			else
+			{
+				LOG.warn("Ignoring ExcludeUrl [" + url + "] as it is not valid");
+			}
+		}
+
+		this.excludeUrlSet = validUrls;
+	}
+
+	protected PathMatcher getPathMatcher()
+	{
+		return pathMatcher;
+	}
+
+	@Required
+	public void setPathMatcher(final PathMatcher pathMatcher)
+	{
+		this.pathMatcher = pathMatcher;
+	}
+}
+
+-->dont forget to add bean===>
+
+<bean id="excludeRedirectUrlRequestMatcher" class="com.gorillagroup.storefront.security.ExcludeUrlRequestMatcher">
+	<property name="excludeUrlSet">
+		<set>
+			<value>.*/guest/.*</value>
+			<value>.*/orderConfirmation/.*</value>
+			<value>.*/login</value>
+			<value>.*/login/checkout</value>
+		</set>
+	</property>
+	<property name="pathMatcher" ref="defaultPathMatcher" />
+	</bean>
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
+
+expression used in spring-security
+=> to use expression we have to--><http use-expressions="true">
+
+*)hasRole([role])		-->Returns true if the current principal has the specified role.
+*)hasAnyRole([role1,role2])	-->Returns true if the current principal has any of the supplied roles (given as a comma-separated list of strings)
+*)authentication		-->Allows direct access to the current Authentication object obtained from the SecurityContext....
+*)permitAll			-->Always evaluates to true
+*)denyAll			-->Always evaluates to false
+*)isAnonymous()			-->Returns true if the current principal is an anonymous user  
+*)isRememberMe()		-->Returns true if the current principal is a remember-me user
+*)isAuthenticated()		-->Returns true if the user is not anonymous
+*)isFullyAuthenticated()	-->Returns true if the user is not an anonymous or a remember-me user
+
+we can fetch username in many ways-->
+=UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+=System.out.println("User has authorities: " + userDetails.getAuthorities());
+=Principal principal = request.getUserPrincipal();
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
+===========================================================================================================================================================================================
+The AuthenticationManager is just an interface, so the implementation can be anything we choose, but how does it work in practice?
+
+The default implementation in Spring Security is called ProviderManager and rather than handling the authentication request itself, 
+it delegates to a list of configured AuthenticationProviders, each of which is queried in turn to see if it can perform the authentication.
+
+<bean id="authenticationManager"
+     class="org.springframework.security.authentication.ProviderManager">
+  <property name="providers">
+    <list>
+      <ref local="daoAuthenticationProvider"/>
+      <ref local="anonymousAuthenticationProvider"/>
+      <ref local="ldapAuthenticationProvider"/>
+    </list>
+  </property>
+</bean>
+
+<bean id="daoAuthenticationProvider"
+    class="org.springframework.security.authentication.dao.DaoAuthenticationProvider">
+  <property name="userDetailsService" ref="inMemoryDaoImpl"/>
+  <property name="saltSource" ref="saltSource"/>
+  <property name="passwordEncoder" ref="passwordEncoder"/>
+</bean>
+
+A SaltSource enables the passwords to be populated with a "salt", which enhances the security of the passwords in the authentication repository.
+In cryptography, a salt is random data that is used as an additional input to a one-way function that "hashes" data, a password or passphrase..
+
+Erasing Credentials on Successful Authentication==>to prevent information like passwords being retained longer than necessary.
+
+This feature is controlled by the **eraseCredentialsAfterAuthentication** property on ProviderManager.
+
+<authentication-manager erase-credentials="false">
+
+**)In-Memory Authentication
+Is easy to use create a custom UserDetailsService implementation that extracts information from a persistence engine of choice, 
+but many applications do not require such complexity. This is particularly true if you're building a prototype application or just starting integrating Spring Security, 
+when you don't really want to spend time configuring databases or writing UserDetailsService implementations. 
+For this sort of situation, a simple option is to use the user-service element from the security namespace:
+
+  <user-service id="userDetailsService">
+    <user name="jimi" password="jimispassword" authorities="ROLE_USER, ROLE_ADMIN" />
+    <user name="bob" password="bobspassword" authorities="ROLE_USER" />
+  </user-service>
+  
+                    
+This also supports the use of an external properties file:=>
+
+<user-service id="userDetailsService" properties="users.properties"/>
+  
+The properties file should contain entries in the form=>
+
+username=password,grantedAuthority[,grantedAuthority][,enabled|disabled]
+For example
+
+jimi=jimispassword,ROLE_USER,ROLE_ADMIN,enabled
+bob=bobspassword,ROLE_USER,enabled
+
+<authentication-manager>
+        <authentication-provider>
+            <user-service>
+                <user name="admin" password="admin" authorities="ROLE_ADMIN" />
+                <user name="member" password="member" authorities="ROLE_MEMBER" />
+            </user-service>
+        </authentication-provider>
+    </authentication-manager>
+
+===========================================================================================================================================================================================
+
+                                                     ***Jdbc Implementation Of Provider***
+Table Structure for Spring Security
+-- ----------------------------
+-- Table structure for `tbl_users`
+-- ----------------------------
+DROP TABLE IF EXISTS `tbl_users`;
+CREATE TABLE `tbl_users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `username` varchar(100) NOT NULL,
+  `password` varchar(20) NOT NULL,
+  `enabled` int(1) NOT NULL,
+  PRIMARY KEY (`id`)
+);
+
+-- ----------------------------
+-- Table structure for `tbl_user_role`
+-- ----------------------------
+DROP TABLE IF EXISTS `tbl_user_role`;
+CREATE TABLE `tbl_user_role` (
+  `userid` int(11) NOT NULL, foreignkey
+  `rolename` varchar(100) NOT NULL
+) ;
+
+Example==>
+<authentication-manager alias="authenticationManager">
+    <authentication-provider>
+        <jdbc-user-service data-source-ref="dataSource"
+ 
+       users-by-username-query="
+         SELECT USERNAME, PASSWORD, CASE ENABLED WHEN 1 THEN 'true' ELSE 'false' END 'ENABLED'
+         FROM TBL_USERS
+         WHERE USERNAME=?;"
+ 
+       authorities-by-username-query="
+        SELECT u.USERNAME, r.ROLENAME
+        FROM TBL_USERS u, TBL_USER_ROLE r
+        WHERE u.ID = r.USERID
+        AND u.USERNAME=?;"
+ 
+        />
+    </authentication-provider>
+</authentication-manager>
+
+Another Way==>
+
+U can pass it in userDetail Service and use user-service-ref to find user by loadUserByUsername(String method)====>
+
+<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+  <property name="driverClassName" value="org.hsqldb.jdbcDriver"/>
+  <property name="url" value="jdbc:hsqldb:hsql://localhost:9001"/>
+  <property name="username" value="sa"/>
+  <property name="password" value=""/>
+</bean>
+
+<bean id="userDetailsService" class="org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl">     //pass it is as a reference
+  <property name="dataSource" ref="dataSource"/>
+</bean>        
+
+
+                                                       ***********Password Encoding**************************
+
+This will normally mean that the passwords are “hashed” using a digest algorithm such as MD5 or SHA.
+
+6.3.1 What is a hash?
+Password hashing is not unique to Spring Security but is a common source of confusion for users who are not familiar with the concept. 
+A hash (or digest) algorithm is a one-way function which produces a piece of fixed-length output data (the hash) from some input data, such as a password. 
+As an example, the MD5 hash of the string “password” (in hexadecimal) is
+
+    5f4dcc3b5aa765d61d8327deb882cf99
+
+A hash is “one-way” in the sense that it is very difficult (effectively impossible) to obtain the original input given the hash value, 
+or indeed any possible input which would produce that hash value.
+
+Note that this also means you have no way of recovering the password once it is encoded.
+
+===========================================================================================================================================================================================
+                                                           **********Filters and filter-chain*****************
+
+The order that filters are defined in the chain is very important. 
+Irrespective of which filters you are actually using, the order should be as follows:=>
+
+*)ChannelProcessingFilter, =>because it might need to redirect to a different protocol
+e.g.===>you want to switch from http to https
+
+*)SecurityContextPersistenceFilter =>so a SecurityContext can be set up in the SecurityContextHolder at the beginning of a web request, 
+and any changes to the SecurityContext can be copied to the HttpSession when the web request ends (ready for use with the next web request)
+e.g==>we have to send username and password to authentication Interface..so it will setup context for this and pass later to any authentication filter..
+The most important configuration parameter for this implementation is the allowSessionCreation property..which default==>true
+
+*)ConcurrentSessionFilter=> because it uses the SecurityContextHolder functionality and needs to update the SessionRegistry to reflect ongoing requests from the principal
+e.g==>If you use the concurrency-control namespace element, a ConcurrentSessionFilter will be added to the filter chain automatically
+<security:session-management> 
+<security:concurrency-control error-if-maximum-exceeded="true" max-sessions="1"/>   ///activate filter
+</security:session-management>
+
+Spring Security is able to prevent a principal from concurrently authenticating to the same application more than a specified number of times.
+another way==>(custom)
+To use concurrent session support
+you will need to add the ConcurrentSessionFilter to your FilterChainProxy. The ConcurrentSessionFilter requires two properties,
+sessionRegistry, 
+which generally points to an instance of SessionRegistryImpl, 
+and expiredUrl, 
+which points to the page to display when a session has expired. 
+A configuration using the namespace to create the FilterChainProxy and other default beans might look like this:
+
+<http>
+
+    <custom-filter position="CONCURRENT_SESSION_FILTER" ref="concurrencyFilter" />
+ 
+    <session-management session-authentication-strategy-ref="sas"/>
+
+  </http>
+
+ 
+
+  <beans:bean id="concurrencyFilter"
+
+      class="org.springframework.security.web.session.ConcurrentSessionFilter">
+
+    <beans:property name="sessionRegistry" ref="sessionRegistry" />
+
+    <beans:property name="expiredUrl" value="/session-expired.htm" />
+
+  </beans:bean>
+
+ 
+**)Authentication processing mechanisms - UsernamePasswordAuthenticationFilter, CasAuthenticationFilter, BasicAuthenticationFilter etc ==>
+so that the SecurityContextHolder can be modified to contain a valid Authentication request token
+
+**)The SecurityContextHolderAwareRequestFilter =>if you are using it to install a Spring Security aware HttpServletRequestWrapper into your servlet container
+A Filter which populates the ServletRequest with a request wrapper which implements the servlet API security methods.
+e.g.)
+HttpServletRequest.authenticate(HttpServletResponse) - Allows the user to determine if they are authenticated and if not send the user to the login page. See setAuthenticationEntryPoint(AuthenticationEntryPoint).
+HttpServletRequest.login(String, String) - Allows the user to authenticate using the AuthenticationManager. See setAuthenticationManager(AuthenticationManager).
+HttpServletRequest.logout() - Allows the user to logout using the LogoutHandlers configured in Spring Security. See setLogoutHandlers(List).
+
+The JaasApiIntegrationFilter==>if a JaasAuthenticationToken is in the SecurityContextHolder this will process the FilterChain as the Subject in the JaasAuthenticationToken
+
+RememberMeAuthenticationFilter==>so that if no earlier authentication processing mechanism updated the SecurityContextHolder, 
+and the request presents a cookie that enables remember-me services to take place, a suitable remembered Authentication object will be put there
+
+AnonymousAuthenticationFilter==> so that if no earlier authentication processing mechanism updated the SecurityContextHolder, an anonymous Authentication object will be put there
+
+ExceptionTranslationFilter==> to catch any Spring Security exceptions so that either an HTTP error response can be returned or an appropriate AuthenticationEntryPoint can be launched
+
+FilterSecurityInterceptor==>to protect web URIs and raise exceptions when access is denied
+We've already seen FilterSecurityInterceptor briefly when discussing access-control in general, 
+and we've already used it with the namespace where the <intercept-url> elements are combined to configure it internally.
+Take help of Exception Translater Filter..
+
+                                              ****************Creating the Filter*****************
+
+Spring Security provides a number of filters by default, and most of the time, these are enough.
+
+But of course sometimes it’s necessary to implement new functionality with create a new filter to use in the chain.
+
+The GenericFilterBean is a simple javax.servlet.Filter implementation implementation that is Spring aware.
+
+Here are all attributes to specify exactly a place your filter in the stack:
+
+after – describes the filter immediately after which a custom filter will be placed in the chain
+before – defines the filter before which our filter should be placed in the chain
+position – allows replacing a standard filter in the explicit position by a custom filter
+
+<http>
+    <custom-filter after="BASIC_AUTH_FILTER" ref="myFilter" />
+</http>
+ 
+<beans:bean id="myFilter" class="org.baeldung.security.filter.CustomFilter"/>
+
+Does configuring two http elements create two springSecurityFitlerChains?
+Yes, that's true
+
+
+===========================================================================================================================================================================================
+                                                    **********************Remember-Me Authentication*********************
+
+Remember-me or persistent-login authentication refers to web sites being able to remember the identity of a principal between sessions. 
+This is typically accomplished by sending a cookie to the browser, 
+with the cookie being detected during future sessions and causing automated login to take place. 
+Spring Security provides the necessary hooks for these operations to take place, 
+and has two concrete remember-me implementations. One uses hashing to preserve the security of cookie-based tokens and 
+the other uses a database or other persistent storage mechanism to store the generated tokens.
+
+Note that both implemementations require a UserDetailsService. 
+If you are using an authentication provider which doesn't use a UserDetailsService (for example, the LDAP provider) then it won't work unless 
+you also have a UserDetailsService bean in your application context.
+
+Simple Hash-Based Token Approach==>
+
+This approach uses hashing to achieve a useful remember-me strategy. 
+After being logged in,In essence a cookie is sent to the browser upon successful interactive authentication, with the cookie being composed as follows:
+
+    base64(username + ":" + expirationTime + ":" +
+             md5Hex(username + ":" + expirationTime + ":" password + ":" + key))
+
+    username:          As identifiable to the UserDetailsService
+    password:          That matches the one in the retrieved UserDetails
+    expirationTime:    The date and time when the remember-me token expires,
+                       expressed in milliseconds
+    key:               A private key to prevent modification of the remember-me token
+
+As such the remember-me token is valid only for the period specified, and provided that the username, password and key does not change. 
+
+ <http>
+    ...
+    <remember-me key="myAppKey"/>                                           /////////////////////
+  </http>
+  
+                
+The UserDetailsService will normally be selected automatically. 
+If you have more than one in your application context, you need to specify which one should be used with the user-service-ref attribute, 
+where the value is the name of your UserDetailsService bean.
+
+Example==>
+ Use a database to store the generated tokens
+
+a)Create a table with name persistent_logins to save tokens. So we need to specify a datasource for remember-me configuration.
+
+
+create table persistent_logins (
+	username varchar(64) not null, 
+	series varchar(64) primary key,                                              /////////////////
+	token varchar(64) not null,
+	last_used timestamp not null
+)
+
+ <!-- enable remember me -->
+    <remember-me 
+        token-validity-seconds="1209600"
+	remember-me-parameter="remember-me"                       ///////////////////
+	data-source-ref="dataSource" />
+
+b)make xml
+
+<http auto-config="true" use-expressions="true">
+    <intercept-url pattern="/admin**" access="hasRole('ROLE_ADMIN')" />
+
+    <form-login login-page="/login" 
+	default-target-url="/welcome"
+	authentication-failure-url="/login?error" 
+	username-parameter="username"
+	password-parameter="password" 
+	login-processing-url="/auth/login_check"
+	authentication-success-handler-ref="savedRequestAwareAuthenticationSuccessHandler" />
+
+    <logout logout-success-url="/login?logout" delete-cookies="JSESSIONID" />                        ///////vvipppp
+    <csrf />
+
+    <!-- enable remember me -->
+    <remember-me 
+        token-validity-seconds="1209600"
+	remember-me-parameter="remember-me" 
+	data-source-ref="dataSource" />
+
+  </http>
+=========================================================================================================================================================================================== 
+                                                             *************SessionManagementFilter****************
+
+The SessionManagementFilter checks the contents of the SecurityContextRepository against the current contents of the SecurityContextHolder to determine 
+whether a user has been authenticated during the current request, typically by a non-interactive authentication mechanism, 
+such as pre-authentication or remember-me [16]. If the repository contains a security context, the filter does nothing. 
+If it doesn't, and the thread-local SecurityContext contains a (non-anonymous) Authentication object, the filter assumes they have been authenticated by a previous filter in the stack. 
+It will then invoke the configured SessionAuthenticationStrategy.
+
+If the user is not currently authenticated, the filter will check whether an invalid session ID has been requested (because of a timeout, for example) and 
+will redirect to the configured invalidSessionUrl if set..
+
+Concurrency Control==>
+Spring Security is able to prevent a principal from concurrently authenticating to the same application more than a specified number of times. 
+Many ISVs take advantage of this to enforce licensing, whilst network administrators like this feature because it helps prevent people from sharing login names.
+You can, for example, stop user “Batman” from logging onto the web application from two different sessions. 
+You can either expire their previous login or you can report an error when they try to log in again, preventing the second login. Note that if you are using the second approach, 
+a user who has not explicitly logged out (but who has just closed their browser, for example) will not be able to log in again until their original session expires.
+
+
+<session-management invalid-session-url="/logout.html">
+    <concurrency-control max-sessions="1" error-if-maximum-exceeded="true" />
+</session-management>
+
+Example==>
+<http>
+  <session-management>
+    <concurrency-control
+       max-sessions="1"\
+       expired-url="/your-page-here" />                    same as invalid session-url
+  </session-management>
+</http>
+
+===========================================================================================================================================================================================
+                                          ************************<global-method-security> **************************
+
+This element is used to enable annotation-based security in your application (by setting the appropriate attributes on the element), 
+and also to group together security pointcut declarations which will be applied across your entire application context. 
+***********You should only declare one <global-method-security> element. The following declaration would enable support for Spring Security’s @Secured:
+
+<global-method-security secured-annotations="enabled" />
+
+Example==>
+@Secured("IS_AUTHENTICATED_ANONYMOUSLY")
+public Account readAccount(Long id);
+
+Spring’s basic support is for these levels:
+
+URL level security                         //already discussed above
+Method level security                      //<global-method-security pre-post-annotations="enabled" /
+Entity or Object level security..
+
+
+
+method level==>@PreAuthorize and @Secured.
+
+<global-method-security secured-annotations="enabled" />  // only @Secured
+
+These annotations take one string parameter which is either is role-name or expression, 
+and which one to use depends on your configuration for <http> element’s use-expression value.
+
+If use-expression is set to true, then you should use expressions inside the annotation otherwise role name should be used directly.
+Expression-based annotations are a good choice if you need to define simple rules that go beyond checking the role names against the user’s list of authorities
+
+I want that user with role admin can only add an employee to employees collection. Rest other operations are allowed as before. To do so, I will annotate add method
+
+ @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Override
+    public void addEmployee(EmployeeEntity employee) {
+        //System.out.println(((User)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getAuthorities());
+        this.sessionFactory.getCurrentSession().save(employee);
+    }
+
+@PreAuthorize annotation will test that if logged in used has the ‘ROLE_ADMIN‘ authority or not. If user has not this authority, an access denied exception will be thrown.
+
+
+If you wanted to do something like access the method only if the user has Role1 and Role2 then you would have to use @PreAuthorize
+
+@PreAuthorize("hasRole('ROLE_role1') and hasRole('ROLE_role2')")
+Using
+
+@Secured({"role1", "role2"}) // is treated as an OR
+
+Using @PreFilter and @PostFilter Annotations
+Spring Security provides the @PreFilter annotation to filter a collection argument before executing the method:
+
+@PreFilter("filterObject != authentication.principal.username")
+public String joinUsernames(List<String> usernames) {
+    return usernames.stream().collect(Collectors.joining(";"));
+}
+In this example, we’re joining all usernames except for the one who is authenticated.
+
+Here, our expression uses the name filterObject to represent the current object in the collection.
+
+However, if the method has more than one argument which is a collection type, we need to use the filterTarget property to specify which argument we want to filter:
+
+@PreFilter
+  (value = "filterObject != authentication.principal.username",
+  filterTarget = "usernames")
+public String joinUsernamesAndRoles(
+  List<String> usernames, List<String> roles) {
+  
+    return usernames.stream().collect(Collectors.joining(";")) 
+      + ":" + roles.stream().collect(Collectors.joining(";"));
+}
+Additionally, we can also filter the returned collection of a method by using @PostFilter annotation:
+
+@PostFilter("filterObject != authentication.principal.username")
+public List<String> getAllUsernamesExceptCurrent() {
+    return userRoleRepository.getAllUsernames();
+}
+In this case, the name filterObject refers to the current object in the returned collection.
+
+With that configuration, Spring Security will iterate through the returned list and remove any value which matches with the principal’s username.
+
+***********************Spring Method Security with protect-pointcut
+Spring security provides pointcuts to allow security in service layer of application. All methods of more than one class can be secured just by matching a pattern. 
+In this way by small code, we secure many classes in one go. 
+
+<global-method-security >
+    <protect-pointcut expression="execution(* com.concretepage.service.*Service.*(..))"
+         access="ROLE_USER"/>
+</global-method-security>
+
+The configuration says that the classes whose name ended with Service and lying within the package com.concretepage.service can be access only with ROLE_USER. 
+
+// WE use this to get authorities
+
+Collection<GrantedAuthority> authorities = (Collection<GrantedAuthority>)SecurityContextHolder.getContext().getAuthentication().getAuthorities();///Cpmmonly Used
+===========================================================================================================================================================================================
+
+===========================================================================================================================================================================================
+JAS vs CAS vs SAS Authentication
+===========================================================================================================================================================================================
+Let’s understand the above problem with below diagram
+me(xyz.com)-------------------------------------------------------->loginthroughfacebook------>xyz.com/home-page
+
+==>Lets understand “Without OAuth” Flow
+
+xyz.com asks for the user to login into xyz.com through his/her Facebook credentials.
+
+This is generally provided to avoid the registration process with xyz.com
+
+As soon as user clicks on login with facebook, xyz.com presents a login page of its own to collect facebook credentials.
+
+User provides facebook credentials to xyz.com , now xyz.com gets the user’s details from Facebook using these crednetials.
+
+In this case, user has compromised his/her facebook credentials with xyz.com even though xyz.com displays a message saying that
+credentials will not be misused.
+
+==>Lets understand “With OAuth” Flow
+
+xyz.com asks for the user to login into xyz.com through Facebook credentials.
+
+As soon as user clicks on login with facebook, xyz.com redirects to facebook login page
+
+Since it is a Facebook Login page, User can trust facebook easily and enters facebook credentials in facebook login page,
+Now facebook page will asks for the permission to provide access to required details and same details will be sent back to xyz.com.
+
+In this way, user’s credentials of facebook is not shared with xyz.com and still user can login to xyz.com without registering in xyz.com.
+
+
+Now Let’s understand this in technical terms how OAUTH makes it happen
+
+What is OAUTH?
+
+The OAuth is an authorization framework which allows third-party applications to obtain limited access to an HTTP service, 
+either on behalf of a resource owner or by allowing the third-party application to obtain access on its own behalf.
+
+Access will be requested by a client,for example, it can be a web application, desktop application or mobile application.
+
+Many applications in real world have implemented OAUTH to expose their secured HTTP services, some of which are Google, Facebook and GitHub.
+
+Any third party application who wants to access these secured HTTP services has to follow the OAUTH protocol standards.
+
+In simple words,
+When any third party application (example xyz.com) tries to access the secured service (example facebook profile)
+OAUTH provides different set of credentials to thrird party instead of actual facebook’s credentials.
+
+These different set of credentials are access token and refresh token in OAUTH words.
+
+Client use these credentials to communicate with the secured service.
+
+
+*****OAUTH defines 4 roles
+
+**OAUTH_roles
+
+
+1. Resource owner
+
+As the name indicates, it’s the owner of the resource who is capable of granting access to a protected resource.
+
+Example : It could be end user(owner of facebook profile)==>me
+
+2. Authorization server
+
+The server issuing access tokens to the client only after successfully authenticating the resource owner and obtaining authorization.
+
+Example:Facebook server
+
+Resource server will be same as authorization server in most of the cases.
+
+3. Resource server
+
+The server hosting the protected resources, capable of accepting and responding to protected resource requests through HTTP service using access tokens.
+
+Example : Facebook server
+
+
+4. Client
+
+It’s an application making requests to protected resource on behalf of the resource owner with its authorization.
+
+Example:-->xyz.com
+
+It could be mobile app asking our permission to access our Facebook feeds
+
+REST client trying to access a secured REST API
+
+Web site providing an alternative login option using Facebook or Gmail account.
+
+
+
+Tokens
+Tokens are random strings generated by authorization server and they are issued to client whenever client request for it using authentication.
+
+Types of tokens
+
+tokens
+
+
+1. Access Token
+
+These are the credentials used by client to access the secured resource.
+
+Access tokens sent with each request and valid for very short time
+
+
+2. Refresh token
+
+These are the credentials used by client to obtain the access token whenever the current access token becomes invalid or expires.
+
+**)Refresh tokens will not be sent with each request and they usually live longer than access tokens.
+
+Refresh tokens are issued by authorization server to client while sending access token for the first time.
+
+And it is stored in database-->
+
+**=>ALL OVER FLOW--->
+
+1. Client(xyz.com) makes a request to resource owner(me) to get authorization grant.
+It can be made directly to resource owner or indirectly via authrorization server(fbk).
+
+2. If resource owner(me) authorizes the request, Client(xyz.com) receives the authorization grant
+which is a credential representing the resource owner’s authorization expressed using one of the 4 defined Grant types.
+
+3. The client requests an access token from the authorization server by presenting authentication of its own identity, and the authorization grant.
+
+4. If the client identity is authenticated and the authorization grant is valid, the authorization server issues an access token to the client.
+
+5. The client requests the secured resource from the resource server by presenting the access token.
+
+6. The resource server validates the provided access token, and if valid, serves the request.
+
+
+more==>http://tutorials.jenkov.com/oauth2/roles.html      ///////////must revise this link before going to oauth 2
+======================================================================================================================>
+
+=======================================================================================================================================================================================>
+SiteMinder==>when user is authenticated in already another products and it want to access in our product...just fetch from cookies and check is authorization in database...
+
+=======================================================================================================================================================================================>
+Jsp tags For Spring Security==>
+
+<%@ taglib uri="http://www.springframework.org/security/tags" prefix="security" %>
+
+Spring provide basically 3 tags for securing view layer information i.e.
+
+authorize tag
+authenticate tag
+accesscontrollist tag
+
+1) authorize tag:
+This tag is used to determine whether its contents should be evaluated or not. 
+This tag has two flavors i.e. securing information based on user’s role or securing information based on user’s permission to access a particular URL.
+
+<security:authorize ifAnyGranted="ROLE_ADMIN">
+    <tr>
+        <td colspan="2">
+            <input type="submit" value="<spring:message code="label.add"/>"/>
+        </td>
+    </tr>
+</security:authorize>
+ 
+OR
+ 
+<security:authorize url="/admin">
+    <tr>
+        <td colspan="2">
+            <input type="submit" value="<spring:message code="label.add"/>"/>
+        </td>
+    </tr>
+</security:authorize>
+
+or
+<sec:authorize access="hasRole('ADMIN') and hasRole('DBA')">
+            <label><a href="#">Start backup</a> | This part is visible only to one who is both ADMIN & DBA</label>
+        </sec:authorize>
+
+2)authenticate tag:
+This tag allows access to the current Authentication object stored in the security context.      /////////
+It renders a property of the object directly in the JSP. So, for example, 
+if the principal property of the Authentication is an instance of Spring Security’s UserDetails object, 
+then using <sec:authentication property=”principal.username”></sec:authentication> will render the name of the current user.
+
+This tag is not for security purpose directly, but it can be used for accessing information which can be used for view layer security.
+
+<security:authentication property="principal.username" />
+
+3)accesscontrollist tag
+This tag is only valid when used with Spring Security’s ACL module. It checks a comma-separated list of required permissions for a specified domain object.
+If the current user has any of those permissions, then the tag body will be evaluated. If they don’t, it will be skipped.
+
+<sec:accesscontrollist hasPermission="1,2" domainObject="someObject">
+    This will be shown if the user has either of the permissions
+    represented by the values "1" or "2" on the given object.
+</sec:accesscontrollist>
+

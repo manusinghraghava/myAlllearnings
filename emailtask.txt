@@ -1,0 +1,230 @@
+created email-process for every step
+
+1)defined in core-spring..
+
+2)create template
+
+resources/lynxvietnaminitialdata/import/coredata/contentCatalogs/amwayvietnamContentCatalog/email-content.impex
+
+;;PaymentConfirmationEmailTemplate;Payment Confirmation Email Template;true;paymentConfirmationEmail;email_Payment_Confirmation_Subject;email_Payment_Confirmation_Body;EmailPage
+;;DeliveryConfirmationEmailTemplate;Delivery Confirmation Email Template;true;deliveryConfirmationEmail;email_Delivery_Confirmation_Subject;email_Delivery_Confirmation_Body;EmailPage
+
+INSERT_UPDATE ContentSlotName;name[unique=true];template(uid,$contentCV)[unique=true][default='PaymentConfirmationEmailTemplate'];validComponentTypes(code)
+;SiteLogo;;;logo
+;TopContent;;$wideContent;
+;BottomContent;;$wideContent;
+INSERT_UPDATE ContentSlotName;name[unique=true];template(uid,$contentCV)[unique=true][default='DeliveryConfirmationEmailTemplate'];validComponentTypes(code)
+;SiteLogo;;;logo
+;TopContent;;$wideContent;
+;BottomContent;;$wideContent;
+
+
+INSERT_UPDATE ContentSlotForTemplate;$contentCV[unique=true];uid[unique=true];position[unique=true];pageTemplate(uid,$contentCV)[unique=true][default='PaymentConfirmationEmailTemplate'];contentSlot(uid,$contentCV)[unique=true];allowOverwrite
+;;SiteLogo-PaymentConfirmationEmail;SiteLogo;;EmailSiteLogoSlot;true
+;;TopContent-PaymentConfirmationEmail;TopContent;;EmailTopSlot;true
+;;BottomContent-PaymentConfirmationEmail;BottomContent;;EmailBottomSlot;true
+
+INSERT_UPDATE ContentSlotForTemplate;$contentCV[unique=true];uid[unique=true];position[unique=true];pageTemplate(uid,$contentCV)[unique=true][default='DeliveryConfirmationEmailTemplate'];contentSlot(uid,$contentCV)[unique=true];allowOverwrite
+;;SiteLogo-DeliveryConfirmationEmailTemplate;SiteLogo;;EmailSiteLogoSlot;true
+;;TopContent-DeliveryConfirmationEmailTemplate;TopContent;;EmailTopSlot;true
+;;BottomContent-DeliveryConfirmationEmailTemplate;BottomContent;;EmailBottomSlot;true
+
+INSERT_UPDATE EmailPage;$contentCV[unique=true];uid[unique=true];name;masterTemplate(uid,$contentCV);defaultPage;approvalStatus(code)[default='approved']
+;;CustomerRegistrationEmail;Customer Registration Email;CustomerRegistrationEmailTemplate;true;
+;;ForgottenPasswordEmail;Forgotten Password Email;ForgottenPasswordEmailTemplate;true;
+;;CustomerRegistrationPasswordEmail;Customer Registration Password Email;CustomerRegistrationPasswordEmailTemplate;true;
+;;OrderConfirmationEmail;Order Confirmation Email;OrderConfirmationEmailTemplate;true;
+;;PaymentConfirmationEmail;Order Confirmation Email;PaymentConfirmationEmailTemplate;true;
+;;DeliveryConfirmationEmail;Order Confirmation Email;DeliveryConfirmationEmailTemplate;true;
+
+
+INSERT_UPDATE RendererTemplate;code[unique=true];contextClass;rendererType(code)[default='velocity']
+;electronics_Email_Customer_Registration_Body;$emailPackageName.CustomerEmailContext
+;electronics_Email_Forgotten_Password_Body;$emailPackageName.ForgottenPasswordEmailContext
+;electronics_Email_Order_Confirmation_Body;$emailPackageName.OrderNotificationEmailContext
+;email_Payment_Confirmation_Subject;$emailPackageName.PaymentConfirmationEmailContext
+;email_Payment_Confirmation_Body;$emailPackageName.PaymentConfirmationEmailContext
+;email_Delivery_Confirmation_Subject;$emailPackageName.DeliveryConfirmationEmailContext
+;email_Delivery_Confirmation_Body;$emailPackageName.DeliveryConfirmationEmailContext
+
+
+
+created contexts..
+
+D:\amway\hybris\bin\custom\lynxfacades\src\com\amway\lynx\facades\process\email\context\OrderNotificationEmailContext.java
+D:\amway\hybris\bin\custom\lynxfacades\src\com\amway\lynx\facades\process\email\context\PaymentConfirmationEmailContext.java
+
+
+
+
+
+created related vm
+
+# CMS components and Email velocity templates
+UPDATE RendererTemplate;code[unique=true];description[lang=$lang];templateScript[lang=$lang,translator=de.hybris.platform.commerceservices.impex.impl.FileLoaderValueTranslator]
+;email_Payment_Confirmation_Subject;"email Payment Confirmation Subject";$emailResource/email_Payment_Confirmation_Subject.vm
+;email_Payment_Confirmation_Body;"email Payment Confirmation Body";$emailResource/email_Payment_Confirmation_Body.vm
+;email_Delivery_Confirmation_Subject;"email Delivery Confirmation Subject";$emailResource/email_Delivery_Confirmation_Subject.vm
+;email_Delivery_Confirmation_Body;"email Delivery Confirmation Body";$emailResource/email_Delivery_Confirmation_Body.vm 
+
+
+
+
+Create respective event and event listener.
+==================================================================================================================================================
+------------------------------------------------------------------------------------
+1)working on orderconfirmation
+
+#email-content.impex
+
+$contentCatalog=amwayvietnamContentCatalog
+$contentCV=catalogVersion(CatalogVersion.catalog(Catalog.id[default=$contentCatalog]),CatalogVersion.version[default=Online])[default=$contentCatalog:Online]
+$wideContent=CMSImageComponent,BannerComponent
+
+UPDATE GenericItem[processor=de.hybris.platform.commerceservices.impex.impl.ConfigPropertyImportProcessor];pk[unique=true]
+$emailPackageName=com.amway.lynx.facades.process.email.context
+
+INSERT_UPDATE Media;$contentCV[unique=true];code[unique=true];realfilename;mediaFormat(qualifier)[default=desktop];@media[translator=de.hybris.platform.impex.jalo.media.MediaDataTranslator];mime[default='image/jpeg'];altText;folder(qualifier)[default='images']
+;;logo1.png;logo1.png;;$siteResource/logo1.png;image/png;Header image;
+
+  
+INSERT_UPDATE SimpleBannerComponent ; $contentCV[unique=true] ; uid[unique=true]       ; name                      ; &componentRef          ; urlLink
+                                    ;                         ; TopHeaderLogoComponent ; Top Header Logo Component ; TopHeaderLogoComponent ; "/"    
+
+
+
+
+UPDATE SimpleBannerComponent;$contentCV[unique=true];uid[unique=true];$picture[lang=$lang]
+;;TopHeaderLogoComponent;topHeaderLogoImage
+
+INSERT_UPDATE ContentSlot ; $contentCV[unique=true] ; uid[unique=true] ; cmsComponents(&componentRef)
+                          ;                         ; AmwayEmailSiteLogoSlot     ; TopHeaderLogoComponent   
+
+
+INSERT_UPDATE EmailPageTemplate;$contentCV[unique=true];uid[unique=true];name;active;frontendTemplateName;subject(code);htmlTemplate(code);restrictedPageTypes(code)
+;;OrderConfirmationEmailTemplate;Order Confirmation Email Template;true;orderConfirmationEmail;electronics_Email_Order_Confirmation_Subject;electronics_Email_Order_Confirmation_Body;EmailPage
+
+
+INSERT_UPDATE ContentSlotName;name[unique=true];template(uid,$contentCV)[unique=true][default='OrderConfirmationEmailTemplate'];validComponentTypes(code)
+;SiteLogo;;;logo
+;TopContent;;$wideContent;
+;BottomContent;;$wideContent;
+
+
+INSERT_UPDATE ContentSlotForTemplate;$contentCV[unique=true];uid[unique=true];position[unique=true];pageTemplate(uid,$contentCV)[unique=true][default='OrderConfirmationEmailTemplate'];contentSlot(uid,$contentCV)[unique=true];allowOverwrite
+;;SiteLogo-OrderConfirmationemail;SiteLogo;;AmwayEmailSiteLogoSlot;true
+;;TopContent-OrderConfirmationEmail;TopContent;;EmailTopSlot;true
+;;BottomContent-OrderConfirmationEmail;BottomContent;;EmailBottomSlot;true
+
+
+INSERT_UPDATE EmailPage;$contentCV[unique=true];uid[unique=true];name;masterTemplate(uid,$contentCV);defaultPage;approvalStatus(code)[default='approved']
+;;OrderConfirmationEmail;Order Confirmation Email;OrderConfirmationEmailTemplate;true;
+
+INSERT_UPDATE RendererTemplate;code[unique=true];contextClass;rendererType(code)[default='velocity']
+;electronics_Email_Order_Confirmation_Body;$emailPackageName.OrderNotificationEmailContext
+;electronics_Email_Order_Confirmation_Subject;$emailPackageName.OrderNotificationEmailContext
+
+
+
+
+--------------------------------------------------------------------------------------------
+#%impex.enableCodeExecution(true)
+#%impex.enableExternalSyntaxParsing(true)
+#%impex.includeExternalData(ImpExManager.class.getResourceAsStream("/lynxvietnaminitialdata/import/coredata/common/macros-definition.impex"), "UTF-8", 0)
+
+$contentCatalog=amwayvietnamContentCatalog
+$contentCV=catalogVersion(CatalogVersion.catalog(Catalog.id[default=$contentCatalog]),CatalogVersion.version[default=Online])[default=$contentCatalog:Online]
+$wideContent=CMSImageComponent,BannerComponent
+UPDATE GenericItem[processor=de.hybris.platform.commerceservices.impex.impl.ConfigPropertyImportProcessor];pk[unique=true]
+$emailResourceValueVN=jar:com.amway.lynx.core.setup.CoreSystemSetup&/lynxcore/import/emails
+
+# Language
+$lang=vi
+
+UPDATE RendererTemplate;code[unique=true];description[lang=$lang];templateScript[lang=$lang,translator=de.hybris.platform.commerceservices.impex.impl.FileLoaderValueTranslator]
+;electronics_Email_Order_Confirmation_Body;"Order Confirmation Email Body";$emailResourceValueVN/email-orderConfirmationBody.vm
+;electronics_Email_Order_Confirmation_Subject;"Order Confirmation Email Subject";$emailResourceValueVN/email-orderConfirmationSubject.vm
+
+INSERT_UPDATE EmailPage;$contentCV[unique=true];uid[unique=true];name;masterTemplate(uid,$contentCV);defaultPage;approvalStatus(code)[default='approved']
+;;OrderConfirmationEmail;Order Confirmation Email;OrderConfirmationEmailTemplate;true;
+
+UPDATE EmailPage;$contentCV[unique=true];uid[unique=true];fromEmail[lang=$lang];fromName[lang=$lang]
+;;OrderConfirmationEmail;"customerservices@amway.com";"Customer Services Team"
+ 
+===================================================================================================================================
+2)working on paymentconfirmation
+
+<bean id="generatePaymentConfirmationEmail" parent="abstractGenerateEmailAction">
+			<property name="frontendTemplateName" value="PaymentConfirmationEmailTemplate" />
+		</bean>
+
+
+$contentCatalog=amwayvietnamContentCatalog
+$contentCV=catalogVersion(CatalogVersion.catalog(Catalog.id[default=$contentCatalog]),CatalogVersion.version[default=Online])[default=$contentCatalog:Online]
+$wideContent=CMSImageComponent,BannerComponent
+$siteResource=jar:com.amway.lynx.vietnam.initialdata.setup.LynxvietnaminitialdataSystemSetup&/lynxvietnaminitialdata/import/sampledata/contentCatalogs/$contentCatalog/images
+UPDATE GenericItem[processor=de.hybris.platform.commerceservices.impex.impl.ConfigPropertyImportProcessor];pk[unique=true]
+$emailPackageName=com.amway.lynx.facades.process.email.context
+ 
+
+INSERT_UPDATE EmailPageTemplate;$contentCV[unique=true];uid[unique=true];name;active;frontendTemplateName;subject(code);htmlTemplate(code);restrictedPageTypes(code)
+;;PaymentConfirmationEmailTemplate;Payment Confirmation Email Template;true;paymentConfirmationEmail;email_Payment_Confirmation_Subject;email_Payment_Confirmation_Body;EmailPage
+;;DeliveryConfirmationEmailTemplate;Delivery Confirmation Email Template;true;deliveryConfirmationEmail;email_Delivery_Confirmation_Subject;email_Delivery_Confirmation_Body;EmailPage
+
+INSERT_UPDATE ContentSlotName;name[unique=true];template(uid,$contentCV)[unique=true][default='PaymentConfirmationEmailTemplate'];validComponentTypes(code)
+;SiteLogo;;;logo
+;TopContent;;$wideContent;
+;BottomContent;;$wideContent;
+
+INSERT_UPDATE ContentSlotForTemplate;$contentCV[unique=true];uid[unique=true];position[unique=true];pageTemplate(uid,$contentCV)[unique=true][default='PaymentConfirmationEmailTemplate'];contentSlot(uid,$contentCV)[unique=true];allowOverwrite
+;;SiteLogo-PaymentConfirmationEmail;SiteLogo;;AmwayEmailSiteLogoSlot;true
+;;TopContent-PaymentConfirmationEmail;TopContent;;EmailTopSlot;true
+;;BottomContent-PaymentConfirmationEmail;BottomContent;;EmailBottomSlot;true
+
+INSERT_UPDATE ContentSlotName;name[unique=true];template(uid,$contentCV)[unique=true][default='DeliveryConfirmationEmailTemplate'];validComponentTypes(code)
+;SiteLogo;;;logo
+;TopContent;;$wideContent;
+;BottomContent;;$wideContent;
+
+INSERT_UPDATE ContentSlotForTemplate;$contentCV[unique=true];uid[unique=true];position[unique=true];pageTemplate(uid,$contentCV)[unique=true][default='DeliveryConfirmationEmailTemplate'];contentSlot(uid,$contentCV)[unique=true];allowOverwrite
+;;SiteLogo-DeliveryConfirmationEmail;SiteLogo;;AmwayEmailSiteLogoSlot;true
+;;TopContent-DeliveryConfirmationEmail;TopContent;;EmailTopSlot;true
+;;BottomContent-DeliveryConfirmationEmail;BottomContent;;EmailBottomSlot;true
+
+INSERT_UPDATE EmailPage;$contentCV[unique=true];uid[unique=true];name;masterTemplate(uid,$contentCV);defaultPage;approvalStatus(code)[default='approved']
+;;PaymentConfirmationEmail;Order Confirmation Email;PaymentConfirmationEmailTemplate;true;
+;;DeliveryConfirmationEmail;Order Confirmation Email;DeliveryConfirmationEmailTemplate;true;
+
+INSERT_UPDATE RendererTemplate;code[unique=true];contextClass;rendererType(code)[default='velocity']
+;email_Payment_Confirmation_Subject;$emailPackageName.PaymentConfirmationEmailContext
+;email_Payment_Confirmation_Body;$emailPackageName.PaymentConfirmationEmailContext
+;email_Delivery_Confirmation_Subject;$emailPackageName.DeliveryConfirmationEmailContext
+;email_Delivery_Confirmation_Body;$emailPackageName.DeliveryConfirmationEmailContext
+
+
+#%impex.enableCodeExecution(true)
+#%impex.enableExternalSyntaxParsing(true)
+#%impex.includeExternalData(ImpExManager.class.getResourceAsStream("/lynxvietnaminitialdata/import/coredata/common/macros-definition.impex"), "UTF-8", 0)
+
+$contentCatalog=amwayvietnamContentCatalog
+$contentCV=catalogVersion(CatalogVersion.catalog(Catalog.id[default=$contentCatalog]),CatalogVersion.version[default=Online])[default=$contentCatalog:Online]
+$wideContent=CMSImageComponent,BannerComponent
+UPDATE GenericItem[processor=de.hybris.platform.commerceservices.impex.impl.ConfigPropertyImportProcessor];pk[unique=true]
+$emailResourceValueVN=jar:com.amway.lynx.core.setup.CoreSystemSetup&/lynxcore/import/emails
+
+# Language
+$lang=vi
+
+UPDATE RendererTemplate;code[unique=true];description[lang=$lang];templateScript[lang=$lang,translator=de.hybris.platform.commerceservices.impex.impl.FileLoaderValueTranslator]
+;email_Payment_Confirmation_Subject;"email Payment Confirmation Subject";$emailResourceValueVN/email_Payment_Confirmation_Subject.vm
+;email_Payment_Confirmation_Body;"email Payment Confirmation Body";$emailResourceValueVN/email_Payment_Confirmation_Body.vm
+;email_Delivery_Confirmation_Subject;"email Delivery Confirmation Subject";$emailResourceValueVN/email_Delivery_Confirmation_Subject.vm
+;email_Delivery_Confirmation_Body;"email Delivery Confirmation Body";$emailResourceValueVN/email_Delivery_Confirmation_Body.vm
+
+UPDATE EmailPage;$contentCV[unique=true];uid[unique=true];fromEmail[lang=$lang];fromName[lang=$lang]
+;;PaymentConfirmationEmail;"customerservices@amway.com";"Customer Services Team"
+;;DeliveryConfirmationEmail;"customerservices@amway.com";"Customer Services Team"
+
+===================================================================================================================================
+Doubts to clear-->
+1)header of amway..

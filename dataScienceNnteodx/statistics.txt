@@ -1,0 +1,72 @@
+Statistics-->
+Statistics is the discipline that concerns the collection, organization, analysis, interpretation, and presentation of data. In applying statistics to a scientific, industrial, or social problem, it is conventional to begin with a statistical population or a statistical model to be studied
+
+three steps-->
+a)collecting of data.
+b)analysis of data.
+c)result on analysis(interpretation)//////all three is statics. and it is used for prediction,decision
+
+maily two types-->
+a)discriptive----> summerizing,analyzing and visualizing the data
+             ---->mean,median,mode(measure of central  tendency)
+			 ---->measure of dispersion , variance, standard deviation
+			 ---->corelation,covariance etc.
+			 ---->histogram,pdf(probability density function),pmf(probability mass function),cdf(cummulative density),etc etc
+             ----> univarant , bivariant , kernel density 
+             ---->what is the common age of students in classroom(mean)
+
+b)inferential--->using data for a conclusion for whole state which is known as population(state)
+hypothesi testing , null and alernate hypothesis
+z-test
+t-test
+is the common age of students is same u expected of as university.
+
+Population(N) : --->the group that we are interested in studying.
+
+Sample(n):----> A subset of population which represent whole population
+
+example-->lets take example of exit poll
+we cannot descide by asking every person.
+so we will ask some random people across every region (sample)
+by all sample we will decide who can be winner (population)
+
+different type of sampling techniques-->
+a)simple random sampling-->select random sample from population
+while doibg random sampling every member of population has a chance of equal selection.
+
+b)stratified sampling-->sampling of different groups but it should not be overlapped.
+example--> like exit poll first we divide in men and women...which can be further divide in young and old.
+
+c)systematic sampling--->like we are selected nth sample every time to visualize..
+
+d)convenience sampling(voluentary response)--> sample create from expertise persons.
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+variable-->
+quantitive and qualitative (categorical)
+
+in quantitive we have discrete and continous
+discrete(whole number)---> number of students
+continous(infinite)------> height   ///////any thing can be go inside
+
+in qualitative--->we can define in categories like gender than we can go onmale and female
+it is type of classification based on properties.
+
++&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+central tendency---> used to find centre of distribution of data.
+technique used-->
+mean(M)   average 
+median    middle element
+mode      most frequent  
+
+
+now take example which we have to use where in case of data set
+when we dont have much outliors(huge difference in data) we will go for mean (average)
+if we have huge outliors we will go for median...for median first we sort the data and find middle element.
+if it is odd middle is easy otherwise in case of odd take average of both middle element.
+
+if we have not som much different data and have repeated values we can use mode to fill na
+
++==========================================================================
+

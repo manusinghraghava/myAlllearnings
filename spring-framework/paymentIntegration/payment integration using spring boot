@@ -1,0 +1,18 @@
+Payment Integration using spring Boot-->
+
+how payment works?
+
+1)when customer click on payment on web/page.
+2)payment will initiate and go to server/side first(java end).
+3)java end will use razor pay api to create a order on razor pay api.
+4)razor pay will create an order for payment and return an ordder_id..
+5)we will save order information in db with user details.
+6)now we will send back order_id and amount to web/page where it shows amount to be paid and order-id associated with it.
+7)now we will submit checkout form with order_id which will hit razor pay server directly because we have already created order for it.
+8)on success/failure razor will return payment_id,order_id,razorpay_signature.
+9)change paid status on java server.
+
+
+https://www.youtube.com/watch?v=-Ke6JYqTM_s&list=PL0zysOflRCelYeugqOJszoof1ruhLVdJc&index=43
+
+razorpay.com/docs

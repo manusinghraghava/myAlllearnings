@@ -1,0 +1,82 @@
+Scrum==>Scrum is a framework which support complex product development.
+why framework?
+Methodolgy==>it is a set of methods for a particular activity.
+framework==>It is a basic structure for development with some guidlines..
+
+Scrum principle==>
+a)transparency==>to believe in each other
+b)inspection==>it is important to have feedback at every point helps in improvement..
+c)adaptation==>combination of both to work on same goal..with callobration
+d)time boxing==>ensures certain time limits for certain events..
+
+Scrum Master==>coach for scrum practices.
+a)Enabling communication across for all roles==>work as mediator
+
+Scrum Product Owner==>maintains  product backlog==>certain work items example..enhancements 
+a)represents voice of customer
+b)defined acceptance criteria for qa.
+c)to determine release dates and concepts
+
+Scrum development teams exclude SM and PO and share same goal to fullfillment of sprint
+and chooses what work to do.and have different skillsets
+
+Scrum sprint planning meeting==>8 hours meeting staring for a sprint.
+a)team understands what to have done in sprint and requirement.
+b)starts with order product backlog.. In the simplest definition the Scrum Product Backlog is simply a list of all things that needs to be done within the project. 
+
+daily scrum==>15 minutes==>each member tell==>what i have accomplished,and what i plan for future,and should place on same place daily(update).
+
+sprint review meeting==>4 hours meeting
+a)at the end of sprint for review of output ..result==>revised product backlog..
+b)point of discussion product increment===>The Increment is the sum of all the Product Backlog items completed during a Sprint.
+
+sprint retrospective meeting==>for development what they have developed and what they can improve
+a)3 hours meeting
+b)what went well and what gone wrong...regarding tools are they good or not.
+
+product backlog grooming meeting==>happens between sprint
+a)what is coming in next sprint.
+b)not all scrum members required.
+c)team reviews and provide input to PO..mostly happens between SM and PO.
+
+product backlog contains everything...as minor as story as big as design change...feature request and as bug fixing..
+
+
+Scrum tools==>jira etc..
+==============================================================================================
+Agile==>it is a software development methodology used to built software incrementally..
+a)it use short iteration of 1 to 4 weeks
+b)so that development is aligned with the changing buisness need.
+c)so no risk as they are predicted upfront.as client feedback for evry sprint
+d)for every sprint we define=>code=>test and also for a user story...
+e)Roles in agile==>Scrum Master,product owner
+
+Agile works==>
+a)works on user stories.
+
+b)have baclog priortization means which story is prior.
+
+point==>how much a team can commit....mostly appropriate hours
+i)it not work on effort ...works on complexity(risk dependencies)..so estimation is done on story points...
+ii)mostly follow on fibonacci series.with multiple of 10
+1-->very easy
+2-->increases complexity and risk ---3 5 8 13
+
+c)capacity==>how much an individual can commit..
+
+Acceptance criteria==>
+a)it tells what to be done when user story is complete..
+
+Agile Manifesto==>
+12 features main are==>customer satisfaction,welcome change(adaptable to changes),working software,face to face conversation,
+
+========================================================================================================================================================================================
+jira tutorial==>scrum tool to support complex product development
+
+any problem==>https://www.youtube.com/watch?v=UHcfYoIvpPg&list=PL5NG-eEzvTtjmzgslgWJwWGmAn8BB7eRH
+
+create project==>
+go to create==>story,bug,epic(feature)==>set priority==>assignee
+
+for sprint creation==>go to backlog tab==>fill story in it===>start sprint..(with time duration)..
+

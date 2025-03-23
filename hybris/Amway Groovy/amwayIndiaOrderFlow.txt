@@ -1,0 +1,78 @@
+Amway India Order flow==>
+
+1)click ADD to My Cart.-->
+a) redirect to D:\amwayIndia\hybris\bin\custom\indiacn\indstorefront\web\src\com\amway\controllers\misc\cart\LynxAddToCartController.java
+b)call addToCart() with mapping "/cart/add" use addToCartForm for binding.
+c)Checking stock for Stock if channel is POS else calling super oootb.
+d)Check limit if below or exceed will throw Exception.
+e)if no error than open a pop up with updated cart.
+f)path of popup D:\Projects\amway\hybris\bin\custom\indiacn\indstorefront\web\webroot\WEB-INF\views\responsive\fragments\cart\addToCartPopup.jsp.
+
+2)on Clicking viewCart on cartpopup--->
+a)redirect to D:\amwayIndia\hybris\bin\custom\indiacn\indstorefront\web\src\com\amway\controllers\pages\cart\LynxCartPageController.java
+b)call showCart().
+c)validate the cart.
+d)check CartModificationData if data has no entry related data like entry no. disable the checkout.
+
+3)on clicking proceed to buy-->
+a)redirect to D:\amwayIndia\hybris\bin\custom\indiacn\indstorefront\web\src\com\amway\controllers\pages\cart\LynxCartPageController.java
+b)call cartCheck()
+c)if validation fail redirect to "/cat"
+d)else prepare cart for checkout and redirect to "/checkout/multi/delivery-address/add"(if user is not anynomous)
+
+//////////////////////////ervery checkout default method is enterStep
+
+4)on redirecting to "/checkout/multi/delivery-address/add" -->D:\amwayIndia\hybris\bin\custom\indiacn\indstorefront\web\src\com\amway\controllers\pages\checkout\steps\DeliveryMethodCheckoutStepController.java
+a)fetch delivery modes and attatch to model.
+b)if (checkoutFacade.isNoInventory()) ?????????why
+c)populate data and return pages/checkout/multi/addEditDeliveryAddressPage.jsp
+
+5)on click continue redirecting to "/checkout/multi/review-order" in D:\amwayIndia\hybris\bin\custom\indiacn\indstorefront\web\src\com\amway\controllers\pages\checkout\steps\IndReviewOrderCheckoutStepController.java
+a)updateCart()
+b)cart.getLynxAllEntries()==?
+c)how validating dropcode from session and from postal code===as dropcode and warehouse pincode is same and isDynamicFulfillment==if multiple consignment creates due to priority of warehouse
+d)checking is isDynamicFulfillment
+e)populate dates for delivery.
+f)checking for valid warehouse is attatched in cart entries or not.
+g)converting cartData into json and also attatch into model.
+h)return pages/checkout/multi/reviewOrderPage.jsp.
+
+6)Now on Clicking ConfirmOrder
+a)again go to post method of review-order and check checkIfOrderingIsBlocked()  Check if the user has login blocked enabled. //due to fraud
+     *
+     * @return Boolean value for login block
+b)redirect to next step-->"/checkout/multi/payment-method/add
+
+7)payment will cover by nitin..
+
+8)now on continue-->redirecting to "/checkout/multi/order-confirmation" in D:\amwayIndia\hybris\bin\custom\indiacn\indstorefront\web\src\com\amway\controllers\pages\checkout\steps\IndOrderConfirmationCheckoutStepController.java
+a)fetch order details and check payment status.failde,pending or paid.
+b)fill necessary information regarding abo and order.
+
+============================order-process ------>
+
+when the action ("checkPaymentStatusFromGateway") called from checkPaymentStatusProcess.xml
+
+ publish event--->new IndSubmitOrderEvent(order); which is catch by
+
+IndSubmitOrderEventListener--->start the buisness process for order.
+
+
+
+                                        Or
+if payment done by ar and challan we publish event inside IndPaymentMethodCheckoutStepController...
+
+
+
+====================================================================
+Flow of order-process-->
+1)updateEntryPromotionResults
+a)Revisit discounted order entries and update accountable entries for the same.===?
+
+2)checkOrder
+a)check if order is null than exit the process.
+b)check orderStatus if payment not captured or failed than exit the order-process.
+c)check if (checkDeliveryAddress(order) && checkDeliveryZone(order) && checkOrderStatus(order) && !checkIsOrderIsNotProcessed(order)) true than go to next step.
+
+3)checkPaymentStatus
+a)

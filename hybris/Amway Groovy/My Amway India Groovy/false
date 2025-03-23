@@ -1,0 +1,112 @@
+import de.hybris.platform.core.Registry;
+import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.orderprocessing.model.OrderProcessModel;
+import de.hybris.platform.core.model.order.OrderModel;
+import de.hybris.platform.processengine.enums.ProcessState;
+import de.hybris.platform.servicelayer.search.FlexibleSearchQuery;
+import de.hybris.platform.core.enums.OrderStatus;
+import de.hybris.platform.core.model.order.*;
+import java.util.*;
+import com.amway.core.enums.*;
+import de.hybris.platform.servicelayer.search.FlexibleSearchService;
+import com.amway.indcore.loyalty.service.IndCalculateLoyaltyPointsService;
+import de.hybris.platform.commerceservices.search.pagedata.PageableData;
+import de.hybris.platform.commerceservices.search.pagedata.SearchPageData;
+import de.hybris.platform.core.model.order.OrderModel;
+import org.apache.commons.collections4.CollectionUtils;
+import de.hybris.platform.servicelayer.search.SearchResult;
+import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.servicelayer.i18n.CommonI18NService;
+import de.hybris.platform.store.BaseStoreModel;
+import de.hybris.platform.store.services.BaseStoreService;
+import de.hybris.platform.site.BaseSiteService;
+import de.hybris.platform.cms2.model.site.CMSSiteModel;
+import com.amway.indcore.order.strategies.impl.*;
+import com.amway.indcommercewebservicesaddon.receipt.facade.*;
+import com.amway.indfacades.docgen.print.*;
+import com.amway.core.model.invoice.*;
+import com.amway.indintegration.docgen.data.*;
+import de.hybris.platform.returns.model.*;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.io.FileWriter;
+import java.io.IOException;
+import de.hybris.platform.commerceservices.enums.*;
+import org.apache.commons.lang3.StringUtils;
+
+final BaseStoreService baseStoreService = spring.getBean("baseStoreService");
+final BaseSiteService baseSiteService = spring.getBean("baseSiteService");
+final IndReceiptPrintFacade indReceiptPrintFacade = spring.getBean("indReceiptPrintFacade");
+
+final IndIRNIntegrationStrategyImpl indIRNGenerationStrategy=spring.getBean("indIRNGenerationStrategy");
+final ModelService modelService = (ModelService) Registry.getApplicationContext().getBean("modelService");
+
+String query1="select {pk} from {CMSSite as o} where {o.pk} ='"+8796093056040+"'";
+final SearchResult<CMSSiteModel> searchResult1 = ((FlexibleSearchService)Registry.getApplicationContext().getBean("flexibleSearchService")).search(query1);
+final List<CMSSiteModel> results1 = searchResult1.getResult();
+CMSSiteModel cmsSiteModel = results1.stream().findFirst().get();
+
+
+
+
+def baseSiteModel =baseSiteService.getCurrentBaseSite();
+
+
+
+baseSiteService.setCurrentBaseSite(cmsSiteModel, true);
+
+
+try{
+String query = "select {pk} from {Order as o} where {o.creationtime}>='2020-10-01 00:00:01' and {o.creationtime}<='2020-10-22 00:00:01'";
+
+
+final SearchResult<OrderModel> searchResult = ((FlexibleSearchService) Registry.getApplicationContext().getBean("flexibleSearchService")).search(query);
+
+final List<OrderModel> results = searchResult.getResult();
+
+if(CollectionUtils.isNotEmpty(results))
+{
+for(OrderModel order :results)
+{
+try{
+if (order!=null)
+{
+List<AmwayInvoiceModel> receipts = order.getAmwayInvoices().stream().filter({s->s.getIndReceiptType().getReceiptSubType().getCode().equalsIgnoreCase("CREDIT_NOTE_TRADEDISCOUNT")}).collect(Collectors.toList());
+
+if(CollectionUtils.isNotEmpty(receipts)) {
+List<IndDocGenResponseData> docGenResponseDataList= new ArrayList<>();
+def isReprint = false;
+for (AmwayInvoiceModel receipt : receipts) {
+try{
+modelService.refresh(receipt);
+List<AmwayInvoiceModel> receiptForB2b = new ArrayList<>();
+receiptForB2b.add(receipt);
+//calling to docGen
+docGenResponseDataList = indReceiptPrintFacade.getPrintDataForOrderDocument(receiptForB2b,isReprint);
+}
+catch(Exception e ){
+e.printStackTrace();
+continue;
+}
+}
+
+}
+}
+}
+catch(Exception e)
+{
+e.printStackTrace();
+continue;
+}
+}
+
+}
+}
+catch(Exception e)
+{
+e.printStackTrace();
+}
+
+
+
+

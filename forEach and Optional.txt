@@ -1,0 +1,381 @@
+=>forEach--------------->
+
+One common requirement in Java application is to iterate through the elements of a collection. 
+Prior to Java 8, the three most common ways to iterate through a collection are by using the while loop,
+ for loop, and enhanced for loop. As the Java Collection interface extends Iterable, 
+you can also use the hasNext() and next() methods of Iterable to iterate through collection elements.
+
+Starting from Java 8, we have a new forEach method in Iterable to loop through elements in a collection – but in a different way.
+
+External vs Internal Iterators
+--------------------------------------------->
+Based on who controls iterations, Java Iterators can be classified into external and internal iterators.
+
+External iterators are also known as active or explicit iterators. When using an external iterator, 
+the client code performing the iteration controls the iteration. 
+The client creates the iterator and instructs it when to advance to the next element. 
+The client also checks whether or not all the element has been visited, and so on.
+
+Enumerations, iterators, and enhanced for-loop are all examples of external iterators. 
+Remember the old hasMoreElements() and nextElement() of Enumeration that you write to control iteration? Similarly, next() and hasNext() of Iterator?
+
+The enhanced for loop introduced in Java 5 is another example of external iterator.
+
+As evident from this code, the enhanced for loop shields developers from explicitly controlling looping via code.
+However, internally the next() and hasNext() methods get called, and therefor making it an external iterator.
+
+Internal iterators are also known as passive, implicit or callback iterator. 
+When you use an internal iterator, it is the iterator itself that controls the iteration. 
+The client code essentially says to the iterator, “perform this operation on the elements in the collection.”
+
+Internal iterator has been introduced in Java 8 with the introduction of Lambda expression. 
+The forEach method of this post covers is an internal iterator.
+
+The signature of the forEach method is this.
+=>
+default void forEach(Consumer<? super T> action)
+
+as consumer<T> interface has a accept(T)method which has no return type and takes one argument so we can write logic for every element......
+
+Example==>
+public static void iterateThroughList(List<String> list){
+        list.forEach(System.out::println);   //==> method referrencing passing every element to SYSO
+} 
+
+This code is usually like this===>
+
+public static void iterateThroughList(List<String> list){
+    Consumer<String> consumerNames = new Consumer<String>() {
+        public void accept(String name) {
+            System.out.println(name);
+        }
+    };
+    list.forEach(consumerNames);
+}
+
+ForEach(Now What ever You have to Perform Action on Each Element of Collection You can Write in this Using Consumer Interface).....
+
+For Map It is use biConsumer----->
+
+public static void iterateThroughMap(Map<?,?> map){
+    map.forEach((k,v) -> {System.out.println("Key: "+k+" Value: "+v);});
+}
+
+
+
+
+
+
+/////////////////////////////////////////////////Optional/////////////////////////////////////////////////////////////////////////////////////////////////
+
+One of the most interesting features that Java 8 introduces to the language is the new Optional class.
+The main issue this class is intended to tackle is the infamous NullPointerException that every Java programmer knows only too well.
+
+Essentially, this is a wrapper class that contains an optional value, meaning it can either contain an object or it can simply be empty.
+
+Example: 
+Java Program without using Optional
+In the following example, we are not using Optional class. This program terminates abnormally and throws a nullPointerException.
+
+public class OptionalExample {  
+    public static void main(String[] args) {  
+        String[] str = new String[10];  
+        String lowercaseString = str[5].toLowerCase();  
+        System.out.print(lowercaseString);  
+    }  
+}  
+
+
+To avoid the abnormal termination, we use Optional class.
+In the following example, we are using Optional. So, our program can execute without crashing.
+
+Some Important Methods In Optional
+
+1)public static <T> Optional<T> empty()
+
+=>It returns an empty Optional object. No value is present for this Optional.
+
+There are several ways of creating Optional objects. To create an empty Optional object:
+public void whenCreatesEmptyOptional_thenCorrect() {
+    
+	Optional<String> empty = Optional.empty();  //creating object
+    
+     assertFalse(empty.isPresent());
+}
+
+The isPresent API is used to check if there is a value inside the Optional object.
+A value is present if and only if we have created Optional with a non-null value. We will look at the isPresent API in the next section.
+
+2)public static <T> Optional<T> of(T value)
+
+=> It returns an Optional with the specified present non-null value.
+
+Example=>
+public void givenNonNull_whenCreatesNonNullable_thenCorrect() {
+    String name = "baeldung";
+    Optional.of(name);
+}
+
+However, the argument passed to the of method cannot be null, otherwise, we will get a NullPointerException:
+
+3)public static <T> Optional<T> ofNullable(T value)	
+
+=>It returns an Optional describing the specified value, if non-null, otherwise returns an empty Optional.
+
+Example=>
+
+public void givenNull_whenCreatesNullable_thenCorrect() {
+    String name = null;
+    Optional<String> opt = Optional.ofNullable(name);
+    assertEquals("Optional.empty", opt.toString());
+}
+
+4)public T get()	
+
+=>If a value is present in this Optional, returns the value, otherwise throws NoSuchElementException.
+Example=>
+
+public void givenOptional_whenGetsValue_thenCorrect() {
+    Optional<String> opt = Optional.of("baeldung");
+    String name = opt.get();
+ 
+    assertEquals("baeldung", name);
+}
+
+5)public boolean isPresent()	
+
+=>It returns true if there is a value present, otherwise false.
+
+Example=>
+public void givenOptional_whenIsPresentWorks_thenCorrect() {
+    Optional<String> opt = Optional.of("Baeldung");
+    assertTrue(opt.isPresent());
+ 
+    opt = Optional.ofNullable(null);
+    assertFalse(opt.isPresent());
+}
+
+6)public void ifPresent(Consumer<? super T> consumer)	
+
+=>If a value is present, invoke the specified consumer with the value, otherwise do nothing.
+
+Example=>
+
+public void givenOptional_whenIfPresentWorks_thenCorrect() {
+    Optional<String> opt = Optional.of("baeldung");
+ 
+    opt.ifPresent(name -> System.out.println(name.length()));
+}
+
+ ////// if we want to check some condition on the given value.......... Than go to filter....
+7)public Optional<T> filter(Predicate<? super T> predicate)	
+
+=>If a value is present, and the value matches the given predicate, return an Optional describing the value *as it is*, otherwise return an empty Optional.
+
+Example=>
+
+public void whenOptionalFilterWorks_thenCorrect() {
+    Integer year = 2016;
+    Optional<Integer> yearOptional = Optional.of(year);
+// Doing function on Values..
+    boolean is2016 = yearOptional.filter(y -> y == 2016).isPresent();//first it matches the test case of predicate if true than return value otherwise empty.
+    assertTrue(is2016);
+    boolean is2017 = yearOptional.filter(y -> y == 2017).isPresent();
+    assertFalse(is2017);
+}
+
+8)public T orElse(T other)	
+
+=>It returns the value if present, otherwise returns other.
+
+Example=>
+public void whenOrElseWorks_thenCorrect() {
+    String nullName = null;
+    String name = Optional.ofNullable(nullName).orElse("john");
+    assertEquals("john", name);
+}
+
+9)public T orElseGet(Supplier<? extends T> other)	
+
+=>It returns the value if present, otherwise invoke other and return the result of that invocation.
+
+Example=>
+
+public void whenOrElseGetWorks_thenCorrect() {
+    String nullName = null;
+    String name = Optional.ofNullable(nullName).orElseGet(() -> "john");  // using supplier it returns the optional object with given value
+    assertEquals("john", name);                                           // by calling Otional get(){return optional.of("john");}
+}
+
+**
+Notice that when using orElseGet to retrieve the wrapped value,
+the get API is not even invoked if the contained value is present.
+
+However, when using orElse, whether the wrapped value is present or not, the default object is created. 
+So in this case, we have just created one redundant object that is never used.
+
+10)public <X extends Throwable> T orElseThrow(Supplier<? extends X> exceptionSupplier) throws X extends Throwable	
+
+=>It returns the contained value,** if present **
+, otherwise throw an exception to be created by the provided supplier.
+
+Example=>
+public void whenOrElseThrowWorks_thenCorrect() {
+    String nullName = null;
+    String name = Optional.ofNullable(nullName).orElseThrow(
+      IllegalArgumentException::new);       //passing constructor of illegalException in Supplier
+}
+
+
+11)public <U> Optional<U> map(Function<? super T,? extends U> mapper)	If a value is present,
+ apply the provided mapping function to it, and if the result is non-null,
+ **return an Optional describing the result.** 
+ Otherwise return an empty Optional.
+
+Example=>
+public void givenOptional_whenMapWorks_thenCorrect() {
+    List<String> companyNames = Arrays.asList(
+      "paypal", "oracle", "", "microsoft", "", "apple");
+    Optional<List<String>> listOptional = Optional.of(companyNames);
+ 
+    int size = listOptional
+      .map(List::size)      // calling function<Integer,Integer>  and return the size of list. using refrencing calling list.size()
+      .orElse(0);
+    assertEquals(6, size);
+}
+In this example, we wrap a list of strings inside an Optional object and 
+use its map API to perform an action on the contained list. The action we perform is to retrieve the size of the list.
+
+
+
+//// one more method of java 8//////////////////////////////
+
+=>stream() method for converting an Optional to a Stream
+
+=>static <T,U extends Comparable<? super U>> Comparator<T> comparing(
+   Function<? super T,? extends U> keyExtractor)
+
+-------->The Comparator.comparing static function accepts a sort key Function and returns a Comparator for the type which contains the sort key:
+
+Example===>
+
+To see this in action, let’s use the name field in Employee as the sort key and pass its method reference as an argument of type Function. 
+The Comparator returned from the same is used for sorting:
+
+
+public void whenComparing_thenSortedByName() {
+    Comparator<Employee> employeeNameComparator
+      = Comparator.comparing(Employee::getName);  // to which you want to do the comparing
+     
+    Arrays.sort(employees, employeeNameComparator);
+     
+    assertTrue(Arrays.equals(employees, sortedEmployeesByName));
+}
+As you can see, the employees array values are sorted by name as a result of the sort:
+
+
+[Employee(name=Ace, age=22, salary=2000.0, mobile=5924001), 
+Employee(name=John, age=25, salary=3000.0, mobile=9922001), 
+Employee(name=Keith, age=35, salary=4000.0, mobile=3924401)]
+
+
+
+========================================================================================================================
+BigDecimal/Integer class on java--->
+
+// Java Program to illustrate BigDecimal Class 
+  
+import java.math.BigDecimal; 
+public class BigDecimalExample 
+{ 
+    public static void main(String[] args)  
+    { 
+        // Create two new BigDecimals 
+        BigDecimal bd1 =  
+               new BigDecimal("124567890.0987654321"); 
+        BigDecimal bd2 =  
+               new BigDecimal("987654321.123456789"); 
+          
+        // Addition of two BigDecimals 
+        bd1 = bd1.add(bd2); 
+        System.out.println("BigDecimal1 = " + bd1); 
+  
+        // Multiplication of two BigDecimals 
+        bd1 = bd1.multiply(bd2); 
+        System.out.println("BigDecimal1 = " + bd1); 
+  
+        // Subtraction of two BigDecimals 
+        bd1 = bd1.subtract(bd2); 
+        System.out.println("BigDecimal1 = " + bd1); 
+  
+        // Division of two BigDecimals 
+        bd1 = bd1.divide(bd2); 
+        System.out.println("BigDecimal1 = " + bd1); 
+  
+        // BigDecima1 raised to the power of 2 
+        bd1 = bd1.pow(2); 
+        System.out.println("BigDecimal1 = " + bd1); 
+  
+        // Negate value of BigDecimal1 
+        bd1 = bd1.negate(); 
+        System.out.println("BigDecimal1 = " + bd1); 
+    }     
+}         
+Output:-
+
+BigDecimal1 = 1112222211.2222222211
+BigDecimal1 = 1098491072963113850.7436076939614540479
+BigDecimal1 = 1098491071975459529.6201509049614540479
+BigDecimal1 = 1112222210.2222222211
+BigDecimal1 = 1237038244911605079.77528397755061728521
+BigDecimal1 = -1237038244911605079.77528397755061728521
+Declaration
+
+double a, b;                
+BigDecimal A, B; 
+Initialization:
+
+a = 5.4;
+b = 2.3;
+A  = BigDecimal.valueOf(5.4);
+B  = BigDecimal.valueOf(2.3); 
+If you are given a String representation of a double number then you can initialize in the following manner:
+
+A  = new BigDecimal(“5.4”);
+B  = new BigDecimal(“1238126387123.1234”); 
+For ease of initialization BigDecimal class has some pre-defined constants:
+
+A = BigDecimal.ONE;
+// Other than this, available constants
+// are BigDecimal.ZERO and BigDecimal.TEN 
+Mathematical operations:
+
+int c = a + b;
+BigDecimal C = A.add(B); 
+Other similar function are subtract() , multiply(), divide(), pow()
+But all these functions, except pow() which takes integer as its argument, take BigDecimal as their argument so if we want these operation with decimals or string convert them to BigDecimal before passing them to functions as shown below:
+
+String str = “123456789.123456789”;
+BigDecimal C = A.add(new BigBigDecimal(str));
+double val  = 123456789.123456789;
+BigDecimal C = A.add(BigDecimal.valueOf(val)); 
+Extraction of value from BigDecimal:
+
+
+
+
+// value should be in limit of double x
+double x   =  A.doubleValue();   
+
+// To get string representation of BigDecimal A
+String z = A.toString();       
+Comparison:
+
+if (a < b) {}         // For primitive double
+if (A.compareTo(B) < 0)  {} // For BigDecimal
+Actually compareTo returns -1(less than), 0(Equal), 1(greater than) according to values.
+
+For equality we can also use:
+
+if (A.equals(B)) {}  // A is equal to B 
+

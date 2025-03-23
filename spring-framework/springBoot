@@ -1,0 +1,1786 @@
+Before Spring Boot some main points--->
+Servlet--->
+web.xml known as deployment descriptor handeles every request.and map the request with respected servlet.
+every request is thread.
+new context is created for every request.
+Servlet class is loaded.
+Servlet instance is created.
+init method is invoked.
+service method is invoked.
+destroy method is invoked.
+
+
+Every web request generate a new thread as explained in this thread.
+
+Spring manages different scopes (prototype, request, session, singleton). If two simultaneous requests access a singleton bean, then the bean must be stateless (or at least synchronized to avoid problems). If you access a bean in scope request, then a new instance will be generated per request. Spring manages this for you but you have to be careful and use the correct scope for your beans. Typically, your controller is a singleton but the AppModel has to be of scope request, otherwise you will have problems with two simultaneous requests.
+
+
+HttpRequest scope
+
+Mark mark1 = context.getBean("mark"); 
+Mark mark2 = context.getBean("mark"); 
+mark1 == mark2; //This will return true 
+Prototype scope
+
+Mark mark1 = context.getBean("mark"); 
+Mark mark2 = context.getBean("mark"); 
+mark1 == mark2; //This will return false 
+
+revise via this-->
+https://dzone.com/articles/spring-mvc-example-for-user-registration-and-login-1
+
+----------------------------------------------------------------------------------------------------------------------------------
+hibernate is implementation of jpa.
+entitymnagerfactory provides entitymanager which provides crud operation.
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+The difference between an embedded Tomcat and running it externally (Spring Boot) comes down to how the Tomcat server is utilized in an application. When Tomcat is embedded, it runs inside the same JVM as the application, allowing it to access resources more easily than if it were running outside of the JVM. However, when Tomcat is run externally, or with Spring Boot, it can be set up as a standalone server, with its own resources and settings independent of the main application.
+
+One major advantage of having an embedded Tomcat is that you can deploy and test your applications faster, as you don’t have to worry about setting up a separate environment for each deployment. Additionally, you can also easily manage resource allocation for different deployments. On the other hand, by running Tomcat externally with Spring Boot you are able to leverage its security features, making your application more secure against malicious attacks.
+==============================================================================================================================================
+Spring Boot-->
+
+It is just a sub module of spring framework to faster the development.
+
+spring framework + embedded server - configuration(means not to do manually) = spring boot
+
+all configurations are already installed inside the metainf/spring.factories.
+it will pull the jar from there based on the requirement..if we need security it will pull only these jar based on classpath. 
+
+1)Use sts or spring initializr.
+2)Create a new project ..select dependencies as u like.
+3)in main package u will find a class with annotation @SpringBootApplication
+
+@SpringBootApplication---used for package scan,auto config,and starter point.
+
+we have to do all things in base package otherwise component scan will not work.
+if u want to use another package put @ComponentScan(//package) on main class.
+same for repo and entity use @EnableJpaRepositries(//package) @EntityScan(//package)
+where we have used @SpringBootApplication.
+
+@Controller,requestmapping,responsebody is same as mvc.
+
+we have to do some configuration for jsp pages in sts...aws boot people mainly use for rest applications.
+
+so go to resources/application.properties and define prefix/suffix we use to do in mvc.
+1)spring.mvc.view.prefix=path after main/webapp    -->          /views/(if not please create)
+2)spring.mvc.view.suffix=.jsp
+
+also we need to add jasper tomcat api in maven dependency.
+---------------------------------------------------------------------------------------------------------
+Difference application.yml vs application.properties
+
+By default, Spring Boot can access configurations set in an application.properties file, which uses a key-value format:
+
+app.name=MyApp
+app.description=${app.name} is a Spring Boot application   //also we can use placeholder
+
+If we have the same kind of properties with different values, we can represent the list structure with array indices:
+
+application.servers[0].ip=127.0.0.1
+application.servers[0].path=/path1
+
+
+Since version 2.4.0, Spring Boot supports creating multi-document properties files. Simply put, we can split a single physical file into multiple logical documents.
+
+This allows us to define a document for each profile we need to declare, all in the same file:
+
+logging.file.name=myapplication.log
+bael.property=defaultValue
+#---
+spring.config.activate.on-profile=dev
+spring.datasource.password=password
+spring.datasource.url=jdbc:h2:dev
+spring.datasource.username=SA
+bael.property=devValue
+#---
+spring.config.activate.on-profile=prod
+spring.datasource.password=password
+spring.datasource.url=jdbc:h2:prod
+spring.datasource.username=prodUser
+bael.property=prodValue
+Note we use the ‘#---' notation to indicate where we want to split the document.
+
+In this example, we have two spring sections with different profiles tagged. Also, we can have a common set of properties at the root level — in this case, the logging.file.name property will be the same in all profiles.
+
+
+*************
+As well as Java properties files, we can also use YAML based configuration files in our Spring Boot application. YAML is a convenient format for specifying hierarchical configuration data.
+
+
+Now, let's take the same example from our properties file and convert it to YAML:
+
+spring:
+    datasource:
+        password: password
+        url: jdbc:h2:dev
+        username: SA
+This can be more readable than its property file alternative as it does not contain repeated prefixes.
+
+YAML has a more concise format for expressing lists:
+
+application:
+    servers:
+    -   ip: '127.0.0.1'
+        path: '/path1'
+    -   ip: '127.0.0.2'
+        path: '/path2'
+    -   ip: '127.0.0.3'
+        path: '/path3'
+
+
+We can inject the values of our properties using the @Value annotation:
+
+@Value("${key.something}")
+private String injectedProperty;
+
+We can also obtain the value of a property using the Environment API:
+
+@Autowired
+private Environment env;
+
+public String getSomeKey(){
+    return env.getProperty("key.something");
+}
+
+
+
+we can also use some classes in application.properties
+
+like-->abc.key={random.int}//////it will give a random integer value.
+
+
+--------------------------------------------------------------------------------------------------------
+Spring Boot has many useful features including externalized configuration and easy access to properties defined in properties files. An earlier tutorial described various ways in which this could be done.
+
+
+Simple Properties
+The official documentation advises that we isolate configuration properties into separate POJOs.
+
+So let's start by doing that:
+
+@Configuration
+@ConfigurationProperties(prefix = "mail")     ///by this name we have to create our config.
+public class ConfigProperties {
+    
+    private String hostName;
+    private int port;
+    private String from;
+
+    // standard getters and setters
+}
+We use @Configuration so that Spring creates a Spring bean in the application context.
+
+Note: If we don't use @Configuration in the POJO, then we need to add @EnableConfigurationProperties(ConfigProperties.class) in the main Spring application class to bind the properties into the POJO:
+
+
+#Simple properties
+mail.hostname=host@mail.com
+mail.port=9000
+mail.from=mailer@mail.com
+
+it will automatically bind properties which have prefix mail.we can also put validations like hibernate-validator.
+
+
+-----------------------------------------------------------------------------------------------------------
+Another environments Configuration on basis of env.
+
+Profiles in Spring Boot
+
+Every enterprise application has many environments, like:
+
+Dev | Test | Stage | Prod | UAT / Pre-Prod
+
+Each environment requires a setting that is specific to them. For example, in DEV, we do not need to constantly check database consistency. Whereas in TEST and STAGE, we need to. These environments host specific configurations called Profiles.
+
+How Do we Maintain Profiles?
+This is simple — properties files!
+We make properties files for each environment and set the profile in the application accordingly, so it will pick the respective properties file. 
+
+we need to create three  application.properties:
+
+ application-dev.properties 
+ application-test.properties 
+ application-prod.properties 
+Of course, the application.properties will remain as a master properties file, but if we override any key in the profile-specific file, the latter will gain precedence.
+
+
+We have used the @Profile("Dev")   to let the system know that this is the BEAN  that should be picked up when we set the application profile to DEV. The other two beans will not be created at all.
+
+@Profile("Dev") //it is method level and class level.
+
+@Component
+@Profile(value="prod & !dev")
+class MyRunner3 implements CommandLineRunner {
+
+    @Override
+    public void run(String... args) throws Exception {
+
+        System.out.println("In production");
+    }
+}
+
+
+One last setting is how to let the system know that this is DEV, TEST, or PROD. But, how do we do this?
+
+We will use the application.properties to use the key below:
+
+spring.profiles.active=dev
+
+
+How environment know which file to pick?
+we will set path of file at the time of build.
+
+
+we can check active profiles like this-->
+
+@Component
+class MyRunner implements CommandLineRunner {
+
+    @Autowired
+    private Environment environment;
+
+    @Override
+    public void run(String... args) throws Exception {
+
+        System.out.println("Active profiles: " +
+                Arrays.toString(environment.getActiveProfiles()));
+    }
+}
+
+----------------------------------------------------------------------------------------------------------
+overriding system properties--->
+
+For example, here's our application.properties file:
+
+server.port=8081
+
+To override the server.port value, we need to pass the new value in the following manner (for Spring Boot 1.x):
+mvn spring-boot:run -Dspring-boot.run.arguments=--server.port=8085  //maven
+---------------------------------------------------------------------------------------------------------
+Internalization-->it is ootb handle in boot just we need to add message properties.
+
+for this first create messages.properties //each for every language u want to localize.
+
+LocaleResolver
+In order for our application to be able to determine which locale is currently being used, we need to add a LocaleResolver bean:
+
+
+@Bean
+public LocaleResolver localeResolver() {
+    SessionLocaleResolver slr = new SessionLocaleResolver();
+    slr.setDefaultLocale(Locale.US);//this we can change via js
+    return slr;
+}
+The LocaleResolver interface has implementations that determine the current locale based on the session, cookies, the Accept-Language header, or a fixed value.
+
+In our example, we have used the session based resolver SessionLocaleResolver and set a default locale with value US.
+
+
+LocaleChangeInterceptor
+Next, we need to add an interceptor bean that will switch to a new locale based on the value of the lang parameter appended to a request:
+
+@Bean
+public LocaleChangeInterceptor localeChangeInterceptor() {
+    LocaleChangeInterceptor lci = new LocaleChangeInterceptor();
+    lci.setParamName("lang");///it will change tha local if any request has ?lang=fr  //lang in param with its value.
+    return lci;
+}
+
+
+
+3)In order to take effect, this bean needs to be added to the application's interceptor registry.
+
+To achieve this, our @Configuration class has to implement the WebMvcConfigurer interface and override the addInterceptors() method:
+
+@Override
+public void addInterceptors(InterceptorRegistry registry) {
+    registry.addInterceptor(localeChangeInterceptor());
+}
+
+---------------------------------------------------------------------------------------------------------
+Error/Exception Handiling  in boot--->
+
+by default boot search for /error while getting error in any api.
+
+whitelabel error page---it is 404 page inboot.
+
+handling above?
+1)create your error.html which will search by boot.
+
+
+//if we want to do some exceptional and want to redirect different pages on different http errors.
+2)create a class which implements ErrorController and override getErrorPath().
+
+@Controller
+public class CustomErrorController implements ErrorController {
+
+	private static final String ERROR_PATH = "/error";
+	private static final String ERROR_TEMPLATE = "customError"; //name of custom jsp
+	
+	private final ErrorAttributes errorAttributes;    //this is the class we have to override for error attributes.
+
+	@Autowired
+	public CustomErrorController(ErrorAttributes errorAttributes) {
+		this.errorAttributes = errorAttributes;
+	}
+
+	@RequestMapping(ERROR_PATH)
+	public String error(Model model,HttpServletRequest request) {
+		
+		// {error={timestamp=Mon Nov 02 12:40:50 EST 2015, status=404, error=Not Found, message=No message available, path=/foo}}
+		Map<String,Object> error = getErrorAttributes(request, true);   //fetching error details here.
+		
+		model.addAttribute("timestamp", error.get("timestamp"));
+		model.addAttribute("status", error.get("status"));
+		model.addAttribute("error", error.get("error"));
+		model.addAttribute("message", error.get("message"));
+		model.addAttribute("path", error.get("path"));
+		
+		return ERROR_TEMPLATE;
+	}
+
+	@Override
+	public String getErrorPath() {
+		return ERROR_PATH;  //on error redirecting to /error
+	}
+	
+	@RequestMapping("/404")
+	public String pageNotFound(Model model,HttpServletRequest request){
+		model.addAttribute("error", getErrorAttributes(request,true));
+		return "404";
+	}
+	
+	private Map<String, Object> getErrorAttributes(HttpServletRequest request, boolean includeStackTrace) {
+		RequestAttributes requestAttributes = new ServletRequestAttributes(request);
+		return this.errorAttributes.getErrorAttributes(requestAttributes,includeStackTrace);//sending all details
+	}
+	
+}
+
+
+now,in above on error getErrorPath will call and redirect to error page.
+as /error is ootb in boot for errors if we want to show different page for diffrent error.
+we have to add it in EmbeddedServletContainerCustomizer.
+
+@SpringBootApplication
+public class ErrorsApplication {
+
+	@Bean
+	public EmbeddedServletContainerCustomizer containerCustomizer(){
+		return ( container -> {
+			ErrorPage custom404Page = new ErrorPage(HttpStatus.NOT_FOUND,"/404");
+			container.addErrorPages(custom404Page);
+		});
+	}
+	
+    public static void main(String[] args) {
+        SpringApplication.run(ErrorsApplication.class, args);
+    }
+}
+
+
+=================================
+Exceptional Handeling--->
+
+It is very easy in Spring Boot.
+
+  
+package com.therealdanvega.controller;
+
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+
+@ControllerAdvice                            //this annotation will allow u to wor with every controller.
+public class ExceptionControllerAdvice {
+
+	@ExceptionHandler(Exception.class)      //this is to handle Parent Exception
+	public String exception(Exception exception, Model model){
+		model.addAttribute("exception", exception);
+		return "errorHandler";              //this is custom global view page
+	}
+	
+}
+
+Like this we can handle any Exception.For Global we use Controller Advice.
+For Particular controller we can just use @ExceptionHandler.
+
+----------------------------------------------------------------------------------------------------------
+JPA in Spring Boot---->
+dependency--spring-boot-starter-data-jpa
+
+it will automatic add hibernate in dependency.
+
+but we donot need hibernate.confg.xml here like mvc just add properties in application.properties.
+
+spring.datasource.url=jdbc:mysql://localhost:3306/manu
+spring.datasource.name=manu
+spring.datasource.username=root
+spring.datasource.password=MAnv12@3
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL5Dialect
+spring.jpa.hibernate.ddl-auto=update
+spring.main.web-application-type=none    // this is not to start embedded server.
+server.port=8081                         //changing port in boot
+
+in boot we do not need to create dao for only crud methods ,boot provide CRUDRepository<MODEL NAME ON WHICH OPERATION DONE,MODEL ID> interface to provide these facility.spring will automatic check for these operations.
+
+entity annotations and everything is same as hibernate.
+
+Example===>
+import com.example.Entity.User;
+
+public interface UserRepository extends CrudRepository<User, Integer>{    //its method are somehow different than hibernate.
+}
+
+we donot need transaction to begin and close for repo.
+
+UserRepository repo = context.getBean(UserRepository.class);  // we can also use autowire
+		
+		User user = new User();
+		user.setName("manu");
+		user.setStatus("single");
+		user.setCity("Gwalior");
+		//create
+		User savedUser =repo.save(user);
+		System.out.println(savedUser.getName());
+		
+		//update
+		Optional<User> updateUser =repo.findById(1);        //findAll() for all elements.
+		if(updateUser.isPresent())
+		{
+			updateUser.get().setName("shelly");    //not automatic update like hibernate.
+			repo.save(updateUser.get());
+		}
+		
+		//delete
+		repo.deleteById(1);
+
+
+--------------------------------------------------------------------------------------------------
+we can also add our methods in Repository...
+
+let we have to find data through name.
+
+select * from User where name ="something" ;
+
+lets create.
+
+go back to our interface.
+
+public interface UserRepository extends CrudRepository<User, Integer>{
+
+	List<User> findByName(String name);     // just we have to declare method   %%%%%%%%%%%%%%
+}
+findBy is Jpa keyword and Name here is our property/coloumn in our entity..we have to follow this.
+
+Spring will automatic create body for this.
+
+we have syntax for all thing in repository....
+
+Distinct findDistinctByLastnameAndFirstname                           select distinct…​ where x.lastname = ?1 and x.firstname = ?2
+
+And      		findByLastnameAndFirstname                                           … where x.lastname = ?1 and x.firstname = ?2
+
+Or       		findByLastnameOrFirstname                                            … where x.lastname = ?1 or x.firstname = ?2
+
+Is, Equals 		findByFirstname,findByFirstnameIs,findByFirstnameEquals              … where x.firstname = ?1
+
+Between 		findByStartDateBetween												 … where x.startDate between ?1 and ?2
+
+LessThan        findByAgeLessThan													 … where x.age < ?1
+
+LessThanEqual   findByAgeLessThanEqual                                               … where x.age <= ?1
+
+GreaterThan     findByAgeGreaterThan                                                 … where x.age > ?1
+
+GreaterThanEqualfindByAgeGreaterThanEqual                                            … where x.age >= ?1
+
+After           findByStartDateAfter                                                 … where x.startDate > ?1
+
+Before          findByStartDateBefore                                                … where x.startDate < ?1
+
+IsNull, Null    findByAge(Is)Null                                                    … where x.age is null
+
+IsNotNull       findByAge(Is)NotNull                                                 … where x.age not null
+
+Like            findByFirstnameLike                                                  … where x.firstname like ?1
+
+NotLike         findByFirstnameNotLike                                               … where x.firstname not like ?1
+
+StartingWith    findByFirstnameStartingWith                                          … where x.firstname like ?1 (parameter bound with appended %)
+
+OrderBy         findByAgeOrderByLastnameDesc                                         … where x.age = ?1 order by x.lastname desc
+
+Not             findByLastnameNot                                                    … where x.lastname <> ?1
+
+In              findByAgeIn(Collection<Age> ages)                                    … where x.age in ?1
+
+NotIn           findByAgeNotIn(Collection<Age> ages)                                 … where x.age not in ?1
+
+True            findByActiveTrue()                                                   … where x.active = true
+
+False           findByActiveFalse()                                                  … where x.active = false
+
+IgnoreCase      findByFirstnameIgnoreCase                                            … where UPPER(x.firstname) = UPPER(?1)
+
+
+
+Example===>
+Iterable<Entity> findByStatusIdNotNull();
+
+----------------------------------------------------------------------------------------------------------------------------------------
+
+we can also write query in spring boot jpa..
+same as hibernate....we use @namedQuery,@NamedNativeQuery.  and we can also use @Query on the method in Repository.
+
+public interface UserRepository extends CrudRepository<User, Integer>{    //its method are somehow different than hibernate.
+
+@Query("From User")   /// query same like Hibernate langauage.
+List<User> getAllUsers()
+
+@Query("From User where name = :n")   /// query same like Hibernate langauage.
+List<User> getAllUsers(@Param("n") String name)  ///binding query parametre with name
+}
+
+
+@Query("select * From User" , nativequery=true)   /// for mysql queries.
+List<User> getAllUsers()
+
+
+Named QUery in Jpa...
+
+LikeHibernate we have to also declare it on entity level..
+
+@Entity
+@Table(name = "employee", schema="spring_data_jpa_example")
+@NamedQuery(name = "Employee.fetchByLastNameLength",
+        query = "SELECT e FROM Employee e WHERE CHAR_LENGTH(e.lastname) =:length "
+)
+public class Employee {
+
+**
+**
+-
+}
+
+Pay extra attention to the query name and the convention we follow:
+
+@{EntityName}.{queryName}.
+
+Then, we will add the method to our Spring Data repository.
+
+@Repository
+public interface EmployeeRepository extends JpaRepository<Employee,Long>, EmployeeRepositoryCustom {
+ 
+    List<Employee> fetchByLastNameLength(@Param("length") Long length);
+}
+
+//////same as above...
+
+--------------------------------------------------------------------------------------------------------------------------------
+
+Cache in SPring Boot--->
+
+1)to enable Caching in boot..we have to use @EnableCaching on main controller.
+
+What data should be cached?
+This is mostly opinionated decision about the type of data which should reside in cache and go through cache lifecycle. It varies in different scenario and requirement on how much time we can tolerate stale data.
+
+So caching candidates will vary on each project, still those are few examples of caching –
+
+List of products available in an eCommerce store
+Any Master data which is not frequently changed
+Any frequently used database read query, where result does not change in each call at least for a specific period.
+
+
+a)@Cacheable
+It is used on the method level to let spring know that the response of the method are cacheable. Spring manages the request/response of this method to the cache specified in annotation attribute. For example, @Cacheable ("cache-name1", “cache-name2”).//next two are name of cache
+
+@Cacheable annotation has more options. Like we can specify the key of the cache from the request of the method. If nothing specified, spring uses all the class fields and use those as cache key (mostly HashCode) to maintain caching but we can override this behavior by providing key information.
+
+
+@Cacheable(value="books", key="T(classType).hash(#isbn)")  //if we want to do caching on specific key.
+public Book findStoryBook (ISBN isbn, boolean checkWarehouse, boolean includeUsed)
+
+We can also use conditional caching as well. For example,
+
+@Cacheable(value="book", condition="#name.length < 50")
+public Book findStoryBook (String name)
+
+
+also we can synchronized caching
+
+@Cacheable(value="book", sync=true)
+public Book findStoryBook (String name)    //method will do caching in synchronized way.
+
+
+b). @CachePut
+Sometimes we need to manipulate the cacheing manually to put (update) cache before method call. This will allow us to update the cache and will also allow the method to be executed. The method will always be executed and its result placed into the cache (according to the @CachePut options).
+
+It supports the same options as @Cacheable and should be used for cache population rather then method flow optimization.
+
+@CachePut(value="book", condition="#name.length < 50")
+public Book updateBook (String name)  //it will call when we update someyhing so need to update cache.
+
+so always think what annotation we have to put while caching.
+
+
+
+c)@CacheEvict
+It is used when we need to evict (remove) the cache previously loaded of master data. When CacheEvict annotated methods will be executed, it will clear the cache.
+
+We can specify key here to remove cache, if we need to remove all the entries of the cache then we need to use allEntries=true. This option comes in handy when an entire cache region needs to be cleared out – rather then evicting each entry (which would take a long time since it is inefficient), all the entries are removed in one operation.
+
+@CacheEvict(value="book", allEbtries=true)   //will remove all entries from caching.
+public Book updateBook (String name) 
+
+
+d)@Caching
+This annotation is required when we need both CachePut and CacheEvict at the same time.
+
+In the following example, we have cached the return value of the method studentInfo() in cacheStudentInfo, and id is the unique key that identifies each entry in the cache.
+
+@Cacheable(value="cacheStudentInfo", key="#id")  
+public List studentInfo()  
+{  
+//some code   
+return studentDetails;  
+}  
+
+
+
+
+
+
+e)@CacheConfig--->it is class level.if we want to put same on all methods in class.
+
+
+Now we will see by all with example-->
+
+i)add dependency of cache in project.
+
+    @Override
+    @CachePut(cacheNames = "books", key="#book.id")
+    public Book updateBook(Book book) {
+        bookRepository.updateAddress(book.getId(), book.getName());
+        logger.info("book updated with new name");
+        return book;
+    }
+
+    @Override
+    @Cacheable(cacheNames = "books", key="#id")
+    public Book getBook(long id) {
+        logger.info("fetching book from db");
+        Optional<Book> book = bookRepository.findById(id);
+        if (book.isPresent()) {
+            return book.get();
+        } else {
+            return new Book();
+        }
+    }
+
+    @Override
+    @CacheEvict(cacheNames = "books", key = "#id")
+    public String deleteBook(long id) {
+        bookRepository.deleteById(id);
+        return "Book deleted";
+    }
+	
+	
+1)so in this when we first fetch book by id it will hit database.
+2)if we try to fetch again it with same id it will not hit database object will return through cache.
+3)so whenever we update something we will put @CachePut on the method if we fetch updated object it will not hit database...**
+4)for delete we dont want cache to return caheable object so we have to delete it we have to use @CacheEvict.
+
+
+
+
+---------------------------------------------------------------------------------------------------
+Methods are same as mVC.
+
+Example==>
+@RequestMapping("/test",method=RequestMethod.Get)
+	@ResponseBody                             //if response body not use it will search for view resolver.
+	public String testMethod() {              // otherwise use @RestController
+		return "Hello";
+	}
+	
+	
+	@RequestMapping("/test",method=RequestMethod.Get)  
+	instead of this we can use 
+	@GetMapping("/test")
+	
+
+valid http status-->
+post-201
+get,put--200
+delete--204
+
+	@RequestMapping("/test")
+	@ResponseBody
+	public ResponseEntity<String> testMethod() {
+		int a=10;
+		int b=20;
+		int c=b/a;
+		if(c<0)
+		{
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();    //setting status 
+		}
+		return ResponseEntity.of(Optional.ofNullable(String.valueOf(c)));  //sending value
+	}
+	
+	
+Multiple Caches:
+@Cacheable can use multiple caches at the same time. In this situation, a requested item will be checked in all the mentioned cached and if it found in any of them, method will not be executed.If it does not exist in any of the cache, method will gets executed and it’s result will be stored in all of those caches.
+
+@Cacheable({"products", "items"})       //  creating multiple cache
+public Product findProduct(Product product) {...
+..
+return aproduct;
+}
+
+@CacheEvict(value = "products", key = "#product.name")    //now we can use above cache here in value. 
+public void refreshProduct(Product product) {
+    //This method will remove only this specific product from 'products' cache.
+} 
+
+
+-------------------------------------------------------------------------------------------------------------------------------
+we can define bean scope by @Scope("singleton")//prototype,request,session,globalsession
+
+@Bean we use to create bean at runtime in a class which we can autowire later.
+
+@Autowired--->
+
+Property Injection makes testing very difficult.
+
+so use like this..
+1)declare property
+
+Private abcService service;
+
+@Autowired
+public void setAbcService(abcService service)
+{
+this.service =service;
+}
+---------------------------------------------------------------------------------------------------------------------------------
+in hibernate if we have two tables having @onetoone mapping.they will go in a deadlock to call each other while fetching.
+so we use those two annotations to stop deadlock.(use mapped by to avoid extra coloumns)
+@JsonManageReference-->On parent object to tell please manage this reference.
+
+@JsonBackReference-->On child object to tell not go back to this refrence.
+
+------------------------------------------------------------------------------------------------------------------------------------
+File Upload in Boot-->
+
+
+for media-->
+Spring.servlet.multipart.enable=true/////enable multipart uploads
+Spring.servlet.multipart.max-file-size=200MB
+Spring.servlet.multipart.file-size-threshold=10kb///lowest file size will not allow to upload file less than this size.
+
+
+
+Example--> write a method to upload a file on server and to save it..
+
+String upload_directory ="C:\\Users\\manvendraraghava\\Documents\\workspace-spring-tool-suite-4-4.9.0.RELEASE\\demo\\src\\main\\resources\\static\\image";
+	
+	@PostMapping("/upload-file")
+	@ResponseBody
+	public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file)  //Datatype for file
+	{
+		if(file.isEmpty())
+		{
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Must Contain File");
+		}
+		uploadFileOnSever(file);
+	return ResponseEntity.ok("working"); 
+		
+	}
+	
+	public boolean uploadFileOnSever(MultipartFile file)
+	{
+		boolean f = false;
+		try {
+			InputStream s = file.getInputStream();
+			byte data[] = new byte[s.available()];//gives count of no of bytes which can be read.
+			FileOutputStream output = new FileOutputStream(upload_directory+File.separator+file.getOriginalFilename());
+			output.write(data);
+			output.flush();
+			output.close();
+			f =true;
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		return f;
+	}
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+Validation in Spring Boot same as mvc---use javax validation..
+
+@NotNull(),@size(min=3,max=15,message="to print on ui")
+
+@valid with model attribute,Errors errors object for errors...
+
+it will show error on api call via postman..we can also override validation exception and create our own logic.
+
+1)create a class extends ResponseEntityExceptionHandeler.
+2)handleMethodArgumentNotValid  override that method.
+3)write our custom logic.
+
+for ui we can use spring taglib
+
+<form:errors path="entity name" >
+
+----------------------------------------------------------------------------------------------------------------------------------------------
+ThymeLeaf--->Thymeleaf is a Java-based library used to create a web application. It provides good support for serving an XHTML/HTML5 in web applications.
+It is mainly used for template just like jsp...server side like jsp.dynamic html.
+
+Spring boot will auto-configure view resolver for Thymeleaf whenever it will find the springboot-thymeleaf-starter dependency on classpath. Spring boot will pick Thymeleaf templates (HTML pages) from resources/templates folder.
+
+thymeleaf expression is same as mostly like jsp expression.
+ just use th:before attribute in html to use dynamic content with expression language.
+ we also dont need any view resolver for this.
+ 
+install plugins for better--->
+
+1)thymeleaf.
+2)emmet.
+
+${model}--->
+
+<h1 th:text="'Thymeleaf ' + ${message} + ' App'"> </h1>   //for text
+
+<button type="button" th:onclick="demo()">Show Alert</button>  //calling event  
+
+---------------
+using enum-->
+
+<th:block th:switch="${day}">
+    <span th:case="${T(com.example.thymeleaf.enums.model.DayOfTheWeek).MONDAY}">weekday</span>
+    <span th:case="${T(com.example.thymeleaf.enums.model.DayOfTheWeek).TUESDAY}">weekday</span>
+    <span th:case="${T(com.example.thymeleaf.enums.model.DayOfTheWeek).WEDNESDAY}">weekday</span>
+    <span th:case="${T(com.example.thymeleaf.enums.model.DayOfTheWeek).THURSDAY}">weekday</span>
+    <span th:case="${T(com.example.thymeleaf.enums.model.DayOfTheWeek).FRIDAY}">weekday</span>
+    <span th:case="${T(com.example.thymeleaf.enums.model.DayOfTheWeek).SATURDAY}">weekend</span>
+    <span th:case="${T(com.example.thymeleaf.enums.model.DayOfTheWeek).SUNDAY}">weekend</span>
+</th:block>
+We are using use T() syntax to get the static fields from enum object.
+---------------
+we can also use pre defined methods in thymeleaf which is like java. use #
+
+${#strings.toUpperCase(variable name)}    /// nice
+
+th:with ----->we can create variable like c:var.
+<div th:with="someVariable=${someValue}">
+
+loop in -->
+th:each="n:${list}"   /////same like java
+
+conditional statement---->
+
+th:if/////th:unless
+
+th:name--->///******to bind the value to pojo with attribute.
+th:value--->//////to print value of object variable if present.
+
+
+
+ <input 
+						      name="name"
+						      type="text"
+						      class="form-control "
+						      th:classappend="${#fields.hasErrors('name') ? 'is-invalid':''}"
+						      id="name_field" 
+						      aria-describedby="emailHelp"
+						      placeholder="Enter here"
+						      required
+						      th:value="${user.name}"
+						       />
+
+
+
+
+if we use # before the bracket we can call message property directly for lcalization.
+#{propertyName.}
+--------------------------------------
+Fragments in thyme leaf--->include,insert,replace....like we can use component repeatedly.
+
+steps--->first declare some code within <th:fragment="name">//code</>
+
+now we can call it anywhere
+
+th:include/replace/insert="pagename::name"  //calling code.pagename is the name where we have the fragment.
+
+passing dynamic values
+
+steps--->first declare some code within <th:fragment="name('valu1','value2')">//code</>//we can use it in code via ${}
+
+now passing values
+
+th:include/replace/insert="pagename::name(values to be passed.)" 
+
+Adding css,js,image in project....
+as we put all css js files in static folder...
+adding is same ut instead of href/src we have to use th:href/src=@{}  //this the path till static.
+
+  <a class="nav-link" th:href="@{/}">Home <span class="sr-only">(current)</span></a>////also work same for controllers
+
+we can also replace content in thymeleaf/...
+
+ Example==>
+ 
+ 1)home.html
+ 
+ <!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="base::layout(~{::section})">//$$$$ we are replacing html with base fragement named layout and 
+<head>                                                                            //passing html using ~ sign.
+<meta charset="ISO-8859-1">                                                       //
+<title>This is home page</title>
+</head>
+<body>
+<section>
+<h1>This is home Page. </h1>                               //we are sending this section in fragment.
+</section>
+</body>
+</html>
+
+2)base.html
+
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="layout(content)"> //creating fragment
+  <head>
+<link href ="@{/css/style.css}">
+    <title th:text="${title}"></title>       //automatic call model attribute of home.html.
+  </head>
+  <body>
+    <h1>Hello, world!</h1>
+    <div th:replace="${content}"></div>      //passing content here to replace...******this is important
+
+  </body>
+</html>
+
+
+th:insert — Inserts the fragment content inside the host tag
+th:replace &mdahs; Replaces the host tag with the specified fragment content
+th:include — Similar to th:insert but it only inserts the contents of the specified fragment.
+
+
+in our project we are sending data from all page to bsse fragment..
+
+-----------------------------------------------------------------------------------------------------------------------------------------------
+<form th:action="@{/login}" method="post"                    //here only name will work to bind inner elements.
+    th:object="${loginBean}">
+	
+	is similiar to --->
+	
+<form: method="post" action="login" modelAttribute="loginBean">///but when we use it we use path="" attribute to bind inner elements.
+
+
+
+for form validations server side th use-->
+ <div class="invalid-feedback" th:each="e : ${#fields.errors('name')}" th:text="${e}">   //fields class.
+       								 
+     							 </div>
+								 
+								 
+								 
+<th:block th:text="${#session.removeAttribute('message')}"></th:block>  //we can also remove attribute from session here
+
+th:block here is container which will work as a div.
+-----------------------------------------------------------------------------------------------------------------------------------------------
+
+================================================================================================================================================
+Message Source-->
+MessageSource is a powerful feature available in Spring applications. This helps application developers handle various complex scenarios with writing much extra code, such as environment-specific configuration, internationalization or configurable values.
+
+
+Let's consider a scenario where we have to develop an application that supports multiple languages. If the user doesn't provide the correct details as input, we'd like to show error messages according to the user's locale.
+
+Let's take an example of a Login form bean:
+
+public class LoginForm {
+
+    @NotEmpty(message = "{email.notempty}")
+    @Email
+    private String email;
+
+    @NotNull
+    private String password;
+
+    // standard getter and setters
+}
+Here we've added validation constraints that verify if an email is not provided at all, or provided, but not following the standard email address style.
+
+To show custom and locale-specific message, we can provide a placeholder as mentioned for the @NotEmpty annotation.
+
+
+2)An application context delegates the message resolution to a bean with the exact name messageSource.
+
+ReloadableResourceBundleMessageSource is the most common MessageSource implementation that resolves messages from resource bundles for different locales:
+
+@Bean
+public MessageSource messageSource() {
+    ReloadableResourceBundleMessageSource messageSource
+      = new ReloadableResourceBundleMessageSource();
+    
+    messageSource.setBasename("classpath:messages");
+    messageSource.setDefaultEncoding("UTF-8");
+    return messageSource;
+}
+Here, it's important to provide the basename as locale-specific file names will be resolved based on the name provided.
+
+
+3)Defining LocalValidatorFactoryBean 
+To use custom name messages in a properties file like we need to define a LocalValidatorFactoryBean and register the messageSource:
+
+@Bean
+public LocalValidatorFactoryBean getValidator() {
+    LocalValidatorFactoryBean bean = new LocalValidatorFactoryBean();
+    bean.setValidationMessageSource(messageSource());
+    return bean;
+}
+
+The final step is to create a properties file in the src/main/resources directory with the name provided in the basename in step 4:
+
+# messages.properties
+email.notempty=Please provide valid email id.
+Here we can take advantage of internationalization along with this. Let's say we want to show messages for a French user in their language.
+
+In this case, we have to add one more property file with the name the messages_fr.properties in the same location (No code changes required at all):
+
+# messages_fr.properties
+email.notempty=Veuillez fournir un identifiant de messagerie valide.
+
+
+=================================================================================================================================================
+Transaction in boot-->
+Basically, there are two distinct ways to configure Transactions, annotations and AOP, each with their own advantages. We're going to discuss the more common annotation-config here.
+
+1)Spring 3.1 introduces the @EnableTransactionManagement annotation that we can use in a @Configuration class to enable transactional support.
+@Configuration
+@EnableTransactionManagement
+public class PersistenceJPAConfig{
+
+   @Bean
+   public LocalContainerEntityManagerFactoryBean
+     entityManagerFactoryBean(){
+      //...
+   }
+
+   @Bean
+   public PlatformTransactionManager transactionManager(){
+      JpaTransactionManager transactionManager
+        = new JpaTransactionManager();
+      transactionManager.setEntityManagerFactory(
+        entityManagerFactoryBean().getObject() );
+      return transactionManager;
+   }
+}
+
+
+
+above is same we use to do in xml-->
+
+<bean id="txManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+   <property name="entityManagerFactory" ref="myEmf" />
+</bean>
+<tx:annotation-driven transaction-manager="txManager" />
+
+2)With transactions configured, we can now annotate a bean with @Transactional either at the class or method level:
+
+@Service
+@Transactional
+public class FooService {
+    //...
+}
+The annotation supports further configuration as well:
+
+the Propagation Type of the transaction
+the Isolation Level of the transaction
+a Timeout for the operation wrapped by the transaction
+a readOnly flag – a hint for the persistence provider that the transaction should be read only
+the Rollback rules for the transaction
+Note that by default, rollback happens for runtime, unchecked exceptions only. The checked exception does not trigger a rollback of the transaction. We can, of course, configure this behavior with the rollbackFor and noRollbackFor annotation parameters.
+
+
+At a high level, Spring creates proxies for all the classes annotated with @Transactional, either on the class or on any of the methods. The proxy allows the framework to inject transactional logic before and after the running method, mainly for starting and committing the transaction.
+
+What's important to keep in mind is that, if the transactional bean is implementing an interface, by default the proxy will be a Java Dynamic Proxy. This means that only external method calls that come in through the proxy will be intercepted. Any self-invocation calls will not start any transaction, even if the method has the @Transactional annotation.
+
+Another caveat of using proxies is that only public methods should be annotated with @Transactional. Methods of any other visibilities will simply ignore the annotation silently as these are not proxied.
+'
+
+
+The fact is that we can't be sure that an insert or update won't occur when the readOnly flag is set. This behavior is vendor dependent, whereas JPA is vendor agnostic.
+
+It's also important to understand that the readOnly flag is only relevant inside a transaction. If an operation occurs outside of a transactional context, the flag is simply ignored. A simple example of that would call a method annotated with:
+
+@Transactional( propagation = Propagation.SUPPORTS,readOnly = true )
+
+
+****)Transaction Rollback
+The @Transactional annotation is the metadata that specifies the semantics of the transactions on a method. We have two ways to rollback a transaction: declarative and programmatic.
+
+In the declarative approach, we annotate the methods with the @Transactional annotation. The @Transactional annotation makes use of the attributes rollbackFor or rollbackForClassName to rollback the transactions, and the attributes noRollbackFor or noRollbackForClassName to avoid rollback on listed exceptions.
+
+
+The default rollback behavior in the declarative approach will rollback on runtime exceptions.
+
+Let's see a simple example using the declarative approach to rollback a transaction for runtime exceptions or errors:
+
+@Transactional
+public void createCourseDeclarativeWithRuntimeException(Course course) {
+    courseDao.create(course);
+    throw new DataIntegrityViolationException("Throwing exception for demoing Rollback!!!");
+}
+Next we'll use the declarative approach to rollback a transaction for the listed checked exceptions. The rollback in our example is on SQLException:
+
+@Transactional(rollbackFor = { SQLException.class })
+public void createCourseDeclarativeWithCheckedException(Course course) throws SQLException {
+    courseDao.create(course);
+    throw new SQLException("Throwing exception for demoing rollback");
+}
+Let's see a simple use of attribute noRollbackFor in the declarative approach to prevent rollback of the transaction for the listed exception:
+
+@Transactional(noRollbackFor = { SQLException.class })
+public void createCourseDeclarativeWithNoRollBack(Course course) throws SQLException {
+    courseDao.create(course);
+    throw new SQLException("Throwing exception for demoing rollback");
+}
+In the programmatic approach, we rollback the transactions using TransactionAspectSupport:
+
+public void createCourseDefaultRatingProgramatic(Course course) {
+    try {
+       courseDao.create(course);
+    } catch (Exception e) {
+       TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+    }
+}
+The declarative rollback strategy should be favored over the programmatic rollback strategy.
+
+==================================================================================================================================================
+
+JPA allows to map application classes to tables in database.
+
+Entity Manager - Once the mappings are defined, entity manager can manage your entities. Entity Manager handles all interactions with the database
+JPQL (Java Persistence Query Language) - Provides ways to write queries to execute searches against entities. Important thing to understand is the these are different from SQL queries. JPQL queries already understand the mappings that are defined between entities. We can add additional conditions as needed.
+Criteria API defines a Java based API to execute searches against databases.
+
+
+User Service to talk to Entity Manager
+Typically with JPA we need to create a service to talk to the entity manager. In this example, we create a UserService to manage the persistence of user entity.
+
+@Repository
+@Transactional
+public class UserService {
+	
+	@PersistenceContext
+	private EntityManager entityManager;
+	
+	public long insert(User user) {
+		entityManager.persist(user);
+		return user.getId();
+	}
+
+	public User find(long id) {
+		return entityManager.find(User.class, id);
+	}
+	
+	public List<User> findAll() {
+		Query query = entityManager.createNamedQuery(
+				"query_find_all_users", User.class);
+		return query.getResultList();
+	}
+}
+
+important things to note
+
+@Repository: Spring Annotation to indicate that this component handles storing data to a data store.
+
+@Transactional: Spring annotation used to simplify transaction management
+
+@PersistenceContext: A persistence context handles a set of entities which hold data to be persisted in some persistence store (e.g. a database). In particular, the context is aware of the different states an entity can have (e.g. managed, detached) in relation to both the context and the underlying persistence store.
+
+EntityManager : Interface used to interact with the persistence context.
+
+entityManager.persist(user): Make user entity instance managed and persistent i.e. saved to database.
+
+entityManager.createNamedQuery: Creates an instance of TypedQuery for executing a Java Persistence query language named query. The second parameter indicates the type of result.
+
+
+ser Entity Manager Command Line Runner
+CommandLineRunner interface is used to indicate that this bean has to be run as soon as the Spring application context is initialized.
+
+We are executing a few simple methods on the UserService.
+
+@Component
+public class UserEntityManagerCommandLineRunner implements CommandLineRunner {
+
+	private static final Logger log = LoggerFactory.getLogger(UserEntityManagerCommandLineRunner.class);
+	
+	@Autowired
+	private UserService userService;
+
+	@Override
+	public void run(String... args) {
+
+		log.info("-------------------------------");
+		log.info("Adding Tom as Admin");
+		log.info("-------------------------------");
+		User tom = new User("Tom", "Admin");
+		userService.insert(tom);
+		log.info("Inserted Tom" + tom);
+
+		log.info("-------------------------------");
+		log.info("Finding user with id 1");
+		log.info("-------------------------------");
+		User user = userService.find(1L);
+		log.info(user.toString());
+
+		log.info("-------------------------------");
+		log.info("Finding all users");
+		log.info("-------------------------------");
+		log.info(userService.findAll().toString());
+	}
+}
+
+org.springframework.data.repository.CrudRepository is common interface for repositories which provide CRUD operations.
+javax.persistence.EntityManager is associated with a persistence context. Spring has its own interface which extends CrudRepository called JpaRepository for this purposes.
+
+==================================================================================================================================================
+Swagger in boot.
+
+It is a best way to document your Rest Api.
+
+Swagger is a tool, a specification and a complete framework implementation for producing the visual representation of RESTful Web Services. It enables documentation to be updated at the same pace as the server. When properly defined via Swagger, a consumer can understand and interact with the remote service with a minimal amount of implementation logic.
+
+<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger2</artifactId>
+			<version>2.4.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger-ui</artifactId>
+			<version>2.4.0</version>
+		</dependency>
+		
+		
+To enable the Swagger 2 we use the annotation @EnableSwagger2.
+A Docket bean is defined and using its select() method we get an instance of ApiSelectorBuilder. 
+ApiSelectorBuilder we configure the endpoints exposed by Swagger.
+After the Docket bean is defined, its select() method returns an instance of ApiSelectorBuilder, 
+which provides a way to control the endpoints exposed by Swagger.
+
+Using the RequestHandlerSelectors and PathSelectors we configure the predicates for selection of RequestHandlers.
+
+example-->
+
+@Configuration
+@EnableSwagger2
+public class SwaggerConfig {
+
+	@Bean
+	public Docket postsApi() {
+		return new Docket(DocumentationType.SWAGGER_2).groupName("public-api")
+				.apiInfo(apiInfo()).select().paths(postPaths()).build();   //building docke with api info and paths with help of select.
+	}
+
+	private Predicate<String> postPaths() {
+		return or(regex("/api/posts.*"), regex("/api/javainuse.*"));  //paths
+	}
+
+	private ApiInfo apiInfo() {                             //creating api Info.
+		return new ApiInfoBuilder().title("JavaInUse API")  //it will show on page
+				.description("JavaInUse API reference for developers")  //desc
+				.termsOfServiceUrl("http://javainuse.com")              //like copyright url
+				.contact("javainuse@gmail.com").license("JavaInUse License")
+				.licenseUrl("javainuse@gmail.com").version("1.0").build();
+	}
+
+}
+These are the only changes required. Now go to http://localhost:8080/swagger-ui.html.
+
+
+2)Now add some annotation on our api.
+
+@ApiOperation-
+
+This annotation is used to describe the exposed REST API. It describes an operation or typically a HTTP method against a specific path. It takes the following parameters:-
+
+value:-	The value of the annotation is a short description on the API. Since this is displayed in the list of operations in Swagger-UI and the location is limited in size, this should be kept short (preferably shorter than 120 characters)
+
+notes:-	The notes allows you to give significantly more details about the operations (e.g. you can include request samples and responses here)
+
+nickname:-	The nickname for this API.
+
+
+@ApiOperation(value = "getGreeting", notes="get greeting",nickname = "getGreeting")
+	@RequestMapping(method = RequestMethod.GET, value = "/api/javainuse")
+	public <Hello> sayHello() {
+		ArrayList<Hello> arrayList= new ArrayList<>();
+			arrayList.add(new Hello());
+		return arrayList;
+	}
+	
+	
+@ApiResponses-
+
+This annotation is used to describe the expected responses for the REST API. The @ApiResponse describes a concrete possible response. It cannot be used directly on the method and needs to be included in the array value of @ApiResponses (whether there's one response or more). It takes the following parameters-
+
+ApiResponse:	The @ApiResponse describes a concrete possible response
+
+
+The code will be as follows for the hello method-
+	@ApiOperation(value = "getGreeting", nickname = "getGreeting")
+	 @ApiResponses(value = {
+		        @ApiResponse(code = 500, message = "Server error"),
+		         @ApiResponse(code = 404, message = "Service not found"),
+		        @ApiResponse(code = 200, message = "Successful retrieval",
+		            response = Hello.class, responseContainer = "List") })
+	@RequestMapping(method = RequestMethod.GET, value = "/api/javainuse")
+	public <Hello> sayHello() {
+			ArrayList<Hello> arrayList= new ArrayList<>();
+			arrayList.add(new Hello());
+		return arrayList;
+	}
+	
+If the user has default response messages which are to be applied to all the REST APIs then these can be specified when defining the Docket bean. Hence these will not need to be applied at the method level. For example if the response for code 404 and 500 is going to be same through out all services.
+
+
+@ApiParam-
+
+This annotation is used to describe the exposed REST API. It takes the following parameters-
+
+value	The value is a short description of the parameter
+required	If the parameter is optional or required.
+defaultValue	Specify defaultValue of the parameter.
+
+
+
+@ApiOperation(value = "getGreeting", nickname = "getGreeting")
+	 @ApiResponses(value = {
+		        @ApiResponse(code = 500, message = "Server error"),
+		        @ApiResponse(code = 200, message = "Successful retrieval",
+		            response = Hello.class, responseContainer = "List") })
+	@RequestMapping(method = RequestMethod.GET, value = "/api/javainuse")
+	public List<Hello> sayHello(@ApiParam(value = "testId",
+	        required = true, defaultValue = "111")  @PathVariable(ID) final int institutuionId) {
+		return new Hello();
+	}
+   
+
+
+@ApiModelProperty-
+
+The @ApiModelProperty allows controlling Swagger-specific definitions such as allowed values, and additional notes. It also offers additional filtering properties in case you want to hide the property in certain scenarios. We use this parameter for specifying default values to the Response model class Hello. It takes the following parameters-
+
+position	The position of the field in the reponse class during display using swagger.
+value	The value of the field when using Swagger. For example the default value of the path varaible will be 111 for class Hello.
+required	If the field is optional or required.
+
+
+@ApiModel
+public class Hello {
+	
+	private int helloId;
+	private String test;
+
+    @ApiModelProperty(position = 1, required = true, value = "1")
+	public int getHelloId() {
+		return helloId;
+	}
+
+	public void setHelloId(int helloId) {
+		this.helloId = helloId;
+	}
+
+    @ApiModelProperty(position = 2, required = true, value = "helloTest")
+	public String getTest() {
+		return test;
+	}
+
+	public void setTest(String test) {
+		this.test = test;
+	}
+}
+===================================================
+Debugging and logging properties
+
+debug=true
+logging.level.<package_name>=<LOGGING_LEVEL>
+logging.level.org.springframework.context=DEBUG
+==============================================================================================================================================
+Actuator and Hal Browser--->
+
+1)Actuator is same as swagger but it also provide monitoring on rest api and services.
+2)Hal browser is the ui for actuator.
+
+we need to just add plugins and on/actuator it will work.
+==================================================================================================================================================
+
+==================================================================================================================================================
+======================================================================================================================
+====================================================================================
+=========================================================
+==================================
+=======
+Lets Create a Project.
+referrence-->https://www.youtube.com/watch?v=b5a0LmKc2Zc&list=PL0zysOflRCelYeugqOJszoof1ruhLVdJc&index=16
+
+a)we use @media only in css for responsive sites.and in form action use enctype=multipart/form-data for image.while posting
+
+Project name--->smart contact manager.//just writing important concepts
+if we donot bind any form input value to model ..it will go in @requestparam
+
+
+2)to save image in db. we just save name in db and save origional pic in project..
+
+// file the file to folder and update the name to contact
+@RequestParam("profileImage") MultipartFile file
+
+				contact.setImage(file.getOriginalFilename());  //setting name in db
+
+				File saveFile = new ClassPathResource("static/img").getFile();////this is the destination we have to save
+
+				Path path = Paths.get(saveFile.getAbsolutePath() + File.separator + file.getOriginalFilename());
+
+				Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+
+				System.out.println("Image is uploaded");
+				
+
+3))	@Query("from Contact as c where c.user.id =:userId")
+	//currentPage-page
+	//Contact Per page - 5
+	public Page<Contact> findContactsByUser(@Param("userId")int userId, Pageable pePageable);
+
+we can also use associated/embedded object property in query.
+
+
+4))Pagination -->
+
+1)we have to find data from db not in list but in Page.page is a sublist of list data.
+
+//pagination...
+	
+	@Query("from Contact as c where c.user.id =:userId")
+	//currentPage-page
+	//Contact Per page -    //pageable object will have both the information.
+	public Page<Contact> findContactsByUser(@Param("userId")int userId, Pageable pePageable);	
+	
+2)now in controller whenever we get a hit from ui we will get the current page from there.
+
+// show contacts handler
+	// per page = 5[n]
+	// current page = 0 [page]
+	@GetMapping("/show-contacts/{page}")  //here we are getting current page.
+	public String showContacts(@PathVariable("page") Integer page, Model m, Principal principal) {
+		m.addAttribute("title", "Show User Contacts");
+		// contact ki list ko bhejni hai
+
+		String userName = principal.getName();
+
+		User user = this.userRepository.getUserByUserName(userName);
+
+		// currentPage-page
+		// Contact Per page - 5
+		Pageable pageable = PageRequest.of(page, 5);  //creating pageable data.
+
+		Page<Contact> contacts = this.contactRepository.findContactsByUser(user.getId(), pageable);
+
+		m.addAttribute("contacts", contacts);    //having sublist of current page.
+		m.addAttribute("currentPage", page);
+		m.addAttribute("totalPages", contacts.getTotalPages()); //total pages after paginbation.
+
+		return "normal/show_contacts";
+	}
+
+
+
+4))if u use cascade than u will delete one entity it will not work until.
+and put this extra attribute-->
+@OneToMany(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
+	private List<Contact> contacts=new ArrayList<>();
+	
+now after this
+'
+Contact contact = this.contactRepository.findById(cId).get();
+		// check...Assignment..image delete
+
+		// delete old photo
+
+		User user = this.userRepository.getUserByUserName(principal.getName());
+
+		user.getContacts().remove(contact);   // first remove it from user and than save.
+
+		this.userRepository.save(user);
+
+
+---------
+6)search functionality.
+
+i)create a text box to search first with a id to put ajax..
+
+ii)Now put a method in repo which will fetch result on keywords.
+
+//search
+	public List<Contact> findByNameContainingAndUser(String name,User user);
+	
+	containing is ootb like like and we are sending user here for to search only his contacts not other users.
+	
+iii)now write a controller which will be hit by ajax for search using above dao method.
+
+//search handler
+	@GetMapping("/search/{query}")   //this is the keyword we will send.
+	public ResponseEntity<?> search(@PathVariable("query") String query,Principal principal)
+	{
+		System.out.println(query);		
+		User user=this.userRepository.getUserByUserName(principal.getName());		
+		List<Contact> contacts = this.contactRepository.findByNameContainingAndUser(query, user);
+		return ResponseEntity.ok(contacts);
+	}
+	
+	
+	note--->not forget to put json ignore in user on attribute level otherwise it will go in loop while returning json.
+	
+iv)<input onkeyup="search()" id="search-input" type="text" class="form-control" placeholder="Search your contacts" />
+
+we will call js onkeyup event.
+
+
+--------------------------
+7))
+
+Forget password module--->
+
+we will make another page in which we will take his email.
+after putting his email we will send otp.
+we will save otp either in db/session.
+we will match otp if success we will match than we would redirect it to change password .
+
+
+so for this we have to send email..we will use java mail api.
+main interfaces used.
+
+1)java.util.Properties-->it is used to save properties from a stream or to a stream.used mailny to build key-value pair.
+
+ii)System.getProperties()--->to load system properties.
+
+iii)javax.mail.message-->to save attribute and message for email.
+
+iv)javax.mail.PasswordAuthentication--->it will check whether user is authenticated or not to sent email.on smtp server.from where we sending mail.
+
+v)javax.mail.Session---->session in which mail transaction runs.
+
+vi)javax.mail.Transport--->it will send messsage through send() method.
+
+
+
+now code for email with attachment-->
+
+
+System.out.println("preparing to send message ...");
+		String message = "Hello , Dear, this is message for security check . ";
+		String subject = "CodersArea : Confirmation";
+		String to = "learncodewithdurgesh@gmail.com";   //we can take it dynamic.
+		String from = "techsoftindia2018@gmail.com";
+
+		sendAttach(message,subject,to,from);
+	}
+
+	//this is responsible to send the message with attachment
+	private static void sendAttach(String message, String subject, String to, String from) {
+
+		//Variable for gmail
+		String host="smtp.gmail.com";
+		
+		//get the system properties
+		Properties properties = System.getProperties();   /fetching our system properties.
+		System.out.println("PROPERTIES "+properties);
+		
+		//setting important information to properties object
+		
+		//host set
+		properties.put("mail.smtp.host", host);
+		properties.put("mail.smtp.port","465");                                //puting our properties in system.
+		properties.put("mail.smtp.ssl.enable","true");
+		properties.put("mail.smtp.auth","true");
+		
+		//Step 1: to get the session object.. and setting authenticator
+		Session session=Session.getInstance(properties, new Authenticator() {
+			@Override
+			protected PasswordAuthentication getPasswordAuthentication() {				
+				return new PasswordAuthentication("techsoftindia2018@gmail.com", "*******");
+			}//must be real username/password gmail will check it
+			
+			
+			
+		});
+		
+		session.setDebug(true);
+		
+		//Step 2 : compose the message [text,multi media]
+		MimeMessage m = new MimeMessage(session);     
+		
+		try {
+		
+		//from email
+		m.setFrom(from);
+		
+		//adding recipient to message
+		m.addRecipient(Message.RecipientType.TO, new InternetAddress(to));  //here we can add cc also.
+		
+		//adding subject to message
+		m.setSubject(subject);
+	
+		
+		//attachement..
+		
+		//file path
+		String path="C:\\Users\\user\\Desktop\\ca_logo.png";
+		
+		
+		MimeMultipart mimeMultipart = new MimeMultipart();
+		//text
+		//file
+		//each for everything.
+		MimeBodyPart textMime = new MimeBodyPart();
+		
+		MimeBodyPart fileMime = new MimeBodyPart();
+		
+		try {
+			
+			textMime.setText(message);
+			
+			File file=new File(path);
+			fileMime.attachFile(file);
+			
+			
+			mimeMultipart.addBodyPart(textMime);
+			mimeMultipart.addBodyPart(fileMime);
+		
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+		}
+		m.setContent(mimeMultipart);
+		//send 
+		
+		//Step 3 : send the message using Transport class
+		Transport.send(m);    //sending message.
+
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println("Sent success...................");
+		}
+
+
+
+
+5)Catch the SendFailedException, which can never be thrown.
+
+
+
+
+--------------------------------
+
+message.setContent("<h1>This is actual message embedded in 
+   HTML tags</h1>", "text/html");       // for our designed message. like vm .
+======
+
+Modules--->
+1)User Management--->Register,login,logout
+
+2)Contact Management--->show,update,delete,add contacts.Pagination in show contacts.
+
+Adding dependencies--->
+
+web,thymeleaf,jpa,spring-security,mysqldriver,spring-boot-dev-tools,validation-api,hibernate-validator
+
+
+**)E-R-Diagram
+
+main we have 2 entities here.....one to many ----user can have multiple contacts.
+
+user----have id,name,email,password,image,description,enabled(admin can block user)....role,and we will have two type of users--->admin,user
+
+contact---cid,name,nickname,phone no,work,emailid,image,information.
+
+
+**)Now we have to create entities for E-R.
+
+
+@Entity
+@Table(name="USER")
+public class User {
+
+@Id
+@GeneratedValue(strategy = GenerationType.AUTO)
+private int id;
+private String name;
+@Column(unique = true)
+private String email;
+private String password;
+private String role;
+private boolean enabled;
+private String imageUrl;
+@Column(length = 500)
+private String about;
+@OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "user") //will not create extra table and cascade means save contacts
+private List<Contact> contacts;                                                //when we save users automatically
+}
+
+
+@Entity
+@Table(name="CONTACT")
+public class Contact {
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private int cid;
+	private String name;
+	private String nickName;
+	private String work;
+	private String email;
+	private String phone;
+	private String image;
+	@Lob
+	private String description;   // for big data
+	@ManyToOne
+	private User user;
+}
+
+
+
+**)On adding spring security jar boot will auto configure it.
+if u want to disable it.
+
+put this on main class
+
+@SpringBootApplication(exclude = { SecurityAutoConfiguration.class })
+public class SmartcontactmanagerApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(SmartcontactmanagerApplication.class, args);
+	}
+
+
+**)we will use a config here.
+
+@Configuration Indicates that a class declares one or more @Bean methods and may be processed by the Spring container to generate bean definitions and service requests for those beans at runtime
+
+@Component Indicates that an annotated class is a "component". Such classes are considered as candidates for auto-detection when using annotation-based configuration and classpath scanning.
+
+@Configuration is meta-annotated with @Component, therefore @Configuration classes are candidates for component scanning.
+
+
+
+-------------------------------------------------------------------------------------------------------------------------------

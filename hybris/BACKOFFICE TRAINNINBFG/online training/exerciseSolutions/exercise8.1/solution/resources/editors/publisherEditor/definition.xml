@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<!-- TODO exercise 8.3a: Specify our chosen Backoffice Definition ID for this Editor, 'my.bookstore.backoffice.editor.publisherEditor' -->
+<editor-definition id="my.bookstore.backoffice.editor.publisherEditor"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:noNamespaceSchemaLocation="http://www.hybris.com/schema/cockpitng/editor-definition.xsd">
+
+    <name>Publisher Editor</name>
+    <description>Publisher Editor</description>
+    <author>SAP Hybris Education</author>
+    <version>0.1</version>
+
+    <!-- TODO exercise 8.3b: Specify the full name of the Publisher attribute's Commerce type. -->
+    <type>java.lang.String</type>
+    
+    <!-- TODO exercise 8.4c: Provide the fully qualified name of the PublisherEditor Java class. -->
+    <editorClassName>my.bookstore.bookstorecustombackoffice.editors.PublisherEditor</editorClassName>
+    
+    
+</editor-definition>

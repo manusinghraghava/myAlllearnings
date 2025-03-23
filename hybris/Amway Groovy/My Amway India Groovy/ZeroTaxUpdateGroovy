@@ -1,0 +1,151 @@
+import de.hybris.platform.core.Registry;
+import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.servicelayer.search.FlexibleSearchQuery;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import com.amway.core.model.invoice.*;
+import java.util.Arrays;
+import org.apache.commons.collections4.CollectionUtils;
+import de.hybris.platform.servicelayer.search.SearchResult;
+import de.hybris.platform.servicelayer.model.ModelService;
+import com.amway.indcore.loyalty.service.IndCalculateLoyaltyPointsService;
+import de.hybris.platform.commerceservices.search.pagedata.PageableData;
+import de.hybris.platform.commerceservices.search.pagedata.SearchPageData;
+import de.hybris.platform.core.model.order.OrderModel;
+import com.amway.eventstream.model.AmwayEventStagingEntryModel;
+import com.amway.eventstream.enums.AmwayEventSyncState;
+import com.amway.indfacades.order.payload.*;
+import java.util.List;
+import java.util.Optional;
+import com.google.gson.*;
+import java.util.*;
+import de.hybris.platform.commercefacades.product.PriceDataFactory;
+import de.hybris.platform.servicelayer.dto.converter.Converter;
+import de.hybris.platform.cms2.model.site.CMSSiteModel;
+import de.hybris.platform.servicelayer.search.FlexibleSearchService;
+import org.apache.commons.collections4.CollectionUtils;
+import de.hybris.platform.servicelayer.i18n.CommonI18NService;
+import de.hybris.platform.store.BaseStoreModel;
+import de.hybris.platform.store.services.BaseStoreService;
+import de.hybris.platform.site.BaseSiteService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang.StringEscapeUtils;
+import com.amway.eventstream.enums.*;
+import de.hybris.platform.core.model.order.*;
+import com.amway.indcore.receipt.service.*; 
+import com.amway.core.enums.IndReceiptTypeEnum;
+import com.amway.indcore.order.service.calculation.impl.*;
+import de.hybris.platform.order.impl.*;
+
+import com.amway.lynxcore.order.service.calculation.impl.*;
+
+final IndCalculationServiceImpl indCalculationService = (IndCalculationServiceImpl) Registry.getApplicationContext().getBean("indCalculationService");
+final DefaultCalculationService defaultAmwayCalculationService = (DefaultCalculationService) Registry.getApplicationContext().getBean("defaultCalculationService");
+final ModelService modelService = (ModelService) Registry.getApplicationContext().getBean("modelService");
+final IndReceiptService indReceiptService=(IndReceiptService) Registry.getApplicationContext().getBean("indReceiptService");
+
+
+final LynxCalculationServiceImpl lynxCalculationService=(LynxCalculationServiceImpl) Registry.getApplicationContext().getBean("lynxCalculationService");
+
+
+
+String query1="select {pk} from {CMSSite as o} where {o.pk} ='"+8796093056040+"'";
+final SearchResult<CMSSiteModel> searchResult1 = ((FlexibleSearchService) Registry.getApplicationContext().getBean("flexibleSearchService")).search(query1);
+final List<CMSSiteModel> results1 = searchResult1.getResult();
+CMSSiteModel cmsSiteModel = results1.stream().findFirst().get();
+
+
+def baseSiteModel =baseSiteService.getCurrentBaseSite();
+
+
+
+baseSiteService.setCurrentBaseSite(cmsSiteModel, true);
+String query="select {pk} from {Order as o} where {o.code} in ('754129730','754129744','754129751','754129805','754129850','754129886','754129927','754129977','754129995','754130029','754130104','754130131','754130165','754130199','754130225','754130238','754130346','754130400','754130421','754130583','754130641','754130650','754130730','754130794','754130798','754130800','754130801','754130819','754130876','754130901','754130902','754130903','754130912','754130949','754130971','754131013','754131028','754131102','754131105','754131135','754131169','754131226','754131313','754131398','754131440','754131472','754131497','754131521','754131542','754131556','754131620','754131648','754131655','754131747','754131811','754131826','754131898','754131920','754131964','754132120','754132135','754132207','754132232','754132260','754132401','754132414','754132426','754132522','754132720')";
+
+final SearchResult<OrderModel> searchResult = ((FlexibleSearchService) Registry.getApplicationContext().getBean("flexibleSearchService")).search(query);
+
+final List<OrderModel> results = searchResult.getResult();
+
+for(OrderModel order: results)
+{
+try{
+
+
+Set<AmwayInvoiceModel> invoices = new HashSet<>();
+for(AmwayInvoiceModel invoice:order.getAmwayInvoices())
+{
+if(!(invoice.getIndReceiptType().getReceiptSubType().getCode().equalsIgnoreCase("BILL_OF_SUPPLY_GOODS")))
+{
+invoices.add(invoice);
+}
+}
+order.setAmwayInvoices(null);
+order.setAmwayInvoices(invoices);
+modelService.save(order);
+
+def orderEntries = order.getEntries();
+for(AbstractOrderEntryModel entry: orderEntries)
+{
+indCalculationService.calculateTotalTaxValues(entry);
+lynxCalculationService.calculateTotals(entry,true);
+modelService.save(entry);
+}
+if(order.isGroupOrder())
+{
+for(OrderModel childOrder: order.getLynxSubcarts())
+{
+def childOrderEntries = childOrder.getEntries();
+for(AbstractOrderEntryModel entry: childOrderEntries)
+{
+indCalculationService.calculateTotalTaxValues(entry);
+lynxCalculationService.calculateTotals(entry,true);
+modelService.save(entry);
+}
+childOrder.setCalculated(false);
+modelService.save(childOrder);
+defaultAmwayCalculationService.calculate(childOrder);
+
+modelService.save(childOrder);
+modelService.refresh(childOrder);
+Set<AmwayInvoiceModel> childInvoices = new HashSet<>();
+for(AmwayInvoiceModel invoice:childOrder.getAmwayInvoices())
+{
+if(!(invoice.getIndReceiptType().getReceiptSubType().getCode().equalsIgnoreCase("BILL_OF_SUPPLY_GOODS")))
+{
+childInvoices.add(invoice);
+}
+}
+childOrder.setAmwayInvoices(null);
+childOrder.setAmwayInvoices(childInvoices);
+modelService.save(childOrder);
+}
+}
+order.setCalculated(false);
+modelService.save(order);
+
+defaultAmwayCalculationService.calculate(order);
+
+modelService.save(order);
+modelService.refresh(order);
+
+
+indCalculationService.updateGrandTotalsForParentCart(order);
+modelService.save(order);
+		if(order.isGroupOrder()) {
+		indCalculationService.updateGrandTotalsForSubcarts(order);
+		}
+modelService.refresh(order);
+
+indReceiptService.createReceipts(order, IndReceiptTypeEnum.INVOICE.getCode());
+}
+catch(Exception e)
+{
+println "exception in Order: "+order.getCode();
+continue;
+}
+}
+baseSiteService.setCurrentBaseSite(baseSiteModel, true);
+
+println "Groovy Rocks";
+

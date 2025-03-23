@@ -1,0 +1,25 @@
+{
+  "init": "Go",
+  "initmethod": "update",
+  "localizetypes": "true",
+  "backofficesolrsearch_sample": "true",
+  "basecommerce_create geocoding cron job": [
+    "no"
+  ],
+  "bookstorecore_accessRights": [
+    "no"
+  ],
+  "bookstoreinitialdata_importCoreData": [
+    "no"
+  ],
+  "bookstoreinitialdata_importSampleData": [
+    "no"
+  ],
+  "bookstoreinitialdata_activateSolrCronJobs": [
+    "no"
+  ],
+  "bookstorecockpits_importCustomReports": [
+    "no"
+  ],
+  "filteredPatches": "true"
+}

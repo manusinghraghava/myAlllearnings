@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hybrisconfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="resources/schemas/extensions.xsd">
+	<extensions>
+		<!--
+				All extensions located in ${HYBRIS_BIN_DIR}/platform/ext are automatically loaded.
+				More information about how to configure available extensions can be found here : https://wiki.hybris.com/x/nZVzC
+		-->
+
+		<path dir="${HYBRIS_BIN_DIR}" depth="5"/>
+		<!-- <path autoload="true" dir="/Users/sapit/Documents/projects/amway/implementation/hybris_code/lynx-in"/> -->
+
+		<path autoload="false" dir="${HYBRIS_BIN_DIR}/custom"/>
+
+		<!-- lynx-core -->
+		<extension name="amwayoauth2" />
+		<extension name="amwayreport" />
+		<extension name="amwaycore" />
+		<extension name="amwayfacades"/>
+
+		<extension name="amwayfinance" />
+		<extension name="amwaycommercewebservicesaddon" />
+		<extension name="amwaycommercewebservices" />
+
+		<extension name="amwaydms"/>
+		<extension name="amwaylos"/>
+		<extension name="amwaydamintegration"/>
+		<extension name="amwaycontentsolrsearchaddon" />
+		<extension name="amwayfulfillment" />
+		<extension name="amwaysso" />
+		<extension name="amwayordermanagementwebservices" />
+
+		<!-- ext-platform -->
+		<extension name="commerceservices" />
+		<extension name="basecommerce" />
+		<extension name="backoffice" />
+		<extension name="basecommercebackoffice" />
+		
+		<!-- <extension name="commercesearchbackoffice" /> -->
+		<extension name="ordermanagementwebservices" />
+
+		<extension name="commerceservicesbackoffice" />
+		<extension name='warehousingbackoffice' />
+		<extension name="solrfacetsearchbackoffice" />
+
+		<extension name="platformbackoffice" />
+		<extension name='warehousing' />
+		<extension name="solrfacetsearch" />
+		<extension name="solrserver" />
+		
+		<extension name="wishlist" />
+		<extension name="commercefacades" />
+		<extension name="addonsupport" />
+		<extension name="amazoncloud" />
+		<extension name="assistedservicestorefront" />
+		<extension name="assistedservicefacades" />
+		<extension name="recentvieweditemsservices" />
+		<extension name="recentvieweditemsaddon" />
+		<extension name="cmswebservices"/>
+		<extension name="warehousingfacades"/>
+		<extension name="subscriptionservices"/>
+
+		<!-- sample store -->
+		<!--<extension name="lynxdcommercesamplesite"/>-->
+
+		<!-- amway point of sale -->
+		<!--extension name="amwaypos" /-->
+
+
+		<!-- EIA extensions -->
+		<extension name="lynxcore"/>
+		<extension name="lynxcustomersupportbackoffice"/>
+		<extension name="lynxbackoffice"/>
+		<!--	<extension name="lynxcockpits" /> -->
+		<extension name="lynxfulfilmentprocess" />
+		
+<!--
+		<extension name="lynxintegrationtest" />
+-->
+		
+		<extension name="lynxproductintegration" />
+		<extension name="lynxtaxintegration" />
+		<extension name="lynxpriceintegration" />
+		<extension name="lynxinventoryintegration" />
+		<extension name="lynxdeliverywareintegration" />
+		<extension name="lynxwsaddon" />
+		<!-- <extension name="lynxcommercewebservicesaddon" />-->
+	<!--	<extension name="lynxdamintegration"/> -->
+		<extension name="lynxsso" />
+		<extension name="lynxcouponintegration"/>
+		<extension name="lynxsecurity" />
+		<extension name="pcmbackoffice" />
+
+		<!-- bundles -->
+		<extension name="configurablebundleservices"/>
+		<extension name="configurablebundlefacades"/>
+		<extension name="configurablebundlecockpits"/>
+
+		<extension name="lynxconfiguration"/>
+
+		<!-- dashboard --> 
+		<extension name="lynxbusinesscenteraddon"/>
+
+		<!--<extension name="liveeditaddon"/> -->
+      		<!--  <extension name="lynxassistedservicestorefront" /> -->
+		<extension name="lynxtealiumiqaddon"/>
+
+		<extension name="lynxcommercewebservicescommons"/>
+
+		<!-- smartedit based extensnions start-->
+		<extension name="cmssmartedit"/>
+		<extension name="cmssmarteditwebservices"/>
+		<extension name="permissionswebservices"/>
+		<extension name="previewwebservices"/>
+		<extension name="smartedit"/>
+		<extension name="smarteditaddon"/>
+		<extension name="smarteditwebservices"/>
+		<extension name="npmtestancillary" /> 
+		<!-- smartedit based extensnions end-->
+		
+		<!-- adaptive search based extensnions start-->
+		<extension name='adaptivesearchsolr' />
+	    	<extension name='adaptivesearchbackoffice' />
+    		<extension name='adaptivesearchwebservices' />
+    		<extension name='personalizationsearchbackoffice' />
+    		<extension name='personalizationsearchsmartedit' />
+    		<extension name='personalizationsearchweb' /> 
+		<!-- adaptive search based extensnions end-->
+	
+		<extension name="lynxedplos"/>
+		<extension name="lynxpayment"/>
+		<extension name="lynxfacades"/>
+		
+
+	<!--	<extension name="lynxstores"/>
+		<extension name="lynxfinance"/>-->
+		
+		<!-- Amway India -->
+		
+		<extension name="indcore" />
+		<extension name="indfacades"/>
+		<extension name="indfulfilmentprocess" />
+		<extension name="indcockpits"/>
+		<extension name="indinitialdata" />
+		<extension name="indstorefront"/>
+		<extension name="indintegration"/>
+		<extension name="indbackoffice"/>
+		<extension name="indcommercewebservicesaddon"/>
+		<!-- Amway India Payment Extension -->
+		<extension name="indpayment"/>
+		<extension name="indpaymentpaytm"/>
+		<extension name="indpaymentbilldesk"/>
+		<extension name="indpaymentpbcaddon"/> 
+		<extension name="indpaymentitz"/>
+		<extension name="indpointofsaleoccaddon"/>
+		<extension name="indpaymentoccaddon"/>
+		<extension name="indsmsintegration"/>
+		<extension name="indpaymentccavenue"/>
+		<!-- <extension name="indiacntest"/> -->
+		<extension name="indpaymentpbcaddon"/> 
+		<extension name="indpaymentpinelabs"/>
+		<extension name="indpaymentupiintegration"/>
+    <extension name="indbusinesscenteraddon"/>
+		<extension name="amwayeventstream"/>
+    <extension name="lynxumintegration"/>
+		<extension name="indmasterdataintegration"/>
+
+    <extension name="indresourcecenteraddon"/>
+
+		<!-- REDIS Common Pricing and Stock extensions BEGIN -->
+		<extension name='externaldb' />
+		<!-- REDIS Common Pricing and Stock extensions END -->
+		<extension name='externalprice' />
+		<extension name='externalpricebackoffice' />
+		
+		<!-- REDIS Stock extensions BEGIN -->
+		<extension name='externalstock' />
+		<extension name='externalstockbackoffice' />
+		 <!-- REDIS Stock extensions END -->
+    <extension name="indresourcecenteraddon"/>
+		<extension name="psdtocache"/>
+
+	</extensions>
+</hybrisconfig>

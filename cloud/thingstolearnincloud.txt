@@ -1,0 +1,93 @@
+ssh -i manu-mumbai.pem ubuntu@3.110.47.124     
+
+learn how to do with command // aws
+
+we can create alarm only region specific and billing alarm for only north virginia region.
+why?
+as it is root reason and billing works on account.
+
+
+how-to-measure-how-much-traffic-a-server-could-potentially-handle
+
+#!/bin/bash
+sudo su
+yum update -y
+yum install httpd -y
+service httpd start
+chkconfig httpd on
+echo "hello from $(hostname -f)" > /var/www/html/index.html   
+
+
+ssh -i manu-mumbai.pem ec2-user@13.232.246.0
+
+
+Simply using ELB/ALB you won’t be able to distribute traffic between two regions. But combine it with Route 53 and you will be able to do so. Your solution will leverage Route53’s routing policy (Weighted ) to direct your request to load balancers created in different regions. Those load balancers will distribute traffic to the listeners registered to them in different AZs.
+
+
+load command-->
+sha1sum /dev/zero &
+
+Route 53 again concept.
+-------------------------------------------------
+costs for all services.
+Gateway Load Balancer.
+KMS for keys 
+outbound rules in security group
+Iam user using Identity center 
+Access Advisor
+Access Analyzer IAM
+https load balancing using ALB
+Aws does not support vertical scaling but can be done through script.
+using lifecycle hooks in autoscaling.
+attach and detach storage at time of autoscaling
+cloud trail / AWS Config.  19/05/2024   
+cloudwatch event.
+replay dashboard -->period override in dashboard
+group metrics on ASG---> 
+Deploy the application to the Auto Scaling group
+predictive Scaling policy In ASg
+https://docs.aws.amazon.com/autoscaling/ec2/userguide/tutorial-lifecycle-hook-lambda.html
+look virtualization video later as it is theory.types of hypervisior.
+cluster management software.
+Private connectivity in NAT gateway.
+Transit Gateway.
+VPN -->setup https://www.youtube.com/watch?v=GXuVo3hBjYg   // vpn direct connect
+VPC flow logs.
+Vpc tenanacy dedicated vs default.
+DHCP option set in VPC.
+access points in s3.cors in s3
+multipart file upload on s3.
+conditions in policy
+Aurora mysql.if it is chosen serverless how it is working? proxy in s3
+dynamo db streams after learning lambda
+load data from s3 to redshift.
+write a code to use redis over rds.
+use sqs with other services.
+connecting elastic search redis on premises using outpost.
+stacksets in cloud formation.
+visibility timeout in queue.
+container image in lambda.
+layer for java in lambda.
+cloudfront distribution in deep.
+aws organization samples.
+policies description.
+ssm in deep.
+how to update software patch in ssm sample.
+write lambda with api gateway.
+instance purchasing options. check gws ops lecture.
+Amazon kinesis , backup
+Migration
+
+
+
+
+
+
+
+
+
+==========
+https://lksprod.dst.ibm.com/collection/goto?id=1149
+https://learning.sap.com/my-learning/certifications
+https://github.com/awsdocs/aws-doc-sdk-examples/tree/main/javav2/usecases/creating_scheduled_events
+https://github.com/aws-samples/serverless-snippets/tree/main/integration-s3-to-lambda

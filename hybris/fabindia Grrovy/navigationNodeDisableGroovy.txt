@@ -1,0 +1,94 @@
+import org.apache.commons.lang3.StringUtils;
+import de.hybris.platform.core.Registry;
+import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.servicelayer.search.FlexibleSearchQuery;
+import de.hybris.platform.servicelayer.search.FlexibleSearchService;
+import org.apache.commons.collections4.CollectionUtils;
+import de.hybris.platform.servicelayer.search.SearchResult;
+import de.hybris.platform.core.model.product.*;
+import de.hybris.platform.europe1.model.*;
+import de.hybris.platform.catalog.enums.*;
+import de.hybris.platform.cms2.model.navigation.*;
+import de.hybris.platform.cms2.model.contents.components.*;
+import de.hybris.platform.category.model.*;
+import de.hybris.platform.servicelayer.search.*;
+import de.hybris.platform.core.model.product.*;
+import java.util.stream.Collectors;
+
+boolean havingProducts(CategoryModel category)
+{
+String query2 ="SELECT {prod:pk} FROM {Product AS prod JOIN CategoryProductRelation AS catprod ON {catprod:target}={prod:pk} JOIN Category AS cat ON {catprod:source}={cat:pk} join catalogVersion as cv on {prod.catalogVersion}={cv.pk}} where {cat:code} = ?category and {cv.version} = ?version";
+final Map<String, Object> params = new HashMap<String, Object>();
+params.put("category", category.getCode());
+params.put("version", "Online");
+final FlexibleSearchQuery fQuery = new FlexibleSearchQuery(query2);
+fQuery.addQueryParameters(params);
+final SearchResult<ProductModel> searchResult = ((FlexibleSearchService) Registry.getApplicationContext().getBean("flexibleSearchService")).search(fQuery);
+final List<ProductModel> results = searchResult.getResult();
+
+if(CollectionUtils.isNotEmpty(results))
+{
+return true;
+}
+return false;
+}
+
+String query = "select {pk} from {CMSNavigationEntry as p join catalogVersion as cv on {p.catalogVersion}={cv.pk}} where {cv.version} = ?version and {p.category}=?value";
+final Map<String, Object> params = new HashMap<String, Object>();
+params.put("value", true);
+params.put("version", "Online");
+final FlexibleSearchQuery fQuery = new FlexibleSearchQuery(query);
+fQuery.addQueryParameters(params);
+final SearchResult<CMSNavigationEntryModel> searchResult = ((FlexibleSearchService) Registry.getApplicationContext().getBean("flexibleSearchService")).search(fQuery);
+final ModelService modelService = (ModelService) Registry.getApplicationContext().getBean("modelService"); 
+def categoryService =spring.getBean("categoryService");
+def catalogVersionService =spring.getBean("catalogVersionService");
+
+
+
+
+def version =catalogVersionService.getCatalogVersion('fabindia-b2cProductCatalog','Online');
+final List<CMSNavigationEntryModel> results = searchResult.getResult();
+println results.size();
+def links = results.stream().map{s->(CMSLinkComponentModel)s.getItem()}.collect(Collectors.toList());
+if(CollectionUtils.isNotEmpty(links))
+{
+for(CMSLinkComponentModel link :links)
+{
+try{
+boolean isVisible=false;
+def url = link.getUrl();
+def categoryCode = url.substring(url.lastIndexOf("/") + 1)
+def model = categoryService.getCategoryForCode(version,categoryCode);
+
+
+if(CollectionUtils.isNotEmpty(model.getAllSubcategories()))
+{
+def productCategory=model.getAllSubcategories().stream().filter{s->havingProducts(s)}.findAny();
+if(productCategory.isPresent())
+{
+isVisible=true;
+}
+}
+else
+{
+if(CollectionUtils.isNotEmpty(model.getProducts()))
+{
+isVisible=true;
+}
+}
+
+if(!isVisible)
+{
+link.setVisible(false);
+println link.getLinkName();
+}
+}
+catch(Exception e)
+{
+println e.getMessage();
+continue;
+}
+}
+modelService.saveAll(links);
+}

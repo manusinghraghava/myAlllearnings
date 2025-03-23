@@ -1,0 +1,74 @@
+import de.hybris.platform.core.Registry;
+import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.servicelayer.search.FlexibleSearchQuery;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Arrays;
+import org.apache.commons.collections4.CollectionUtils;
+import de.hybris.platform.servicelayer.search.SearchResult;
+import de.hybris.platform.servicelayer.model.ModelService;
+import com.amway.indcore.loyalty.service.IndCalculateLoyaltyPointsService;
+import de.hybris.platform.commerceservices.search.pagedata.PageableData;
+import de.hybris.platform.commerceservices.search.pagedata.SearchPageData;
+import de.hybris.platform.core.model.order.OrderModel;
+import com.amway.eventstream.model.AmwayEventStagingEntryModel;
+import com.amway.eventstream.enums.AmwayEventSyncState;
+import java.util.stream.Collectors;
+import com.amway.indfacades.order.payload.*;
+import java.util.List;
+import java.util.Optional;
+import com.google.gson.*;
+import de.hybris.platform.commercefacades.product.PriceDataFactory;
+import de.hybris.platform.servicelayer.dto.converter.Converter;
+import de.hybris.platform.cms2.model.site.CMSSiteModel;
+import de.hybris.platform.servicelayer.search.FlexibleSearchService;
+import org.apache.commons.collections4.CollectionUtils;
+import de.hybris.platform.servicelayer.i18n.CommonI18NService;
+import de.hybris.platform.store.BaseStoreModel;
+import de.hybris.platform.store.services.BaseStoreService;
+import de.hybris.platform.site.BaseSiteService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang.StringEscapeUtils;
+import com.amway.eventstream.enums.*;
+import de.hybris.platform.returns.model.ReturnRequestModel;
+import com.amway.core.enums.*;
+import java.util.*;
+import java.util.logging.Logger;
+import java.text.SimpleDateFormat;  
+
+
+Date currentDate = new Date();
+Calendar cal = Calendar.getInstance();
+cal.setTime(currentDate);
+//change this for fetching order on different time
+cal.add(Calendar.DATE, -30);
+Date previouDay = cal.getTime();
+SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+String strDate= formatter.format(previouDay);
+
+String query="select {order} from {ReturnRequest} where {date} > '"+strDate+"' GROUP BY {order} HAVING COUNT({order}) > 1";
+
+println query;
+
+
+final SearchResult<OrderModel> searchResult = ((FlexibleSearchService) Registry.getApplicationContext().getBean("flexibleSearchService")).search(query);
+
+final List<OrderModel> results = searchResult.getResult();
+
+
+//if order is in status returned ..return request refund status is already in refunded status or sent_for_refund
+List<OrderModel> returnedOrder=results.stream().filter({s->s.getStatus().getCode().equalsIgnoreCase("RETURNED")}).collect(Collectors.toList());
+
+for(OrderModel order: returnedOrder)
+{
+if(order.getReturnRequests().stream().filter({s->s.getRefundStatus().getCode().equalsIgnoreCase("REFUNDED")}).count()>1)
+{
+HashSet<String> invoiceNo = new HashSet<String>();
+def ord=order.getReturnRequests().stream().filter({s->s.isFullReturn()}).map({s->s.getInvoice().getNumber()}).filter({s->!invoiceNo.add(s)}).findAny(); 
+if(ord.isPresent())
+{
+println order.getCode();
+}
+}
+}

@@ -1,0 +1,1778 @@
+Vue. js is more lightweight, while Angular is more enterprise ready for developing complex applications. However, many enterprise users testify that Vue has its place in enterprise application development. Angular's main drawback is its size, startup time, and memory allocation capacity compared to Vue.
+
+
+In computing, lightweight software also called lightweight program and lightweight application, is a computer program that is designed to have a small memory footprint (RAM usage) and low CPU usage, overall a low usage of system resources.
+
+-----------------
+
+steps ==>
+instance of vue==>new Vue({});    //inside Json object
+
+how to bind vue with html==>
+
+  <head>
+    <meta charset="utf-8">
+    <title>Vue Js Tutorial</title>
+    <link rel="stylesheet" href="master.css">   //for css
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>   //online vue
+  </head>
+  <body>
+
+
+    <div id="vue-app">  // we will link vue with this attribute
+      <h1>{{name}}</h1>    //this is the string object called in {{}}
+    </div>
+    <script src="app.js">  //this is the vue.js file
+
+    </script>
+  </body>
+  
+  binding vue with id==>
+  
+  new Vue({      // new instance inside app.js
+  el:'#vue-app', // div -id to bind
+  data:{
+    name:'manu'  // string object inside data which take a {} object.
+  }
+});
+=========================================
+method in vue.js
+
+declaring method in vue js==>
+
+new Vue({
+  el:'#vue-app',
+  data:{
+    name:'manu'
+  },
+  methods:                       //use this for declaring methods.
+  {
+    greet:function(time)             //for method whose name is greet
+    {
+      return "Good"+time ;     //returning string..
+    }
+  }
+});
+
+calling method==> <p>{{greet('morning')}}</p>   ///in html
+
+=======================================================
+
+using data parametres inside methods==>
+
+new Vue({
+  el:'#vue-app',               //always remember it will work only for this div.
+  data:{
+    name:'manu'
+  },
+  methods:
+  {
+    greet:function(time)
+    {
+      return "Good "+time+" "+this.name;    //using this keyword we can use data inside methods
+    }
+  }
+});
+========================================================
+Data binding==>
+we use data binding to bind html attributes with the vue dynamic data using v-bind: directive.
+
+Example==>
+
+new Vue({
+  el:'#vue-app',
+  data:{
+    name:'manu',
+    website:'https://www.google.com'
+  }});
+  
+ 
+ binding==><a v-bind:href="website">Google</a>    //while data binding we dont use {{}} /////just use ""
+ 
+ or we can use a shortcut ===><a :href="website">Google</a>
+ 
+ example==><input type="text" v-bind:value="job"/ >
+==================================================================
+ 
+ to bind html into html tag using vue we use v-html directive===>
+ 
+ Example==>
+ 
+ new Vue({
+  el:'#vue-app',
+  data:{
+    name:'manu',
+    website:'https://www.google.com',
+    websitelink:'<a href="http://www.youtube.com">YouTube</a>'    // as this is html if we use {{}} //it will print in text form
+  },
+  methods:
+  {
+    greet:function(time)
+    {
+      return "Good "+time+" "+this.name;
+    }
+  }
+});
+
+so to print in html format we use==>v-html
+
+<p v-html="websitelink"></p>        //: not require in v-html Directive.
+
+==================================================================
+Events in vue js==>like click events==>
+
+in this we r going to show age on html and add/subtract 1 in age using buttons.
+
+so on button click we have to bind event by using v-on:EventName Directive.
+
+Example==>
+<h1>Events</h1>
+<button v-on:click="age++">Add a no.</button>       //direct using event on age via v-on:click
+<button v-on:click="age--">Subtract a no.</button>
+<p>My age is :{{age}}</p>
+    </div> 
+	
+but this is not correct way we will use methods here.
+
+  el:'#vue-app',
+  data:{
+  age:25
+  },
+  methods:
+  {
+  add:function(){
+    return this.age++
+  },
+  minus:function(){
+    this.age--
+  }
+  }
+});
+  
+and binding==>
+
+<div id="vue-app">
+<h1>Events</h1>
+<button v-on:click="add">Add a no.</button>         //not require {{add()}} with directives
+<button v-on:click="minus">Subtract a no.</button>
+<p>My age is :{{age}}</p>
+    </div>
+	
+but if we want to send parametres==>
+
+<button v-on:click="add(10)">Add a no.</button>  
+
+if you want to trigger event only once==>
+
+<button v-on:click.once="add">Add a no.</button> 
+===============================================================================	
+Access Event object in vue==>
+
+Let we create a canvas and in this canvas we will show the cordinates of mouse movement in canvas.
+
+binding event===>
+
+  <div class="canvas" v-on:mousemove="generateXY">     //on mousemove event we donot require to send event object
+   {{x}},{{y}}
+    </div>
+    <script src="app.js">
+
+    </script>
+ 
+ 
+ creating canvas==>in css
+ 
+ .canvas{
+  width:600px;
+  padding: 200px 20px;
+  text-align: center;
+  border: 1px solid #333;
+}
+
+
+code in vue==>
+
+
+new Vue({
+  el:'.canvas',
+  data:{
+  x:0,
+  y:0
+  },
+  methods:
+  {
+  generateXY:function(event)      //reading event..
+  {
+    this.x=event.offsetX;        //seeting x,y cordinate through mouse event
+    this.y=event.offsetY;
+  }
+  }
+});
+
+
+Sometimes we also need to access the original DOM event in an inline statement handler. You can pass it into a method using the special $event variable:
+
+<button v-on:click="warn('Form cannot be submitted yet.', $event)">
+  Submit
+</button>
+
+======================================================================================================
+
+Event modifiers==>
+The following modifiers are available in Vue.
+stop - Prevents event bubbling up the DOM tree.
+prevent - Prevents default behavior.
+capture - Capture mode is used for event handling.
+self - Only trigger if the target of the event is itself.
+once - Run the function at most once.
+
+we can use the like v-on:click.once   //example on work one time not next time.
+
+Similar to event modifiers, we can add key modifiers that allow us to listen to a particular key when handling key-related events such as keyup.
+
+<input v-on:keyup.13="addToCount">
+In the above example, when the keyup event is fired with the key code of 13 (the enter key), the addToCount method gets called.
+
+
+<!-- the click event's propagation will be stopped ,stops the bubbling of an event to parent elements, preventing any parent event handlers from being executed.-->
+<a v-on:click.stop="doThis"></a>
+
+<!-- the submit event will no longer reload the page -->
+<form v-on:submit.prevent="onSubmit"></form>
+
+<!-- modifiers can be chained -->
+<a v-on:click.stop.prevent="doThat"></a>
+
+<!-- just the modifier -->
+<form v-on:submit.prevent></form>
+
+<!-- use capture mode when adding the event listener -->
+<!-- i.e. an event targeting an inner element is handled here before being handled by that element -->
+<div v-on:click.capture="doThis">...</div>
+
+****************
+15
+
+So right after posting I stumbled on this article which illustrates it clearly. Let's say for this example that you have three elements nested within each other:
+
+<div class="outer">
+    <div class="middle">
+        <div class="inner"></div>
+    </div>
+</div>
+When a click event occurs, there are two phases: the first is called capturing, the second is called bubbling. When you click on the .inner, the event traverses down from the outermost container element .outer, to .middle, then to .inner in the capturing phase, then from .inner to .middle, then to .outer in the bubbling phase.
+
+
+
+If a parent node and child node are registered with same type of event then when that type event dispatches then handlers of parent and child are called.
+
+Here is an example fiddle.
+
+Try removing self from click event modifier of the parent div then click on the child div.
+
+First the child handler is called.
+Parent handler is called.
+
+<div class="parent" v-on:click="log('from parent')">
+  Parent
+  <div class="child" v-on:click="log('from child')">
+    Child
+  </div>
+</div>
+If you put back self modifier and clicking on the child div doesn't call the parent handler.
+
+share  improve this answer  follow 
+answered Mar 13 '17 at 14:37
+
+Srinivas Damam
+2,19411 gold badge1111 silver badges2323 bronze badges
+add a comment
+
+4
+
+Let's i explain difference.
+
+<div id="app">
+    <div class="root" v-on:click="log('root')">root
+        <div class="parent" v-on:click.self="log('parent')">Parent
+            <div class="child" v-on:click="log('child')">Child
+            </div>
+        </div>
+    </div>
+</div>
+Do you know about event phases?
+
+Capture (event.eventPhase = 1)
+Target (event.eventPhase = 2)
+Bubbling (event.eventPhase = 3)
+By default if you add event listener for element it will work in bubbling mode.
+
+If you click on child in example, you will get output:
+
+child
+root
+Modificator self say: 'If user click on me (my area or borders), please trigger handler'
+
+If you remove self:
+
+<div class="parent" v-on:click="log('parent')">
+and click on child, you will get output:
+
+child
+parent
+root 
+If you add stop:
+
+<div class="parent" v-on:click.stop="log('parent')">
+and click on child, you will get output:
+
+child
+parent
+You will not get root, because stop cancel event bubbling (event.stopPropagation).
+
+If you will use self it doesn't stop bubbling!
+
+***********************************************************************
+<!-- only trigger handler if event.target is the element itself -->
+<!-- i.e. not from a child element -->
+<div v-on:click.self="doThat">...</div>
+
+
+//in details later.
+
+with keyup and keydown event we can use these modifiers==>
+
+.enter
+.tab
+.delete (captures both “Delete” and “Backspace” keys)
+.esc
+.space
+.up
+.down
+.left
+.right
+=========================================================================================================
+Two-way-data-binding==>
+
+it is used to bind data dynamicaly which is a input from user .
+For this we use v-model directive.
+
+Example==>
+
+<div class="canvas">
+      <label>Input X:</label>
+      <input type="text" v-model="x">   //it will bind x with data in vue instance but name should be same.
+      <label>Input Y:</label>
+      <input type="text" v-model="y">
+   {{x}},{{y}}
+    </div>
+	
+vue instance==>
+
+new Vue({
+  el:'.canvas',
+  data:{
+  x:0,
+  y:0
+  },
+  methods:
+  {
+  
+  }
+});
+
+
+=========================================================================================================
+Computed Properties==>they are same as methods but work different...let show with example...
+
+
+vue==>
+new Vue({
+    el: '#vue-app',
+    data: {
+        a: 0,
+        b: 0,
+        age: 20
+    },
+    methods: {
+        addToAmethod: function(){
+            console.log('addToAmethod');
+            return this.a + this.age;
+        },
+        addToBmethod: function(){
+            console.log('addToBmethod');
+            return this.b + this.age;
+        }
+    },
+    computed: {
+        addToAcomputed: function(){
+            console.log('addToAcomputed');
+            return this.a + this.age;
+        },
+        addToBcomputed: function(){
+            console.log('addToBcomputed');
+            return this.b + this.age;
+        }
+    }
+});
+
+
+first calling methods===>
+
+  <div id="vue-app">
+                <h1>Methods</h1>
+                <button v-on:click="a++">Add to A</button>
+                <button v-on:click="b++">Add to B</button>
+                <p>Age + A = {{ addToAmethod() }}</p>        //as both method will call either we change a or b..
+                <p>Age + B = {{ addToBmethod() }}</p>
+            </div>
+
+
+now calling computed===>
+
+ <div id="vue-app">
+                <h1>Computed Properties</h1>
+                <button v-on:click="a++">Add to A</button>
+                <button v-on:click="b++">Add to B</button>
+                <p>Age + A = {{ addToAcomputed }}</p>   // no need bracket here 
+                <p>Age + B = {{ addToBcomputed }}</p>   /only call that method which will we change value either it will show already coded value
+            </div>                                      //work like static method of java...
+
+
+so using computed property is better choice.
+
+==========================================================================================================================
+Dynamic Css Class===>
+
+we can bind css classes with also vue dynamic attribute..using v-bind.
+
+Syntax==><div v-bind:class="{red:true}">  //it will take only one single {} inside with key and pair value..//can also have multiple values
+
+key==>class name which we will bind data .css file
+value ===>it is boolean value either true or false to implement css class or not on particular div.
+
+on above example on inspect it will show red class on div because it is true.
+
+now the value we can set dynamically through vue example==>
+
+
+<div v-bind:class="{available:available}">       //same syntax extra {} //object
+
+  data: {
+    available:false,   //value is going through here
+    nearby:false
+    },
+
+
+
+
+
+Example==>on click event change value of available...which is false and enable the class in html.and make span green
+
+
+html==>
+<div v-on:click="available=!available" v-bind:class="{available:available}">
+<span>Ryu</span>
+             </div>
+
+
+css=>
+.available span{ background: green;}
+
+  data: {
+    available:false,
+    nearby:false
+    }
+	
+	
+	
+
+Example==>
+
+html==>
+  <div id="vue-app">
+             <h1>Dynamic Css</h1>
+             <h2>Example 1</h2>
+             <div  v-bind:class="compClasses">    //it is computed which will return json object as dynamic classes always need them.
+               <button v-on:click="nearby=!nearby">Toggle nearby</button>     //changing nearby value on click
+               <button v-on:click="available=!available">Toggle Available</button>
+<span>Ryu</span>
+             </div>
+         </div>
+		 
+		 
+css==>
+.available span{ background: green;}
+
+.nearby span:after{content: "nearby";margin-left: 10 px;}   //after is use to add element/data after span.
+
+
+vue==>
+
+new Vue({
+    el: '#vue-app',
+    data: {
+    available:false,
+    nearby:false
+    },
+    methods: {
+
+    },
+    computed: {
+    compClasses:function()
+    {
+      return {
+        available:this.available,    //returning object remeber it is json object.
+        nearby:this.nearby           //v-bind:class always take json object.
+      }
+    }
+    }
+});
+
+
+================================================================================================
+
+Conditions in vue js==>v-if/v-show
+
+v-if example==>
+
+vue==>
+  data: {
+    error:false,
+    success:false
+    },
+
+html=>
+
+  <div id="vue-app">
+
+             <h2>Example 1</h2>
+
+               <button v-on:click="error=!error">Toggle Error</button>
+               <button v-on:click="success=!success">Toggle Success</button>
+          <p v-if="error">There is a error</p>       							 //showing para only on true value 
+            <p v-else-if="success">There is a success</p> 						 //it will show only when if version is false otherwise not.
+         </div>
+
+
+v-show is same as v-if give same behaviour..but v-if hide full element on false but show will not u can see style property.
+
+=========================================================================================================
+
+loop==>v-for==>
+
+Example==>
+
+html==>
+			<ul>
+              <li v-for="x in characters">{{x}}</li>    //like for (Object x:list)
+            </ul>
+			
+vue==>
+  data: {
+    characters:['manu','shelly','rohit']}      //calling characters in html.
+	
+	
+if we have a array of object and we want to itrate over all key and pair...
+	
+	
+			<ul>
+              <li v-for="(key,value) in characters">{{key}},{{value}}</li>    //like for (Object x:list)
+            </ul>
+			
+			
+if we want to print index also in loop......==>
+
+			<ul>
+              <li v-for="(x,index) in characters">{{index}}-->{{x}}</li>    //like for (Object x:list)
+            </ul>
+			
+			
+			nested array in json====>
+			myObj = {
+  "name":"John",
+  "age":30,
+  "cars": [
+    { "name":"Ford", "models":[ "Fiesta", "Focus", "Mustang" ] },
+    { "name":"BMW", "models":[ "320", "X3", "X5" ] },
+    { "name":"Fiat", "models":[ "500", "Panda" ] }
+  ]
+ }
+=========================================================================================================
+practice==>
+
+Lets create a punch bag game...==>
+when we punch it should burst....
+
+vue==>
+
+new Vue({
+    el: '#vue-app',
+    data: {
+        health: 100,
+        ended: false
+    },
+    methods: {
+        punch: function(){
+            this.health -= 10;
+            if ( this.health <= 0 ){
+                this.ended = true;
+            }
+        },
+        restart: function(){
+            this.health = 100;
+            this.ended = false;
+        }
+    },
+    computed: {
+
+    }
+});
+
+
+css==>
+
+#bag{
+    width: 200px;
+    height: 500px;
+    margin: 0 auto;
+    background: url(/img/bag.png) center no-repeat;
+    background-size: 80%;
+}
+
+#bag.burst{
+    background-image: url(/img/bag-burst.png);
+}
+
+#bag-health{
+    width: 200px;
+    border: 2px solid #000;
+    margin: 0 auto 20px auto;
+}
+
+#bag-health div{
+    height: 20px;
+    background: crimson
+}
+
+#controls{
+    width: 120px;
+    margin: 0 auto;
+}
+
+
+html===>
+
+
+<div id="vue-app">
+            <!-- bag image -->
+            <div id="bag" v-bind:class="{ burst: ended }"></div>   //binding class with json object ///redirect new image when ended = true
+
+            <!-- bag health bar -->
+            <div id="bag-health">
+   **             <div v-bind:style="{ width: health + '%' }"></div>  //binding style simply like old css
+            </div>
+
+            <!-- game control buttons -->
+            <div id="controls">
+                <button v-on:click="punch" v-show="!ended">Punch</button>      //disabling button on burst..
+                <button v-on:click="restart">Restart</button>
+            </div>
+        </div>
+
+
+
+====================================================================================================================================
+multiple vue instance..
+
+var one = new Vue({});
+
+var two = new Vue({{}});
+
+we can call variable of one vue into another by its name..
+
+Example===>
+
+new Vue({{
+el:"",
+methods: function(){
+one.variableName=""      ///thats how we used.
+}
+}})
+
+
+if we call it outside any instance it will override the value inside of any vue instance........
+
+one.variableName=""  //////override others value....
+
+===================================================================================================================================
+
+Components==>this is a reusable use of code which we can use different vue instance.
+
+How to declare vue component==>
+
+Vue.component('name',{});   //name of component,with json object which will contain properties.
+
+Example==>
+
+Vue.component('greeting',{
+  template:'<p>Hii i am reusable Component</p>'    ////can use only one root tag...
+});
+
+how to use it==><greeting> in html..
+
+**)how to pass data in component==>
+
+It is just same like a vue instance but in this we will take a method s parametre and return a object.Why?
+
+As a component always return the fresh data always as we r using it multiple times..and using that data in same component.
+
+Example==>
+
+Vue.component('greeting',{
+  template:'<p>Hii i am reusable {{name}}</p>',   ///using data defined inside...
+  data:function(){                                 //some how differ from instance take a function which will return json object.
+    return{
+    name:"manu"
+  }
+  }
+});
+
+
+Another Example==>in this we use external data inside component with a button in template..
+disadvantage of outside variable=====>changes will reflect in every component as it is not a fresh one.
+
+var data={name:"manu"}         //an external object with name attribute
+
+Vue.component('greeting',{
+  template:'<p>Hii i am reusable {{name}} <button v-on:click="changeName">ChangeName</button></p>',               //using button in template
+  data:function(){
+    return data;              //as data in component is a function which return data...but not returning fresh one.   
+  },
+  methods:{
+    changeName:function()
+    {
+      this.name="shelly";
+    }
+  }
+});
+
+
+So, the reason why Vue forces the data property to be a function is that each instance of a component should have its own data object. If we don't do that, all instances will be sharing the same object and every time we change something, it will be reflected in all instances.
+===========================================================================================================================================
+refrencing in vue js==>this is using to ref a whole element with its all attribute inside a vue instance using $refs.
+
+
+Example==>
+
+  <div id="vue-app-two">
+      <h2>Refs</h2>
+      <input type="text" ref="manu" v-on:click="click">   //here refrencing it with some name...
+      </div>
+
+
+vue==>
+
+ new Vue({
+    el: '#vue-app-two',
+    data: {
+    },
+    computed: {
+    },
+    methods: {
+      click:function()
+      {
+        console.log(this.$refs);   //here all the refrences will come...Remember always use with this keyword.
+      }
+    }
+});
+
+output==>{manu: input}  ///which also contain many attribute inside////manu is the name of refrence...
+
+
+Example 2==>
+
+console.log(this.$refs.manu.value);   //using manu refrence from all the refrences and its parametre value.
+=====================================================================================================================================
+If you – for whatever reason – want to only output something one time, then you can use the **v-once directive. This directive ensures that an element is only rendered once, and when Vue.js re-renders the page, the element and all of its children will be considered as static content and thereby skipped. An example usage of the v-once directive is for optimizing the performance when updating data on the page.
+
+
+ 
+In the example that I have prepared for you, I simply output the title of a movie using string interpolation, and I also have a button which simply updates the movie title to a different movie. If I click the button, you will see that the text changes as you would expect.
+
+Now I will simply add the v-once directive to the h1 element.
+
+<h1 v-once>{{ movieTitle }}</h1>
+
+
+
+======================================================================================================================================
+installing vue-cli globally
+
+npm install -g vue-cli     command in cmd.
+
+creating new vue project...
+
+==> vue init <template-name> <project-name>
+
+Example==>vue init webpack-simple vuejs-playlist
+
+A simple Vue 2.0 Webpack & vue-loader setup for quick prototyping. Note this template is not suitable for production - for that you may want to use the full webpack template.
+
+we have many templates===>
+
+1)vue-webpack-boilerplate
+A full-featured Webpack setup with hot-reload, lint-on-save, unit testing & css extraction.
+
+vue init webpack#1.0 my-project
+
+2)vue-pwa-boilerplate
+A full-featured PWA template with webpack, hot-reload, lint-on-save, unit testing & css extraction.
+
+Documentation
+This template builds on top of the main webpack template.
+
+pwa==>progressive web app==>A Progressive Web App (PWA) is a web app that uses modern web capabilities to deliver an app-like experience to users. ... You can deploy your app as a PWA as well as Native app and take advantage of both channels.
+these app will open in browser and run very fast..
+
+3)one we already used.
+
+4)vue-simple-boilerplate
+The simplest possible Vue setup in a single HTML file
+
+5)vue-browserify-boilerplate
+A full-featured Browserify + vueify setup with hot-reload, linting & unit testing.
+=>
+
+This command is for start the development server :
+
+npm run dev
+Where this command is for the production build :
+
+npm run build
+
+======================================================================================================================================================
+
+important files==>
+
+compile and minify source code in 1 file.
+it does compile on browser not in server.
+
+index.html file ==> main file. calling root component
+
+dist/build.js ===> main vue file single created after compiling.create after build main.js
+
+src/assets===>any images we use we can put here.
+
+main.js===>main file for vue js. render app(root component)
+
+app.vue===>it is the root component which render in main.js.this is the same different code of component declaration just in a another file.
+
+every component(vue file) has its <template>(html),<script>(vue),<style>(CSS)
+
+
+Example==>
+index.html===>
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>vuejs-playlist</title>
+  </head>
+  <body>
+    <div id="app"></div>                         //our root div whatever we have to code is inside this.
+    <script src="/dist/build.js"></script>       //our vue file after compilation
+  </body>
+</html>
+
+
+app.vue    ===> as it our root component
+
+<template>
+  <div>
+<h1>{{title}}</h1>
+<p>{{greeting()}}</p>           //here is template: field which we use to declare inside vue.component.
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'app',                 //name of vue.component
+  data () {
+    return {                                 
+ title : "Hi this is my first vue project"              //same as data inside vue.component data : function (){}
+    }
+  },
+  methods :{
+  greeting : function()
+  {
+  return "thats great right";
+  }
+  }
+}
+</script>
+
+<style>
+
+</style>
+
+
+main.js==>
+
+import Vue from 'vue'
+import App from './App.vue'         ES6 feature of js....importing vue from library and app component file.
+
+new Vue({
+  el: '#app',
+  render: h => h(App)                           //rendering component..
+  
+})
+------------------------------------------------------------------------------------------------------------------------------
+These path components are shortcuts with specific meanings:
+
+. means the current path level (so if you're on index.aspx and you reference ./style.css then the latter would have to be in the same folder as the former)
+.. means one path level up (so if you're on /somefolder/index.aspx and you reference ../style.css then the latter would have to be in the parent folder of someFolder)
+/ means the root level (so /style.css is the same as http://www.mysite.com/style.css)
+~ in ASP.NET means the server-side application root (so ~/index.aspx would be translated to the URL of the index.aspx file that's in the application's root)
+-------------------------------------------------------------------------------------------------------------------------------
+
+Nesting component===>
+
+                                                      root component (app.vue)
+													/            |            \
+												/				 |              \
+                                            header				article			footer component  			
+                                          /	      \										
+										/           \
+									Links          Login
+									
+There are two ways to register component one is locally and other is globally.
+we will see both ways.
+
+
+globally==> go to main.js file
+
+just like we declare component.
+
+import ninjas from './ninjas.vue'    //importing our file
+
+Vue.component("ninja",ninjas)        //giving name to component
+
+so first step==>
+
+1)create your component let ninja.vue.
+
+<template>
+  <div>
+  <ul>
+  <li v-for="x in title">"{{x}}</li>   //printing array
+  </ul>
+  </div>
+</template>
+
+<script> 
+export default {                          //it is export by default.
+  name: 'ninja',
+  data () {
+    return {
+ title : ['manu','manvendra','raghava']    //array
+    }
+  }
+}
+</script>
+
+<style>
+
+</style>
+
+
+2)declaring globally in main.js
+
+import ninjas from './ninja.vue'    //importing our file
+
+Vue.component("manu",ninjas)        //giving name as manu.
+
+3)calling new component in app.vue
+as it is globally can call anywhere
+
+
+<template>
+  <div>
+<h1>{{title}}</h1>
+<manu></manu>                   //calling our component..
+  </div>
+</template>
+
+
+
+
+
+
+
+iiiiiiii)Locally ===>locally means where we declare can only use there.
+
+now we have to use only in app. vue 
+
+so go to its script tag,
+
+import again.
+
+<script>
+import ninjas from './ninja.vue'
+export default {
+  name: 'app',
+  components:{                         //new tag for components as usual  "name":refrence.
+    'manu': ninjas
+  },
+  data () {
+    return {
+ title : "Hi this is my first vue project"
+    }
+  }
+}
+</script>
+
+
+----------------------------------------------------------------------------------------------------------------------------------------
+
+as all js file which ever called in root component combined in one js.so all <style> tags also combined into one..if they have
+same proprty like in a root component.
+Root component will override it.
+
+so use <style scoped>  //to scoped the css to particular component.
+
+--------------------------------------------------------------------------------------------------------------------------------------
+props=>
+ it is mainly used to import/export data.
+ for example if we r using a same component multiple times but we need a different data every time..so we go on props.
+ data is mainly declared in root component.and by using of **v-bind we attach it with props attribute having same name.
+ 
+ Example==>we have to insert some data into one ninja component.
+ 
+ 1)ninjas.vue
+ 
+ export default {
+  name: 'app',
+  components:{
+
+  },
+  data () {
+    return {
+
+    }
+  },
+  props :['manu']    ///here we need data props with a array values
+}
+</script>
+
+2)app.vue==>
+
+  data () {
+    return {
+      ninjas :[
+      {name:'manu',speciality:'java',show:false},
+      {name:'nanne',speciality:'payment',show:false},
+      {name:'amit',speciality:'solr',show:false},
+      {name:'naveen',speciality:'ladkibaji',show:false},            //declaring data here
+      {name:'raghava',speciality:'java',show:false},
+      ]
+    }
+  }
+  
+  
+3)<app-middle v-bind:manu="ninjas"/>       //binding manu with ninjas as "inside it always component data".//ninja component
+
+
+another way for good practicing of declaring props:.
+
+props :{
+    manu :{
+      type :Array,
+      required:true                            //as an object...also work as validator.
+    }
+  }
+  
+  
+  //this.ninjas.pop()to remove one element from array in vue.
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+Event and listeners in vue==>
+
+It is same as defining a custom event like click,keyUp event.
+
+syntax==>$emit('eventName','data');
+
+Listener==>it is like other events we use to handle using v-on
+v-on:eventName="customFunction($event)"    //$event here is the data we use to send in event above.
+
+
+Example==>lets handle the event send by child component to root component to change one of root data.
+
+1)child component
+
+<template>
+  <div>
+    <header>
+      <h1 v-on:click="changeTitle">{{title}}</h1>    //calling a method in click event.
+      <h2>{{ninjavue}}</h2>
+    </header>
+  </div>
+</template>
+
+  methods:{
+    changeTitle:function()
+    {
+      this.$emit('changeName','Manvendra Singh');   //creating event with some data
+    }
+  }
+
+
+
+
+2)Root Component..
+
+<app-header :ninjavue="title" v-on:changeName="changeTitle($event)"/>    //calling our event and collecting data.
+
+
+  methods:{
+    changeTitle:function(name)      //using event data to change root data.
+    {
+      this.title = name;
+    }
+  }
+
+
+
+props-->sent data
+events --->takes data      // from root
+
+
+Event Bus===>
+As we can communicate between components and root component via events and props.
+
+what if we have to comunicate between siblings?
+as component to root and than to sibling is a long process.
+
+For this we go to event Bus...
+It is nothing a Vue Component in the main file which we use to emit event and to listen inside component.
+
+Example==>
+1)main.js
+declaring and exporting bus
+
+export const bus = new Vue({});    //same like other component we r using export default.
+
+2)emitting event on bus through header.
+
+import {bus} from '../main';    ////importing bus by name.so using {{}}
+
+  methods:{
+    changeTitle:function()
+    {
+    //  this.$emit('changeName','Manvendra Singh');
+    bus.$emit('changeName','Manvendra Singh');
+    }
+  }
+
+3)listening event in footer inside hook
+
+  created () {
+    bus.$on('changeName',(data)=>    //using lambda inside on.....////same as v-on:changeName=abcd(data); listen here in footer and footer changes
+    {
+      this.ninjavue=data;
+    })
+  }
+================================================================================================================================
+Life-cycle Hooks==>   //in details later.
+
+1)when we create vue instance --> new Vue({});
+2)beforeCreated hook called-->at that time no data is created so we cannot access data(){} here.
+3)observe data.
+4)init Events.
+5)Created Hook Called.
+6)complie template(el) into renderer function.
+7)beforeMount Hook is called. //we can use it just before it mount the DOM.
+8)Mounted the DOm.
+9)Mounted Hook is called.///after this all component got loaded as it is a dom.
+if we change any data in DOM--->like changing data through pop and events--->beforeUpdated() and updated () hook called.
+10)beforeDestroy hook is called.
+11)tear down child components and event listeners.
+12)detroyed hook is called.
+
+
+Example==>
+
+created(){
+alert('created');      //in the vue instance..
+}
+
+==============================================================================================================================
+Slots==>
+
+we can pass data into child through pops.
+what if we want to pass something complex like whole html code....we can use v-html but it is not a good choice.
+Here comes concept of slots.
+
+Example==>
+1)App.vue==>
+
+<template>
+  <div>
+ <form-Helper>
+   <h2>Hi i am data send via root component</h2>
+   <p>R u going to use me.</p>                        //we r sending data directly but it will not appear ..
+   </form-Helper>
+  </div>
+</template>
+
+
+2)Appear the data into code we will use slots wherever in child component we want it to render.
+
+child-component-->
+
+<template>
+  <div>
+    <header>
+    <h1>I am a Form Helper</h1>
+    <slot></slot>                                // it will render whole code of root here.
+    </header>
+  </div>
+</template>
+
+
+NOw what if we want to render h2 above and p data below the child html code...we will give name to tags and call it by slots.
+
+<template>
+  <div>
+ <form-Helper>
+   <h2 slot="one">Hi i am data send via root component</h2>    //naming slots
+   <p slot ="two">R u going to use me.</p>
+   </form-Helper>
+  </div>
+</template>
+
+
+<template>
+  <div>
+    <header>
+      <slot name ="one"></slot>
+    <h1>I am a Form Helper</h1>
+    <slot name ="two"></slot>                                   ///calling by name in child component.
+    </header>
+  </div>
+</template>
+
+
+===========================================================================================================
+Dynamic components--->
+
+we can also call components dynamically.
+
+<component is ="name" />         <=equivalent to=>        <name></name>
+
+now if we want to set ist value dynamically we can use v-bind
+
+
+<component :is ="name" /> 
+
+data () {
+name : "name of component u want to show"
+}
+
+
+so whole idea is this u can show whatever component u want by events with dynamic value..like on mouse click this component will load.
+
+<keep-alive>
+<component :is ="name" />                                  //we use keep-alive to maintain data it will not get refresh on loading/unloading comp.
+</keep-alive>
+
+This means that Vue does not have to create a new instance every single time you switch components. Instead, it just uses the cached reference whenever you come back to it. Keep-Alive is what VueJS calls an abstract element – meaning that it does not render a DOM element nor does it show up as a component
+==================================================================================================================================
+
+Binding in vue===>
+
+1)input binding  ->we use v-model to bind data.
+
+example==>
+
+input form fields....
+
+  <form>
+<label>Blog Title:</label>
+<input type="text" v-model.lazy="blog.title"required/>    ///here we use lazy because we want to show data just on clicking
+<label>Blog Content:</label>
+<textarea v-model.lazy="blog.content"></textarea>         //binding with attribute of blog object.
+  </form> 
+
+
+data() {
+        return{
+          blog:{
+        title:"",
+        content:""
+        }
+		
+		
+		
+
+2)CheckBox Binding---->
+
+<div class="checkBoxes">
+    <label>A:</label>
+    <input type="checkbox" value="A" v-model="blog.categories">      ////we have to store all values in one array.
+    <label>B:</label>
+    <input type="checkbox" value="B" v-model="blog.categories">      //so binding it with array
+    <label>C:</label>
+    <input type="checkbox" value="C" v-model="blog.categories">     //whatever value we choose automatic store in array.
+    <label>D:</label>
+    <input type="checkbox" value="D" v-model="blog.categories">
+  </div>
+  
+  
+  
+    data() {
+        return{
+          blog:{
+        title:"",
+        content:"",
+        categories:[]    ///array defined in blog.
+        }
+      }
+	  
+	  
+	  
+	  
+3)Select box binding.
+
+  <select v-model="blog.author">                               //as we have to store only one value so string.
+    <<option v-for="author in authors">{{author}}</option>     //whatever we select store in blog object attribute.
+  </select>
+  
+ 
+   data() {
+        return{
+          blog:{
+        title:"",
+        content:"",
+        categories:[],
+        author:""
+      },
+      authors:["mn","as","jk"]
+      }
+	  
+	  
+-========================================================================================================================
+
+
+Http Requests==>
+
+1)install vue-resource npm install vue-resource --save    //use for handle http requests
+2)check in package.json file it is present or not.
+
+3)Now in main.js
+
+import VueResource from 'vue-resource'     //importing from library.
+
+
+Vue.use(VueResource);                      //telling vue to use it.
+
+
+we will use JSONPlaceholder--->Fake Online REST API for Testing and Prototyping
+
+Example==>
+
+<button v-on:click.prevent="post" name="submitt"></button> caliin method post...//<!-- the submit event will no longer reload the page -->prevent.
+
+
+  methods: {
+      post:function()
+      {
+        this.$http.post('https://jsonplaceholder.typicode.com/posts',{   //calling post method with url and data
+          title:this.blog.title,
+          body:this.blog.content,
+          userId:1
+        }).then(function(data){                                         //reading response.
+          console.log(data);
+        });
+      }
+	  
+	  
+	  
+========================================================================================================================================
+
+GET REQUEST---->
+
+same as we do while post but with some different manner.
+
+<template>
+<div class="">
+  <h1>ALL BLOGS:</h1>
+  <div v-for="x in blogs">
+    {{x.title}}
+    <article class="">
+      {{x.body}}
+    </article>
+  </div>
+</div>
+</template>
+
+<script>
+// Imports
+export default {
+    components: {
+
+    },
+    data() {
+    return{
+      blogs :[]
+    }
+
+    },
+    methods: {
+
+    },
+    created() {                        //as it is a get method so calling when component is created.
+      this.$http.get('https://jsonplaceholder.typicode.com/posts').then(function(data)
+    {
+      this.blogs=data.body.slice(0,10);   //as in data we get response...response has its body...in body from there we are getting an array ; 									// of documents...so only taking first 10 using slice method.
+    });
+    }
+
+}
+</script>
+
+
+------------------------------------------------------------------------------------------------------------------------------------------
+Custom Directives--->
+
+as we know in vue what we use with v-* known as directives.
+How to create our own directive.
+
+Example-->we will create our v-rainbow which we will use wit<h> whatever element in it will get a different colour randomly.
+
+1)as we have to make it global so everybody can use it...so global means main.js
+
+we use Vue.directive('name',{    //to declare our own directive.
+bind(el,binding,vnode)           //this is the hook for directive when we bind it another tag.
+{
+//el refers to the tag to which w will bind
+//binding takes values if we send it like v-for="values".
+}
+})         
+
+Example--> so in main .js
+
+
+Vue.directive('rainbow',{
+  bind(el,binding,vnode)
+  {
+    el.style.color = "#" + Math.random().toString().slice(2,8);       //binding color to el using slice to cut 6 digit from string.
+  }
+})
+
+
+2)Calling directive-->As we dont need any import as it is globally declared.
+ we can use it directly --><h2 v-rainbow>{{x.title}}</h2>
+ 
+ 
+II)Now sending Value===>
+
+<div v-theme="'wide'" class="">         //sending value in our new custom directive....as string so sending in ''
+
+catching this value in main.js.
+
+
+Vue.directive('theme',{
+  bind(el,binding,vnode)
+  {
+    if(binding.value='wide')       ///catching and validating value.
+    {
+      el.style.maxWidth ="1200px";
+    }
+  }
+})
+
+
+
+III)Passing Argument
+
+v-on:click                ///click here is a argument.
+
+Vue.directive('on',{
+  bind(el,binding,vnode)
+  {
+    if(binding.arg='click')       ///catching and validating args. args is always string.
+    {
+      el.style.maxWidth ="1200px";
+    }
+  }
+})
+=============================================================================================================================
+
+Filters-->we can use it to change the output data into browser...
+Example--->lets we want to change the data into uppercase.
+
+How to create it--->like directives and components..and register it globally.
+
+Vue.filter('name',function(data){return updated data});
+
+How to use it ---> by using pipe (|) with data in browser.
+
+Example-->
+
+Vue.filter('to-upperCase',function(data){               //main.js
+  return data.toUpperCase();
+})
+
+
+using in component---><h2 v-rainbow>{{x.title | to-upperCase}}</h2>
+
+
+---------------------------------------------------------------------------------------------------------------------------
+Custom-search Filter--->
+
+Lets create a search filter which will show only the matching data to the word in the search box.
+
+
+  <input type="text" v-model="search">                        //binding search object to data.
+  <div v-for="x in computedBlogs">                           //method which is used for searching
+    <h2 v-rainbow>{{x.title | to-upperCase}}</h2>
+	
+	
+	  computed:{
+      computedBlogs:function()
+      {
+        return this.blogs.filter((data)=>data.title.match(this.search));      //matching and returnig array.
+      }
+    }, 
+	
+	
+-------------------------------------------------------------------------------------------------------------------
+Mixins--->these are the code which we want to reuse.
+Lets take example of search filter above if we have different pages like that which we need same functionality.
+So we didnot need to write it again and again just create a mixin and reuse it.
+
+Example-->
+1)create a js file which will do above functionality.
+
+mixin.js.--->
+
+export default{      ///alwayse use it to export it
+
+  computed:{
+    computedBlogs:function()                                                              //same as because it just copy and paste code in which 
+    {																					  // it called.
+      return this.blogs.filter((data)=>data.title.match(this.search));
+    }
+  },
+}
+
+
+2)in component which we have to called--->
+
+i)import it--->
+
+import mixinSearch from './mixins/mixin';
+
+ii)register it--->
+
+  mixins : [mixinSearch]    //it is array because we can call multiple mixins.
+  
+  
+=========================================================================================================================================
+
+Routing is a way of organizing and managing application states. A routing framework in JavaScript helps you to change the state of the application--perhaps moving from one admin panel section to another--while maintaining application persistence.
+
+So how to declare routing in Vue js..
+
+just like directives,components
+
+1)we have to install vue-router
+
+npm install vue-router.
+
+now in main.js--->
+
+import VueRouter from 'vue-router'
+
+Vue.use(VueRouter);
+
+2)Now in main .js we will create a new instance of router so we can register it.
+
+const router = new VueRouter({
+                                            //we can register our routers here but it is not a good way..
+});
+
+
+3)create a file to register router here.
+lets routes.js
+
+export default [                          //here it is an array because it contains many routes object.
+  {},
+  {}
+]
+
+
+example-->
+
+import addBlog from './components/addBlog.vue'
+import showBlog from './components/showBlog.vue'
+
+export default [
+  {path:'/',component:addBlog},        //path is the url in which that component will route.
+  {path:'/add',component:showBlog}
+]
+
+
+4)again in main.js
+
+import Routes from './routes'
+
+const router = new VueRouter({
+routes:Routes                               //register routes here..
+});
+
+new Vue({
+  el: '#app',
+  render: h => h(App),
+  router:router                             //we r using above defind router in this vue instance....
+})
+
+
+
+
+5)Now we have declared that we will use router in app component...so go to app component remove all component tags from there.
+
+<template>
+  <div class="">
+    <router-view />     //this tag will allow routing..
+  </div>
+
+</template>
+
+
+we also dont use href in vue js to redirect to url we use <router-link>
+
+Example <router-link to="/" exact>Blog</router-link>
+
+//here exact will make only active it when we are exactly on this url  it is activating the class which are ootb in vue for router.
+===========================================================================================================================================
+Routing Modes--->
+
+as we can see on calling router we have additional "#" in url which dont seems look good but it indicates we are not doing additional request to server.
+
+so it is default behaviour mode known as hash...we ca change it by changing mode to history.
+
+const router = new VueRouter({
+routes:Routes,
+mode : 'history'                               //register history here..
+});
+
+hash vs history-->
+
+You typically need to use server side rendering when using history mode so that all of the pages in your app are built and located in the expected directories. Hash mode on the other hand is more useful if you are building a single page app and cant or dont want to use server side rendering for whatever reason.
+
+hash—— That is, in the address bar URL#Symbols (this hash is not a hash operation in cryptography).
+For example, this URL:http://www.abc.com/#/helloThe value of hash is#/hello。 The feature is that although hash appears in the URL, it will not be included in the HTTP request and has no effect on the back end, so changing hash will not reload the page.
+
+
+history—— Using the new HTML5 History InterfacepushState() and replaceState()Method. (Browser-specific support is required)
+These two methods are applied to the browser’s history stack, which is currently available.back、forward、goOn this basis, they provide the function of modifying historical records. Only when they make changes, the browser does not immediately send requests to the back end, although the current URL is changed.
+
+
+The default mode for vue-router is hash mode - it uses the URL hash to simulate a full URL so that the page won't be reloaded when the URL changes. To get rid of the hash, we can use the router's history mode, which leverages the history. ... If the URL doesn't match any static assets, it should serve the same index.
+
+understand it-->
+=============================================================================================================================
+Route Parametres--->
+
+/add is our routing.
+/add/123 it is our parametre ....
+
+so how to handle..
+
+on declartion we will declare /add/:id
+
+Now in single component we will detect id and make a get call to fetch data
+
+Example-->
+
+1)routes.js
+
+import addBlog from './components/addBlog.vue'
+import showBlog from './components/showBlog.vue'
+import singleBlog from './components/singleBlog.vue'
+export default [
+  {path:'/',component:addBlog},
+  {path:'/add',component:showBlog},
+  {path:'/add/:id',component:singleBlog}       //registering param here.
+]
+
+
+2)main.js
+
+import VueRouter from 'vue-router'
+import Routes from './routes'
+
+Vue.use(VueRouter);
+
+const router = new VueRouter({
+routes:Routes,                                        //declaring our routes..
+});
+
+
+new Vue({
+  el: '#app',
+  render: h => h(App),
+  router:router                                          //registering our router in main component
+})
+
+
+3)root-component
+
+<template>
+  <div class="">
+    <router-view />                                  //declaring our routerview
+  </div>
+
+</template>
+
+
+4)Now handling router param in child Component
+
+
+<template>
+  <div class="">
+    <h1>{{blogs.title}}</h1>
+    <h2>{{blogs.body}}</h2>
+  </div>
+
+</template>
+<script>
+export default {
+
+    data(){
+        return{
+        id:this.$route.params.id,               //handling param on a given route
+        blogs:{}
+        }
+    },
+    created (){
+    this.$http.get('https://jsonplaceholder.typicode.com/posts/'+this.id).then(function(data){    //calling method on param.
+    this.blogs=data.body;
+    });
+    }
+}
+</script>
+
+
+---------------------------------------------------------------------------------------------------
+The only exception to this being the use of Object.freeze(), which prevents existing properties from being changed, which also means the reactivity system can’t track changes.
+
+Object.freeze(obj);
+
+
+
+
+

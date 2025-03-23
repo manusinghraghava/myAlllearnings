@@ -1,0 +1,47 @@
+import de.hybris.platform.servicelayer.search.FlexibleSearchService;
+import de.hybris.platform.store.services.BaseStoreService;
+import de.hybris.platform.site.BaseSiteService;
+import de.hybris.platform.servicelayer.event.EventService;
+import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.commerceservices.security.SecureToken;
+import de.hybris.platform.commerceservices.security.SecureTokenService;
+import de.hybris.platform.servicelayer.i18n.CommonI18NService;
+import de.hybris.platform.commerceservices.event.ForgottenPwdEvent;
+import de.hybris.platform.core.model.user.CustomerModel;
+import de.hybris.platform.basecommerce.model.site.BaseSiteModel;
+import de.hybris.platform.core.model.c2l.CurrencyModel;
+import de.hybris.platform.core.model.c2l.LanguageModel;
+import de.hybris.platform.store.BaseStoreModel;
+import de.hybris.platform.commerceservices.event.AbstractCommerceUserEvent;
+
+flexibleSearchService = spring.getBean("flexibleSearchService");
+baseStoreService = spring.getBean("baseStoreService");
+baseSiteService = spring.getBean("baseSiteService");
+eventService = spring.getBean("eventService");
+modelService = spring.getBean("modelService");
+secureTokenService = spring.getBean("secureTokenService");
+commonI18NService = spring.getBean("commonI18NService");
+
+String query = "select {pk} from {Customer}"
+allCustomers = flexibleSearchService.search(query).result
+
+for(customerModel in allCustomers) {
+
+	final SecureToken data = new SecureToken(customerModel.getUid(), new Date().getTime());
+	final String token = secureTokenService.encryptData(data);
+	customerModel.setToken(token);
+	modelService.save(customerModel);
+	modelService.refresh(customerModel);
+	eventService.publishEvent(initializeEvent(new ForgottenPwdEvent(token), customerModel));
+	out.println("Sending reset password email to : "+customerModel.getUid());
+}
+
+def AbstractCommerceUserEvent initializeEvent(final AbstractCommerceUserEvent event, final CustomerModel customerModel)
+	{
+		event.setCustomer(customerModel);
+		event.setSite(baseSiteService.getBaseSiteForUID("fabindiab2c"));
+		event.setBaseStore(baseStoreService.getBaseStoreForUid("fabindiab2c"));
+		event.setLanguage(null != customerModel.getSessionLanguage() ? customerModel.getSessionLanguage() : commonI18NService.getLanguage("en"));
+		event.setCurrency(null != customerModel.getSessionCurrency() ? customerModel.getSessionCurrency() : commonI18NService.getCurrency("INR"));
+		return event;
+	}

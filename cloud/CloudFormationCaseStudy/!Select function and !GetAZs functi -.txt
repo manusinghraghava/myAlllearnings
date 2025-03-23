@@ -1,0 +1,9 @@
+**!Select function and !GetAZs function :
+
+--!GetAZs returns a list of all Availability Zones (AZs) in the specified region. If no region is specified, it returns the AZs for the region in which the stack is created.
+
+--!Select [ 0, !GetAZs ] selects the first Availability Zone from the list returned by !GetAZs.
+
+**!Sub function is used for string substitution
+
+**${AWS::Region} is a pseudo parameter

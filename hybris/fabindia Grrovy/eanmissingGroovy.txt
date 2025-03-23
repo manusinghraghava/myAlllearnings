@@ -1,0 +1,41 @@
+import de.hybris.platform.core.Registry;
+import de.hybris.platform.servicelayer.search.FlexibleSearchQuery;
+import de.hybris.platform.servicelayer.search.FlexibleSearchService;
+import org.apache.commons.collections4.CollectionUtils;
+import de.hybris.platform.servicelayer.search.SearchResult;
+import de.hybris.platform.core.model.product.*;
+import de.hybris.platform.variants.model.*;
+import de.hybris.platform.europe1.model.*;
+import de.hybris.platform.catalog.enums.*;
+import org.apache.commons.lang3.*;
+import java.util.*;
+import java.util.stream.*;
+
+String vpQuery = "select {pk} from {Product! as vp join catalogVersion as cv on {vp.catalogVersion}={cv.pk} join Unit as u on {vp.unit}={u.pk}} where {cv.version} = 'Staged'";
+
+final SearchResult<ProductModel> vpSearchResult = ((FlexibleSearchService) Registry.getApplicationContext().getBean("flexibleSearchService")).search(vpQuery);
+final List<ProductModel> vpResults = vpSearchResult.getResult();
+
+
+if(CollectionUtils.isNotEmpty(vpResults))
+{
+for(ProductModel vProduct :vpResults)
+{
+
+if(vProduct.getApprovalStatus().getCode().equalsIgnoreCase("approved"))
+{
+if(CollectionUtils.isNotEmpty(vProduct.getVariants()))
+{
+vProduct.getVariants().stream().filter{s->StringUtils.isBlank(s.getSapEAN())}.forEach{p->println p.getCode()};
+}
+else
+{
+
+if(StringUtils.isBlank(vProduct.getSapEAN()))
+{
+println vProduct.getCode();
+}
+}
+}
+}
+}

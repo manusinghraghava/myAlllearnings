@@ -1,0 +1,773 @@
+..
+Java provides a new additional package in Java 8 called java.util.stream
+
+main features=>
+
+=>Stream does not store elements. 
+It simply conveys elements from a source such as a data structure, an array, or an I/O channel, through a pipeline of computational operations.
+
+
+=>Stream is functional in nature. Operations performed on a stream does not modify it's source.
+For example, filtering a Stream obtained from a collection produces a new Stream without the filtered elements, 
+rather than removing elements from the source collection.
+Stream is lazy and evaluates code only when required.
+
+
+=>The elements of a stream are only visited once during the life of a stream. 
+Like an Iterator, a new stream must be generated to revisit the same elements of the source.
+
+=>You can use stream to filter, collect, print, and convert from one data structure to other etc.
+
+
+Main methods used in stream=>
+
+**a)boolean allMatch(Predicate<? super T> predicate) //predicate is used for boolean check here as it has one method boolean test....
+
+=>returns whether all elements of this stream match the provided predicate. It may not evaluate the predicate on all elements if not necessary for determining the result. 
+This is a short-circuiting terminal operation. A terminal operation is short-circuiting if, when presented with infinite input, it may terminate in finite time.
+Example: Stream allMatch()
+
+In this example we have a stream of student details that consists student id, name and age.
+We have three predicates in this example, 
+predicate p1 says that the student name starts with “A”, predicate p2 says that the student age is less than 40 and 
+predicate p3 says that the age must be less than 40 and name should start with “P”.
+allMatch() method returns false for predicate p1 because there are students whose names do not start with “A”.
+allMatch() method returns true for predicate p2 because all students have age less than 40.
+allMatch() method returns false for predicate p3 because details of all the students do not statisfy the condition of age <40 and name start with “P”.
+
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.ArrayList;
+class Student{
+   int stuId; 
+   int stuAge;  
+   String stuName;  
+   Student(int id, int age, String name){
+      this.stuId = id;   
+      this.stuAge = age;  
+      this.stuName = name;  
+   }  
+   public int getStuId() { 
+      return stuId;  
+   }  
+   public int getStuAge() {  
+      return stuAge;  
+   } 
+   public String getStuName() {  
+      return stuName;  
+   }  
+   public static List<Student> getStudents(){ 
+      List<Student> list = new ArrayList<>(); 
+      list.add(new Student(11, 28, "Lucy")); 
+      list.add(new Student(28, 27, "Tim")); 
+      list.add(new Student(32, 30, "Daniel")); 
+      list.add(new Student(49, 27, "Steve")); 
+      return list; 
+   }
+}
+public class Example { 
+   public static void main(String[] args) { 
+      Predicate<Student> p1 = s -> s.stuName.startsWith("A"); 
+      Predicate<Student> p2 = s -> s.stuAge < 40; 
+      Predicate<Student> p3 = s -> s.stuAge < 40 && s.stuName.startsWith("P");
+      List<Student> list = Student.getStudents();
+
+      /* allMatch() method returns true if all the elements of stream satisfy the 
+       * given predicate, else it returns false 
+       */ 
+
+      /* This will return false because all student names do not start with "A"  
+       */ 
+      boolean b1 = list.stream().allMatch(p1); 
+      System.out.println("list.stream().allMatch(p1): "+b1); 
+
+      /* This will return true because all students have age less than 40  
+       */ 
+      boolean b2 = list.stream().allMatch(p2); 
+      System.out.println("list.stream().allMatch(p2): "+b2); 
+
+      /* This will return false because all the students do not satisfy the predicate: 
+       * Age must be less than 40 and name starts with letter "P" 
+       */ 
+      boolean b3 = list.stream().allMatch(p3); 
+      System.out.println("list.stream().allMatch(p3): "+b3);
+   }
+}
+Output:
+
+list.stream().allMatch(p1): false
+list.stream().allMatch(p2): true
+list.stream().allMatch(p3): false
+
+
+**b)boolean anyMatch(Predicate<? super T> predicate)
+=>It returns any element of this stream that matches the provided predicate. 
+ If the stream is empty then false is returned and the predicate is not evaluated
+
+Exaple is same as the above==>
+
+
+**c)long count()
+=>It returns the count of elements in this stream. This is a special case of a reduction.
+
+
+**d)Stream<T> distinct()
+=>It returns a stream consisting of the distinct elements (according to Object.equals(Object)) of this stream.
+
+Example=>
+
+Collection<String> list = Arrays.asList("A", "B", "C", "D", "A", "B", "C");
+ 
+// Get collection without duplicate i.e. distinct only
+List<String> distinctElements = list.stream().distinct().collect(Collectors.toList());
+ 
+//Let's verify distinct elements
+System.out.println(distinctElements);
+
+//we will learn about collector later..
+
+
+**e)static <T> Stream<T> empty()	
+=>It returns an empty sequential Stream.
+
+
+**f)Stream<T> filter(Predicate<? super T> predicate)	
+=>It returns a stream consisting of the elements of this stream that match the given predicate.
+
+Example=>
+
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class NowJava8 {
+
+    public static void main(String[] args) {
+
+        List<String> lines = Arrays.asList("spring", "node", "mkyong");
+
+        List<String> result = lines.stream()                // convert list to stream
+                .filter(line -> !"mkyong".equals(line))     // we dont like mkyong
+                .collect(Collectors.toList());              // collect the output and convert streams to a List
+
+        result.forEach(System.out::println);                //output : spring, node
+
+    }
+
+}
+
+Output:
+spring
+node
+
+**g)void forEach(Consumer<? super T> action)	
+=>It performs an action for each element of this stream.  //like print
+
+
+**h)<R> Stream<R> map(Function<? super T,? extends R> mapper)	
+=>It returns a stream consisting of the results of applying the given function to the elements of this stream.
+=>In simple words, the map() is used to transform one object into other by applying a function.
+
+For example, by using the map() function, you can convert a list of String into a List of Integer by applying the Integer.valueOf() method
+to each String on the input list.
+
+All you need is a mapping function to convert one object to the other. Then, the map() function will do the transformation for you. 
+It is also an intermediate Stream operation which means you can call other Stream methods, like a filter, 
+or collect on this to create a chain of transformations.
+
+Example 
+
+1.)A List of Strings to Uppercase
+
+ List<String> collect = alpha.stream().map(String::toUpperCase).collect(Collectors.toList());
+
+// in this it is taking a list of string Alpha and run Function<T,R> Interface  R apply(T t) method
+
+Take Each Element convert it into Uppercase and Return to Stream than it convert by list through collect() method..
+
+2.)List of objects -> List of String
+
+ List<Staff> staff = Arrays.asList(
+                new Staff("mkyong", 30, new BigDecimal(10000)),
+                new Staff("jack", 27, new BigDecimal(20000)),
+                new Staff("lawrence", 33, new BigDecimal(30000))
+        );
+
+ List<String> collect = staff.stream().map(x -> x.getName()).collect(Collectors.toList());
+
+// it is taking every element of object and return its name which is string and collect than change that stream into list of strings..
+
+3)Another Good Example
+
+ List<Product> productsList = new ArrayList<Product>();  
+        //Adding Products  
+        productsList.add(new Product(1,"HP Laptop",25000f));  
+        productsList.add(new Product(2,"Dell Laptop",30000f));  
+        productsList.add(new Product(3,"Lenevo Laptop",28000f));  
+        productsList.add(new Product(4,"Sony Laptop",28000f));  
+        productsList.add(new Product(5,"Apple Laptop",90000f));  
+        productsList.stream()  
+                    .filter(p ->p.price> 30000)   // filtering price            //uses predicate
+                    .map(pm ->pm.price)          // fetching price              //uses function
+                    .forEach(System.out::println);  // iterating price          //uses consumer
+
+// here we are filtering the Stream according to the price of object ,than changing the object into int and than printing the every element
+
+ List<Student> studentList = tmpStudents.stream()
+            .map(tmpStud -> new Student(tmpStud.name, tmpStud.age, tmpStud.address, tmpStud.mobileNumbers))
+            .collect(Collectors.toList());
+ 
+ //////converting from object to Another
+
+**h)<R,A> R collect(Collector<? super T,A,R> collector)
+
+=>It performs a mutable reduction operation on the elements of this stream using a Collector. 
+A Collector encapsulates the functions used as arguments to collect(Supplier, BiConsumer, BiConsumer), 
+allowing for reuse of collection strategies and composition of collect operations such as multiple-level grouping or partitioning.
+
+//dont learn much about this just learn it use
+
+it is mainly used to collect elements from stream in a specific format using Collections util class..
+
+=> .collect(Collectors.toList());  // collecting as list  
+=> .collect(Collectors.toSet());   // collecting as Set
+=> Double sumPrices =   
+                productsList.stream()  
+                            .collect(Collectors.summingDouble(x->x.price));    //using Function
+
+//return the total sum of double values 
+
+=>Integer sumId =   
+                productsList.stream().collect(Collectors.summingInt(x->x.id));   //for Integer
+
+// for avaerage
+=>Collectors.averagingDouble(p->p.price)  
+=>Collectors.averagingInt(p->p.price)     
+
+=>Long noOfElements = productsList.stream()  
+                               .collect(Collectors.counting());           // for counting Elements
+
+							   
+							   
+							   
+==>collect(joining(","));  ==> use to return stream with join on a delimiter as a String.
+
+==>collect(Collectors.summarizingInt Or Long Or float)-->work on data type and return dataType_summaryStatistics Object from which we can fetch count//average//summ etc..
+
+
+**i)Optional<T> findAny()	
+
+=>It returns an Optional describing some element of the stream, or an empty Optional if the stream is empty.
+=>As the name suggests, the findAny() method allows you to find any element from a Stream. 
+Use it when you are looking for an element without paying an attention to the encounter order:
+
+Example=>
+public void createStream_whenFindAnyResultIsPresent_thenCorrect() {
+    List<String> list = Arrays.asList("A","B","C","D");
+ 
+    Optional<String> result = list.stream().findAny();
+ 
+    assertTrue(result.isPresent());
+    assertThat(result.get(), anyOf(is("A"), is("B"), is("C"), is("D")));/////The assertThat is one of the JUnit methods from the Assert object that 
+                                                                             can be used to check if a specific value match to an expected one.
+}
+
+**j)Optional<T> findFirst()	
+
+=>It returns an Optional describing the first element of this stream, or an empty Optional if the stream is empty. 
+  If the stream has no encounter order, then any element may be returned.
+
+Example=>
+public void createStream_whenFindFirstResultIsPresent_thenCorrect() {
+ 
+    List<String> list = Arrays.asList("A", "B", "C", "D");
+ 
+    Optional<String> result = list.stream().findFirst();
+ 
+    assertTrue(result.isPresent());
+    assertThat(result.get(), is("A"));
+}
+
+**k)void forEachOrdered(Consumer<? super T> action)	
+
+=>It performs an action for each element of this stream, in the encounter order of the stream if the stream has a defined encounter order.
+
+
+**l)Stream<T> limit(long maxSize)	
+
+=>It returns a stream consisting of the elements of this stream, truncated to be no longer than maxSize in length.
+
+**l)Optional<T> max(Comparator<? super T> comparator)	
+
+=>It returns the maximum element of this stream according to the provided Comparator. This is a special case of a reduction.
+
+**m)Optional<T> min(Comparator<? super T> comparator)	
+
+=>It returns the minimum element of this stream according to the provided Comparator. This is a special case of a reduction.
+
+Example=>
+
+public void whenListIsOfIntegerThenMaxCanBeDoneUsingIntegerComparator() {
+    // given
+    List<Integer> listOfIntegers = Arrays.asList(1, 2, 3, 4, 56, 7, 89, 10);
+    Integer expectedResult = 89;
+ 
+    // then
+    Integer max = listOfIntegers
+      .stream()
+      .mapToInt(v -> v)
+      .max().orElseThrow(NoSuchElementException::new);
+ 
+    assertEquals("Should be 89", expectedResult, max);
+}
+Let’s take a closer look at the code:
+
+Calling stream() method on the list to get a stream of values from the list
+Calling mapToInt(value -> value) on the stream to get an Integer Stream
+Calling max() method on the stream to get the max value
+Calling orElseThrow() to throw an exception if no value is received from max()
+
+Remember==>OptionalInt os =al.stream().mapToInt(s->s.length()).max();       //if al==>arraylist<String>//OptionalInt is for optional Integer Values
+
+$$$$$)Optional<Integer> os =al.stream().map(s->s.length()).collect(Collectors.toList()).stream().max((a,b)->a.compareTo(b));
+                                        //return stream of Integer                                //passing comparatorObject
+////////////min////////
+public void whenListIsOfPersonObjectThenMinCanBeDoneUsingCustomComparatorThroughLambda() {
+    // given
+    Person alex = new Person("Alex", 23);
+    Person john = new Person("John", 40);
+    Person peter = new Person("Peter", 32);
+    List<Person> people = Arrays.asList(alex, john, peter);
+ 
+    // then
+    Person minByAge = people
+      .stream()
+      .min(Comparator.comparing(Person::getAge))         ///////finding min using comparator
+      .orElseThrow(NoSuchElementException::new);
+ 
+    assertEquals("Should be Alex", alex, minByAge);
+}
+Let’s have a look at this logic:
+
+Calling stream() method on the list to get a stream of values from the list
+Calling min() method on the stream to get the minimum value. We are passing a lambda function as a comparator, this is used to decide the sorting logic for deciding the minimum value
+Calling orElseThrow() to throw an exception if no value is received from min()
+
+**n)Stream<T> sorted(Comparator<? super T> comparator)	
+
+=>It returns a stream consisting of the elements of this stream, sorted according to the provided Comparator.
+
+Example=>
+
+1. sorted(): It sorts the elements of stream using natural ordering. The element class must implement Comparable interface. 
+
+2. sorted(Comparator<? super T> comparator): Here we create an instance of Comparator using lambda expression. We can sort the stream elements in ascending and descending order. 
+
+The following line of code will sort the list in natural ordering.
+list.stream().sorted() To reverse the natural ordering Comparator provides reverseOrder() method. We use it as follows.
+
+list.stream().sorted(Comparator.naturalOrder()) The following line of code is using Comparator to sort the list.
+
+list.stream().sorted(Comparator.reverseOrder()) The following line of code is using Comparator to sort the list.
+
+list.stream().sorted(Comparator.comparing(Student::getAge)) To reverse the ordering, Comparator provides reversed() method. We use this method as follows.
+
+list.stream().sorted(Comparator.comparing(Student::getAge).reversed()) 
+
+Stream sorted() with List
+Here we are sorting a List of objects of Student class. First we will sort by natural ordering and then using Comparator. 
+We will reverse both ordering natural ordering as well as ordering provided by Comparator in our example. 
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+public class SortList {
+	public static void main(String[] args) {
+		List<Student> list = new ArrayList<Student>();
+		list.add(new Student(1, "Mahesh", 12));
+		list.add(new Student(2, "Suresh", 15));
+		list.add(new Student(3, "Nilesh", 10));
+		
+		System.out.println("---Natural Sorting by Name---");
+		List<Student> slist = list.stream().sorted().collect(Collectors.toList());
+		slist.forEach(e -> System.out.println("Id:"+ e.getId()+", Name: "+e.getName()+", Age:"+e.getAge()));
+		
+		System.out.println("---Natural Sorting by Name in reverse order---");
+		slist = list.stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList());
+		slist.forEach(e -> System.out.println("Id:"+ e.getId()+", Name: "+e.getName()+", Age:"+e.getAge()));		
+		
+		System.out.println("---Sorting using Comparator by Age---");
+		slist = list.stream().sorted(Comparator.comparing(Student::getAge)).collect(Collectors.toList());
+		slist.forEach(e -> System.out.println("Id:"+ e.getId()+", Name: "+e.getName()+", Age:"+e.getAge()));
+		
+		System.out.println("---Sorting using Comparator by Age with reverse order---");
+		slist = list.stream().sorted(Comparator.comparing(Student::getAge).reversed()).collect(Collectors.toList());
+		slist.forEach(e -> System.out.println("Id:"+ e.getId()+", Name: "+e.getName()+", Age:"+e.getAge()));
+	}
+} Student.java
+package com.concretepage;
+public class Student implements Comparable<Student> {
+	private int id;
+	private String name;
+	private int age;
+	public Student(int id, String name, int age) {
+		this.id = id;
+		this.name = name;
+		this.age = age;
+	}
+	public int getId() {
+		return id;
+	}
+	public String getName() {
+		return name;
+	}
+	public int getAge() {
+		return age;
+	}
+	@Override
+	public int compareTo(Student ob) {
+		return name.compareTo(ob.getName());
+	}
+        @Override
+        public boolean equals(final Object obj) {
+          if (obj == null) {
+             return false;
+          }
+          final Student std = (Student) obj;
+          if (this == std) {
+             return true;
+          } else {
+             return (this.name.equals(std.name) && (this.age == std.age));
+          }
+        }
+        @Override
+        public int hashCode() {
+          int hashno = 7;
+          hashno = 13 * hashno + (name == null ? 0 : name.hashCode());
+          return hashno;
+        }	
+} 
+
+
+**o)Stream<T> skip(long n)	
+=>It returns a stream consisting of the remaining elements of this stream after discarding the first n elements of the stream.
+ If this stream contains fewer than n elements then an empty stream will be returned.
+
+Example=>
+
+The limit(long n) method of java.util.stream.Stream object returns a reduced stream of first n elements. This method will throw an exception if n is negative.
+
+The skip(long n) method of java.util.stream.Stream object returns a stream of remaining elements after skipping first n elements. This method will throw an exception if n is negative.
+
+The following example demonstrates the use of the limit() and skip() methods.
+
+StreamLimitSkipExample.java
+
+package com.boraji.tutorial;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Stream;
+
+/**
+ * @author imssbora
+ */
+public class StreamLimitSkipExample {
+   public static void main(String[] args) {
+      
+      List<Integer> numbers = new ArrayList<>();
+      numbers.add(1);
+      numbers.add(2);
+      numbers.add(3);
+      numbers.add(4);
+      numbers.add(5);
+      numbers.add(6);
+
+      Stream<Integer> stream1 = numbers.stream();
+      // Limit - return new stream of 3 elements
+      System.out.println("--------Stream elements after limiting----------");
+      stream1.limit(3).forEach((a) -> {
+         System.out.println(a);
+      });
+
+      Stream<Integer> stream2 = numbers.stream();
+      // Skip - return new stream of remaining elements
+      // after skipping first 2 elements
+      System.out.println("--------Stream elements after skipping----------");
+      stream2.skip(2).forEach((a) -> {
+         System.out.println(a);
+      });
+   }
+}
+Output
+
+--------Stream elements after limiting----------
+1
+2
+3
+--------Stream elements after skipping----------
+3
+4
+5
+6
+
+------------------------------------------
+
+**p)
+@SafeVarargs static <T> Stream<T> of(T... values)	
+=>It returns a sequential ordered stream whose elements are the specified values.
+
+static <T> Stream<T> of(T t)	
+=>It returns a sequential Stream containing a single element.
+
+Example=>
+
+// create Stream using Stream.of(comma seperated values)
+        Stream<Integer> intStream = Stream.of(1,2,3,4,5);
+        intStream.forEach(System.out::println);
+
+
+
+
+**q)static <T> Stream<T> iterate(T seed,UnaryOperator<T> f)	
+
+=>It returns an infinite sequential ordered Stream produced by iterative application of a function f to an initial element seed, 
+producing a Stream consisting of seed, f(seed), f(f(seed)), etc.
+
+The iterate() method takes two arguments: a seed and a function.
+
+A seed is the first element of the stream. The second element is generated by applying the function to the first element. 
+The third element is generated by applying the function on the second element.
+
+Therefore the elements are: seed, f(seed), f(f(seed)), f(f(f(seed)))....
+
+The following code creates a stream of natural numbers:
+
+Stream<Long> naturalNumbers = Stream.iterate(1L, n -> n + 1);
+The limit(long maxSize) operation is an intermediate operation that produces another stream.
+
+Example
+The following code creates a stream of the first 10 natural numbers:
+
+
+import java.util.stream.Stream;
+
+public class Main {
+  public static void main(String[] args) {
+    Stream<Long> tenNaturalNumbers = Stream.iterate(1L, n  ->  n  + 1)    /////1 is input second is the function done on first one
+        .limit(10);
+
+    tenNaturalNumbers.forEach(System.out::println);
+  }
+}
+
+
+
+Example 2
+The following code filters the values generated from an iterate function.
+
+import java.util.stream.Stream;
+
+public class Main {
+  public static void main(String[] args) {
+    Stream.iterate(2L, n  ->  n  + 1)                             /////1 is input second is the function done on first one
+    .filter(Main::isOdd)
+    .limit(5)
+    .forEach(System.out::println);
+  }
+  public static boolean isOdd(long number) {
+    if (number % 2 == 0) {
+      return false;
+    }
+    return true;
+  }
+}
+
+
+**r)DoubleStream mapToDouble(ToDoubleFunction<? super T> mapper)	
+=>It returns a DoubleStream consisting of the results of applying the given function to the elements of this stream.
+
+IntStream mapToInt(ToIntFunction<? super T> mapper)	
+=>It returns an IntStream consisting of the results of applying the given function to the elements of this stream.
+
+LongStream mapToLong(ToLongFunction<? super T> mapper)	
+=>It returns a LongStream consisting of the results of applying the given function to the elements of this stream.
+
+Example 1 : mapToInt() with operation of printing the stream element if divisible by 3.
+
+// Java code for Stream mapToInt 
+// (ToIntFunction mapper) to get a 
+// IntStream by applying the given function 
+// to the elements of this stream. 
+import java.util.*; 
+  
+class GFG { 
+  
+    // Driver code 
+    public static void main(String[] args) 
+    { 
+  
+        // Creating a list of Strings 
+        List<String> list = Arrays.asList("3", "6", "8",  
+                                            "14", "15"); 
+  
+        // Using Stream mapToInt(ToIntFunction mapper) 
+        // and displaying the corresponding IntStream 
+        list.stream().mapToInt(num -> Integer.parseInt(num)) 
+                     .filter(num -> num % 3 == 0) 
+                     .forEach(System.out::println); 
+    } 
+} 
+
+Example 2: mapToInt() to return IntStream after performing operation of mapping string with its length.
+
+// Java code for Stream mapToInt 
+// (ToIntFunction mapper) to get a 
+// IntStream by applying the given function 
+// to the elements of this stream. 
+import java.util.*; 
+  
+class GFG { 
+  
+    // Driver code 
+    public static void main(String[] args) 
+    { 
+  
+        // Creating a list of Strings 
+        List<String> list = Arrays.asList("Geeks", "for", "gfg", 
+                                          "GeeksforGeeks", "GeeksQuiz"); 
+  
+        // Using Stream mapToInt(ToIntFunction mapper) 
+        // and displaying the corresponding IntStream 
+        // which contains length of each element in 
+        // given Stream 
+        list.stream().mapToInt(str -> str.length()).forEach(System.out::println); 
+    } 
+} 
+
+///////////////////////////////////VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP//////////////////////////////////
+
+
+AtomicInteger in Java==> Atomic operations are performed in a single unit of task without interference from other operations.
+Atomic operations are necessity in multi-threaded environment to avoid data inconsistency.
+
+without atomic Integer//////////////////////////////
+
+myStream.stream().filter(...).forEach(item->{ ... ; runCount++);         /////////////runcount will give error as we cannot change value of final(runCount) again n again
+System.out.println("The lambda ran "+runCount+"times");
+
+Solution make runCount Atomic int Or LOng as you required
+
+ParallelStream In java===>
+
+Parallel stream enables parallel computing that involves processing elements concurrently in parallel with each element in a seperate thread. 
+But this does not guarantee high performance and faster execution everytime. It again depends on the number of CPU cores available.
+
+
+Creating Parallel Streams
+We can create a parallel stream from existing stream by using parallel(). 
+Following is an example:
+
+Stream stream = Stream.of("John", "Mike", "Ryan","Donald", "Matthew");
+Stream parallelStream = stream.parallel();
+Another way to create parallelstream is using parallelStream() method.
+
+Stream parallelStream = Arrays.asList("John", "Mike", "Ryan","Donald", "Matthew").parallelStream();
+
+Following is an example using parallel stream that counts number of prime numbers between 1 and 50.
+Stream of numbers is created by a range method and then the stream is converted to parallel stream.
+
+public void count() {
+	final long count = IntStream.range(1, 50)                         //creating stream range1-50
+            .parallel()
+            .filter(number -> isPrime(number)).count();
+    System.out.println("Count - " + count);
+}
+ 
+public boolean isPrime(final int number) {
+    return number > 1
+            && IntStream.rangeClosed(2, (int) Math.sqrt(number)).noneMatch(
+                    divisor -> number % divisor == 0);
+}
+
+Output : Count - 15
+
+static IntStream rangeClosed(int startInclusive,   int endInclusive)
+Parameters :
+
+IntStream : A sequence of primitive int-valued elements.
+
+startInclusive : The inclusive initial value.
+endInclusive : The inclusive upper bound.
+
+Return Value : A sequential IntStream for the range of int elements.
+
+
+Serial vs Parallel Stream Processing
+If we use serial stream the order is guaranted as below:
+
+Stream.of("John", "Mike", "Ryan","Donald", "Matthew").forEach(System.out::println);
+
+Output:
+
+John
+Mike
+Ryan
+Donald
+Matthew
+Whereas, the order is not guaranted while using parallel stream.
+
+Stream.of("John", "Mike", "Ryan","Donald", "Matthew").parallel().forEach(System.out::println);
+
+Output:
+
+Ryan
+Mike
+Matthew
+John
+Donald
+
+==>IntStream.rangeClosed(2,6) works as >= and  <=  and  produces 
+
+2,3,4,5,6
+
+==>IntStream.range(2,6) works as >= and  < and  produces same but does not include the last number 
+
+2,3,4,5
+
+
+
+What does the flatmap() function do? why you need it? (answer)
+The flatmap function is an extension of the map function. Apart from transforming one object into another, it can also flatten it.
+
+For example, if you have a list of the list but you want to combine all elements of lists into just one list. In this case, you can use flatMap() for flattening. At the same time, you can also transform an object like you do use map() function.
+
+
+List<List<String>> list = Arrays.asList(
+  Arrays.asList("a"),
+  Arrays.asList("b"));
+System.out.println(list);
+This snippet prints a list of lists [[a], [b]].
+Now, let's use a flatMap():
+
+System.out.println(list
+  .stream()
+  .flatMap(Collection::stream)          ///converting into single list...
+  .collect(Collectors.toList()));
+
+
+
+
+What does the peek() method does? When should you use it? (answer)
+The peek() method of Stream class allows you to see through a Stream pipeline. You can peek through each step and print meaningful messages on the console. It's generally used for debugging issues related to lambda expression and Stream processing.
+
+Read more: https://www.java67.com/2018/10/java-8-stream-and-functional-programming-interview-questions-answers.html#ixzz6Ttaw0t00
+
+Read more: https://www.java67.com/2018/10/java-8-stream-and-functional-programming-interview-questions-answers.html#ixzz6TtZEaHY2
+
+////////////////////////////////////////////////////////////After all above go through this////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////// for further knowledge         ////////////////////////////////////////////////////////////
+
+Go through this =====>https://www.baeldung.com/java-8-streams

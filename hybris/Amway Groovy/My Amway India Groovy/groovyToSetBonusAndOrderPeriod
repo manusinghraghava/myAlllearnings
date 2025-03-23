@@ -1,0 +1,149 @@
+import de.hybris.platform.core.Registry;
+import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.servicelayer.search.FlexibleSearchQuery;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Arrays;
+import org.apache.commons.collections4.CollectionUtils;
+import de.hybris.platform.servicelayer.search.SearchResult;
+import de.hybris.platform.servicelayer.model.ModelService;
+import com.amway.indcore.loyalty.service.IndCalculateLoyaltyPointsService;
+import de.hybris.platform.commerceservices.search.pagedata.PageableData;
+import de.hybris.platform.commerceservices.search.pagedata.SearchPageData;
+import de.hybris.platform.core.model.order.OrderModel;
+import com.amway.eventstream.model.AmwayEventStagingEntryModel;
+import com.amway.eventstream.enums.AmwayEventSyncState;
+import com.amway.indfacades.order.payload.*;
+import java.util.List;
+import java.util.Optional;
+import com.google.gson.*;
+import de.hybris.platform.commercefacades.product.PriceDataFactory;
+import de.hybris.platform.servicelayer.dto.converter.Converter;
+import de.hybris.platform.cms2.model.site.CMSSiteModel;
+import de.hybris.platform.servicelayer.search.FlexibleSearchService;
+import org.apache.commons.collections4.CollectionUtils;
+import de.hybris.platform.servicelayer.i18n.CommonI18NService;
+import de.hybris.platform.store.BaseStoreModel;
+import de.hybris.platform.store.services.BaseStoreService;
+import de.hybris.platform.site.BaseSiteService;
+import org.apache.commons.lang.StringEscapeUtils;
+import com.amway.eventstream.enums.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+
+
+try{
+final CommonI18NService commonI18NService = (CommonI18NService) Registry.getApplicationContext().getBean(
+				"commonI18NService");
+				
+final BaseStoreService baseStoreService = spring.getBean("baseStoreService");
+final BaseSiteService baseSiteService = spring.getBean("baseSiteService");
+final PriceDataFactory priceDataFactory = spring.getBean("priceDataFactory");
+final Converter<OrderModel, IndOrderPayloadData> indOrderPayloadConverter = spring.getBean("indOrderPayloadConverter");
+final ModelService modelService = (ModelService) Registry.getApplicationContext().getBean("modelService");
+
+String query1="select {pk} from {CMSSite as o} where {o.pk} ='"+8796093056040+"'";
+final SearchResult<CMSSiteModel> searchResult1 = ((FlexibleSearchService) Registry.getApplicationContext().getBean("flexibleSearchService")).search(query1);
+final List<CMSSiteModel> results1 = searchResult1.getResult();
+CMSSiteModel cmsSiteModel = results1.stream().findFirst().get();
+
+
+def baseSiteModel =baseSiteService.getCurrentBaseSite();
+
+
+
+baseSiteService.setCurrentBaseSite(cmsSiteModel, true);
+
+IndOrderPayloadData indOrderPayloadData=new IndOrderPayloadData();
+
+
+
+String query="select {pk} from {Order as o} where {o.code} in('713925481', '713926011', '714852677', '714914450', '715153497', '715431895', '715973457', '715987896', '716001609', '716002265', '716016026', '716033989')";
+
+
+final SearchResult<OrderModel> searchResult = ((FlexibleSearchService) Registry.getApplicationContext().getBean("flexibleSearchService")).search(query);
+
+final List<OrderModel> results = searchResult.getResult();
+
+for(OrderModel order :results)
+{
+if(order!=null)
+{
+try{
+indOrderPayloadData=indOrderPayloadConverter.convert(order);
+} catch(Exception e)
+{println "Issue come in the Order :"+order.getCode();
+continue;
+}
+}
+indOrderPayloadData.setCurrency(order.getCurrency().getSymbol());
+
+def bonusPeriod=indOrderPayloadData.getBonusPeriod();
+def orderPeriod=indOrderPayloadData.getOrderPeriod();
+
+println bonusPeriod;
+println orderPeriod;
+
+ ObjectMapper mapper = new ObjectMapper();
+   
+   
+String eventQuery="select {e.pk} from {AmwayEventStagingEntry as e join Order as o on {o.code} like  CONCAT(SUBSTR({e.key}, 1, 9), '%')} where {o.code} ='"+order.getCode()+"'";
+
+final SearchResult<AmwayEventStagingEntryModel> eventSearchResult = ((FlexibleSearchService) Registry.getApplicationContext().getBean("flexibleSearchService")).search(eventQuery);
+
+final List<AmwayEventStagingEntryModel> eventResults = eventSearchResult.getResult();
+
+if(CollectionUtils.isNotEmpty(eventResults))
+
+{
+      println "Total Entry==>" + eventResults.size();
+      for(AmwayEventStagingEntryModel entry:eventResults)
+        {
+		 println "EVENTNAME===>"+entry.getEventName();
+		 if(entry.getEventName()==(EventName.ORDER_CREATED_INVOICED))
+		 {
+		 modelService.refresh(entry);
+		 println "Old Payload ===>"+StringEscapeUtils.unescapeJava(entry.getEventPayload());
+		 IndOrderPayloadData indOrderPayloadData1 = mapper.readValue(entry.getEventPayload(), IndOrderPayloadData.class);
+		 if(indOrderPayloadData1.getBonusPeriod()==null)
+		 {
+		 indOrderPayloadData1.setBonusPeriod(bonusPeriod);
+		 }
+		 if(indOrderPayloadData1.getOrderPeriod()==null)
+		 {
+		 indOrderPayloadData1.setOrderPeriod(orderPeriod);
+		 }
+		 if(CollectionUtils.isNotEmpty(indOrderPayloadData1.getChildOrders()))
+		 {
+		  for(IndOrderPayloadData child:indOrderPayloadData1.getChildOrders())
+		 {
+		 if(child.getBonusPeriod()==null)
+		 {
+		 child.setBonusPeriod(bonusPeriod);
+		 }
+		 if(child.getOrderPeriod()==null)
+		 {
+		 child.setOrderPeriod(orderPeriod);
+		 }
+		 }
+		 }
+		 
+		 def jsonString=mapper.writeValueAsString(indOrderPayloadData1);
+		 println "New Payload ===>"+StringEscapeUtils.unescapeJava(StringEscapeUtils.unescapeJava(jsonString));
+		 
+		 entry.setEventPayload(StringEscapeUtils.unescapeJava(jsonString));
+		 entry.setSyncState(AmwayEventSyncState.RETRY);
+		 modelService.save(entry);
+		}
+		}
+}
+
+
+baseSiteService.setCurrentBaseSite(baseSiteModel, true);
+}
+}
+catch(Exception e)
+{
+e.printStackTrace();
+}

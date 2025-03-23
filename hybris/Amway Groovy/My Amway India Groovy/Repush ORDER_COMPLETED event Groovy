@@ -1,0 +1,80 @@
+import de.hybris.platform.core.Registry;
+import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.servicelayer.search.FlexibleSearchQuery;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Arrays;
+import org.apache.commons.collections4.CollectionUtils;
+import de.hybris.platform.servicelayer.search.SearchResult;
+import de.hybris.platform.servicelayer.model.ModelService;
+import com.amway.indcore.loyalty.service.IndCalculateLoyaltyPointsService;
+import de.hybris.platform.commerceservices.search.pagedata.PageableData;
+import de.hybris.platform.commerceservices.search.pagedata.SearchPageData;
+import de.hybris.platform.core.model.order.OrderModel;
+import com.amway.eventstream.model.AmwayEventStagingEntryModel;
+import com.amway.eventstream.enums.AmwayEventSyncState;
+
+
+
+final ModelService modelService = (ModelService) Registry.getApplicationContext().getBean("modelService");
+
+
+String query="select {pk} from {AmwayEventStagingEntry} where {eventName} IN ('8796131197019') and {syncState} IN ('8796131000411','8796130967643','8796130934875') and {numberOfAttempts} = '1' and {key} IN ({{select {code} from {Order} where ({lynxGroupNumber} is null or {lynxGroupNumber}={code}) and {creationTime} >= '2019-12-06 00:00:00.000' and {creationTime} <= '2019-12-14 24:00:00.000'}})";
+
+
+println "QUERY" + query;
+
+final PageableData pageableData = new PageableData();
+
+pageableData.setCurrentPage(0);
+
+pageableData.setPageSize(3000);
+
+SearchPageData<AmwayEventStagingEntryModel> searchResult = Registry.getApplicationContext().getBean("pagedFlexibleSearchService").search(query.toString(), null, pageableData);
+
+final List<AmwayEventStagingEntryModel> results = searchResult.getResults();
+
+//println "Order Completed Events on 6th Dec : " + results.size()
+
+if(CollectionUtils.isNotEmpty(results))
+
+{
+
+	for (final AmwayEventStagingEntryModel amwayEventStagingEntry : results)
+   {
+		
+		amwayEventStagingEntry.setSyncState(AmwayEventSyncState.RETRY); 	
+		
+		modelService.save(amwayEventStagingEntry);
+		
+
+  }
+
+}
+
+-----------------------------------------------------------------------------------------------------------------------------------------
+select {key}, {eventName}, {syncState}, {numberOfAttempts} from {AmwayEventStagingEntry} where {eventName} IN ('8796131197019') and {key} IN ({{select {code} from {Order} where ({lynxGroupNumber} is null or {lynxGroupNumber}={code}) and {creationTime} >= '2019-12-06 00:00:00.000' and {creationTime} <= '2019-12-06 24:00:00.000'}})
+
+select count({key}) from {AmwayEventStagingEntry} where {eventName} IN ('8796131197019') and {syncState} = '8796130902107' and {numberOfAttempts} > '1' and {key} IN ({{select {code} from {Order} where ({lynxGroupNumber} is null or {lynxGroupNumber}={code}) and {creationTime} >= '2019-12-06 00:00:00.000' and {creationTime} <= '2019-12-14 24:00:00.000'}})
+---------------------------------------------------------------------------------------------------------------------------------------------
+All sync state : 
+
+8796130934875   FAILED		
+8796131000411   PROCESSED	
+8796130967643   PROCESSING	
+8796130902107   RETRY		
+---------------------------------------------------------------------------------------------------------------------------------------------
+All Events Names : 
+
+8796131295323	ABO_DOCUMENT_UPLOADED
+8796131164251	ORDER_CANCELLED
+8796131197019	ORDER_COMPLETED
+8796131033179	ORDER_CREATED_INVOICED
+8796131229787	ORDER_CREATED_INVOICED_SHIPPED
+8796131098715	ORDER_SHIPPED
+8796131262555	ORDER_VERIFICATION
+8796131131483	RETURN_COMPLETED
+8796131065947	RETURN_PLACED 
+--------------------------------------------------------------------------------------------------------------------------------------------
+

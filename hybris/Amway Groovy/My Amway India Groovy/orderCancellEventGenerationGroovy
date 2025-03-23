@@ -1,0 +1,482 @@
+import de.hybris.platform.core.Registry;
+import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.orderprocessing.model.OrderProcessModel;
+import de.hybris.platform.core.model.order.OrderModel;
+import de.hybris.platform.processengine.enums.ProcessState;
+import de.hybris.platform.servicelayer.search.FlexibleSearchQuery;
+import de.hybris.platform.core.enums.OrderStatus;
+import de.hybris.platform.core.Registry;
+import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.servicelayer.search.FlexibleSearchQuery;
+import java.util.HashMap;
+import com.amway.indfacades.order.payload.*;
+import com.amway.indfacades.order.payload.*;
+import com.amway.indfacades.util.PayloadUtil;
+import de.hybris.platform.commerceservices.enums.SalesApplication;
+import de.hybris.platform.consignmenttrackingservices.model.CarrierModel;
+import de.hybris.platform.converters.Populator;
+import de.hybris.platform.core.model.ItemModel;
+import de.hybris.platform.core.model.order.OrderModel;
+import de.hybris.platform.core.model.user.CustomerModel;
+import de.hybris.platform.ordersplitting.model.ConsignmentModel;
+import de.hybris.platform.payment.dto.TransactionStatus;
+import de.hybris.platform.payment.enums.PaymentTransactionType;
+import de.hybris.platform.payment.model.PaymentTransactionEntryModel;
+import de.hybris.platform.payment.model.PaymentTransactionModel;
+import de.hybris.platform.servicelayer.dto.converter.Converter;
+import de.hybris.platform.servicelayer.model.ModelService;
+
+import java.math.BigDecimal;
+import java.util.*;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.amway.core.model.AmwayBonusPeriodModel;
+import com.amway.core.model.AmwayOrderPeriodModel;
+import com.amway.eventstream.dto.AmwayEventData;
+import com.amway.indcore.builder.IndPushBusinessEventBuilder;
+import com.amway.indfacades.payload.provider.IndPayloadProviderFacade;
+import java.util.List;
+import java.util.Map;
+import java.util.Arrays;
+import org.apache.commons.collections4.CollectionUtils;
+import de.hybris.platform.servicelayer.search.SearchResult;
+import de.hybris.platform.servicelayer.model.ModelService;
+import com.amway.indcore.loyalty.service.IndCalculateLoyaltyPointsService;
+import de.hybris.platform.commerceservices.search.pagedata.PageableData;
+import de.hybris.platform.commerceservices.search.pagedata.SearchPageData;
+import de.hybris.platform.core.model.order.OrderModel;
+import com.amway.eventstream.model.AmwayEventStagingEntryModel;
+import com.amway.eventstream.enums.AmwayEventSyncState;
+import com.amway.indfacades.order.payload.*;
+import java.util.List;
+import java.util.Optional;
+import com.google.gson.*;
+import de.hybris.platform.commercefacades.product.PriceDataFactory;
+import de.hybris.platform.servicelayer.dto.converter.Converter;
+import de.hybris.platform.cms2.model.site.CMSSiteModel;
+import de.hybris.platform.servicelayer.search.FlexibleSearchService;
+import org.apache.commons.collections4.CollectionUtils;
+import de.hybris.platform.servicelayer.i18n.CommonI18NService;
+import de.hybris.platform.store.BaseStoreModel;
+import de.hybris.platform.store.services.BaseStoreService;
+import de.hybris.platform.site.BaseSiteService;
+import org.apache.commons.lang.StringEscapeUtils;
+import com.amway.eventstream.enums.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Arrays;
+import de.hybris.platform.core.Registry;
+import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.servicelayer.search.FlexibleSearchQuery;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Arrays;
+import org.apache.commons.collections4.CollectionUtils;
+import de.hybris.platform.servicelayer.search.SearchResult;
+import de.hybris.platform.servicelayer.model.ModelService;
+import com.amway.indcore.loyalty.service.IndCalculateLoyaltyPointsService;
+import de.hybris.platform.commerceservices.search.pagedata.PageableData;
+import de.hybris.platform.commerceservices.search.pagedata.SearchPageData;
+import de.hybris.platform.core.model.order.OrderModel;
+import com.amway.eventstream.model.AmwayEventStagingEntryModel;
+import com.amway.eventstream.enums.AmwayEventSyncState;
+import com.amway.indfacades.order.payload.*;
+import java.util.List;
+import java.util.Optional;
+import com.google.gson.*;
+import de.hybris.platform.commercefacades.product.PriceDataFactory;
+import de.hybris.platform.servicelayer.dto.converter.Converter;
+import de.hybris.platform.cms2.model.site.CMSSiteModel;
+import de.hybris.platform.servicelayer.search.FlexibleSearchService;
+import org.apache.commons.collections4.CollectionUtils;
+import de.hybris.platform.servicelayer.i18n.CommonI18NService;
+import de.hybris.platform.store.BaseStoreModel;
+import de.hybris.platform.store.services.BaseStoreService;
+import de.hybris.platform.site.BaseSiteService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang.StringEscapeUtils;
+import com.amway.eventstream.enums.*;
+
+
+import org.apache.commons.collections4.CollectionUtils;
+import de.hybris.platform.servicelayer.search.SearchResult;
+import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.processengine.BusinessProcessService;
+
+import de.hybris.platform.core.model.order.AbstractOrderModel;
+import de.hybris.platform.core.model.order.OrderModel;
+import de.hybris.platform.core.model.user.AddressModel;
+import de.hybris.platform.core.model.user.CustomerModel;
+import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.servicelayer.search.FlexibleSearchService;
+import de.hybris.platform.servicelayer.search.SearchResult;
+import de.hybris.platform.servicelayer.event.EventService;
+
+import de.hybris.platform.order.events.SubmitOrderEvent;
+
+import de.hybris.platform.store.BaseStoreModel;
+import java.lang.System;
+import de.hybris.platform.orderprocessing.model.OrderProcessModel;
+import de.hybris.platform.processengine.BusinessProcessService;
+
+import java.util.List;
+import java.util.Optional;
+import de.hybris.platform.basecommerce.model.site.BaseSiteModel;
+import de.hybris.platform.catalog.CatalogVersionService;
+import de.hybris.platform.catalog.model.CatalogVersionModel;
+import de.hybris.platform.core.enums.OrderStatus;
+import de.hybris.platform.core.model.order.AbstractOrderModel;
+import de.hybris.platform.orderprocessing.model.OrderProcessModel;
+import de.hybris.platform.processengine.action.AbstractSimpleDecisionAction;
+import de.hybris.platform.servicelayer.session.SessionService;
+import de.hybris.platform.servicelayer.user.UserService;
+import de.hybris.platform.task.RetryLaterException;
+
+import java.util.Arrays;
+import java.util.List;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.amway.eventstream.dto.AmwayEventData;
+import com.amway.eventstream.enums.EventName;
+import com.amway.eventstream.exception.AmwayEventRetryException;
+import com.amway.eventstream.service.AmwayEventQueueService;
+import com.amway.indcore.builder.factory.IndPushBusinessEventBuilderFactory;
+import com.amway.indfacades.builder.order.IndOrderPushBusinessEventBuilder;
+import com.amway.lynxcore.site.LynxBaseSiteService;
+import de.hybris.platform.commercefacades.order.OrderFacade;
+import de.hybris.platform.core.model.ItemModel;
+import de.hybris.platform.servicelayer.config.ConfigurationService;
+
+import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Required;
+
+import com.amway.indcore.builder.IndPushBusinessEventBuilder;
+
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import com.amway.core.model.AmwayAccountModel;
+
+import de.hybris.platform.processengine.model.BusinessProcessModel;
+
+        final CatalogVersionService catalogVersionService = (CatalogVersionService) Registry.getApplicationContext().getBean("catalogVersionService");
+		final ModelService modelService = (ModelService) Registry.getApplicationContext().getBean("modelService");
+		final EventService eventService = (EventService) Registry.getApplicationContext().getBean("eventService");
+		final IndOrderPushBusinessEventBuilder orderBuilder =spring.getBean('indOrderPushBusinessEventBuilder');
+		 String key;
+         String id;
+
+
+		 
+    final IndPayloadProviderFacade indPayloadProviderFacade =spring.getBean('indPayloadProviderFacade');
+    
+    final Converter<AmwayBonusPeriodModel, IndBonusPeriodPayloadData> indBonusPeriodPayloadConverter =spring.getBean('indBonusPeriodPayloadConverter');
+   
+    final Converter<AmwayOrderPeriodModel, IndOrderPeriodPayloadData> indOrderPeriodPayloadConverter =spring.getBean('indOrderPeriodPayloadConverter');
+   
+    final PayloadUtil payloadUtil;
+	 String getKey(final OrderModel orderModel, final String eventName) {
+	 final String ORDER_CREATED_INVOICED = "ORDER_CREATED_INVOICED";
+   final String ORDER_CREATED_INVOICED_SHIPPED = "ORDER_CREATED_INVOICED_SHIPPED";
+   final String MOBILE = "MOBILE";
+     final String POS = "POS";
+     final String WEB = "WEB";
+     final String SYSTEM = "System";
+     final String ORDER_SHIPPED = "ORDER_SHIPPED";
+     final String ORDER_CANCELLED = "ORDER_CANCELLED";
+     final String ORDER_COMPLETED = "ORDER_COMPLETED";
+     final String ORDER_VERIFICATION = "ORDER_VERIFICATION";
+        if (StringUtils.equals(eventName, ORDER_SHIPPED)) {
+            final Set<ConsignmentModel> shipments = orderModel.getShipments();
+            if (CollectionUtils.isNotEmpty(shipments)) {
+                final List<ConsignmentModel> sortedShipments = new ArrayList<>(shipments);
+                Collections.sort(sortedShipments, new Comparator<ConsignmentModel>() {
+                    @Override
+                    public int compare(final ConsignmentModel consignment1, final ConsignmentModel consignment2) {
+                        return consignment2.getCreationtime().compareTo(consignment1.getCreationtime());
+                    }
+                });
+                return orderModel.getCode() + "_" + sortedShipments.get(0).getCode();
+            }
+        }
+        return orderModel.getCode();
+    }
+	String getId(final OrderModel orderModel, final String eventName) {
+	final String ORDER_CREATED_INVOICED = "ORDER_CREATED_INVOICED";
+   final String ORDER_CREATED_INVOICED_SHIPPED = "ORDER_CREATED_INVOICED_SHIPPED";
+   final String MOBILE = "MOBILE";
+     final String POS = "POS";
+     final String WEB = "WEB";
+     final String SYSTEM = "System";
+     final String ORDER_SHIPPED = "ORDER_SHIPPED";
+     final String ORDER_CANCELLED = "ORDER_CANCELLED";
+     final String ORDER_COMPLETED = "ORDER_COMPLETED";
+     final String ORDER_VERIFICATION = "ORDER_VERIFICATION";
+        String id = StringUtils.EMPTY;
+        final SalesApplication channel = orderModel.getSalesApplication();
+        if ((StringUtils.equals(eventName, ORDER_CREATED_INVOICED) || StringUtils.equals(eventName, ORDER_SHIPPED)
+                || StringUtils.equals(eventName, ORDER_COMPLETED)) && channel != null) {
+            if ((StringUtils.equalsIgnoreCase(channel.getCode(), WEB) || StringUtils.equalsIgnoreCase(channel.getCode(), MOBILE))
+                    && orderModel.getUser() != null) {
+                id = ((CustomerModel) orderModel.getUser()).getCustomerID();
+            } else if (StringUtils.equalsIgnoreCase(channel.getCode(), POS) && orderModel.getEmployee() != null) {
+                id = orderModel.getEmployee().getUid();
+            }
+        }
+        if (StringUtils.equals(eventName, ORDER_CREATED_INVOICED_SHIPPED)) {
+            if (orderModel.getEmployee() != null) {
+                final String employeeId = orderModel.getEmployee().getUid();
+                id = StringUtils.isNotEmpty(employeeId) ? employeeId : StringUtils.EMPTY;
+            }
+        }
+        if (StringUtils.equals(eventName, ORDER_CANCELLED)) {
+            if (orderModel.getCancelledBy() != null) {
+                final String employeeId = orderModel.getCancelledBy().getUid();
+                id = StringUtils.isNotEmpty(employeeId) ? employeeId : StringUtils.EMPTY;
+            }
+        }
+        if (StringUtils.equals(eventName, ORDER_VERIFICATION)) {
+            id = SYSTEM;
+        }
+        return id;
+    }
+		final ConfigurationService configurationService=(ConfigurationService) Registry.getApplicationContext().getBean("configurationService");
+		final IndPushBusinessEventBuilderFactory builderFactory=(IndPushBusinessEventBuilderFactory) Registry.getApplicationContext().getBean("indPushBusinessEventBuilderFactory");   
+		final UserService userService = (UserService) Registry.getApplicationContext().getBean("userService");
+		final BaseStoreService baseStoreService = spring.getBean("baseStoreService");
+        final BaseSiteService baseSiteService = spring.getBean("baseSiteService");
+		String query1="select {pk} from {CMSSite as o} where {o.pk} ='"+8796093056040+"'";
+        final SearchResult<CMSSiteModel> searchResult1 = ((FlexibleSearchService) Registry.getApplicationContext().getBean("flexibleSearchService")).search(query1);
+        final List<CMSSiteModel> results1 = searchResult1.getResult();
+        CMSSiteModel cmsSiteModel = results1.stream().findFirst().get();
+
+
+        def baseSiteModel =baseSiteService.getCurrentBaseSite();
+
+
+
+        baseSiteService.setCurrentBaseSite(cmsSiteModel, true);
+		
+		final BusinessProcessService businessProcessService   = (BusinessProcessService) Registry.getApplicationContext().getBean("businessProcessService");
+		IndOrderPushBusinessEventBuilder setBuildParameters(final ItemModel itemModel, final String eventName,final IndPushBusinessEventBuilder builder) {
+        IndOrderPayloadData indOrderPayloadData = null;
+        final OrderModel orderModel = (OrderModel) itemModel;
+        modelService.refresh(orderModel);
+        if (orderModel != null) {
+            indOrderPayloadData = indPayloadProviderFacade.getOrderPayloadDataForOrder(orderModel);
+            if (indOrderPayloadData != null) {
+                if (indOrderPayloadData.getBonusPeriod() == null) {
+                    modelService.refresh(orderModel);
+                   
+                    if (orderModel.getBonusPeriod() != null) {
+                        try {
+                            indOrderPayloadData.setBonusPeriod(indBonusPeriodPayloadConverter.convert(orderModel.getBonusPeriod()));
+                           
+                        } catch (Exception e) {
+                            
+                        }
+                    }
+                }
+                if (indOrderPayloadData.getOrderPeriod() == null) {
+                    modelService.refresh(orderModel);
+                    LOG.error("Order Period Null for Order :" + orderModel.getCode());
+                    if (orderModel.getOrderPeriod() != null) {
+                        try {
+                            indOrderPayloadData.setOrderPeriod(indOrderPeriodPayloadConverter.convert(orderModel.getOrderPeriod()));
+                            
+                        } catch (Exception e) {
+                            
+                        }
+                    }
+                }
+                if (indOrderPayloadData.getPaymentTransactions() == null || indOrderPayloadData.getPaymentTransactions().isEmpty()) {
+                   
+                    payloadUtil.setPaymentTransactions(indOrderPayloadData, orderModel);
+                }
+                if(indOrderPayloadData.getConsignments()!=null){
+                for (IndConsignmentPayloadData consignmentData : indOrderPayloadData.getConsignments()) {
+                    modelService.refresh(orderModel);
+                    try {
+                        final ConsignmentModel consignment = orderModel.getConsignments().stream().filter({s -> StringUtils.equalsIgnoreCase(s.getCode(), consignmentData.getCode())}).findAny().get();
+
+                        if (StringUtils.isBlank(consignmentData.getShipmentType())) {
+                            
+                            payloadUtil.setShipmentType(consignmentData, consignment);
+                        }
+                        if (consignmentData.getCarrierDetails() == null) {
+                            
+                            payloadUtil.setCarrierDetails(consignmentData, consignment);
+                        }
+                    } catch (Exception e) {
+                        
+                    }
+                }
+            }
+            }
+            //@formatter:off
+            builder.setEventPayload(indOrderPayloadData);
+			builder.setNumberOfAttempts(BigDecimal.ZERO.intValue());
+			String k=getKey(orderModel, eventName);
+			builder.setKey(k);
+			String d=getId(orderModel, eventName)
+            builder.setId(d);
+            //@formatter:on
+            return builder;
+        }
+        return null;
+    }
+
+		 String getSequenceNumber()
+	{
+		//	return umSeqNumber.generate().toString();
+		return StringUtils.EMPTY;
+	}
+
+
+	/**
+	 * @return the countryCode
+	 */
+	 String getCountryCode()
+	{
+		return configurationService.getConfiguration().getString("UMEvent.countryCode", "IN");
+	}
+
+
+	/**
+	 * @return the topic
+	 */
+	 String getTopic()
+	{
+		return configurationService.getConfiguration().getString("UMEvent.Topic", "EventPubSub_DocTypes_Hybris_Event_Request");
+	}
+		
+		 IndPushBusinessEventBuilder getPushBusinessEventBuilder(final ItemModel itemModel, final String eventName)
+	{
+	  
+		IndPushBusinessEventBuilder builder = spring.getBean('indOrderPushBusinessEventBuilder');
+try{
+		
+		builder= setBuildParameters(itemModel, eventName,builder);
+		builder.setCountryCode(getCountryCode()).setEventName(eventName).setSequenceNumber(getSequenceNumber())
+				.setTopic(getTopic());
+
+		
+		}
+		catch(Exception e)
+		{
+		e.printStackTrace();
+		}
+		return builder;
+	}
+		
+		
+		
+
+		String query = "Select {o.pk} from {order as o} where ({o.lynxGroupNumber} is null or {o.lynxGroupNumber}={o.code}) and {o.code} in ('700002701')";
+		final SearchResult<OrderModel> searchResult = ((FlexibleSearchService) Registry.getApplicationContext().getBean("flexibleSearchService")).search(query);
+		
+		final List<OrderModel> results = searchResult.getResult();
+		if (CollectionUtils.isNotEmpty(results))
+	    {
+		for(OrderModel order :results)
+		{
+		IndOrderPayloadData indOrderPayloadData=new IndOrderPayloadData();
+		if(order!=null)
+		{
+		
+		try{
+		indOrderPayloadData=indOrderPayloadConverter.convert(order);
+		} 
+		catch(Exception e)
+		{
+		println "Issue come in the Order :"+order.getCode();
+		continue;
+		}
+		} 
+		indOrderPayloadData.setCurrency(order.getCurrency().getSymbol());
+		
+		def consignments = indOrderPayloadData.getConsignments();
+		def childOrders =  indOrderPayloadData.getChildOrders(); 
+		def subTotal = indOrderPayloadData.getSubTotal(); 
+		def suborderIDs = indOrderPayloadData.getSuborderIDs();
+		
+		println consignments;
+		
+		try{
+		if(order.getStatus().getCode().equalsIgnoreCase("CANCELLED"))
+		{
+		if (order.isGroupOrder())
+		{
+			final List<AbstractOrderModel> subOrders = order.getLynxSubcarts();
+			if (CollectionUtils.isNotEmpty(subOrders))
+			{
+				for (final AbstractOrderModel subOrder : subOrders)
+				{
+					subOrder.setStatus(OrderStatus.CANCELLED);
+				}
+				modelService.saveAll(subOrders);
+			}
+		}
+		userService.setCurrentUser(order.getUser());
+		final CatalogVersionModel catalog = order.getEntries().get(0).getProduct().getCatalogVersion();
+			if (catalog != null)
+			{
+				catalogVersionService.setSessionCatalogVersion(catalog.getCatalog().getId(), catalog.getVersion());
+			}
+			final String eventName = "ORDER_CANCELLED";
+			final IndOrderPushBusinessEventBuilder eventBuilder = (IndOrderPushBusinessEventBuilder)getPushBusinessEventBuilder(order, eventName);
+			if (eventBuilder != null)
+			{
+				final AmwayEventData eventData = eventBuilder.build();
+				
+				if(eventData.getEventPayload().getConsignments()==null)
+				{
+				eventData.getEventPayload().setConsignments(consignments);
+				
+				println eventData.getEventPayload().getConsignments();
+				}			
+				eventData.getEventPayload().setChildOrders(childOrders);
+				eventData.getEventPayload().setSubTotal(subTotal);
+				eventData.getEventPayload().setSuborderIDs(suborderIDs)
+				if(CollectionUtils.isNotEmpty(eventData.getEventPayload().getChildOrders()))
+				{
+				for(IndOrderPayloadData child :eventData.getEventPayload().getChildOrders())
+				{
+				child.setStatus("CANCELLED");
+				child.setStatusDisplay("Canceled");
+				}
+				
+				}
+				eventData.getEventPayload().setStatus("CANCELLED");
+				eventData.getEventPayload().setStatusDisplay("Canceled");
+				println "status===>"+eventData.getEventPayload().getStatus();
+				println "statusDisplay===>"+eventData.getEventPayload().getStatusDisplay();
+				amwayEventQueueService.publishEvent(eventData);
+			}
+			println "event genrated for order===> "+order.getCode(); 
+		
+		}
+		}
+		catch(Exception e)
+		{
+		e.printStackTrace();
+		continue;
+		}
+		
+		}
+		}
+		baseSiteService.setCurrentBaseSite(baseSiteModel, true);

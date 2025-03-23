@@ -1,0 +1,627 @@
+why lambda?
+=>enables functional programming
+=>readable code,remove boiler plate code
+
+before 1.7 
+=>if we have a method it will do the behaviour which is hard coded or we have to us the anonymous class if we want to do something at runtime
+=>but after 1.8 we us lambda to put some code in method at run time..
+
+it is like functions in value..as before we use to do code in method and call it..
+
+lambda is nothing =>just remove the modifiers,return type and name=>
+example
+public void square(int a)
+{
+----------------------------------------;
+}
+than it will look like=>  (int a)->{------code------;}
+
+=> we dont have to declare and return in return type/ all of the things is done by java compiler it is already so much smart now..
+
+=> if we have multiple return in if else than we have to use return keyword.
+
+=>and if we have a single line body we also dont require { }
+than it will look like=>(int a)->------code------;
+
+=>it is mainly used to implement method of functional interface..and return the ref of it...
+
+=>lambda is a type of shortcut for doing thing like anynomous classes but have a sort of difference...
+
+as compiler do all the binding we can also remove type information of all the arguments like this..
+
+=>   (a)->{------code------;}
+
+compiler automatically bind the type-information of the variable with the method of functional Interface..
+
+=>and for single argument we can also remove the paranthesis.....
+than it will look like =>  a->{------code------;}
+
+
+Another Example=======>
+
+
+======================================================simple way===============================================================
+
+public class A {
+
+	public static void main(String[] args)
+	{
+        run(new B()  {                                     //anynomous class
+
+     public void square(int k)
+{
+    System.out.println(k*k);
+}
+};
+        );	//passing ref of Interface B after overriding its method
+
+	}
+	
+	public static void run(B b)
+	{
+		b.square(100);                //as method is already overriden now calling it
+	}
+
+}
+
+interface B
+{
+	void square(int a);	
+}
+
+
+==========================================================lambda way====================================================
+
+public class A {
+
+	public static void main(String[] args)
+	{
+        run(k->System.out.println(k*k));	//passing ref of Interface B after overriding its method
+
+	}
+	
+	public static void run(B b)
+	{
+		b.square(100);                //as method is already overriden now calling it
+	}
+
+}
+
+interface B
+{
+	void square(int a);	
+}
+
+------------------------------------------important----------------------------
+definition of functional interface changes with jdk 1.8==> it is a interface with one abstract method and can have many default methods....
+
+=>as we require functional interface to use lambda..
+=>so in jdk 1.8 oracle developers have introduced new ootb interfaces so you dont have to require to create one
+
+a)Predicate<T> which is of generic type and have one abstract method boolean test(T t);//=>we can use when we want to do some boolean activity.
+
+b)Supplier<T> which is of generic type and have one abstract method T get() does not take any parametre just returned the object referrence..
+
+c)Function<T,R> which is of generic type and have one abstract method R apply(T t)
+
+d)Consumer<T> which is of generic type and have one abstract method  accept(T t) and 
+no return type we can use it anywhere let we have to print some data on a object.....
+
+e)all interface with prefix bi used to take two input parametre of different or same object and return type still same..
+
+
+Closures in Lambda Expression--->lambda will treat all the variable as final...
+
+
+=>VVVVVVVIIIIIIIIIIIIIIIPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+-------------------------------------------------------------------------------
+=>we can use *this in psvm in one case if we r using it in anynomous classes but it will refer to the object of the anynomous class.
+=>we cannot use *this in lambda expressions it will throw compile time error if it is inside psvm......
+and if we call in another method in class it refer to the class variable through that method called..
+
+
+Method refrences and Collections 
+
+let have an example if we have to call one of the static method in thread
+
+we can do like this
+
+Thread t = new Thread()
+{
+@override
+public void run()
+{
+that static method();
+}
+};
+
+in lambda way=>
+
+Thread t = new Thread(()->method());
+
+
+but jdk 1.8 introduce a new feature to call a method or pass a method as a referrnce
+
+=>if it is not having any parametre and the implementation method also does not have any parametre
+
+Thread t = new Thread(()->method());    in here () it does not have parametre and method also
+
+-----------------------------------------------equivalent to down below--------------------------------
+than new syntax =>Thread t = new Thread(classname::methodname);/////////this is what we called method referrence
+
+=> now it we are passing a parametre and calling a method passing that parametre into it
+
+   than it will look like this=>System.out::println//compiler will automatically map it with the corresponding interface method and pass automatically the reference as a parametre into it
+
+lets take of consumer it will accepts a parametre so it will pass it to corresponding method
+
+p->System.out.print(p);/// as it is pass to Consumer<People>
+
+same as => System.out::println   // compiler will take care that something has to be passed on and it will pass it to method...
+
+
+Static Method References
+--------------------------------------------------------------
+The easiest methods to reference are static methods. Here is first an example of a single function interface:
+
+public interface Finder {
+    public int find(String s1, String s2);
+}
+And here is a static method that we want to create a method reference to:
+
+public class MyClass{
+    public static int doFind(String s1, String s2){
+        return s1.lastIndexOf(s2);
+    }
+}
+And finally here is a Java lambda expression referencing the static method:
+
+Finder finder = MyClass::doFind;
+Since the parameters of the Finder.find() and MyClass.doFind() methods match, 
+it is possible to create a lambda expression that implements Finder.find() and references the MyClass.doFind() method.
+
+
+=>Parameter Method Reference
+----------------------------------
+You can also reference a method of one of the parameters to the lambda. Imagine a single function interface that looks like this:
+
+public interface Finder {
+    public int find(String s1, String s2);
+}
+The interface is intended to represent a component able to search s1 for occurrences of s2. Here is an example of a Java lambda expression that calls String.indexOf() to search:
+
+Finder finder = String::indexOf;
+This is equivalent of this lambda definition:
+
+Finder finder = (s1, s2) -> s1.indexOf(s2);
+Notice how the shortcut version references a single method. The Java compiler will attempt to match the referenced method against the first parameter type, 
+using the second parameter type as parameter to the referenced method.
+
+
+=>Constructor References
+------------------------------
+Finally it is possible to reference a constructor of a class. You do that by writing the class name followed by ::new, like this:
+
+MyClass::new
+Too see how to use a constructor as a lambda expression, look at this interface definition:
+
+public interface Factory {
+    public String create(char[] val);
+}
+The create() method of this interface matches the signature of one of the constructors in the String class. Therefore this constructor can be used as a lambda. Here is an example of how that looks:
+
+Factory factory = String::new;
+This is equivalent to this Java lambda expression:
+
+Factory factory = chars -> new String(chars);
+
+
+
+----------------------------------------------------Method Refrences in Details-------------------------------------------------------------------- 
+
+
+
+In Java, we can use references to objects, either by creating new objects:
+
+List list = new ArrayList();
+store(new ArrayList());
+Or by using existing objects:
+
+List list2 = list;
+isFull(list2);
+But what about a reference to a method?
+
+If we only use a method of an object in another method, we still have to pass the full object as an argument. Wouldn't it be more practical to just pass the method as an argument? For example:
+
+isFull(list.size);
+In Java 8, thanks to lambda expressions, we can do something like this. We can use methods as if they were objects, or primitive values.
+
+Java 8 Method Reference
+A method reference is the shorthand syntax for a lambda expression that executes just ONE method. Here's the general syntax of a method reference:
+
+Object :: methodName
+We know that we can use lambda expressions instead of using an anonymous class. But sometimes, the lambda expression is really just a call to some method, for example:
+
+Consumer<String> c = s -> System.out.println(s);
+To make the code clearer, you can turn that lambda expression into a method reference:
+
+Consumer<String> c = System.out::println;
+In a method reference, you place the object (or class) that contains the method before the :: operator and the name of the method after it without arguments.
+
+********//
+
+lets understand this.....->
+when we call c.display("manu");
+--> the parametre we pass in the method will pass the calling method via Referrence
+and it is like this
+->("manu")-->syso("manu");
+
+//********
+
+Instead of using
+AN ANONYMOUS CLASS
+you can use
+A LAMBDA EXPRESSION
+And if this just calls one method, you can use
+A METHOD REFERENCE
+
+There are four types of method references:
+
+A method reference to a static method.
+A method reference to an instance method of an object of a particular type.
+A method reference to an instance method of an existing object.
+A method reference to a constructor.
+Let's begin by explaining the most natural case, a static method.
+
+Static method reference
+In this case, we have a lambda expression like the one below:
+
+(args) -> Class.staticMethod(args)
+This can be turned into the following method reference:
+
+Class::staticMethod
+Notice that between a static method and a static method reference, instead of the . operator, we use the :: operator, 
+and that we don't pass arguments to the method reference.
+
+In general, we don't have to pass arguments to method references. However, arguments are treated depending on the type of method reference.
+
+In this case, any arguments (if any) taken by the method are passed automatically behind the curtains.
+
+Where ever we can pass a lambda expression that just calls a static method, we can use a method reference. For example, assuming this class:
+
+class Numbers {
+  public static boolean isMoreThanFifty(int n1, int n2) {
+    return (n1 + n2) > 50;
+  }
+  public static List<Integer> findNumbers(
+    List<Integer> l, BiPredicate<Integer, Integer> p) {
+      List<Integer> newList = new ArrayList<>();
+      for(Integer i : l) {
+        if(p.test(i, i + 10)) {
+          newList.add(i);
+        }
+      }
+      return newList;
+  }
+}
+We can call the findNumbers() method:
+
+List<Integer> list = Arrays.asList(12,5,45,18,33,24,40);
+
+// Using an anonymous class
+findNumbers(list, new BiPredicate<Integer, Integer>() {
+  public boolean test(Integer i1, Integer i2) {
+    return Numbers.isMoreThanFifty(i1, i2);
+  }
+});
+
+// Using a lambda expression
+findNumbers(list, (i1, i2) -> Numbers.isMoreThanFifty(i1, i2));
+
+// Using a method reference
+findNumbers(list, Numbers::isMoreThanFifty);
+
+Instance method reference of an object of a particular type
+In this case, we have a lambda expression like the following:
+
+(obj, args) -> obj.instanceMethod(args)
+Where an instance of an object is passed, and one of its methods is executed with some optional(s) parameter(s).
+
+This can be turned into the following method reference:
+
+ObjectType::instanceMethod
+This time, the conversion is not that straightforward. First, in the method reference, we don't use the instance itself—we use its type.
+
+Second, the other argument of the lambda expression, if any, is not used in the method reference, but it's passed behind the curtains like in the static method case.
+
+For example, assuming this class:
+
+class Shipment {
+  public double calculateWeight() {
+    double weight = 0;
+    // Calculate weight
+    return weight;
+  }
+}
+And this method:
+
+public List<Double> calculateOnShipments(List<Shipment> l, Function<Shipment, Double> f) {
+    List<Double> results = new ArrayList<>();
+    for(Shipment s : l) {
+      results.add(f.apply(s));
+    }
+    return results;
+}
+We can call that method using:
+
+List<Shipment> l = new ArrayList<Shipment>();
+
+// Using an anonymous class
+calculateOnShipments(l, new Function<Shipment, Double>() {
+  public Double apply(Shipment s) { // The object
+    return s.calculateWeight(); // The method
+  }
+});
+
+// Using a lambda expression
+calculateOnShipments(l, s -> s.calculateWeight());
+
+// Using a method reference
+calculateOnShipments(l, Shipment::calculateWeight);
+In this example, we don't pass any arguments to the method. The key point here is that an instance of the object is the parameter of the lambda expression, and we form the reference to the instance method with the type of the instance.
+
+Here's another example where we pass two arguments to the method reference.
+
+Java has a Function interface that takes one parameter, a BiFunction that takes two parameters, but there's no TriFunction that takes three parameters, so let's make one:
+
+interface TriFunction<T, U, V, R> {
+  R apply(T t, U u, V v);
+}
+Now assume a class with a method that takes two parameters a return a result, like this:
+
+class Sum {
+  Integer doSum(String s1, String s2) {
+    return Integer.parseInt(s1) + Integer.parseInt(s1);
+  }
+}
+We can wrap the doSum() method within a TriFunction implementation by using an anonymous class:
+
+TriFunction<Sum, String, String, Integer> anon =
+  new TriFunction<Sum, String, String, Integer>() {
+    @Override
+    public Integer apply(Sum s, String arg1, String arg2) {
+      return s.doSum(arg1, arg1);
+    }
+};
+System.out.println(anon.apply(new Sum(), "1", "4"));
+Or by using a lambda expression:
+
+riFunction<Sum, String, String, Integer> lambda =
+  (Sum s, String arg1, String arg2) -> s.doSum(arg1, arg1);
+System.out.println(lambda.apply(new Sum(), "1", "4"));
+Or just by using a method reference:
+
+TriFunction<Sum, String, String, Integer> mRef = Sum::doSum;
+System.out.println(mRef.apply(new Sum(), "1", "4"));
+Here:
+
+The first type parameter of TriFunction is the object type that contains the method to execute.
+The second type parameter of TriFunction is the type of the first parameter.
+The third type parameter of TriFunction is the type of the second parameter.
+The last type parameter of TriFunction is the return type of the method to execute. Notice how this is omitted (inferred) in the lambda expression and the method reference.
+It may seem odd to just see the interface, the class, and how they are used with a method reference; but this becomes more evident when you see the anonymous class or even the lambda version.
+From:
+
+(Sum s, String arg1, String arg2) -> s.doSum(arg1, arg1)
+To
+
+Sum::doSum
+
+
+-----------
+Instance method reference of an existing object
+In this case, we have a lambda expression like the following:
+
+(args) -> obj.instanceMethod(args)
+This can be turned into the following method reference:
+
+obj::instanceMethod
+This time, an instance defined somewhere else is used, and the arguments (if any) are passed behind the curtains like in the static method case.
+
+For example, assuming these classes:
+
+class Car {
+  private int id;
+  private String color;
+  // More properties
+  // And getter and setters
+}
+class Mechanic {
+  public void fix(Car c) {
+    System.out.println("Fixing car " + c.getId());
+  }
+}
+And this method:
+
+public void execute(Car car, Consumer<Car> c) {
+  c.accept(car);
+}
+We can call the method above using:
+
+final Mechanic mechanic = new Mechanic();
+Car car = new Car();
+
+// Using an anonymous class
+execute(car, new Consumer<Car>() {
+  public void accept(Car c) {
+    mechanic.fix(c);
+  }
+});
+
+// Using a lambda expression
+execute(car, c -> mechanic.fix(c));
+
+// Using a method reference
+execute(car, mechanic::fix);
+
+The key, in this case, is to use any object visible by an anonymous class/lambda expression and pass some arguments to an instance method of that object.
+
+Here's another quick example using another Consumer:
+
+Consumer<String> c = System.out::println;
+c.accept("Hello");
+Constructor method reference
+In this case, we have a lambda expression like the following:
+
+(args) -> new ClassName(args)
+That can be turned into the following method reference:
+
+ClassName::new
+The only thing this lambda expression does is to create a new object and we just reference a constructor of the class with the keyword new. Like in the other cases, arguments (if any) are not passed in the method reference.
+
+Most of the time, we can use this syntax with two (or three) interfaces of the java.util.function package.
+
+If the constructor takes no arguments, a Supplier will do the job:
+
+// Using an anonymous class
+Supplier<List<String>> s = new Supplier() {
+  public List<String> get() {
+    return new ArrayList<String>();
+  }
+};
+List<String> l = s.get();
+
+// Using a lambda expression
+Supplier<List<String>> s = () -> new ArrayList<String>();
+List<String> l = s.get();
+
+// Using a method reference
+Supplier<List<String>> s=ArrayList<String>::new;
+
+List<String> l = s.get();
+If the constructor takes an argument, we can use the Function interface. For example:
+
+// Using an anonymous class
+Function<String, Integer> f =
+  new Function<String, Integer>() {
+    public Integer apply(String s) {
+      return new Integer(s);
+    }
+};
+Integer i = f.apply(100);
+
+// Using a lambda expression
+Function<String, Integer> f = s -> new Integer(s);
+Integer i = f.apply(100);
+
+// Using a method reference
+Function<String, Integer> f = Integer::new;
+Integer i = f.apply(100);
+If the constructor takes two arguments, we use the BiFunction interface:
+
+// Using a anonymous class
+BiFunction<String, String, Locale> f = new BiFunction<String, String, Locale>() {
+  public Locale apply(String lang, String country) {
+    return new Locale(lang, country);
+  }
+};
+Locale loc = f.apply("en","UK");
+
+// Using a lambda expression
+BiFunction<String, String, Locale> f = (lang, country) -> new Locale(lang, country);
+Locale loc = f.apply("en","UK");
+
+// Using a method reference
+BiFunction<String, String, Locale> f = Locale::new;
+Locale loc = f.apply("en","UK");
+If you have a constructor with three or more arguments, you would have to create your own functional interface.
+
+You can see that referencing a constructor is very similar to referencing a static method. The difference is that the constructor "method name" is new.
+
+
+
+/////////////////////////////////some more method refrences Example/////////////////////////////////////////////
+
+=>Example 2
+In the following example, we are using predefined functional interface Runnable to refer static method.
+
+public class MethodReference2 {  
+    public static void ThreadStatus(){  
+        System.out.println("Thread is running...");  
+    }  
+    public static void main(String[] args) {  
+        Thread t2=new Thread(MethodReference2::ThreadStatus);  
+        t2.start();       
+    }  
+}  
+
+Output:
+Thread is running...
+
+
+=>Example 3
+You can also use predefined functional interface to refer methods. In the following example, we are using BiFunction interface and using it's apply() method.
+
+import java.util.function.BiFunction;  
+class Arithmetic{  
+public static int add(int a, int b){  
+return a+b;  
+}  
+}  
+public class MethodReference3 {  
+public static void main(String[] args) {  
+BiFunction<Integer, Integer, Integer>adder = Arithmetic::add;  //as bi function takes two paramtres and give one return type
+int result = adder.apply(10, 20);  
+System.out.println(result);  
+}  
+}  
+
+Output:
+30
+
+
+=>Example 4
+You can also override static methods by referring methods. In the following example, we have defined and overloaded three add methods.
+
+import java.util.function.BiFunction;  
+class Arithmetic{  
+public static int add(int a, int b){  
+return a+b;  
+}  
+public static float add(int a, float b){  
+return a+b;  
+}  
+public static float add(float a, float b){  
+return a+b;  
+}  
+}  
+public class MethodReference4 {  
+public static void main(String[] args) {  
+BiFunction<Integer, Integer, Integer>adder1 = Arithmetic::add;  
+BiFunction<Integer, Float, Float>adder2 = Arithmetic::add;  
+BiFunction<Float, Float, Float>adder3 = Arithmetic::add;  
+int result1 = adder1.apply(10, 20);  
+float result2 = adder2.apply(10, 20.0f);  
+float result3 = adder3.apply(10.0f, 20.0f);  
+System.out.println(result1);  
+System.out.println(result2);  
+System.out.println(result3);  
+}  
+}  
+
+Output:
+30
+30.0
+30.0
+
+
+=>to call Non Static Method we can use reference of new() object
+
+   Sayable sayable2 = new InstanceMethodReference()::saySomething; // You can use anonymous object also  
+            // Calling interface method  
+
+=> to calling constructor we can only use new  and other is same as method calling
+
+Example=>
+
+Messageable hello = Message::new;  

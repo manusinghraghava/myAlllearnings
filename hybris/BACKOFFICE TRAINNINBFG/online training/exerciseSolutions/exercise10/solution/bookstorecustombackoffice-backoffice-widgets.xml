@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="UTF-8"?><!--
+~ [y] hybris Platform
+~
+~ Copyright (c) 2000-2015 hybris AG
+~ All rights reserved.
+~
+~ This software is the confidential and proprietary information of hybris
+~ ("Confidential Information"). You shall not disclose such Confidential
+~ Information and shall use it only in accordance with the terms of the
+~ license agreement you entered into with hybris.
+-->
+<widgets xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.hybris.com/schema/cockpitng/widgets.xsd">
+
+	<widget-extension widgetId="backofficeMainSlot">
+		<widget id="bookstorecustombackoffice-cockpit"
+			widgetDefinitionId="com.hybris.cockpitng.borderlayout" template="false"
+			slotId="perspectives" title="Book Management">
+			
+			<widget id="bookstorecustombackoffice-leftNav-collapsiblecontainer" 
+				widgetDefinitionId="com.hybris.cockpitng.collapsiblecontainer" 
+				slotId="leftSlot" template="false">		
+			
+				<widget id="bookstorecustombackoffice-explorer-tree"
+					widgetDefinitionId="com.hybris.cockpitng.widgets.common.explorertree"
+					slotId="center" template="false">
+				
+					<widget id="bookstorecustombackoffice-tree-node-adapter"
+						widgetDefinitionId="com.hybris.cockpitng.conditionevaluator"
+						slotId="cockpitWidgetChildrenInvisible" template="false">
+					
+						<widget id="bookstorecustombackoffice-typecode-extractor"
+							widgetDefinitionId="com.hybris.cockpitng.widgets.common.propextractor"
+							slotId="cockpitWidgetChildrenInvisible" template="false">
+							<setting key="widgetStyleClass" type="String" value="" />
+							<setting key="expression" type="String" value="name" />
+							<setting key="widgetStyleAttribute" type="String" value="" />
+							<setting key="socketDataType_$T" type="String" value="java.lang.String" />
+							<virtual-sockets />
+						</widget>
+						<setting key="widgetStyleClass" type="String" value="" />
+						<setting key="expression" type="String" value="#root instanceof T(com.hybris.cockpitng.tree.node.TypeNode)" />
+						<setting key="widgetStyleAttribute" type="String" value="" />
+						<setting key="socketDataType_$T" type="String" value="java.lang.Object" />
+						<virtual-sockets />
+					</widget>
+				
+					<setting key="widgetStyleClass" type="String" value="" />
+					<setting key="widgetStyleAttribute" type="String" value="" />
+					<setting key="explorerTreeConfigCtx" type="String" value="bcb-explorer-tree" />
+					<virtual-sockets />
+				</widget>
+			
+				<!-- TODO exercise 10.11: Add a new Saved Queries List Widget here! -->
+				<widget id="bookstorecustombackoffice-savedQueries" slotId="bottom"
+						widgetDefinitionId="de.hybris.platform.platformbackoffice.widgets.savedQueriesWidget" >
+				</widget>			
+	       
+				<setting key="thirdSectionDisabled" type="Boolean" value="true" />
+				<setting key="topCaption" type="String" value="CONTENT" />
+				<setting key="centerHeight" type="String" value="50%" />
+				<setting key="centerPanelCollapsed" type="Boolean" value="false" />
+				<setting key="bottomCaption" type="String" value="SEARCH HISTORY" />
+				<setting key="bottomPanelCollapsed" type="Boolean" value="false" />
+		
+			</widget>	
+						
+			<widget id="bookstorecustombackoffice-backoffice-content-container"
+				widgetDefinitionId="com.hybris.backoffice.perspectiveContainer"
+				slotId="centerSlot" template="false">
+							
+				<widget id="HOMEConditionEvaluator" widgetDefinitionId="com.hybris.cockpitng.conditionevaluator"
+					slotId="cockpitWidgetChildrenInvisible" template="false">
+					
+					<widget id="bookstorecustombackoffice-nonDashboardPropertyExtractor" widgetDefinitionId="com.hybris.cockpitng.widgets.common.propextractor"
+						slotId="cockpitWidgetChildrenInvisible" template="false">
+						<setting key="widgetStyleClass" type="String"></setting>
+						<setting key="expression" type="String">'bookstorecustombackoffice-collapsible-container'</setting>
+						<setting key="widgetStyleAttribute" type="String"></setting>
+						<setting key="socketDataType_$T" type="String">java.lang.String</setting>
+						<virtual-sockets />
+					</widget>
+					<setting key="widgetStyleClass" type="String"></setting>
+					<setting key="expression" type="String">#root.id EQ 'HOME'</setting>
+					<setting key="widgetStyleAttribute" type="String"></setting>
+					<setting key="socketDataType_$T" type="String">com.hybris.backoffice.navigation.NavigationNode</setting>
+					<virtual-sockets />
+				</widget>
+				
+				<!-- TODO exercise 10.16a: uncomment the widget start tag below and provide it with the following attributes: 
+						- id="HOME"
+						- widgetDefinitionId="com.hybris.cockpitng.dashboard"
+						- slotId="perspectives"
+						- template="false"
+				-->
+				<widget id="HOME" widgetDefinitionId="com.hybris.cockpitng.dashboard" slotId="perspectives" template="false" >
+						<!-- TODO exercise 10.18: remove the '<?ignore ... ?>' processing block surrounding the following widget instance definition! -->
+						<!-- I.e., delete the '<?ignore' at the beginning of this XML block, then delete the '?>' at the end of this XML block -->
+						<widget id="bookstorebackoffice-defaulMemoryChart"
+							widgetDefinitionId="com.hybris.backoffice.widgets.collector.genericChart"
+							slotId="dashboardWidgets" template="false">
+							<setting key="widgetStyleClass" type="String"></setting>
+							<setting key="widgetStyleAttribute" type="String"></setting>
+							
+							<!-- TODO exercise 10.19: add the settings with keys: chartType, series -->
+							<setting key="chartType" type="String" value="memoryChart" />
+							<setting key="series" type="String" value="maxMemory,committedMemory,usedMemory" />
+							
+							<!-- TODO exercise 10.20: add the appropriate settings for assigning a title and labels for the axis. --> 
+							<setting key="chartTitle" type="String" value="generic.chart.memory.chart.title" />
+							<setting key="yZxisLabel" type="String" value="generic.chart.memory.chart.y" />
+							<setting key="xAxisLabel" type="String" value="generic.chart.x.timestamp" />
+							
+							<virtual-sockets />
+						</widget>
+
+				<!-- TODO exercise 10.16b: uncomment the rest of the HOME widget entry -->
+					<setting key="widgetStyleClass" type="String"></setting>
+					<setting key="widgetStyleAttribute" type="String"></setting>
+					<virtual-sockets>
+						<output id="com.hybris.cockpitng.action.misc.refresh.success"
+							type="java.lang.Object" visibility="external" />
+						<output id="com.hybris.cockpitng.action.run.gc.success"
+							type="java.lang.Object" visibility="external" />
+					</virtual-sockets>
+				</widget>
+
+				
+				<widget id="bookstorecustombackoffice-collapsible-container"
+					widgetDefinitionId="com.hybris.cockpitng.collapsiblecontainer"
+					slotId="perspectives" template="false">
+					
+					<widget id="bookstorecustombackoffice-advancedSearch" widgetDefinitionId="com.hybris.cockpitng.advancedsearch" slotId="center" template="false">
+						<widget id="bookstorecustombackoffice-advancedSearchEngine" widgetDefinitionId="com.hybris.cockpitng.widgets.common.advancedsearchengine" 
+							slotId="cockpitWidgetChildrenInvisible" template="false">
+							<setting key="widgetStyleClass" type="String"></setting>
+							<setting key="defaultPageSize" type="Integer" value="50" />
+							<setting key="widgetStyleAttribute" type="String"></setting>
+							<virtual-sockets/>
+						</widget>
+						<widget id="bookstorecustombackoffice-result-list"
+							widgetDefinitionId="com.hybris.cockpitng.collectionBrowser"
+							slotId="nestedWidget" template="false">
+							<setting key="socketDataType_$T" type="String" value="my.bookstore.core.model.BookModel" />
+							<setting key="listSubtitle" type="String" value="emptylist" />
+							<setting key="colConfigCtxCode" type="String" value="bcb-listview" />
+							<setting key="pageSize" type="Integer" value="20" />
+							<virtual-sockets />
+						</widget>
+						<setting key="simpleSearchConfigCtxCode" type="String" value="bcb-simple-search" />
+						<setting key="advancedSearchConfigCtxCode" type="String" value="bcb-advanced-search" />
+						<setting key="enableNestedWidgetView" type="Boolean" value="true" />
+						<setting key="widgetStyleClass" type="String"></setting>
+						<setting key="widgetStyleAttribute" type="String"></setting>
+						<setting key="forceSearchForCode" type="String" value="WorkflowAction,Principal,AbstractConstraint" />
+						<virtual-sockets/>
+					</widget>
+					
+					<widget id="bookstorecustombackoffice-editor-area"
+						widgetDefinitionId="com.hybris.cockpitng.backoffice.defaultEditorArea"
+						slotId="bottom" template="false">
+						<widget id="bookstorecustombackoffice-previousItemSelector"
+							widgetDefinitionId="com.hybris.cockpitng.previousItemSelector"
+							slotId="previousItemSelectorSlot" template="false">
+							<setting key="socketDataType_$T" type="String" value="java.lang.Object" />
+							<setting key="widgetStyleAttribute" type="String" value="" />
+							<setting key="widgetStyleClass" type="String" value="" />
+							<virtual-sockets />
+						</widget>
+						<widget id="bookstorecustombackoffice-nextItemSelector"
+							widgetDefinitionId="com.hybris.cockpitng.nextItemSelector"
+							slotId="nextItemSelectorSlot" template="false">
+							<setting key="socketDataType_$T" type="String" value="java.lang.Object" />
+							<setting key="widgetStyleAttribute" type="String" value="" />
+							<setting key="widgetStyleClass" type="String" value="" />
+							<virtual-sockets />
+						</widget>
+						<setting key="viewModeBtnVisible" type="Boolean" value="false" />
+						<setting key="initViewMode" type="String" value="fluid" />
+						<setting key="fluidViewCode" type="String" value="fluid" />
+						<setting key="editorAreaConfigCtx" type="String" value="editor-area" />
+						<setting key="bottomToolbar" type="Boolean" value="false" />
+						<setting key="actionSlotComponentId" type="String" value="bcb-editor-area-actions" />
+						<virtual-sockets />
+					</widget>
+					<widget id="bookstorecustombackoffice-backofficeSpaceManagement"
+						widgetDefinitionId="com.hybris.backoffice.spaceManagement" slotId="cockpitWidgetChildrenInvisible"
+						template="false">
+						<virtual-sockets />
+					</widget>
+					<setting key="thirdSectionDisabled" type="Boolean" value="true" />
+					<setting key="centerHeight" type="String" value="60%" />
+					<setting key="allowLockingCenterPanel" type="Boolean" value="true" />
+					<setting key="centerPanelInitiallyLocked" type="Boolean" value="false" />
+					<setting key="centerPanelCollapsed" type="Boolean" value="false" />
+					<setting key="bottomCaption" type="String" value="Edit" />
+					<setting key="allowLockingBottomPanel" type="Boolean" value="true" />
+					<setting key="bottomPanelInitiallyLocked" type="Boolean" value="false" />
+					<setting key="bottomPanelCollapsed" type="Boolean" value="true" />
+					<virtual-sockets />
+				</widget>
+	
+				<virtual-sockets />
+			</widget>
+
+			<widget id="bookstorecustombackoffice-collapsible-previews-container"
+				widgetDefinitionId="com.hybris.cockpitng.collapsiblecontainer" slotId="rightSlot"
+				template="false">
+				<widget id="bookstorecustombackoffice-book-details"
+					widgetDefinitionId="my.bookstore.bookstorecustombackoffice.widgets.bookDetails"
+					slotId="bottom" template="false">
+					<setting key="configContext" type="String" value="base" />
+					<setting key="propertiesConfigContext" type="String" value="bookdetailsConfig" />
+				</widget>
+				
+				<setting key="thirdSectionDisabled" type="Boolean" value="true" />
+				<setting key="topCaption" type="String" value="" />
+				<setting key="centerHeight" type="String" value="50%" />
+				<setting key="centerPanelCollapsed" type="Boolean" value="false" />
+				<setting key="bottomCaption" type="String" value="Book Details" />
+				<setting key="bottomPanelCollapsed" type="Boolean" value="false" />
+				<virtual-sockets />
+			</widget>
+
+			<widget id="bookstorecustombackoffice-preview-adapter" 
+				widgetDefinitionId="com.hybris.cockpitng.conditionevaluator" 
+				slotId="cockpitWidgetChildrenInvisible" title="" template="false">
+                <setting key="widgetStyleClass" type="String" value="" />
+                <setting key="expression" type="String" value="#root != null ? picture != null : false" />
+                <setting key="widgetStyleAttribute" type="String" value="" />
+				<setting key="socketDataType_$T" type="String" value="my.bookstore.core.model.BookModel" />
+                <virtual-sockets/>
+            </widget>
+
+			<setting key="widgetStyleClass" type="String" value="" />
+			<setting key="widgetStyleAttribute" type="String" value="" />
+			<setting key="eastClosed" type="Boolean" value="false" />
+			<setting key="eastWidth" type="String" value="15%" />
+			<setting key="westWidth" type="String" value="15%" />
+			
+			<setting key="perspectiveImageUrl" type="String" value="/cng/images/book.png" />
+			<virtual-sockets />
+	
+		</widget>
+	
+	</widget-extension>
+	
+	<widget-connection sourceWidgetId="bookstorecustombackoffice-explorer-tree" outputId="nodeSelected"
+		targetWidgetId="bookstorecustombackoffice-tree-node-adapter" inputId="input" />
+		
+	<widget-connection sourceWidgetId="bookstorecustombackoffice-tree-node-adapter" outputId="true"
+		targetWidgetId="bookstorecustombackoffice-typecode-extractor" inputId="genericInput" />
+		
+	<widget-connection sourceWidgetId="bookstorecustombackoffice-tree-node-adapter" outputId="result"
+		targetWidgetId="bookstorecustombackoffice-text-search" inputId="enabled" />
+	
+	<widget-connection sourceWidgetId="bookstorecustombackoffice-result-list" outputId="selectedItem"
+		targetWidgetId="bookstorecustombackoffice-editor-area" inputId="inputObject" />
+
+	<widget-connection sourceWidgetId="bookstorecustombackoffice-editor-area"  outputId="objectSaved" 
+		targetWidgetId="bookstorecustombackoffice-backofficeSpaceManagement" inputId="navigationTreeSelectedObject" />	
+	
+	<widget-connection sourceWidgetId="bookstorecustombackoffice-previousItemSelector" outputId="previousItemSelectorInvocation" 
+		targetWidgetId="bookstorecustombackoffice-result-list" inputId="previousItemSelectorInvocation" />
+	
+	<widget-connection sourceWidgetId="bookstorecustombackoffice-nextItemSelector" outputId="nextItemSelectorInvocation" 
+		targetWidgetId="bookstorecustombackoffice-result-list" inputId="nextItemSelectorInvocation" />
+	
+	<widget-connection sourceWidgetId="bookstorecustombackoffice-result-list" outputId="previousItemSelectorContext" 
+		targetWidgetId="bookstorecustombackoffice-previousItemSelector" inputId="previousItemSelectorContext" />
+	
+	<widget-connection sourceWidgetId="bookstorecustombackoffice-result-list" outputId="nextItemSelectorContext" 
+		targetWidgetId="bookstorecustombackoffice-nextItemSelector" inputId="nextItemSelectorContext" />
+	
+	<widget-connection sourceWidgetId="bookstorecustombackoffice-result-list" outputId="selectedItem" 
+		targetWidgetId="bookstorecustombackoffice-backofficeSpaceManagement" inputId="listSelectedObject" />
+	
+	<widget-connection sourceWidgetId="bookstorecustombackoffice-backofficeSpaceManagement" outputId="collapseState" 
+		targetWidgetId="bookstorecustombackoffice-collapsible-container" inputId="collapseState" />
+	
+	<widget-connection sourceWidgetId="bookstorecustombackoffice-explorer-tree" outputId="dataSelected" 
+		targetWidgetId="bookstorecustombackoffice-backofficeSpaceManagement" inputId="navigationTreeSelectedObject" />
+		
+	<widget-connection sourceWidgetId="bookstorecustombackoffice-typecode-extractor" outputId="genericOutput" 
+		targetWidgetId="bookstorecustombackoffice-advancedSearch" inputId="type"/>
+	
+	<widget-connection sourceWidgetId="bookstorecustombackoffice-result-list" outputId="sortData" 
+		targetWidgetId="bookstorecustombackoffice-advancedSearch" inputId="sortData"/>
+	
+	<widget-connection sourceWidgetId="STUB_com.hybris.cockpitng.action.searchbytype" outputId="type" 
+		targetWidgetId="bookstorecustombackoffice-advancedSearch" inputId="type"/>
+	
+	<widget-connection sourceWidgetId="bookstorecustombackoffice-advancedSearchEngine" outputId="fullTextSearchData" 
+		targetWidgetId="bookstorecustombackoffice-advancedSearch" inputId="fullTextSearchData"/>
+	
+	<widget-connection sourceWidgetId="bookstorecustombackoffice-advancedSearchEngine" outputId="autosuggestions" 
+		targetWidgetId="bookstorecustombackoffice-advancedSearch" inputId="autosuggestions"/>
+	
+	<widget-connection sourceWidgetId="bookstorecustombackoffice-result-list" outputId="refreshResults" 
+		targetWidgetId="bookstorecustombackoffice-advancedSearch" inputId="refreshResults"/>
+	
+	<widget-connection sourceWidgetId="bookstorecustombackoffice-advancedSearch" outputId="searchData" 
+		targetWidgetId="bookstorecustombackoffice-advancedSearchEngine" inputId="searchData"/>
+	
+	<widget-connection sourceWidgetId="bookstorecustombackoffice-advancedSearch" outputId="searchData" 
+		targetWidgetId="bookstorecustombackoffice-backofficeSpaceManagement" inputId="searchData"/>
+	
+	<widget-connection sourceWidgetId="bookstorecustombackoffice-advancedSearch" outputId="reset" 
+		targetWidgetId="bookstorecustombackoffice-result-list" inputId="reset"/>
+	
+	<widget-connection sourceWidgetId="bookstorecustombackoffice-advancedSearch" outputId="autosuggestionQuery" 
+		targetWidgetId="bookstorecustombackoffice-advancedSearchEngine" inputId="autosuggestionQuery"/>
+	
+	<widget-connection sourceWidgetId="bookstorecustombackoffice-advancedSearchEngine" outputId="pageable" 
+		targetWidgetId="bookstorecustombackoffice-result-list" inputId="pageable"/>	
+	
+	<widget-connection sourceWidgetId="bookstorecustombackoffice-result-list" outputId="selectedItem" 
+		targetWidgetId="bookstorecustombackoffice-book-details" inputId="selectedBook" /> 
+	
+	<widget-connection sourceWidgetId="bookstorecustombackoffice-result-list" outputId="selectedItem" 
+		targetWidgetId="bookstorecustombackoffice-preview-adapter" inputId="input"/>
+	
+	<widget-connection sourceWidgetId="bookstorecustombackoffice-preview-adapter" outputId="result" 
+		targetWidgetId="bookstorecustombackoffice-book-details" inputId="allowPreview"/>
+	
+	<widget-connection sourceWidgetId="bookstorecustombackoffice-advancedSearchEngine" outputId="pageable" 
+		targetWidgetId="bookstorecustombackoffice-books-list-preview" inputId="pageable"/>
+	
+	<widget-connection sourceWidgetId="bookstorecustombackoffice-result-list" outputId="selectedItem" 
+		targetWidgetId="bookstorecustombackoffice-books-list-preview" inputId="selectedItem"/>
+	
+	<widget-connection sourceWidgetId="bookstorecustombackoffice-books-list-preview" outputId="selectedItem" 
+		targetWidgetId="bookstorecustombackoffice-editor-area" inputId="inputObject"/>
+	
+	<widget-connection sourceWidgetId="bookstorecustombackoffice-books-list-preview" outputId="selectedItem" 
+		targetWidgetId="bookstorecustombackoffice-book-details" inputId="selectedBook"/>
+	
+	<widget-connection sourceWidgetId="bookstorecustombackoffice-books-list-preview" outputId="selectedItem" 
+		targetWidgetId="bookstorecustombackoffice-preview-adapter" inputId="input"/>
+		
+	<widget-connection sourceWidgetId="bookstorecustombackoffice-books-list-preview" outputId="selectedItem" 
+		targetWidgetId="bookstorecustombackoffice-backofficeSpaceManagement" inputId="listSelectedObject" />
+		
+	<!-- TODO exercise 10.13: set the advancedSearchInitContext output socket of your List Widget to the initContext input socket of the Advanced Search Widget. -->		
+	<widget-connection sourceWidgetId="bookstorecustombackoffice-savedQueries" outputId="advancedSearchInitContext" 
+		targetWidgetId="bookstorecustombackoffice-advancedSearch" inputId="initContext" />
+		
+	<!-- The following three connections are to refresh the dashboard when either of the two Refresh or Garbage Collection buttons (actions) of the dashboard are ran. -->
+	<widget-connection sourceWidgetId="HOME" outputId="com.hybris.cockpitng.action.misc.refresh.success" 
+		targetWidgetId="HOME" inputId="refresh"/>
+	
+	<widget-connection sourceWidgetId="HOME" outputId="com.hybris.cockpitng.action.run.gc.success" 
+		targetWidgetId="HOME" inputId="refresh"/>
+	
+	<widget-connection sourceWidgetId="HOME" outputId="refresh" 
+		targetWidgetId="bookstorecustombackoffice-defaulMemoryChart" inputId="refresh"/>
+
+	<!-- TODO exercise 10.17: uncomment the four widget-connection lines! -->
+	<widget-connection sourceWidgetId="bookstorecustombackoffice-nonDashboardPropertyExtractor" outputId="genericOutput" 
+		targetWidgetId="bookstorecustombackoffice-backoffice-content-container" inputId="selectPerspectiveById"/>
+		
+	<widget-connection sourceWidgetId="bookstorecustombackoffice-explorer-tree" outputId="nodeSelected" 
+		targetWidgetId="HOMEConditionEvaluator" inputId="input"/>
+		
+	<widget-connection sourceWidgetId="HOMEConditionEvaluator" outputId="false" 
+		targetWidgetId="bookstorecustombackoffice-nonDashboardPropertyExtractor" inputId="genericInput"/>
+		
+	<widget-connection sourceWidgetId="HOMEConditionEvaluator" outputId="true" 
+		targetWidgetId="bookstorecustombackoffice-backoffice-content-container" inputId="selectPerspective"/>
+
+</widgets>

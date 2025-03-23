@@ -1,0 +1,757 @@
+bit bucket and git  
+
+git is a distributed repository-->local as well remote
+
+git has .git(hidden) folder which has index file which maintains staging of files..
+
+git add=>if we add new file in repository..git is not able to track it or auto-stage..than we right click on file and just select add..to mak it staged(version from non-version)
+
+we can  also select (check for modification file) to see it is staged or not.
+
+if we modified existing file it automatic show in staged while comitting ..
+
+fetch==> bring changes of remote branch into remote tracking branch(middle layer)(mainly when we create new branch and wanna checkout)
+
+merge==>merge the changes of tracking branch into local branch..
+
+pull==> pull changes of remote branch into remote tracking branch.
+
+
+Merging branches==>
+
+fast forward merge==>when we merge child branch into parent
+steps-->
+a)first checkout into the parent branch..
+b)than go to tortoise git merge==>than select the child branch in merge select box from branch..
+
+
+stashing==>saving uncommitted changes==>
+lets take a example we are working on some files and we have to checkout on different branch..
+we have two options either committ the changes or undo the our code...
+if neither stash come into the picture it just saves our changes into temporary folder..
+stash save==>save changes
+stash pop==>undo
+
+revert==> if you have done some changes in local directory and you want to go back on last pull..
+just go on tortoise->revert and select the file in which you want to take revert..remember through this we can only revert file which are staged..or versioned or tracked
+
+
+or if you want to clean your repository to last commit fully
+go to log-->right click the last committ--> reset-->in reset checked hard..
+                       0r
+we can use tortoise git-->clean up command..
+                       Or
+go to log-->right click the last committ--> reset-->revert..
+
+staging area----files which go in next committ
+
+cherry pick==>it is like merge but merge merges all the commit in a branch..if we want to merge only a basic committ we will use the cherry pick..
+
+squash==>if we want to make a commit on a base of all commit we will use squash while merging
+
+rebase==>it is like merge but it will create new commit in the branch of second branch on you will do rebase...
+
+some popular git commands...
+
+git config --global user.name//email "--"  //to register user
+
+git init-------to make a folder into a git repository
+
+git add --a -------putting all file of folder in staging area. only these file get commiited
+
+git status ----------------to check new changes we have done in repository
+
+git commit -m "message" ----------comiiting code
+
+git log --------show all commiitt
+
+rm -rf .git---------remove tracking of repository and delete .git folder
+
+git clone url nameOfFOlder --------------------cloning 
+
+touch .gitignore   ------------------creating git ignore file
+
+git diff ------compare working directory and staging area(ready for comitt)
+
+git diff --staged   ------compare staging area(ready for comitt) and last commit
+
+git commit -a -m "message" ----------comiiting code directly without using add
+
+git checkout -b "branchName" ---------------switch to branch if not present it will create it.
+
+git branch ----------show all child branch.
+
+git remote add origin "url of git repository"-------------to add local repository on github
+
+git push -u origin master--------pushing all local files on local repository to github.
+
+
+Git reset commitid------>to make change reset till this committ..
+
+ git push --no-verify --set-upstream origin branch name    and git fetch origin branchName
+...........when we losse track.
+
+git reset --hard   -----------to remove all changes..
+
+git clean -df    ------------to remove all untracked file.
+=================================================================================================================================================================================
+concurrent hashmap==>
+It is thread Safe.alternative of Hashtable
+when we synchronized it..it only synchronize certain portion of map thats why dont throw concurrent modification exception
+null keys are not allowed..
+ConcurrentHashMap is best suited when you have multiple readers and few writers. If writers outnumber reader,
+ or writer is equal to reader, than performance of ConcurrentHashMap effectively reduces to synchronized map or Hashtable. 
+Performance of CHM drops, because you got to lock all portion of Map, and effectively each reader will wait for another writer, operating on that portion of Map. 
+
+ConcurrentHashMap by default is separated into 16 regions and locks are applied. This default number can be set while initializing a ConcurrentHashMap instance.
+
+ConcurrentHashMap m = new ConcurrentHashMap(); 
+        m.put(100, "Hello"); 
+        m.put(101, "Geeks"); 
+        m.put(102, "Geeks"); 
+  
+        // Here we cant add Hello because 101 key 
+        // is already present in ConcurrentHashMap object 
+        m.putIfAbsent(101, "Hello"); 
+  
+        // We can remove entry because 101 key 
+        // is associated with For value 
+        m.remove(101, "Geeks"); 
+  
+        // Now we can add Hello 
+        m.putIfAbsent(103, "Hello"); 
+  
+        // We cant replace Hello with For 
+        m.replace(101, "Hello", "For"); 
+        System.out.println(m); 
+    } 
+} 
+ConcurrentHashMap is introduced as an alternative of Hashtable and provided all functions supported by Hashtable with an additional feature called "concurrency level", 
+which allows ConcurrentHashMap to partition Map. ConcurrentHashMap allows multiple readers to read concurrently without any blocking. 
+This is achieved by partitioning Map into different parts based on concurrency level and locking only a portion of Map during updates. 
+Default concurrency level is 16, and accordingly Map is divided into 16 part and each part is governed with a different lock. 
+This means, 16 thread can operate on Map simultaneously(at same time) until they are operating on different part of Map. 
+This makes ConcurrentHashMap high performance despite keeping thread-safety intact.  
+Though, it comes with a caveat. Since update operations like put(), remove(), putAll() or clear() is not synchronized, concurrent retrieval may not reflect most recent change on Map.
+
+synchronized(map){
+  if (map.get(key) == null){
+      return map.put(key, value);
+  } else{
+      return map.get(key);
+  }
+}
+
+Though this code will work fine in HashMap and Hashtable, This won't work in ConcurrentHashMap; because, during put operation whole map is not locked, 
+and while one thread is putting value, other thread's get() call can still return null which result in one thread overriding value inserted by other thread. 
+Ofcourse, you can wrap whole code in synchronized block and make it thread-safe but that will only make your code single threaded. 
+ConcurrentHashMap provides putIfAbsent(key, value) which does same thing but atomically and thus eliminates above race condition. 
+
+
+=================================================================================================================================================================================
+Enum=>
+It is used for constants..
+Enum Mobile
+{
+A,B,C //These all are constants
+}
+Internally-->
+
+Class Mobile
+{
+static final Mobile A = new Mobile();    //Actually all these are object of that class
+static final Mobile B = new Mobile();    //which is static and file
+static final Mobile C = new Mobile();    //whise toString() return the name of referrence
+}
+
+As these are object than it also can have constuctor//
+
+public enum Level {
+    HIGH  (3),  //calls constructor with value 3
+    MEDIUM(2),  //calls constructor with value 2
+    LOW   (1)   //calls constructor with value 1
+    ; // semicolon needed when fields / methods follow
+
+
+    private final int levelCode;
+
+    private Level(int levelCode) {
+        this.levelCode = levelCode;
+    }
+ public int getLevelCode() {
+        return this.levelCode;
+    }
+}
+//
+System.out.println(level.getLevelCode()); ///////when we call object it will call constructor and print that value
+
+=================================================================================================================================================================================
+difference between spring:url and c:url
+
+<spring:url value="/something" var="url" htmlEscape="true"/>
+ <a href="${url}">...</a>
+
+But you an also use c:url
+
+ <c:url value="/something" var="url"/>
+ <a href="<c:out value='${url}'/>">...</a>//no need for out in spring
+
+The one important difference between c:url and spring:url is, 
+that c:url does not html encode the created url. 
+But for a valid url the & between the url parameters must be a &amp;. So you need the c:out to escape it. 
+-- In spring:url you have this functionality already included (if I understand the documentation correct).
+
+===================================================================================================================================================================================
+String.Intern()==>It is like a constant pool return same object it the object is already present in constant pool
+===================================================================================================================================================================================
+these methods are used in multithreading to put current thread in wait state==>
+a)wait()
+b)join()
+c)sleep()
+d)yield()
+
+join()==>put in wait to thread from which it is called and first finish the task of thread to which it is called==>
+
+====================================================================================================================================================================================
+
+Marshalling===>In computer science, marshalling or marshaling is the process of transforming the memory representation of an object to a data format suitable for storage or transmission, 
+and it is typically used when data must be moved between different parts of a computer program or from one program to another.
+
+Marshalling: Converting Objects to XML
+In this example, we need to convert Java objects to an XML document. First, we need to create a POJO class.
+
+import javax.xml.bind.annotation.*;
+@XmlRootElement
+public class Student {
+    private String name;
+    private int id;
+    private String subject;
+    Student(){
+    }
+    Student(String name,int id,String subject){
+        this.name=name;
+        this.id=id;
+        this.subject=subject;
+    }
+    @XmlElement
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
+    @XmlAttribute
+    public int getId() {
+        return id;
+    }
+    public void setId(int id) {
+        this.id = id;
+    }
+    @XmlElement
+    public String getSubject() {
+        return subject;
+    }
+    public void setSubject(String subject) {
+        this.subject = subject;
+    }
+}
+
+
+In the above class:
+
+@XmlRootElement specifies the root element for the XML document.
+
+@XmlAttribute specifies the attribute for the root element.
+
+@XmlElement specifies the sub-element for the root element.
+
+Now, we will call the marshaller method
+
+try{
+    //creating the JAXB context
+    JAXBContext jContext = JAXBContext.newInstance(Student.class);
+    //creating the marshaller object
+    Marshaller marshallObj = jContext.createMarshaller();
+    //setting the property to show xml format output
+    marshallObj.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+    //setting the values in POJO class
+    Student student = new Student(“abhishek”, 1163, “hadoop”);
+    //calling the marshall method
+    marshallObj.marshal(student, new FileOutputStream(“/home/knoldus/Desktop/student.xml”));
+} catch(Exception e) {
+    e.printStackTrace();
+}
+
+
+Unmarshalling: Converting XML to Objects
+try{
+    //getting the xml file to read
+    File file = new File(“/home/knoldus/Desktop/student.xml”);
+    //creating the JAXB context
+    JAXBContext jContext = JAXBContext.newInstance(Student.class);
+    //creating the unmarshall object
+    Unmarshaller unmarshallerObj = jContext.createUnmarshaller();
+    //calling the unmarshall method
+    Student student=(Student) unmarshallerObj.unmarshal(file);
+    System.out.println(student.getName()+” “+student.getId()+” “+student.getSubject());
+}catch(Exception e){
+    e.printStackTrace();
+}
+
+
+MEDIA_TYPE – Determine the produced output media type (JSON, XML).
+JSON_INCLUDE_ROOT – Flag to determine whether you want to include the JSON root element in the produced output or not.
+JAXB_FORMATTED_OUTPUT – Flag to determine whether you want to format the produced output or not.
+
+// Create a JaxBContext
+package com.jcg.jaxb.json;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+
+import org.eclipse.persistence.jaxb.MarshallerProperties;
+
+/**
+ * @author ashraf_sarhan
+ * 
+ */
+public class MarshallerDemo {
+
+	/**
+	 * @param args
+	 * @throws JAXBException
+	 * Marshaller POJO to JSON using EclipseLink MOXy
+	 */
+	public static void main(String[] args) throws JAXBException {
+
+		// Creating a new employee pojo object with data
+		Employee employee = new Employee();
+		employee.setId(1);
+		employee.setName("Ashraf");
+		List skills = new ArrayList();
+		skills.add("java");
+		skills.add("sql");
+		employee.setSkills(skills);
+
+		// Create a JaxBContext
+		JAXBContext jc = JAXBContext.newInstance(Employee.class);
+
+		// Create the Marshaller Object using the JaxB Context
+		Marshaller marshaller = jc.createMarshaller();
+		
+		// Set the Marshaller media type to JSON or XML
+		marshaller.setProperty(MarshallerProperties.MEDIA_TYPE,
+				"application/json");
+		
+		// Set it to true if you need to include the JSON root element in the JSON output
+		marshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, true);
+		
+		// Set it to true if you need the JSON output to formatted
+		marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+		
+		// Marshal the employee object to JSON and print the output to console
+		marshaller.marshal(employee, System.out);
+	}
+
+}
+Output:
+
+1
+{
+
+   "employee" : {
+      "id" : 1,
+      "name" : "Ashraf",
+      "skills" : [ "java", "sql" ]
+   }
+}
+4. Unmarshal JSON to Java Object:
+Create a JaxBContext using the Employee class then read the provided JSON string and convert it back to the “employee” Java object using Unmarshaller object with following two properties:
+
+MEDIA_TYPE – Determine the provided input media type (JSON, XML).
+JSON_INCLUDE_ROOT – Flag to determine whether you want to include the JSON root element in the provided input or not.
+UnmarshallerDemo.java:
+
+package com.jcg.jaxb.json;
+
+import java.io.StringReader;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.stream.StreamSource;
+
+import org.apache.commons.lang3.StringUtils;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
+
+/**
+ * @author ashraf_sarhan
+ * 
+ */
+public class UnmarshallerDemo {
+
+	/**
+	 * @param args
+	 * @throws JAXBException
+	 *             Unmarshaller JSON to POJO using EclipseLink MOXy
+	 */
+	public static void main(String[] args) throws JAXBException {
+
+		// Create a JaxBContext
+		JAXBContext jc = JAXBContext.newInstance(Employee.class);
+
+		// Create the Unmarshaller Object using the JaxB Context
+		Unmarshaller unmarshaller = jc.createUnmarshaller();
+
+		// Set the Unmarshaller media type to JSON or XML
+		unmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE,
+				"application/json");
+
+		// Set it to true if you need to include the JSON root element in the
+		// JSON input
+		unmarshaller
+				.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, true);
+
+		// Create the StreamSource by creating StringReader using the JSON input
+		StreamSource json = new StreamSource(
+				new StringReader(
+						"{\"employee\":{\"id\":1,\"name\":\"Ashraf\",\"skills\":[\"java\",\"sql\"]}}"));
+
+		// Getting the employee pojo again from the json
+		Employee employee = unmarshaller.unmarshal(json, Employee.class)
+				.getValue();
+
+		// Print the employee data to console
+		System.out.println("Employee Id: " + employee.getId());
+		System.out.println("\nEmployee Name: " + employee.getName());
+		System.out.println("\nEmployee Skills: "
+				+ StringUtils.join(employee.getSkills(), ','));
+	}
+
+}
+Output:
+
+{
+
+   "employee" : {
+
+      "id" : 1,
+
+      "name" : "Ashraf",
+
+      "skills" : [ "java", "sql" ]
+
+   }
+
+}
+
+Specify MOXy as the JAXB Provider (jaxb.properties)
+To configure MOXy as your JAXB provider simply add a file named jaxb.properties in the same package as your domain model with the following entry:
+
+===========================================================================================================================================================================================
+
+
+Reflexion==>Through this we can call the private method of a class outside the class==>
+
+How==>
+class A
+
+{
+
+private void method show()
+{
+Syso("Helloo")
+}
+In Another Class==>
+Class c = Class.ForName("Full path of class with package name");
+A a =(A)c.newInstance();
+
+Method m =c.getDeclaredMethod("para1","para2");
+para1==>name of method
+para2==>parametres in method
+
+m.setAccessible(true);   ///making public to this class
+
+m.invoke("para1","para2");
+
+para1==>object of class
+para2==>parametres in method
+
+
+
+============================================================================================================================
+MultiValueMap in Java==>
+Java has a useful built in collection library. ... One of this collection is the MultiValueMap. 
+This collection is a map with a key and value, but the value is a collection instead of one single value.
+
+In some cases, you would like to define a map that holds a collection of values against each key (one to many relationship). 
+You can not use HashMap for this task. Instead, you will use the MultiValueMap. 
+The MultiValueMap class did not come with the Java standard collections API. It is in Apache's Commons Collections API.
+
+Syntax==>MultiMap<String, String> mmap=new MultiValueMap<String, String>();
+
+It returns Collection of values==>Collection values=(Collection) mmap.get(key);
+
+
+================================================================================================================================
+
+FlatMap==>
+
+Obviously this is a lot of rework and we have to manually merge the lists to get a single list of elements and then apply map() function. 
+This is where flatMap() is very useful. Let’s see how we can use flatMap() to perform the same operation.
+
+
+
+List<String> betterLetters = Stream.of(l1, l2)
+				.flatMap(List::stream)
+				.map(String::toUpperCase)
+				.collect(Collectors.toList());
+
+Now it’s clear that we used flatMap() function to flatten the Stream of Lists to Stream of elements.
+
+@Test
+public void testflatMap() throws Exception {
+    List<Integer> together = Stream.of(asList(1, 2), asList(3, 4)) // Stream of List<Integer>
+            .flatMap(List::stream)                                 // Converting into singleStream...
+            .map(integer -> integer + 1)
+            .collect(Collectors.toList());
+    assertEquals(asList(2, 3, 4, 5), together);
+}
+
+
+
+=======================================================================================================================================
+
+Calling javaScript from java==>
+
+for this we need javascript engine which is introduced in java 1.8. known as Java Nashorn.
+
+Nashorn is a JavaScript engine. It is used to execute JavaScript code dynamically at JVM (Java Virtual Machine). 
+Java provides a command-line tool jjs which is used to execute JavaScript code.
+
+You can execute JavaScript code by using jjs command-line tool and by embedding into Java source code.
+
+You can execute JavaScript file directly from your Java file. In the following code, we are reading a file hello.js with the help of FileReader class.
+
+Example==>
+
+import javax.script.*;  
+import java.io.*;  
+public class NashornExample {  
+    public static void main(String[] args) throws Exception{  
+        // Creating script engine  
+        ScriptEngine ee = new ScriptEngineManager().getEngineByName("Nashorn");  
+        // Reading Nashorn file  
+        ee.eval(new FileReader("js/hello.js"));  
+    }  
+}  
+
+
+Example: Setting JavaScript variable in Java File
+
+import javax.script.*;  
+import java.io.*;  
+public class NashornExample {  
+    public static void main(String[] args) throws Exception{  
+        // Creating script engine  
+        ScriptEngine ee = new ScriptEngineManager().getEngineByName("Nashorn");  
+        //Binding script and Define scope of script  
+        Bindings bind = ee.getBindings(ScriptContext.ENGINE_SCOPE);  
+        bind.put("name", "Nashorn");                                     //putting value 
+        // Reading Nashorn file  
+        ee.eval(new FileReader("js/hello.js"));  
+    }  
+}  
+
+
+
+Calling JavaScript function inside Java code==>
+
+You can call JavaScript function inside the Java file. In the followed example, we are calling JavaScript functions.
+
+Example: Calling function inside Java code
+
+
+
+File: hello.js
+
+var functionDemo1 = function(){  
+    print("This is JavaScript function");  
+}  
+var functionDemo2 = function(message){  
+    print("Hello "+message);  
+} 
+
+
+
+ 
+File: NashornExample.java
+
+import javax.script.*;  
+import java.io.*;  
+public class NashornExample {  
+    public static void main(String[] args) throws Exception{  
+        // Creating script engine  
+        ScriptEngine ee = new ScriptEngineManager().getEngineByName("Nashorn");  
+        // Reading Nashorn file  
+        ee.eval(new FileReader("js/hello.js"));  
+        Invocable invocable = (Invocable)ee;  
+        // calling a function  
+        invocable.invokeFunction("functionDemo1");  
+        // calling a function and passing variable as well.  
+        invocable.invokeFunction("functionDemo2","Nashorn");       
+    }  
+}  
+
+
+
+==================================================================================================================================================================
+
+Gson==>GSON is Google's JSON parser and generator for Java. 
+Creating a Gson Instance
+Before you can use GSON you must first create a new Gson object. There are two ways to create a Gson instance:
+
+Using new Gson()===>Gson gson = new Gson();
+Creating a GsonBuilder instance and calling create() on it.==>new GsonBuilder().create();
+
+Parsing JSON Into Java Objects
+new Gson().fromJson(json, Car.class);
+
+The Gson instance creates an instance of this class and parses the JSON into it. 
+Thus you should make sure that this class has a no-arg constructor, or GSON cannot use it.
+
+Here is how the Car class looks:
+
+public class Car {
+    public String brand = null;
+    public int    doors = 0;
+}
+
+
+Generating JSON From Java Objects
+GSON can also generate JSON from Java objects. You do so via the Gson object.
+ To generate JSON you call the toJson() method of the Gson object. Here is an example of generating JSON from a Java object with GSON:
+
+Car car = new Car();
+car.brand = "Rover";
+car.doors = 5;
+
+Gson gson = new Gson();
+
+String json = gson.toJson(car);
+
+output
+{"brand":"Rover","doors":5}
+
+However, this compact JSON can be hard to read. 
+Therefore GSON offers a pretty printing option where the JSON is printed so it is more readable in a text editor. 
+Here is an example of how to create a Gson instance with pretty print enabled:
+
+Gson gson = new GsonBuilder().setPrettyPrinting().create();
+Here is an example of how the same JSON would look pretty printed:
+
+{
+  "brand": "Rover",
+  "doors": 5
+}
+
+Excluding Fields
+1)Transient Fields
+If you make a field in a Java class transient then GSON will ignore it in both serialization and deserialization. 
+Here is how the Car class from earlier looks with the brand field marked as transient:
+
+public class Car {
+    public transient String brand = null;
+    public int    doors = 0;
+}
+
+                                                    ////////////or//////////////
+													
+													The @Expose Annotation
+The GSON @Expose annotation (com.google.gson.annotations.Expose) can be used to mark a field to be exposed or not (included or not) when an object is serialized 
+or deserialized. The @Expose annotation can take two parameters.
+ Each parameter is a boolean which can take either the value true or false. Here are some GSON @Expose annotation examples to show what I mean:
+
+@Expose(serialize = true);
+@Expose(serialize = false);
+@Expose(deserialize = true);
+@Expose(deserialize = false);
+@Expose(serialize = true , deserialize = false);
+@Expose(serialize = false, deserialize = true);
+
+Notice the @Expose annotation above the fields, telling whether the given field should be included when serialized or deserialized.
+
+In order to get GSON to react to the @Expose annotations you must create a Gson instance using the GsonBuilder class. Here is how that looks:
+
+GsonBuilder builder = new GsonBuilder();
+builder.excludeFieldsWithoutExposeAnnotation();
+Gson gson = builder.create();
+
+**)GsonBuilder.setExclusionStrategies()
+Another way to exclude a field of a class from serialization or deserialization in GSON is to set an ExclusionStrategy on a GsonBuilder, 
+and use that GsonBuilder to build the Gson object with.
+
+ExclusionStrategy is an interface, so you will have to create a class that implements the ExclusionStrategy interface. 
+Here is an example that implements the ExclusionStrategy interface with an anonymous class:
+
+ExclusionStrategy exclusionStrategy = new ExclusionStrategy() {
+    public boolean shouldSkipField(FieldAttributes fieldAttributes) {
+        if("brand".equals(fieldAttributes.getName())){
+            return true;
+        }
+        return false;
+    }
+
+    public boolean shouldSkipClass(Class aClass) {
+        return false;
+    }
+};
+Notice that inside the shouldSkipField() method of the ExclusionStrategy implementation the example checks if the given field name is brand. If it is, 
+that field is excluded from serialization and deserialization.
+
+**)Serializing Null Fields
+By default the Gson object does not serialize fields with null values to JSON. If a field in a Java object is null, Gson excludes it.
+
+You can force Gson to serialize null values via the GsonBuilder. Here is an example showing how to force serialization of null values with GSON:
+
+GsonBuilder builder = new GsonBuilder();
+
+builder.serializeNulls();
+
+Gson gson = builder.create();
+
+Car car = new Car();
+car.brand = null;
+
+String json = gson.toJson(car);
+System.out.println(json);
+
+=====================================================================================================================================================================
+Copyonwritearraylist vs synchronizedlist==>
+
+
+======================================================================================================================================================pprivate String escapeSpecialCharacters(String input) {
+        if (StringUtils.isNotBlank(input)) {
+            List<String> specialCharacters = Arrays.asList("\\", "'", "^", "$", "{", "}", "[", "]", "(", ")");
+            return Arrays.stream(input.split("")).map((c) -> {
+                if (specialCharacters.contains(c))
+                    return "\\" + c;
+                else
+                    return c;
+            }).collect(Collectors.joining());
+        }
+        return input;
+    }
+	
+==============================================================================================================================================
+indstorefront.xss.filter.rule.alert=(?i);alert(.*?)
+
+==============================================================================================================================================
+manytoANy in hibernate
+
+===================
+collectors.partioningBy

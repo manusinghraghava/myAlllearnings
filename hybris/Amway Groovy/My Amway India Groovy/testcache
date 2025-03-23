@@ -1,0 +1,210 @@
+import de.hybris.platform.core.model.user.UserModel;
+import de.hybris.platform.catalog.model.CatalogVersionModel;
+import java.util.Collection;
+import java.util.ArrayList;
+import de.hybris.platform.catalog.model.CatalogModel;
+import de.hybris.platform.catalog.constants.CatalogConstants;
+import de.hybris.platform.servicelayer.session.SessionExecutionBody;
+import de.hybris.platform.core.Registry;
+import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.orderprocessing.model.OrderProcessModel;
+import de.hybris.platform.core.model.order.OrderModel;
+import de.hybris.platform.processengine.enums.ProcessState;
+import de.hybris.platform.servicelayer.search.FlexibleSearchQuery;
+import de.hybris.platform.core.enums.OrderStatus;
+import de.hybris.platform.catalog.CatalogVersionService;
+import de.hybris.platform.core.model.product.ProductModel;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Arrays;
+import de.hybris.platform.servicelayer.session.SessionService;
+import de.hybris.platform.regioncache.CacheController;
+import de.hybris.platform.regioncache.region.CacheRegion;
+import de.hybris.platform.basecommerce.enums.StockLevelStatus;
+import de.hybris.platform.commercefacades.product.data.ProductData;
+import de.hybris.platform.commercefacades.product.data.StockData;
+import de.hybris.platform.core.model.product.ProductModel;
+import de.hybris.platform.ordersplitting.model.StockLevelModel;
+import de.hybris.platform.servicelayer.dto.converter.ConversionException;
+import de.hybris.platform.servicelayer.session.SessionService;
+import de.hybris.platform.stock.strategy.StockLevelStatusStrategy;
+
+import de.hybris.platform.converters.*;
+
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+
+import com.amway.core.model.AmwayKitEntryProductModel;
+import com.amway.core.model.AmwayKitProductModel;
+import com.amway.core.util.IndCartHelper;
+import com.amway.core.warehouse.service.IndWareHouseStockService;
+import com.amway.lynxcore.constants.LynxCoreConstants.ServiceProductStock;
+import com.amway.lynxcore.service.product.LynxProductService;
+import com.amway.lynxcore.stock.service.LynxCommerceStockService;
+import com.amway.lynxcore.strategies.warehouse.impl.LynxCommerceStockLevelCalculationStrategyImpl;
+import com.amway.lynxfacades.stock.populators.LynxProductStockPopulator;
+import com.amway.lynxfacades.util.LynxCartHelper;
+
+import org.apache.commons.collections4.CollectionUtils;
+import de.hybris.platform.servicelayer.search.SearchResult;
+import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.processengine.BusinessProcessService;
+
+import de.hybris.platform.core.model.order.AbstractOrderModel;
+import de.hybris.platform.core.model.order.OrderModel;
+import de.hybris.platform.core.model.user.AddressModel;
+import de.hybris.platform.core.model.user.CustomerModel;
+import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.servicelayer.search.FlexibleSearchService;
+import de.hybris.platform.servicelayer.search.SearchResult;
+import de.hybris.platform.servicelayer.event.EventService;
+
+import de.hybris.platform.order.events.SubmitOrderEvent;
+
+import de.hybris.platform.store.BaseStoreModel;
+import java.lang.System;
+import de.hybris.platform.orderprocessing.model.OrderProcessModel;
+import de.hybris.platform.processengine.BusinessProcessService;
+
+import java.util.List;
+import java.util.Optional;
+import om.amway.indfacades.product.*;
+import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import com.amway.core.model.AmwayAccountModel;
+import de.hybris.platform.core.Registry;
+import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.servicelayer.search.FlexibleSearchQuery;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import de.hybris.platform.commercefacades.product.*;
+import java.util.Arrays;
+import org.apache.commons.collections4.CollectionUtils;
+import de.hybris.platform.servicelayer.search.SearchResult;
+import de.hybris.platform.servicelayer.model.ModelService;
+import com.amway.indcore.loyalty.service.IndCalculateLoyaltyPointsService;
+import de.hybris.platform.commerceservices.search.pagedata.PageableData;
+import de.hybris.platform.commerceservices.search.pagedata.SearchPageData;
+import de.hybris.platform.core.model.order.OrderModel;
+import com.amway.eventstream.model.AmwayEventStagingEntryModel;
+import com.amway.eventstream.enums.AmwayEventSyncState;
+import com.amway.indfacades.order.payload.*;
+import java.util.List;
+import java.util.Optional;
+import com.google.gson.*;
+import de.hybris.platform.commercefacades.product.PriceDataFactory;
+import de.hybris.platform.servicelayer.dto.converter.Converter;
+import de.hybris.platform.cms2.model.site.CMSSiteModel;
+import de.hybris.platform.servicelayer.search.FlexibleSearchService;
+import org.apache.commons.collections4.CollectionUtils;
+import de.hybris.platform.servicelayer.i18n.CommonI18NService;
+import de.hybris.platform.store.BaseStoreModel;
+import de.hybris.platform.store.services.BaseStoreService;
+import de.hybris.platform.site.BaseSiteService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang.StringEscapeUtils;
+import com.amway.eventstream.enums.*;
+import com.amway.indfacades.product.IndProductFacade;
+import de.hybris.platform.commercefacades.product.data.ProductData;
+import de.hybris.platform.commerceservices.enums.*;
+
+def catalog = "indProductCatalog";
+def catalogVersion = "Online";
+def userService = spring.getBean('userService');
+
+
+
+baseSiteService = spring.getBean('baseSiteService');
+catalogVersionService = spring.getBean('catalogVersionService');
+final ModelService modelService = (ModelService) Registry.getApplicationContext().getBean("modelService");
+final CacheController cacheController =(CacheController) Registry.getApplicationContext().getBean("cacheController");
+final IndWareHouseStockService indWarehouseStockService=(IndWareHouseStockService) Registry.getApplicationContext().getBean("indWarehouseStockService");
+
+final LynxCartHelper lynxCartHelper=(LynxCartHelper) Registry.getApplicationContext().getBean("lynxCartHelper");;
+
+
+final LynxCommerceStockLevelCalculationStrategyImpl lynxCommerceStockLevelCalculationStrategy=(LynxCommerceStockLevelCalculationStrategyImpl)Registry.getApplicationContext().getBean("commerceStockLevelCalculationStrategy");
+
+String query1="select {pk} from {CMSSite as o} where {o.pk} ='"+8796093056040+"'";
+final SearchResult<CMSSiteModel> searchResult1 = ((FlexibleSearchService) Registry.getApplicationContext().getBean("flexibleSearchService")).search(query1);
+final List<CMSSiteModel> results1 = searchResult1.getResult();
+CMSSiteModel cmsSiteModel = results1.stream().findFirst().get();
+
+
+def baseSiteModel =baseSiteService.getCurrentBaseSite();
+baseSiteService.setCurrentBaseSite(cmsSiteModel, true);
+searchRestrictionService = spring.getBean('searchRestrictionService');
+fss = spring.getBean('flexibleSearchService');
+
+sessionService.setAttribute("currentSite", baseSiteService.getBaseSiteForUID('indsite'));
+
+sessionService.executeInLocalView(new SessionExecutionBody()
+{
+	@Override
+	public Object execute()
+	{
+		try
+		{
+			CatalogVersionModel catalogVersionModel = catalogVersionService.getCatalogVersion(catalog, catalogVersion);
+			CatalogModel catalogModel = catalogService.getCatalogForId(catalog);
+			Collection<CatalogVersionModel> catalogVersions = new ArrayList<CatalogVersionModel>();
+			catalogVersions.add(catalogVersionModel);
+			sessionService.setAttribute("catalogversions", catalogVersions);
+			final List<ProductOption> extraOptions = Arrays.asList(ProductOption.TNA_SUBSCRIPTION);
+			
+			String query2="select {pk} from {Product as o} where {o.code} ='282128ID'";
+final SearchResult<ProductModel> searchResult2 = ((FlexibleSearchService) Registry.getApplicationContext().getBean("flexibleSearchService")).search(query2);
+final List<ProductModel> results12= searchResult2.getResult();
+ProductModel product = results12.stream().findFirst().get();
+
+try{
+
+String query3="Select {SL.pk} from {INDDropCodeWareHouseMapping as IDCWP join INDDropCodeWareHouseMappingToChannel as mappingRel on {mappingRel.source}={IDCWP.pk} join SalesApplication as SAP on {mappingRel.target}={SAP.PK} join INDDropCode as IDC on {IDCWP.dropcode}={IDC.PK}  join StockLevel as SL on {SL.warehouse}={IDCWP.warehouse}} where {IDC.code}=('635103') AND {SL.productCode}=('282128ID') AND {SAP.code}=('Web') ORDER BY {IDCWP.priority} ASC LIMIT 3";
+final SearchResult<StockLevelModel> searchResult3 = ((FlexibleSearchService) Registry.getApplicationContext().getBean("flexibleSearchService")).search(query3);
+final List<StockLevelModel> results123= searchResult3.getResult();
+modelService.refresh(results123.stream().findFirst().get());
+
+
+modelService.refresh(product);
+
+//cacheController.getRegions().forEach({s->cacheController.clearCache(s)});
+
+final List<StockLevelModel> stockLevel = indWarehouseStockService.getStock("635103",
+							product.getCode(), SalesApplication.WEB);
+					//
+					
+					final Long quantity = lynxCommerceStockLevelCalculationStrategy.calculateAvailability(stockLevel);
+final Long addedQty = lynxCartHelper.countAddedToSessionCartQtyForProductCode(product.getCode());					
+println "quantity available====> "+quantity;
+println "added available====> "+addedQty;
+
+
+ProductData productData = lynxProductFacade.getProductForAliasOrCode(product.getCode(), extraOptions);
+
+println "Available Stock===> "+productData.getStock().getStockLevel();
+println "Available Stock===> "+productData.getStock().getStockLevelStatus().getCode();
+
+println "productCode===>"+productData.getCode();
+
+println "dropcode===>"+userService.getUserForUID("2a0a9d37-1243-45b1-bab1-d253940f35b0").getDefaultShipmentAddress().getPostalcode();
+}
+catch(Exception e)
+{
+e.printStackTrace();
+
+}
+
+		}
+		finally
+		{
+			searchRestrictionService.enableSearchRestrictions();
+			baseSiteService.setCurrentBaseSite(baseSiteModel, true);
+		}
+	}
+},userService.getUserForUID("2a0a9d37-1243-45b1-bab1-d253940f35b0"));

@@ -1,0 +1,125 @@
+The servlet programmer should implement SingleThreadModel interface to ensure that servlet can handle only one request at a time. 
+It is a marker interface, means have no methods.
+
+What is difference between PrintWriter and ServletOutputStream?
+PrintWriter is a character-stream class where as ServletOutputStream is a byte-stream class. 
+The PrintWriter class can be used to write only character-based information whereas ServletOutputStream class can be used to write primitive 
+values as well as character-based information.
+
+
+What is difference between Cookies and HttpSession?
+Cookie works at client side whereas HttpSession works at server side.
+
+How can we perform any action at the time of deploying the project?
+By the help of ServletContextListener interface.
+
+How can we upload the file to the server using servlet?
+One of the way is by MultipartRequest class provided by third party.
+
+What is load-on-startup in servlet?
+The load-on-startup element of servlet in web.xml is used to load the servlet at the time of deploying the project or server start. 
+So it saves time for the response of first request.
+
+What are the annotations used in Servlet 3?
+There are mainly 3 annotations used for the servlet.
+
+@WebServlet : for servlet class.
+@WebListener : for listener class.
+@WebFilter : for filter class.
+
+================================================================================================================================================================
+Listeners===>
+
+Events are basically occurrence of something. Changing the state of an object is known as an event.
+
+ServletContextEvent and ServletContextListener==>
+The ServletContextEvent is notified when web application is deployed on the server.
+
+If you want to perform some action at the time of deploying the web application such as creating database connection, 
+creating all the tables of the project etc, you need to implement ServletContextListener interface and provide the implementation of its methods.
+
+Creating our own event and listener in java==>
+
+Here's an example of how create your own events and listen to them. 
+It's called the observer pattern. 
+In this example the initiator prints "Hello" and the HelloListener responds with "Hello there!".
+
+// An interface to be implemented by everyone
+// interested in "Hello" events
+interface HelloListener {
+    void someoneSaidHello();
+}
+
+
+// Someone who says "Hello"
+class Initiater {
+    private List<HelloListener> listeners = new ArrayList<HelloListener>();
+
+    public void addListener(HelloListener toAdd) {
+        listeners.add(toAdd);
+    }
+
+    public void sayHello() {
+        System.out.println("Hello!");
+    
+        // Notify everybody that may be interested.
+        for (HelloListener hl : listeners)
+            hl.someoneSaidHello();
+    }
+}
+
+
+// Someone interested in "Hello" events
+class Responder implements HelloListener {
+    @Override
+    public void someoneSaidHello() {
+        System.out.println("Hello there!");
+    }
+}
+
+
+testing==>
+
+class Test {
+    public static void main(String[] args) {
+        Initiater initiater = new Initiater();
+        Responder responder = new Responder();
+        initiater.addListener(responder);
+        initiater.sayHello();  // "Hello!" and "Hello there!"
+    }
+}
+
+
+---------------------------------------------------------------------
+In the original Java Q&A, I specified that you need three elements to generate and listen to custom events:
+
+An event class
+An event listener interface
+An event generator
+
+
+a)The event class
+Any class can fit an event's role. At a minimum, an event should provide a method that allows the listener to retrieve the event's source.
+
+Java includes a few built-in super types for creating events. Have a look at:
+Class EventObject
+
+When creating an event class, you must guarantee that the event is immutable. 
+The event generator will share the same event instance among the listeners; so ensure any one listener cannot change the event's state.
+
+
+b)The listener interface
+The listener interface provides the contract between the listeners and the event generator. 
+The contract provides the event generator with the method to call when it fires an event.
+
+When creating an event listener interface, you can add as many methods as you need. However, by convention, each method normally takes only one argument: the event.
+
+
+c)The event generator
+An event generator tracks listeners, provides a mechanism to add and remove listeners, and, at the appropriate time, fires events to the listeners.
+
+When creating an event generator, make sure its registration mechanism is thread safe. Beyond that, 
+writing an event generator class closely resembles writing any other class.
+
+
+============================================================================================================================================================

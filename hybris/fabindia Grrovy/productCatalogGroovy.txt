@@ -1,0 +1,278 @@
+import de.hybris.platform.core.Registry;
+import de.hybris.platform.servicelayer.search.FlexibleSearchQuery;
+import de.hybris.platform.servicelayer.search.FlexibleSearchService;
+import org.apache.commons.collections4.CollectionUtils;
+import de.hybris.platform.servicelayer.search.SearchResult;
+import de.hybris.platform.core.model.product.*;
+import de.hybris.platform.variants.model.*;
+import de.hybris.platform.europe1.model.*;
+import de.hybris.platform.catalog.enums.*;
+import org.apache.commons.lang3.*;
+import java.util.*;
+import de.hybris.platform.category.model.CategoryModel;
+import java.util.stream.*;
+import de.hybris.platform.variants.model.*;
+import de.hybris.platform.commercefacades.product.ProductOption;
+import de.hybris.platform.commercefacades.product.data.ProductData;
+import java.util.EnumSet;
+import de.hybris.platform.commercefacades.product.*;
+import de.hybris.platform.commercefacades.product.*;
+
+String vpQuery = "select {pk} from {Product as vp join catalogVersion as cv on {vp.catalogVersion}={cv.pk}} where {cv.version} = 'Staged'";
+
+
+void populateLabel(String url)
+	{
+		String[] categories = url.split("\\/");
+		try
+		{
+		try{
+			if (Objects.nonNull(categories[1]))
+			{
+				print categories[1]+ ";";
+			}
+			else
+{
+print "null" + ";";
+}
+}
+catch (Exception e)
+		{
+print "null" + ";";
+		}
+
+try{
+			if (Objects.nonNull(categories[2]))
+			{
+				print categories[2]+ ";";
+			}
+			else
+{
+print "null" + ";";
+}
+}
+catch (Exception e)
+		{
+print "null" + ";";
+		}
+		try{
+			if (Objects.nonNull(categories[3]))
+			{
+				print categories[3]+ ";";
+			}
+			else
+{
+print "null" + ";";
+}
+}
+catch (Exception e)
+		{
+print "null" + ";";
+		}
+			try{
+			if (Objects.nonNull(categories[4]))
+			{
+				print categories[4]+ ";";
+			}
+			else
+{
+print "null" + ";";
+}
+}
+catch (Exception e)
+		{
+print "null" + ";";
+		}
+		}
+		catch (Exception e)
+		{
+         println "";
+		}
+	}
+	
+	
+void populateL1toL4Category(ProductModel source)
+	{
+		String url = null;
+		def firstCategory = source.getSupercategories().stream().filter{categoryModel -> (categoryModel.isEcomVisible()
+			&& categoryModel.isPdpVisible() && categoryModel instanceof CategoryModel)}.findAny();
+		if (firstCategory.isPresent())
+		{
+			url = "/" + firstCategory.get().getName();
+			def secondCategory = firstCategory.get().getSupercategories().stream().filter{categoryModel -> (categoryModel.isEcomVisible()
+			&& categoryModel.isPdpVisible() && categoryModel instanceof CategoryModel)}.findAny();
+			if (secondCategory.isPresent())
+			{
+				url = "/" + secondCategory.get().getName() + url;
+
+				def thirdCategory = secondCategory.get().getSupercategories().stream().filter{categoryModel -> (categoryModel.isEcomVisible()
+			&& categoryModel.isPdpVisible() && categoryModel instanceof CategoryModel)}.findAny();
+				if (thirdCategory.isPresent())
+				{
+					url = "/" + thirdCategory.get().getName() + url;
+
+					def fourthCategory = thirdCategory.get().getSupercategories().stream().filter{categoryModel -> (categoryModel.isEcomVisible()
+			&& categoryModel.isPdpVisible() && categoryModel instanceof CategoryModel)}.findAny();
+					if (fourthCategory.isPresent())
+					{
+						url = "/" + fourthCategory.get().getName() + url;
+
+					}
+				}
+
+			}
+		}
+		populateLabel(url);
+	}
+
+ String getColorForProduct(ProductData product)
+	{
+	    def base =product.getBaseOptions().stream().findAny();
+		if(base.isPresent())
+		{
+		def variant = base.get().getOptions().stream().filter{s->StringUtils.equalsIgnoreCase(s.getCode(),product.getCode())}.findAny();
+		if (variant.isPresent())
+		{
+			def color = variant.get().getVariantOptionQualifiers().stream().filter{categoryModel -> StringUtils.containsIgnoreCase(categoryModel.getQualifier(), "color")}.findAny();
+			if(color.isPresent())
+			{
+			return color.get().getValue();
+			}
+		}
+		}
+		return StringUtils.EMPTY;
+	}
+	
+	String getSizeForProduct(ProductModel source)
+	{
+		def size = source.getSupercategories().stream()
+				.filter{categoryModel -> StringUtils.containsIgnoreCase(categoryModel.getCode(), "size")}.findAny();
+		if (size.isPresent())
+		{
+			return size.get().getName();
+		}
+		return StringUtils.EMPTY;
+	}
+final SearchResult<ProductModel> vpSearchResult = ((FlexibleSearchService) Registry.getApplicationContext().getBean("flexibleSearchService")).search(vpQuery);
+final List<ProductModel> vpResults = vpSearchResult.getResult();
+
+def StringHeader = "SAP Product Code ; Sap Article Number ;Approval status ; EAN number ;Parent Product Code ;Product Type ; redirect Url ; ECOM name ;Description ; Colour ;Size ;MRP Inr ; MRP Usd ;isInternational ;IsReturnable; L1 ;L2 ; L3 ; L4;";
+println StringHeader;
+EnumSet<ProductOption> options = EnumSet.of(ProductOption.BASIC,ProductOption.CATEGORIES,ProductOption.VARIANT_FULL);
+def productConverter = spring.getBean("cwsProductConverter");
+def urlResolver = spring.getBean("defaultGoogleFeedProductModelUrlResolver");
+def productconfigConverter = spring.getBean("productVariantConfiguredPopulator");
+
+if(CollectionUtils.isNotEmpty(vpResults))
+{
+for(ProductModel vProduct :vpResults)
+{
+
+ProductData product = productConverter.convert(vProduct);
+def producttype;
+
+		if (options != null)
+		{
+			productconfigConverter.populate(vProduct, product, options);
+		}
+println "";
+try{
+print vProduct.getCode() + ";";
+print vProduct.getSapArticleNumber() + ";";
+print vProduct.getApprovalStatus().getCode() + ";";
+print vProduct.getSapEAN() + ";";
+if (vProduct instanceof VariantProductModel)
+		{
+			print vProduct.getBaseProduct().getCode()+ ";";
+			producttype="VARIANT" ;
+		}
+		else
+		{
+		producttype="SINGLE" ;
+			print "null" + ";";
+		}
+
+if(CollectionUtils.isNotEmpty(vProduct.getVariants()))
+{
+producttype="GENERIC" ;
+}		
+print producttype + ";";
+print urlResolver.resolveInternal(vProduct)+ ";";
+print vProduct.getEcomName() + ";";
+print vProduct.getDescription() + ";";
+if (vProduct instanceof VariantProductModel)
+		{
+			print getColorForProduct(product)+ ";";
+		}
+		else
+		{
+			print "null" + ";";
+		}
+print getSizeForProduct(vProduct)+ ";";
+if(CollectionUtils.isNotEmpty(vProduct.getEurope1Prices()))
+{
+def priceInInr = vProduct.getEurope1Prices().stream()
+				.filter{priceRowModel -> StringUtils.equalsIgnoreCase(priceRowModel.getCurrency().getIsocode(), "INR")}
+				.findAny();
+
+def priceInUSD = vProduct.getEurope1Prices().stream()
+				.filter{priceRowModel -> StringUtils.equalsIgnoreCase(priceRowModel.getCurrency().getIsocode(), "USD")}
+				.findAny();
+
+if (priceInInr.isPresent())
+		{
+			print String.valueOf(priceInInr.get().getPrice().intValue())+ ";";
+		}
+else
+{
+print "null" + ";";
+}		
+
+if (priceInUSD.isPresent())
+		{
+			print String.valueOf(priceInUSD.get().getPrice().intValue())+ ";";
+		}	
+else
+{
+print "null" + ";";
+}
+}
+else{
+print "null" + ";";
+print "null" + ";";
+}
+if(vProduct.isDomesticOnly())
+{
+print "YES"+ ";";
+}
+else
+{
+print "NO"+ ";";
+}
+
+if(vProduct.isReturnable())
+{
+print "YES"+ ";";
+}
+else
+{
+print "NO"+ ";";
+}
+if (vProduct instanceof VariantProductModel)
+		{
+			populateL1toL4Category(((VariantProductModel) vProduct).getBaseProduct());
+		}
+		else
+		{
+			populateL1toL4Category(vProduct);
+		}
+
+}
+catch(Exception e)
+{
+continue;
+println "";
+}
+
+}
+}

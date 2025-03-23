@@ -1,0 +1,166 @@
+fqa users for pos=>15413601,15440081
+uat user --------7664962/amway@123/10085764.........upline abo : 7664962,downlines : ID 95200423174 phone no : 1267666287 pwd : amway@123,PC ID: 95200423205, phone no: 1331213123 , pwd: amway@123
+
+8745687678/adr/uat/MAnv12@3
+
+642414/721924      gst users with downline
+
+6306014////95202703828 ///
+local------>500537 amway@123    ////downline 7001167328   ///7004353667/mb-1234565422/MAnv/7004403597/mb-7678765678
+http://www.gnr8tr.online/--->petrol
+kit===>250534ID
+http://pos-in.intranet.local/home#machineUniqueId=C02Z3BETL410
+gitlab - dishangamway/qwertyuiopASDF1   //https://gitlab.com/amwayin/lynx-in/-/pipelines
+
+UC - dishang.jain@amway.com/Shinchan@1    https://ultraserve.samanage.com/login
+
+https://github.com/AmwayEIA/lynx-in/pull/5331/files
+
+vuejs/sso/xss fiter/binary methamatics
+
+7664962--abo
+7010260869----appu
+product--100076ID
+http://pos-in.intranet.local/home#machineUniqueId=C02Z3BETL410
+
+"Bearer RE1TOmZ2TmQ5c0FI" and Client Id as "DevelopmentTeam430ClientId"
+
+=================================================================
+vue done check videos in month end
+
+javascript//-------see video and finish in september///ES6
+
+/spring boot & microservices/october
+
+https://vuejs.org/v2/guide/computed.html/mongodb/  -----------november
+
+cloud/css --------------------------------dec
+
+java 8 extra =-----left....sitemap tutorial
+
+why to use ssh rsa in git
+
+payment integartion .....
+at java.util.concurrent.locks.ReentrantReadWriteLock$ReadLock.unlock(ReentrantReadWriteLock.java:88
+
+see when cart create////cart to order conversion.....//hystrix//DNS//encrypt,decrypt using rsa with keys
+
+CartModificationData///commercecartmodification full about cart,,///caching,promotions,//promotions//dynatrace
+
+[‎14-‎08-‎2020 11:40]  Naveen Pandey:  
+https://www.oracle.com/technical-resources/articles/java/g1gc.html 
+///AltDataSourceServiceAspect aop/EnableAltDataSource.java
+
+redis server//jndi
+
+CrudRepository<Person, Long>  ,spring data elasticsearch
+ 
+ <attributes>
+                <attribute autocreate="true" qualifier="calculated" type="java.lang.Boolean" generate="true">
+                    <custom-properties>
+                        <property name="modelPrefetchMode">
+                            <value>java.lang.Boolean.TRUE</value>
+                        </property>
+                    </custom-properties>
+                    <defaultvalue>java.lang.Boolean.FALSE</defaultvalue>
+                    <persistence type="property"/>
+                    <modifiers read="true" write="true" search="true" optional="true"/>
+                    <model>
+                        <getter default="true" name="calculated">
+                            <nullDecorator>Boolean.valueOf(false)</nullDecorator>
+                        </getter>
+                    </model>
+                </attribute>
+				
+				
+				https://help.sap.com/viewer/4c33bf189ab9409e84e589295c36d96e/2005/en-US/01ac8381cb0d42909b4b22d867864175.html
+				
+				[1:02 PM] Rahul Vatyani
+    dto caching
+​[1:02 PM] Rahul Vatyani
+    query caching
+​[1:02 PM] Rahul Vatyani
+    aur component caching ki hui h
+
+
+https://www.sisense.com/blog/8-ways-fine-tune-sql-queries-production-databases/
+========================================================================================================
+Key:5ywhdk48m567kjbr92vu9gch
+
+Secret:H8S2PXmwT4
+
+using for login..
+
+amwaycore.charon.momspresso.authoken.clientId=5ywhdk48m567kjbr92vu9gch
+amwaycore.charon.momspresso.authoken.clientSecret=H8S2PXmwT4
+
+
+
+============return new Gson().fromJson(indRSACipherService.decrypt(body.getBytes()),IndPartnerCartInfoData.class);
+    
+	
+	
+		List<IndPartnerCartEntryData> productList = new ArrayList<>();
+		IndPartnerCartEntryData socialProductData1 = new IndPartnerCartEntryData();
+		IndPartnerCartEntryData socialProductData2 = new IndPartnerCartEntryData();
+		socialProductData1.setQty(2);
+		socialProductData2.setQty(3);
+		socialProductData1.setCode("E89671D");
+		socialProductData2.setCode("239814ID");
+		productList.add(socialProductData1);
+		productList.add(socialProductData2);
+		IndPartnerCartInfoData socialCustomerData = new IndPartnerCartInfoData();
+		socialCustomerData.setUserName("Test User");
+		socialCustomerData.setUserPhoneNo("916377805847");
+		socialCustomerData.setProducts(productList);
+		return socialCustomerData;
+		
+		
+		accountSubTypeCd": "Customer"
+
+
+===============
+revision day---sunday
+
+revision---java,hibernate,spring boot,java 8 extra,time complexity,streams,lambda,optional,additional knowledge,,array,integration,aop,maven,redis
+
+total = BigDecimal.valueOf(deliveryCostWithTax+subtotal).setScale(2, RoundingMode.HALF_EVEN).doubleValue();
+
+
+
+
+spring social,batch,,cloud,docker,cubernetis,hashing,encoding,heap dump checking,thread dump
+
+xss filter.
+
+spring security with udemy later.
+modern java script
+
+junit,patterns
+
+,kafka,kinesis,jboss......eureka,saml
+
+
+
+email to multiplayer
+--------------
+cache and fragments
+
+oauth2 on udemy.
+
+ecache after redis--->
+https://www.youtube.com/watch?v=LT45sRmhCeU&list=PLq3uEqRnr_2HY6LMQsbvsK4btj51sWhBS&index=7
+
+https://jira.amway.com:8443/browse/IPB-4988
+https://jira.amway.com:8443/browse/IPB-4366
+https://jira.amway.com:8443/browse/IPB-5332
+
+
+probability
+
+
+=================================
+eway bill
+nishant groovy
+label issue with ravi
+paytm isuse

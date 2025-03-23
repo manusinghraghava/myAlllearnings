@@ -1,0 +1,1661 @@
+spring integration-->
+
+As we know in high level integration.
+there is one consumer and one producer both of them connect via pipes.in si known as channels.
+
+And producers and consumers are known as Endpoints.
+
+And communication occurs through message via channels.
+
+Spring Integration (SI) is a framework enabling a collection of individual applications to integrate together to deliver a business enterprise system. 
+The framework is essentially a lightweight messaging system that enables spring based applications to communicate 
+with one another and supports integration with external systems via declarative adapters. 
+It is based on the 'filters and pipes' design architecture.
+
+The framework is built on 3 main components: 
+a)Messages
+Encapsulate the data to be transferred from one place to another. 
+They comprise of a header (holds meta data such as message-id, timestamp, etc) and a payload (your data typically in the form of a POJO). 
+we pass messages using pipes and filters.
+
+
+Example-->creating message with message builder
+@SpringBootApplication
+@Configuration
+@ImportResource("integration-context.xml")   //importing other xml files
+public class IntegrationApplication implements ApplicationRunner{
+
+	public static void main(String[] args) {
+		SpringApplication.run(IntegrationApplication.class, args);
+	}
+
+	@Override
+	public void run(ApplicationArguments args) throws Exception {
+		
+		Message<String> message=MessageBuilder.withPayload("Hello ji").setHeaderIfAbsent("me", "u").build();
+		PrintService.print(message);
+	}
+
+}
+------------------------------------------------------------------------------------------------
+b)Channels
+Provide a mechanism to transport messages from one endpoint to another. 
+Represents the pipes in the pipes & filters architecture. SI offers two types of channels, namely Pollable and Subscribable Channels. 
+The former rely on consumers to periodically check for messages whereas 
+the latter is directly responsible for notifying registered consumers when messages become available.
+
+Simple Example-->
+
+<int:channel id ="message" />  //this will create a channel of type DirectMessage with id message in context.
+
+
+@Autowired
+	DirectChannel channel;               // this is the bean we created
+
+	public static void main(String[] args) {
+		SpringApplication.run(IntegrationApplication.class, args);
+	}
+
+	@Override
+	public void run(ApplicationArguments args) throws Exception {
+		
+		Message<String> message=MessageBuilder.withPayload("Hello ji").setHeaderIfAbsent("me", "u").build();
+		channel.subscribe(new MessageHandler() {     // for subscribing we need a message handeler.
+
+			@Override
+			public void handleMessage(Message<?> message) throws MessagingException {
+				PrintService.print(message);
+				
+			}
+			
+		});
+		channel.send(message);                              //sending message.
+	}
+
+
+
+Type of channels(Control How message will receive)-->
+
+All channels implement MessageChannel Interface and override send() method.
+
+1)pollable channel-->it allows endpoints to receive channel within a buffer(a place to store data temporarily) .it has its receive() method.it stores method in a buffer which it receives from producer until it consumes by consumer.
+so in this we expect consumer to check constantly to receive methods.
+
+types of pollable channel
+
+a)queue channel:-it works on fifo .it places message in a blocking queue which can be pulled by consumers.it works asynchronously due to which execution of consumer response never stop.
+
+1)we will create a gateway endpoint.this is used to accept messages.
+
+public interface PrinterGateway {
+
+	public Future<Message<String>> print(Message<?> message);
+}
+
+
+
+config-->
+
+//gateway will accept message and send it to input channel and also receive Future<Message> from channel.
+<int:gateway default-request-channel="inputChannel" service-interface="com.example.demo.PrinterGateway"/>
+<int:channel id="inputChannel">
+<int:queue capacity="10"/>   // we have done queue type integration for channel with capacity of 10 message.
+</int:channel>
+<bean id="printService" class="com.example.demo.PrintService"/>  //service activator bean
+
+//this service will activate when we recieve message on channel it is endpoint to receive message.
+<int:service-activator input-channel="inputChannel" method="print" ref="printService">
+<int:poller max-messages-per-poll="2" time-unit="SECONDS" fixed-rate="5"/>
+</int:service-activator>
+
+
+we have defined pollar to check message for every 5 second for max 2 message from input channel.
+
+
+so when gateway push message on queue channel service activator will check every 2 second for receiving channel.
+
+
+@Override
+	public void run(ApplicationArguments args) throws Exception {
+	
+			List<Future<Message<String>>> messages =IntStream.range(1,10).mapToObj(s->MessageBuilder.withPayload("HI"+s).build()).map(k->{
+			System.out.println("Sending messages" + k.getPayload());
+			return this.gateway.print(k); //we are sending our message to gateway. and receive back from service activator.
+		}).collect(Collectors.toList());
+			
+			messages.stream().forEach(s->{
+				try {
+					System.out.println(s.get().getPayload());
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (ExecutionException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			});
+	}
+	
+	
+	
+b)PriorityChannel-->same as queue but does not maintain order.here we can decide which has to pull on priority.
+
+a)just set priority while building message abd a small change in xml config.
+
+<int:priority-queue capacity="10"/>
+
+we can also give our comparator here to set priority.
+
+	
+	<bean id="customComparator" class="com.oreilly.integration.CustomMessageComparator"/>  //simple comparator with overriden compareTo()
+		
+	<int:channel id="inputChannel">
+		<int:priority-queue capacity="10" comparator="customComparator"/>
+	</int:channel>
+
+
+===============
+2)Subscribable Channels-->it works on observer pattern.it notify consumer for message,have one method suscribe().
+
+a)Direct channel-->it will simply deliver a message only to single suscribed channel.
+our above example of simple channel is example of direct channel.
+
+
+<int:gateway service-interface="com.oreilly.integration.PrinterGateway"
+		default-request-channel="inputChannel"/>
+		
+	<int:channel id="inputChannel">
+		<int:dispatcher failover="false"/>   //this represent the load balancer.
+	</int:channel>
+
+	<bean id="printService" class="com.oreilly.integration.PrintService"/>
+
+	<bean id="uppercasePrintService" class="com.oreilly.integration.UppercasePrintService"/>
+
+	<int:service-activator order="2" ref="uppercasePrintService" method="print" input-channel="inputChannel"/>
+
+	<int:service-activator order="1" ref="printService" method="print" input-channel="inputChannel"/>
+	
+	
+	
+so what is going on here we have two endpoints which are using one input channel which is type of Direct.
+here load balancer divide the message equally to one channel. 
+here we can also define order in which channel will come first to pick.
+if any exception comes in one end point.load balancer will pass remaining messages to other.
+
+by default failover is true..if we make it false execution will stop if exception comes in any endpoint.
+
+
+
+b)PublishSuscribe Channel   - -->it will send message to many subscribers.not like direct channel one message to on e suscriber.here we can send same message to many suscribers.
+
+rest code is same except this--->
+
+	
+	<task:executor id="executor" pool-size="5"/>   //this is the thread we use to send message nonsynchronously
+	
+	<int:publish-subscribe-channel id="inputChannel" task-executor="executor"/>		
+	
+	
+	here we are sending message to different suscribers,so we are taking help of thread to do it fast.
+
+
+
+===========================================================
+messaging bridge--> it is used to connect two channel.
+
+<int:gateway service-interface="com.oreilly.integration.PrinterGateway"
+		default-request-channel="pollableChannel"/>
+
+	<int:channel id="pollableChannel">   //creating one queue channel
+		<int:queue capacity="10"/>
+	</int:channel>
+	
+	<int:bridge input-channel="pollableChannel" output-channel="inputChannel">
+		<int:poller fixed-delay="5" time-unit="SECONDS" max-messages-per-poll="2"></int:poller> //send 2 message every 5 second
+	</int:bridge>
+	
+				
+	<int:publish-subscribe-channel id="inputChannel" task-executor="executor"/>		
+
+	<task:executor id="executor" pool-size="5"/>
+
+	<bean id="printService" class="com.oreilly.integration.PrintService"/>
+
+	<bean id="uppercasePrintService" class="com.oreilly.integration.UppercasePrintService"/>
+
+	<int:service-activator order="2" ref="uppercasePrintService" method="print" input-channel="inputChannel"/>
+
+	<int:service-activator order="1" ref="printService" method="print" input-channel="inputChannel"/>
+	
+	
+	here bridge is taking message from pollable channel and pass it to input channel with fix delay of 5 seconds.
+	
+	
+------------------------------------------------------------------------------------------------
+c)Endpoints
+Consumer/Producer of messages. Performs some action based on the payload. 
+Endpoints come in various flavours, each performing a different function. 
+These include Transformers (transform data), Routers (route data), Filters (filter data), Splitter (splits messages), 
+Aggregator (aggregates group of messages into single message), Service Activator (connecting messages to Services) and 
+Channel Adapters (connect channels to external applications).
+
+The basic idea behind the SI framework is that applications communicate with each other by sending/receiving messages. 
+These messages would typically contain the information (payload) required by the next application in the process pipeline. 
+The transport of messages from one application to another is performed by Channel components. 
+The Endpoints perform some action based on the payload. This could be routing the messages to another endpoint or processing the payload itself. 
+
+
+Example-->
+
+we will use service activator here-->
+it is used to connect spring bean to a input channel.
+
+
+1)create a bean
+
+public class PrintService {
+	
+	public Message print(Message message)
+	{
+		return MessageBuilder.withPayload("Bye ji").setHeaderIfAbsent("me", "u").build();  //it will return a message
+		
+	}
+}
+
+
+2)now config
+
+<int:channel id ="outputChannel"></int:channel>
+<int:channel id ="inputChannel"></int:channel>
+
+
+<bean class="com.example.demo.PrintService" id="printService"/>
+<int:service-activator ref="printService" method="print" input-channel="inputChannel" output-channel="outputChannel"></int:service-activator>
+
+
+here we have two channels.
+here service activator is taking our bean method print() to connect between two channels.
+
+
+3)now calling.
+
+@Autowired
+	@Qualifier("inputChannel")
+	DirectChannel channel;
+	
+	@Autowired
+	@Qualifier("outputChannel")
+	DirectChannel outputChannel;
+
+	public static void main(String[] args) {
+		SpringApplication.run(IntegrationApplication.class, args);
+	}
+
+	@Override
+	public void run(ApplicationArguments args) throws Exception {
+		
+		Message<String> message=MessageBuilder.withPayload("Hello ji").setHeaderIfAbsent("me", "u").build();
+		
+		outputChannel.subscribe(new MessageHandler() {   
+
+			@Override
+			public void handleMessage(Message<?> message) throws MessagingException {
+				System.out.println(message.getPayload());        //handling message in second channel.
+				}
+			
+		});
+		channel.send(message);  //sending from channel 1
+	}
+
+--------------------------------------------------------------------------------------------------------------------------------------
+Types of components of Endpoints-->
+
+
+a)Router----->it is used to take message from channel and then put some logic in it and send to various endpoints.
+it is also of different type-->
+
+*))Payload Type Router-->it will dynamically decide which channel should receive the message on some logic on payload.
+
+example-->
+<int:gateway service-interface="com.oreilly.integration.PrinterGateway"
+		default-request-channel="inputChannel"/>
+	
+	<int:payload-type-router input-channel="inputChannel">
+		<int:mapping type="java.lang.Integer" channel="intChannel"/>   // automatically check type of payload and creating channel
+		<int:mapping type="java.lang.String" channel="stringChannel"/>
+	</int:payload-type-router>
+	
+	<int:channel id="inputChannel" />		
+
+	<bean id="printService" class="com.oreilly.integration.PrintService"/>
+
+	<bean id="numericPrintService" class="com.oreilly.integration.NumericPrintService"/>
+
+	<int:service-activator ref="numericPrintService" method="print" input-channel="intChannel"/>  //calling router channel.
+
+	<int:service-activator ref="printService" method="print" input-channel="stringChannel"/>
+	
+here we are defining a gateway endpoint who will connect input channel to send/receive message.
+but before the inputchannel receive message router will check message on its type and create different channels according to type.
+now we will send data according type to service activator.
+
+
+**))Header Type Router-->it will dynamically decide which channel should receive the message on some logic on Header.
+same as above in this it will check header name and on its type it transfer message.
+
+<int:gateway service-interface="com.oreilly.integration.PrinterGateway"
+		default-request-channel="inputChannel"/>
+
+	<int:header-value-router input-channel="inputChannel" header-name="routeHeader">//setting this header while creating message.
+		<int:mapping value="int" channel="intChannel"/>
+		<int:mapping value="string" channel="stringChannel"/>           ///redirecting on header type.
+	</int:header-value-router>
+			
+	<int:channel id="inputChannel" />		
+
+	<bean id="printService" class="com.oreilly.integration.PrintService"/>
+
+	<bean id="numericPrintService" class="com.oreilly.integration.NumericPrintService"/>
+
+	<int:service-activator ref="numericPrintService" method="print" input-channel="intChannel"/>
+
+	<int:service-activator ref="printService" method="print" input-channel="stringChannel"/>
+
+
+
+**)RecepientList Router-->
+it is just used to route message to endpoints on some logic which is statically written.it can write logic on anything..
+
+<int:gateway service-interface="com.oreilly.integration.PrinterGateway"
+		default-request-channel="inputChannel"/>
+
+	<int:recipient-list-router input-channel="inputChannel" default-output-channel="defaultChannel">
+		<int:recipient selector-expression="payload.equals(51)" channel="intChannel"/>  //if payload matches route to this channel
+		<int:recipient selector-expression="payload.equals(51)" channel="stringChannel"/>
+	</int:recipient-list-router>
+				
+	<int:channel id="inputChannel" />		
+
+	<int:channel id="defaultChannel"/>
+	
+	<bean id="printService" class="com.oreilly.integration.PrintService"/>
+
+	<bean id="numericPrintService" class="com.oreilly.integration.NumericPrintService"/>
+	
+	<bean id="defaultService" class="com.oreilly.integration.DefaultService"/>
+
+	<int:service-activator ref="defaultService" method="print" input-channel="defaultChannel"/>
+
+	<int:service-activator ref="numericPrintService" method="print" input-channel="intChannel"/>
+
+	<int:service-activator ref="printService" method="print" input-channel="stringChannel"/>
+
+if we dont give selector expression it will route all messages to both channels...and both service activator will call on messages.
+as before direct channel it will receive message and create its own channel on condition.
+if condition not matches here it will route to default channel.
+
+
+
+**)Custom Router-->If we want to define our own logic on basis of our logic not on type or on expression.
+
+steps-->
+
+$$)create a new class with extending AbstractMesaageRouter-->
+
+public class CustomRouter extends AbstractMessageRouter {
+
+	@Autowired
+	@Qualifier("intChannel")
+	private MessageChannel intChannel;
+
+	@Autowired
+	@Qualifier("stringChannel")
+	private MessageChannel stringChannel;
+	
+	@Override
+	protected Collection<MessageChannel> determineTargetChannels(Message<?> message) {
+		Collection<MessageChannel> targetChannels = new ArrayList<MessageChannel>();
+		
+		if(message.getPayload().getClass().equals(Integer.class)){
+			targetChannels.add(intChannel);
+		}else if(message.getPayload().getClass().equals(String.class)){
+			targetChannels.add(stringChannel);
+		}
+		
+		return targetChannels;
+	}
+
+}
+
+Here we are redirecting to a channel on our logic.
+
+
+
+<int:gateway service-interface="com.oreilly.integration.PrinterGateway"
+		default-request-channel="inputChannel"/>
+	
+	<bean id="customRouter" class="com.oreilly.integration.CustomRouter"/>
+	
+	<int:router ref="customRouter" input-channel="inputChannel"/> //defining custom router.
+	  			
+	<int:channel id="inputChannel" />		
+
+	
+	<bean id="printService" class="com.oreilly.integration.PrintService"/>
+
+	<bean id="numericPrintService" class="com.oreilly.integration.NumericPrintService"/>
+	
+
+	<int:service-activator ref="numericPrintService" method="print" input-channel="intChannel"/>
+
+	<int:service-activator ref="printService" method="print" input-channel="stringChannel"/>
+
+
+
+-------------------------------
+b)filter----->it is used to filter message before sending it to other channel.
+we can also write our custom filter class which implements MessageSelector Interface.
+
+<int:gateway service-interface="com.oreilly.integration.PrinterGateway"
+		default-request-channel="inputChannel"/>
+		  			
+	<int:channel id="inputChannel" />
+	<int:channel id="outputChannel" />
+	
+	<int:filter expression="payload.equals(4)" input-channel="inputChannel" output-channel="outputChannel"/> filtering and passing to other channel.
+		
+	<bean id="printService" class="com.oreilly.integration.PrintService"/>
+
+	<int:service-activator ref="printService" method="print" input-channel="outputChannel"/>
+
+--------------------------------
+c)splitter--->it is used to divide single message into subsets before sending it to endpoints.
+
+need to create a class which extends AbstractMesssageSpliiter. and override split() message.
+This method takes the input message as parameter, and should return a collection or array of Message or payload objects.
+
+The AbstractMessageSplitter class produces as output multiple messages. These are the messages directly returned by method splitMessage(), or internally created messages having as paylod the object returned by the method.
+
+Each of the messages produced by AbstractMessageSplitter has three headers automatically set:
+
+CORRELATION_ID — is set with the value of the header ID of the input message
+SEQUENCE_SIZE — is set with the number of output messages produced from the input message
+SEQUENCE_NUMBER — is set with a ordering number from 1 to SEQUENCE_SIZE
+
+
+Example below show how to configure a splitter in XML with element . Attribute ref is a reference to bean that extends AbstractMessageSplitter.
+
+<int:splitter id="orderSplitter" input-channel="orderChannel" 
+	ref="orderSplitterBean" output-channel="itemChannel" />
+
+<beans:bean id="orderSplitterBean" class="app.OrderSplitter"/>
+Below is the implementation of the splitter bean:
+
+public class OrderSplitter extend AbstractMessageSplitter {
+
+	@Override
+	protected Object splitMessage(Message<Order> message) {
+		return message.getPayload().getItems();
+	}
+}
+
+
+--------------------------------
+d)Aggregator->it is opposite of splitter. learn this in deep later.
+
+orrelation determines how messages are grouped for aggregation. In Spring Integration, correlation is done by default, based on the IntegrationMessageHeaderAccessor.CORRELATION_ID message header. Messages with the same IntegrationMessageHeaderAccessor.CORRELATION_ID are grouped together. However, you can customize the correlation strategy to allow other ways of specifying how the messages should be grouped together. To do so, you can implement a CorrelationStrategy (covered later in this chapter).
+
+To determine the point at which a group of messages is ready to be processed, a ReleaseStrategy is consulted. The default release strategy for the aggregator releases a group when all messages included in a sequence are present, based on the IntegrationMessageHeaderAccessor.SEQUENCE_SIZE header. You can override this default strategy by providing a reference to a custom ReleaseStrategy implementation.
+
+
+for referrence aggregrator-->
+
+
+he following listing shows a brief highlight of the base AbstractAggregatingMessageGroupProcessor (the responsibility for implementing the aggregatePayloads method is left to the developer):
+
+public abstract class AbstractAggregatingMessageGroupProcessor
+              implements MessageGroupProcessor {
+
+    protected Map<String, Object> aggregateHeaders(MessageGroup group) {
+        // default implementation exists
+    }
+
+    protected abstract Object aggregatePayloads(MessageGroup group, Map<String, Object> defaultHeaders);
+
+}
+
+
+
+https://docs.spring.io/spring-integration/reference/html/aggregator.html
+=============================================
+
+Transformers---->It is another endpoint used to manipulate a message.we can transform payload and headers.
+Example producer send the data into object but consumer only takes json...than transformer comes in picture.
+
+a)simple example-->
+
+<int:gateway service-interface="com.oreilly.integration.PrinterGateway"
+		default-request-channel="inputChannel"/>
+		  			
+	<int:channel id="inputChannel" />
+	<int:channel id="outputChannel" />
+	
+	<int:transformer expression="payload.toUpperCase()" input-channel="inputChannel" output-channel="outputChannel"/>
+		
+	<bean id="printService" class="com.oreilly.integration.PrintService"/>
+
+	<int:service-activator ref="printService" method="print" input-channel="outputChannel"/>
+
+
+
+b)custom transformer-->
+
+<context:component-scan
+        base-package="org.javacodegeeks.springintegration.transformer.simpletransformer" />
+ 
+    <int:transformer input-channel="input" output-channel="output"
+        ref="mapToObject" method="map"/>   //passing ref of our bean and method name.
+ 
+    <int:channel id="input" />
+    <int:channel id="output">
+            <int:queue />
+    </int:channel>
+	
+	
+	
+	///our bean
+	
+	@Component
+public class MapToObject {
+ 
+    public Ticket map(Message<String> message) {
+        Ticket ticket = new Ticket();
+        ticket.setTicketId(message.get("ticketId"));
+        ticket.setDescription(message.get("description"));
+ 
+        return ticket;
+    }
+}
+
+
+
+types of ootb transformers-->
+
+a)object-to-string/object-to-json -----automatatically convert one message into another.
+b)header filter                   -----remove that header from message.
+c)Header Enricher                 -----opposite of filter will add header into the message.also we can write our custom.
+
+
+Example-->
+
+
+
+<int:gateway service-interface="com.oreilly.integration.PrinterGateway"
+		default-request-channel="inputChannel" />
+
+	<int:channel id="inputChannel" />
+	<int:channel id="enricherChannel" />
+	<int:channel id="filterChannel" />
+	<int:channel id="outputChannel" />
+
+	<int:header-enricher input-channel="inputChannel" output-channel="enricherChannel">
+		<int:header name="publicKey" ref="customEnricher" method="getHeaderValue"></int:header> //settinh header with our custom
+	</int:header-enricher>		
+
+	<bean id="customEnricher" class="com.oreilly.integration.CustomHeaderEnricher"/>
+
+	<int:header-filter header-names="privateKey" input-channel="enricherChannel" output-channel="filterChannel"/>  //emoving header
+	
+	<int:object-to-json-transformer input-channel="filterChannel" output-channel="outputChannel"/>   //convrting object to jsoon ootb
+
+		
+	<bean id="printService" class="com.oreilly.integration.PrintService" />
+
+	<int:service-activator ref="printService" method="print"
+		input-channel="outputChannel" />
+		
+		
+custom enricher class-->
+
+
+public class CustomHeaderEnricher {
+
+	public String getHeaderValue(){
+		return "This is the header value";
+	}
+}
+
+
+
+
+
+d)Payload Enricher-->append additioanl information to payload using a request channel.
+
+lets create a service which will add a number in message..
+
+
+public class CustomService {
+
+	public String getPhoneNumber(Person person){
+		return "867-5309";
+	}
+}
+
+
+<int:gateway service-interface="com.oreilly.integration.PrinterGateway"
+		default-request-channel="inputChannel" />
+
+	<int:channel id="inputChannel" />
+	<int:channel id="filterChannel" />
+	<int:channel id="outputChannel" />
+	<int:channel id="enricherChannel" />
+	<int:channel id="requestChannel"/>
+
+	<bean class="com.oreilly.integration.CustomService" id="customService"/>
+	
+	<int:service-activator ref="customService"  input-channel="requestChannel" method="getPhoneNumber"/>
+	
+	<int:enricher input-channel="inputChannel" request-channel="requestChannel" output-channel="enricherChannel">
+		<int:property name="phoneNumber" expression="payload"/>
+	</int:enricher>
+	
+	<int:header-filter header-names="privateKey" input-channel="enricherChannel" output-channel="filterChannel"/>
+	
+	<int:object-to-json-transformer input-channel="filterChannel" output-channel="outputChannel"/>
+
+	<bean id="printService" class="com.oreilly.integration.PrintService" />
+
+	<int:service-activator  ref="printService" method="print"
+		input-channel="outputChannel" />
+		
+		
+whats going on here..
+
+our gateway drop message on our input channel.
+input channel call our enricher..
+enrichet takes help of request channel ,request channel will activate service and append payload on property phoneNUmber.
+<int:property name="phoneNumber" expression="payload"/>   //if we send a object we can use payload.fieldName.
+
+ 
+-------------------------------
+
+endpoints whuch use to connect with other application,services etc.
+
+1)Service-activator--->it is used to activate a service method on message handeler bean.it also return response while other not.
+
+2)Gateways         --->it is used to hide message system.
+we have already seen examples above-->
+
+but in above example we have default-reply-channel what if we have to rply on some logic to another channel.
+means whatever message will come we have to pass on another channels.
+
+a)lets create a interface-->
+
+public interface EnhancedPrinterGateway {
+
+	public void print(Person person);
+	
+	public String uppercase(Person person);
+	
+}
+
+here we have two methods-->one return void another string.
+
+
+<int:gateway service-interface="com.oreilly.integration.EnhancedPrinterGateway">
+		<int:method name="print" request-channel="printChannel"></int:method>  //when this method call pass to this channel
+		<int:method name="uppercase" request-channel="uppercaseChannel"></int:method>  //otherwise this.
+	</int:gateway>
+
+	<int:channel id="printChannel" />
+	<int:channel id="uppercaseChannel" />
+
+	<int:service-activator ref="uppercaseService" method="execute" input-channel="uppercaseChannel" />
+	
+	<bean id="uppercaseService" class="com.oreilly.integration.UppercaseService"/>
+	
+	<int:service-activator ref="printService" method="print"
+		input-channel="printChannel" />
+		
+	<bean id="printService" class="com.oreilly.integration.PrintService" />
+	
+	
+
+if we want to set a header in all messages we can set it in gateway...
+
+
+	<int:gateway service-interface="com.oreilly.integration.EnhancedPrinterGateway">
+		<int:default-header name="globalHeader" value="simpleValue"/>  //setting a header for all message
+		<int:method name="print" request-channel="printChannel">
+			<int:header name="individualHeader" expression="#args[0].firstName"/>
+		</int:method>
+		<int:method name="uppercase" request-channel="uppercaseChannel"></int:method>
+	</int:gateway>
+	
+	
+here-->
+<int:header name="individualHeader" expression="#args[0].firstName"/>
+we are setting header for specific messages.
+#args[0].firstName --->this is the first argument pass in method print and firstName is its property.
+
+
+
+asynchronous gateway-->by default if we have to execute a method on gateway they are synchronous.they will wait for rply.
+                       they will run in sequence.
+					   but we can make it asynchronous.
+					   
+					   in this code no change in xml,but change in gateway interface..we have use future<?<?>> is example of this.
+					   
+
+1)declare our gateway-->
+
+
+public interface EnhancedPrinterGateway {
+
+
+	public ListenableFuture<String> uppercase(Person person);   //here spring will know it is asynchronous.
+	
+}
+
+2)Our service-->
+
+public class UppercaseService {
+
+	public String execute(Person person){
+		
+		try {
+			TimeUnit.SECONDS.sleep(new Random().nextInt(10));  //waiting
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return (person.getFirstName() + " " + person.getLastName()).toUpperCase();
+		
+	}
+	
+	
+3)our config-->
+
+<int:gateway service-interface="com.oreilly.integration.EnhancedPrinterGateway">
+		<int:method name="uppercase" request-channel="uppercaseChannel"></int:method>
+	</int:gateway>
+	<int:channel id="uppercaseChannel" />
+    <int:service-activator ref="uppercaseService" method="execute" input-channel="uppercaseChannel" />
+	<bean id="uppercaseService" class="com.oreilly.integration.UppercaseService"/>
+	
+
+
+4)now our main method-->
+
+@Override
+	public void run(ApplicationArguments arg0) throws InterruptedException, ExecutionException {
+		Person[] payloads = { new Person("Kevin", "Bowersox"), new Person("John", "Doe") };
+		for (int x = 0; x < payloads.length; x++) {
+			
+			System.out.println("Invoking the gateway method");
+			
+			ListenableFuture<String> future = this.gateway.uppercase(payloads[x]);  //sending data
+			future.addCallback(new ListenableFutureCallback<String>(){
+
+				@Override
+				public void onSuccess(String result) {
+					System.out.println("Invoking the success callback");  //adding callback.
+					System.out.println(result);
+				}
+
+				@Override
+				public void onFailure(Throwable ex) {
+				}
+				
+			});
+			
+//			System.out.println(returnMessage);
+		}
+	}
+	
+	
+here what will happen-->
+while sending person as payload gateway will not wait for response as it is on sleep while activating service.
+and run Asynchronously.
+
+
+
+
+e) inbound Channel adapter-->receives message by polling or notifying external system.once message is received it deliver the message downstream
+it is used to integrate with external systems.
+
+it is not like gateway we donot have to call method.
+
+inbound chn adp.--> will automatically check if there any object related to messaging service appear it will pass it to system.
+
+Example-->
+
+
+<int:inbound-channel-adapter ref="personDirectoryService" method="findNewPeople" channel="printChannel">
+		<int:poller fixed-rate="3000"/>
+	</int:inbound-channel-adapter>
+	
+	
+	<bean id="personDirectoryService" class="com.oreilly.integration.PersonDirectoryService"/>
+	<int:channel id="printChannel" />
+	
+	<int:service-activator ref="printService" method="print"
+		input-channel="printChannel" />
+		
+	<bean id="printService" class="com.oreilly.integration.PrintService" />
+	
+	
+	here inbound channel will check every 3 sec if there any object returned to him it will pass it to print channel.
+	
+	
+
+
+our service-->
+
+
+public class PersonDirectoryService {
+
+	public Person findNewPeople(){
+		return new Person("Jan", "Doe");
+	}
+}
+
+it will check this method every 3 sec and will get 2 object which it pass to print service.
+
+
+
+
+
+f)outbound-channel-adapter-->opposite of inbound ,send message to external system.
+
+1)we will create a service in which we have to send data--->
+
+public class PersonRegistrationService {
+
+	public void registerEmail(Person person){
+		System.out.println("Email created for: " + person.getFirstName());
+	}
+}
+
+now-->
+
+config-->
+
+<int:inbound-channel-adapter ref="personDirectoryService" method="findNewPeople" channel="registerChannel"> //deliver message to this channel
+		<int:poller fixed-rate="3000"/>
+	</int:inbound-channel-adapter>
+	
+	<bean id="personDirectoryService" class="com.oreilly.integration.PersonDirectoryService"/>
+
+	<int:outbound-channel-adapter ref="personRegistrationService" method="registerEmail"
+		channel="registerChannel"/>  //here channel is which who deliver message to outbound channel.
+	
+	<bean id="personRegistrationService" class="com.oreilly.integration.PersonRegistrationService"/>
+	
+		
+	<int:channel id="registerChannel" />
+
+
+flow-->
+
+inbound channel check every 3 sec from a external system and deliver message to register channel.
+now outbound channel takes message from register-channel and send it to third party.
+
+------------------------------------------------------------------------------------------------------------------------------------------
+Application Runner and Command Line Runner interfaces lets you to execute the code after the Spring Boot application is started. You can use these interfaces to perform any actions immediately after the application has started.
+
+=============================================
+Channel Interceptor-->
+
+---------------------------------------------
+
+
+Adapter allow one way communication and gateway are two way.
+======================================================================================
+======================================================================================
+======================================================================================
+
+Example-->
+
+File System Integration-->Using Spring Integration to Read
+and Write Files.
+
+
+reading writing file is very easy via spring integration,for this we will use int-file namespace.
+so dont forgot to add it.
+
+
+
+	<int-file:inbound-channel-adapter 
+		directory="file:src/test/read"  //here we are reading file
+		filename-pattern="sample.txt"   //of this pattern
+		channel="inboundChannel">       //passing it to this channel
+		<int:poller fixed-rate="10000"/>//in every 10 sec.
+	</int-file:inbound-channel-adapter>
+	
+	<int:channel id="inboundChannel"/>
+	
+	<int-file:outbound-channel-adapter
+		directory="file:src/test/write" //writing to this path
+		channel="inboundChannel"       //reading from this channel
+		auto-create-directory="true"   //if directory not present it will create.
+		mode="REPLACE"                 //if any file with same name exist will replace it
+		delete-source-files="true">    //deleting origional source file
+	</int-file:outbound-channel-adapter>
+	
+	
+so when we put file in folder inbound channel will check every 10 sec and write it to the path.
+
+
+transforming file--->
+
+
+<int-file:inbound-channel-adapter 
+		directory="file:src/test/read"
+		filename-pattern="sample.txt"
+		channel="inboundChannel">
+		<int:poller fixed-rate="10000"/>
+	</int-file:inbound-channel-adapter>
+	
+	<int:channel id="inboundChannel"/>
+	
+	<int-file:file-to-string-transformer input-channel="inboundChannel" output-channel="transformChannel"/>
+	//here we tranforming file content  to string.
+	<int:channel id="transformChannel"/>
+	
+	<int:service-activator ref="filePrinter" method="print" input-channel="transformChannel"/>
+	
+	<bean id="filePrinter" class="com.oreilly.integration.FilePrinter"/>
+	
+	
+	
+	public class FilePrinter {
+
+	public void print(String file){
+		System.out.println("Invoking the print method with a string");
+		System.out.println(file);
+	}
+	
+	
+}
+
+
+
+	
+
+outbound:gateway---> as we know adapter are of only one way channel.so for sometimes we use this for two way communication.
+
+<int-file:inbound-channel-adapter 
+		directory="file:src/test/read"
+		filename-pattern="sample.txt"
+		channel="inboundChannel">
+		<int:poller fixed-rate="10000"/>
+	</int-file:inbound-channel-adapter>
+	
+	<int:channel id="inboundChannel"/>
+	
+	<int-file:file-to-string-transformer input-channel="inboundChannel" output-channel="transformChannel"/>
+	
+	<int:channel id="transformChannel"/>
+	
+	<int-file:outbound-gateway 
+		request-channel="transformChannel"
+		reply-channel="outboundChannel"
+		directory="file:src/test/write"
+		auto-create-directory="true"
+		mode="REPLACE"
+	/>
+		
+	<int:channel id="outboundChannel"/>
+	
+	<int:service-activator ref="filePrinter" method="print" input-channel="outboundChannel"/>
+	
+	<bean id="filePrinter" class="com.oreilly.integration.FilePrinter"/>
+	
+	
+here what is happening gateway is taking message from request channel write it to file and pass it to outbound channel.
+
+
+
+================================================================================================================================
+
+FTP Integration-->
+
+transfering a file from client to server we use this.
+
+1)setup ftp connection using filezilla server.
+
+2)then setup and account and directory on filezilla server.
+
+3)we will use int-ftp: namespace here.
+
+4)now if we want to pull files from ftp
+
+config-->
+
+
+		
+	<bean id="ftpClientFactory" class="org.springframework.integration.ftp.session.DefaultFtpSessionFactory">
+		<property name="host" value="localhost"/>     
+		<property name="port" value="21"/>     //port we define on ftp sever
+		<property name="username" value="kbowersox"/>   //accout user/pass of ftp sever
+		<property name="password" value="password"/>
+	</bean>
+	
+	<int-ftp:inbound-channel-adapter 
+		session-factory="ftpClientFactory" 
+		local-directory="file:src/test/write"     //to where we have to write file
+		remote-directory="shared/files"           //path from where we have to read file
+		channel="ftpChannel"                      //passing to this channel after read/write
+		delete-remote-files="true">
+		<int:poller fixed-rate="5000"></int:poller>
+	</int-ftp:inbound-channel-adapter>	
+	
+	<int:channel id="ftpChannel"/>
+		
+	<int:service-activator ref="filePrinter" method="print" input-channel="ftpChannel"/>
+	
+	<bean id="filePrinter" class="com.oreilly.integration.FilePrinter"/>
+	
+	
+here we have declare ftpClientFactory of type DefaultFtpSessionFactory which will create a session with ftp server.
+
+
+
+5)when we write files on ftp server.
+
+a)first we declare a gateway--->
+
+public interface FileWriterGateway {
+
+	public void write(@Header("fileName") String fileName, @Payload String message);
+}
+
+header--->for telling it is header
+payload-->for telling it is payload to channel.
+
+config-->
+<int:gateway service-interface="com.oreilly.integration.FileWriterGateway"
+		default-request-channel="ftpChannel"/>
+				
+	<bean id="ftpClientFactory" class="org.springframework.integration.ftp.session.DefaultFtpSessionFactory">
+		<property name="host" value="localhost"/>
+		<property name="port" value="21"/>
+		<property name="username" value="kbowersox"/>
+		<property name="password" value="password"/>
+	</bean>
+	
+	<int-ftp:outbound-channel-adapter 
+		session-factory="ftpClientFactory"
+		channel="ftpChannel"
+		remote-directory="files"
+		remote-filename-generator-expression="headers['fileName']">   //creating file with header name.
+	</int-ftp:outbound-channel-adapter>
+	
+	<int:channel id="ftpChannel"/>
+
+
+
+here when we call 
+
+this.gateway.write("example.txt", "This is a test of the FTP outbound channel adapter");
+
+gateway create a message with header and payload and pass it to ftpChannel which passes it to outbound channel and write file om server.
+
+
+
+
+
+FILE-outbound-gateway--->
+
+
+	<int:gateway service-interface="com.oreilly.integration.FileWriterGateway"
+		default-request-channel="ftpChannel"/>
+				
+	<bean id="ftpClientFactory" class="org.springframework.integration.ftp.session.DefaultFtpSessionFactory">
+		<property name="host" value="localhost"/>
+		<property name="port" value="21"/>
+		<property name="username" value="kbowersox"/>
+		<property name="password" value="password"/>
+	</bean>
+	
+	<int-ftp:outbound-gateway 
+		session-factory="ftpClientFactory"
+		command="get"               //here we are downloading file to local from server
+		expression="payload"
+		request-channel="ftpChannel"
+		local-directory="src/test/write"
+		reply-channel="outboundChannel">   //passing it to reply channel.
+	</int-ftp:outbound-gateway>
+	
+	<bean id="mp" class="com.oreilly.integration.MessagePrinter"/>
+	
+	<int-file:file-to-string-transformer input-channel="outboundChannel" output-channel="transformChannel"/>
+	
+	<int:service-activator ref="mp" method="print" input-channel="transformChannel"/>
+	
+	<int:channel id="ftpChannel"/>
+	<int:channel id="outboundChannel"/>
+	<int:channel id="transformChannel"/>
+	
+	
+	Change to a directory on the local system where you want the files from the remote system to be copied. ... To copy a single file, use the get command.
+	
+	for multiple use command=mget
+	
+	for uploading use command=put/mput.
+	
+	
+
+
+===============================================================================================================================================
+JDBC INTEGRATION-->
+
+here we will use our inbound gateway to read file from mysql server.
+
+1)setup database.
+
+
+<jdbc:initialize-database data-source="dataSource" enabled="true" >  //passing our database
+        <jdbc:script location="init.sql"/>  //this will read this file from resources folder
+    </jdbc:initialize-database>
+ 
+    <bean id="dataSource"
+        class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="com.mysql.cj.jdbc.Driver" />
+        <property name="url" value="jdbc:mysql://localhost:3306/manu" />
+        <property name="username" value="root" />
+        <property name="password" value="MAnv12@3" />
+    </bean>
+	
+	 <int-jdbc:inbound-channel-adapter
+		channel="jdbcChannel"
+		query="select * from person"   //passing query to read data
+		data-source="dataSource">
+		<int:poller fixed-rate="4000"></int:poller>   //read every 4 sec
+	</int-jdbc:inbound-channel-adapter>	
+	
+	<bean id="mp" class="com.example.demo.MessagePrinter"/>
+	
+	<int:service-activator ref="mp" method="print" input-channel="jdbcChannel"/>
+	
+	<int:channel id="jdbcChannel"/>
+	
+	
+here we will initialize a databse on runtime and it will run init.sql file and run the command on server using datasource.
+
+here is our file save it in resources.
+
+DROP TABLE IF EXISTS person;
+
+create table person(
+	person_id int primary key,
+	first_name varchar(20),
+	last_name varchar(20)
+);
+
+insert into person values(1, 'Kevin','Bowersox');
+insert into person values(2, 'John','Doe');
+
+now in bound channel using query will pass it data to jdbc channel.
+
+
+
+Outbound-channel-adapter--->
+
+1)create a pojo with name person
+
+
+<int:gateway service-interface="com.oreilly.integration.PersonGateway" default-request-channel="inboundChannel"></int:gateway>
+	
+	<int-jdbc:outbound-channel-adapter
+		channel="inboundChannel"
+		data-source="datasource"
+		query="insert into person values(:payload.id,:payload.firstName,:payload.lastName)"/>  //way to insert values.
+		
+	<jdbc:embedded-database id="datasource" type="H2">
+		<jdbc:script location="init.sql"/>
+	</jdbc:embedded-database>
+	
+	
+	<bean id="mp" class="com.oreilly.integration.MessagePrinter"/>
+	
+	<int:service-activator ref="mp" method="print" input-channel="jdbcChannel"/>
+	
+	<int:channel id="jdbcChannel"/>
+
+	<int:channel id="inboundChannel"/>
+	
+
+
+calling method-->
+
+public void run(ApplicationArguments arg0) throws InterruptedException, ExecutionException {
+		Person person = new Person(4,"Jane","Doe");
+		this.gateway.save(person);
+	}
+	
+here our gateway pass our data to inbound channel in which is in our payload.
+outbound-channel-adapter takes data and pass it to mysql server.
+
+
+
+
+
+Outbound-Gateway-->it can do both read/write operations.
+
+
+<int:gateway service-interface="com.oreilly.integration.PersonGateway" default-request-channel="inboundChannel"></int:gateway>
+	
+	<int-jdbc:outbound-gateway
+		request-channel="inboundChannel"
+		data-source="datasource"
+		update="insert into person values(:payload.id,:payload.firstName,:payload.lastName)" //here it inserting from inboundchannel
+		query="select * from person where person_id = :payload.id"     //here it is reading and pass it to jdbc channel.
+		reply-channel="jdbcChannel"
+	></int-jdbc:outbound-gateway>	
+			
+	<jdbc:embedded-database id="datasource" type="H2">
+		<jdbc:script location="init.sql"/>
+	</jdbc:embedded-database>
+	
+	<bean id="mp" class="com.oreilly.integration.MessagePrinter"/>
+	
+	<int:service-activator ref="mp" method="print" input-channel="jdbcChannel"/>
+	
+	<int:channel id="jdbcChannel"/>
+
+	<int:channel id="inboundChannel"/>
+
+
+
+
+==========================================================================================================
+
+JMS--->java messaging sources.
+
+Here we will use activeMqueue sever to communicate via messaging.
+
+add dependency.download sever and run it.
+
+now sending message to activeMqueue from spring--->
+
+Example-->
+
+
+
+
+<bean id="connectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory">  //it is the factory which open coonection
+		<property name="targetConnectionFactory">
+			<bean class="org.apache.activemq.ActiveMQConnectionFactory">
+				<property name="brokerURL" value="tcp://localhost:61616"/>   ///server url
+			</bean>
+		</property>
+	</bean>
+	
+	<bean id="queue" class="org.apache.activemq.command.ActiveMQQueue">
+		<constructor-arg value="sample.queue"></constructor-arg>  //we have to create it on server
+	</bean>  //take help of this for sending message
+	
+	<int-jms:outbound-channel-adapter 
+		connection-factory="connectionFactory"    //conection
+		channel="outboundChannel"                 //
+		destination="queue"/>                     //take help of this channel to receive message.
+		
+	<int:object-to-string-transformer input-channel="inboundChannel" output-channel="outboundChannel"/>
+	
+	<int:gateway service-interface="com.oreilly.integration.PersonGateway" default-request-channel="inboundChannel"></int:gateway>
+
+
+	<int:channel id="inboundChannel"/>
+
+	<int:channel id="outboundChannel"/>
+	
+	
+gateway pass message to inbound channel .than we will transform our payload...pass it to outbound channel.
+which it will send to activemq server using queue.
+
+
+
+
+
+
+
+2)Now receiving message from activemq server.
+
+we have already sent the message using outbound gateway--->
+just add the below code under above config..
+
+
+<int-jms:inbound-channel-adapter
+		connection-factory="connectionFactory"
+		destination="queue"
+		channel="jmsChannel">
+		<int:poller fixed-rate="7000"/>
+	</int-jms:inbound-channel-adapter>
+	
+	<int:gateway service-interface="com.oreilly.integration.PersonGateway" default-request-channel="inboundChannel"></int:gateway>
+	
+	<bean id="mp" class="com.oreilly.integration.MessagePrinter"/>
+	
+	<int:service-activator ref="mp" method="print" input-channel="jmsChannel"/>
+	
+	<int:channel id="jmsChannel"/>
+	
+here in every 7 sec inbound-adapter will check message on server and out in queue and pass it to jms channel.
+
+
+
+*******3)now we don not want to check every 7 second for messages we want to just pull when message is present
+we will use different approach not inbound-channel adapter we will use message driven channel adapter.
+it is same as inbound but does not have any poller.
+
+
+	<int-jms:message-driven-channel-adapter
+		connection-factory="connectionFactory"
+		destination="queue"
+		channel="jmsChannel"/>
+		
+		//it will automaticall fetch message when it is present.
+		
+
+
+4)Inbound Gateway-->this is we use to take message from server and push it back on the server with a rply at same time..
+
+
+
+<int-jms:inbound-gateway
+		connection-factory="connectionFactory"
+		request-destination="queue"                     //read from this channel on server
+		request-channel="jmsChannel"                    //pass message to this channel in application.
+		default-reply-destination="replyQueue"/>        //reply on this queue on server
+
+	<int:service-activator ref="mp" method="print" input-channel="jmsChannel"/>
+
+	<bean id="connectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory">
+		<property name="targetConnectionFactory">
+			<bean class="org.apache.activemq.ActiveMQConnectionFactory">
+				<property name="brokerURL" value="tcp://localhost:61616"/>
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="replyQueue" class="org.apache.activemq.command.ActiveMQQueue">
+		<constructor-arg value="reply.queue"></constructor-arg>   //creating additional queue on server.
+	</bean>
+		
+	<bean id="queue" class="org.apache.activemq.command.ActiveMQQueue">
+		<constructor-arg value="sample.queue"></constructor-arg>
+	</bean>
+	
+	<int-jms:outbound-channel-adapter 
+		connection-factory="connectionFactory"
+		channel="outboundChannel"
+		destination="queue"/>
+			
+	<int:object-to-string-transformer input-channel="inboundChannel" output-channel="outboundChannel"/>
+
+	<int:gateway service-interface="com.oreilly.integration.PersonGateway" default-request-channel="inboundChannel"></int:gateway>
+	
+	<bean id="mp" class="com.oreilly.integration.MessagePrinter"/>
+	
+	
+	<int:channel id="jmsChannel"/>
+
+	<int:channel id="inboundChannel"/>
+
+	<int:channel id="outboundChannel"/>
+
+
+here gateway pass message to inbound channel than we transform message and put it on outbound channel.
+than outbound-channel-adapter take message abd put it on sever...
+
+now our gateway read message from queue on server and pass it to jms channel whatever it gave back message it will send it to reply queue.
+
+
+
+
+6)Outbound-gateway-->
+it is opposite of inbound but bit complicated let see with exampleee---->
+
+
+
+
+<!-- Method invocation sends a Message to the queue -->
+	<int:gateway service-interface="com.oreilly.integration.PersonGateway" default-request-channel="inboundChannel"></int:gateway>
+
+	<int:object-to-string-transformer input-channel="inboundChannel" output-channel="outboundChannel"/>
+	
+	<int-jms:outbound-gateway
+		connection-factory="connectionFactory"
+		request-destination="queue"
+		request-channel="outboundChannel"
+		reply-destination="replyQueue"      //it will check here for message.
+		reply-channel="replyChannel"
+	></int-jms:outbound-gateway>
+	
+	<int:service-activator ref="mp" method="printConsole" input-channel="replyChannel"/>	
+
+	<!-- Will check the queue for messages to process and pass them to service activator -->
+	<int-jms:inbound-gateway
+		connection-factory="connectionFactory"
+		request-destination="queue"
+		request-channel="jmsChannel"
+		default-reply-destination="replyQueue"/>
+
+	<int:service-activator ref="mp" method="print" input-channel="jmsChannel"/>	
+	
+	<bean id="mp" class="com.oreilly.integration.MessagePrinter"/>
+	
+	<int:channel id="jmsChannel"/>
+
+	<int:channel id="inboundChannel"/>
+
+	<int:channel id="outboundChannel"/>
+
+	<int:channel id="replyChannel"/>
+	
+	<bean id="connectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory">
+		<property name="targetConnectionFactory">
+			<bean class="org.apache.activemq.ActiveMQConnectionFactory">
+				<property name="brokerURL" value="tcp://localhost:61616"/>
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="replyQueue" class="org.apache.activemq.command.ActiveMQQueue">
+		<constructor-arg value="reply.queue"></constructor-arg>
+	</bean>
+		
+	<bean id="queue" class="org.apache.activemq.command.ActiveMQQueue">
+		<constructor-arg value="sample.queue"></constructor-arg>
+	</bean>
+	
+	remember in case of inbound/outbound request-destination is place where to pull/put message.
+
+here what is going on-->
+
+a)our gateway when receive message pass it to inbound channel.
+b)we taking our message from inbound channel transform it and put it back on outbound channel.
+c) now outbound gateway take message from outbound channel put it on queue and send it to sever which it is request destination.
+d)now when message get on queue inbound-gateway come in picture pull mesaage from there as it is request-destination and put it on jmschannel.
+e)now service will activate on jms channel get a message from there and inbound-gateway will put that reply message on replyquque.
+f)here outbound gateway is waiting for the message on reply queue take response from there and pass it to reply channel.
+g)reply channel at last pass it to service-activator to activate soe service.
+
+
+
+
+
+
+
+
+
+==================================================================================================================================================
+
+HTTP INTEGRATION--->to integrate with rest apis.
+
+1)InBoundChannel adapter-->
+
+
+
+	<int-http:inbound-channel-adapter
+		path="/"
+		supported-methods="GET"
+		channel="httpChannel">
+	</int-http:inbound-channel-adapter>
+	
+	<int:channel id="httpChannel"/>
+	
+	<bean class="com.oreilly.integration.MessagePrinter" id="printer"/>
+	
+	<int:service-activator ref="printer" input-channel="httpChannel" method="printConsole"/>
+	
+	
+	
+whene we hit / url inbound gateway comes in picture pass the request to channel.
+if we send ?a=abc,than it will come in payload to inbound adapter.
+
+
+
+2)Inbound Gateway--->
+
+as gateway allows two way communication we can also send response.
+
+
+
+
+<int-http:inbound-gateway 
+		request-channel="httpChannel"
+		supported-methods="GET"    //type of http request.
+		path="/">
+	</int-http:inbound-gateway>
+		
+	<int:channel id="httpChannel"/>
+	
+	<bean class="com.oreilly.integration.MessagePrinter" id="printer"/>
+	
+	<int:service-activator ref="printer" input-channel="httpChannel" method="print"/>
+	
+	
+	here whatever service activator give back will send as response...we can also use reply-channel here,
+	but if we donot give any reply-channel it takes response from request channel.
+	
+
+
+3)Outbound-channel-adapter--->
+
+As it is adapter ,it will be one way not get any response otherwise code like 200,403.
+if we want to send some data to other external system apis.
+
+
+<int:gateway service-interface="com.oreilly.integration.SimpleGateway" 
+		default-request-channel="httpOutbound"/>
+		
+	<int:channel id="httpOutbound"/>	
+		
+	<int-http:outbound-channel-adapter 
+		channel="httpOutbound"
+		http-method="GET"
+		url="http://localhost:8080/"
+		></int-http:outbound-channel-adapter>	
+		
+	<int-http:inbound-gateway 
+		request-channel="httpChannel"
+		supported-methods="GET"
+		path="/">
+	</int-http:inbound-gateway>
+		
+	<int:channel id="httpChannel"/>
+	
+	<bean class="com.oreilly.integration.MessagePrinter" id="printer"/>
+	
+	<int:service-activator ref="printer" input-channel="httpChannel" method="print"/>
+	
+	
+here we are sending message using gateway on http-outbound-channel-adapter.
+we can see we are sending data to / path where our inbound-gateway comes into picture and pull message.
+
+
+4)outbound-Gateway--->
+allow to send request and take response from there....
+
+In above exmaple we are not able to response from inbound channel but with gateway we can.
+
+
+
+
+	<int:gateway service-interface="com.oreilly.integration.SimpleGateway" 
+		default-request-channel="httpOutbound"/>
+		
+	<int:channel id="httpOutbound"/>	
+	
+	<int-http:outbound-gateway
+		request-channel="httpOutbound"
+		url="http://localhost:8080/"
+		http-method="GET"
+		reply-channel="httpReply"
+	></int-http:outbound-gateway>
+
+	<int:channel id="httpReply"/>
+	
+	<bean class="com.oreilly.integration.MessagePrinter" id="printer2"/>
+	
+	<int:service-activator ref="printer2" input-channel="httpReply" method="printConsole"/>
+
+	<int-http:inbound-gateway 
+		request-channel="httpChannel"
+		supported-methods="GET"
+		path="/">
+	</int-http:inbound-gateway>
+		
+	<int:channel id="httpChannel"/>
+	
+	<bean class="com.oreilly.integration.MessagePrinter" id="printer"/>
+	
+	<int:service-activator ref="printer" input-channel="httpChannel" method="print"/>
+	
+	
+	here we are taking response from inbound gateway and pass it to our httpReply channel.
+
+
+
+
+================================================================================================================================================
+====================================================================================================================================
+=================================================================================================================
+
+Annotation based-->
+
+@EnableIntegration---->//for enable spring integration.
+
+<channel id =""directchannel">
+
+is equivalent to
+
+@Bean
+public MessageChannel recieverChannel() 
+{
+return new DirectChannel();
+}
+
+
+
+Message - Message is a generic wrapper for any Java object. It has the header and the payload (your actual object)
+
+Message Channel - it represents a pipe. messages are sent and received to and from a channel
+
+
+@EnableIntegration - is useful when you have multiple config files in your application along with spring integration configurations
+
+@IntegrationComponentScan - used for class path scaling just like @ComponentScan, but restricted to integration components where @ComponentScan cannot reach
+
+@MessagingGateway - it is an interface that serves as a proxy abstraction over the messaging structure
+
+@Gateway is usually annotated on the method signature inside the interface
+
+DirectChannel - acts like a point to point channel and is the simplest
+
+service activator - acts like a connecter between the spring managed object and the input channel

@@ -1,0 +1,1581 @@
+Use Ant Customize command in Hybris==>
+
+In Hybris, there are two types of files and directories :
+
+Custom files : The source code that we write, change and commit (eg. custom extensions).
+
+Read only files : The binary files that we can’t/shouldn’t change (eg. platform).
+
+However, you may need to replace some read only binary files, eg. customize HMc css style.
+
+To do so, you have to :
+
+Copy the original file that you want to customize inside the ${HYBRIS_CONFIG_DIR}/customize directory.
+Update and customize the file.
+Run ant customize.
+
+For example, to customize the CSS style of the HMc, you need to replace the hmc.css 
+file located in the ${HYBRIS_BIN_DIR}/ext-platform-optional/hmc/web/webroot/css directory.
+
+2.1. Copy original file means yours
+Copy the hmc.css file inside inside the ${HYBRIS_CONFIG_DIR}/customize.
+
+You have to keep the same folder structure, which mean  ${HYBRIS_CONFIG_DIR}/customize/ext-platform-optional/hmc/web/webroot/css/hmc.css.
+
+run ant customize.
+
+
+external-dependencies.xml file we can use for adding dependencies through maven.
+
+add usemaven=”true” in extensioninfo.xml
+
+ant modulegen==>three template default
+
+accelerator==>b2c
+b2baccelerator ==>b2b
+telcoaccelerator==>plan based
+
+
+We can do changes in all project.properties files except the one in platform folder.
+Changing values or adding new key value pairs in HAC directly will be lost after restarting the Server.
+
+Hybris has come up with an extension called “Impex” inside platform/ext folder which helps in Inserting,updating,deleting and exporting data.
+
+If we are doing initialization,it is recommended to take data backup using Impex Export.
+
+translator extends AbstractValueTranslator
+
+decorator  extends CSVCellDecorator
+
+distributedimpex==>run on different threads via hac
+
+
+=======================================================================================================================================================================
+hot folder==>
+
+the main idea behind hot folders is to transform csv files giving in input to impexes using a pre-configured ImpexConverters and import them using ImportService
+
+csv-------convert--->Impex------import----->database.
+
+Let’s explain the flw==>
+
+Inbound Channel Adapter : is a Spring integration component that allows us to create a watcher over csv files on a specific directory.
+
+File Order Comparator : the Inbound Channel Adapter uses a file order comparator to treat files by order of priority, 
+this comparator compares files based on their file names.
+
+Header Setup Task : in this step of the flow a BatchHeader is created/initialized with the file, catalog, and some other information, 
+this BatchHeader will be used throughout the flow as a reference for file and some other information.
+
+Header Init Task : this is just another initialization step, in this step we extract the sequenceId and the language then we add them to the BatchHeader for later use
+For example for this file name product-fr-2313213672186.csv the sequenceId is 2313213672186 and the language is fr.
+
+Impex Transformer Task : this is one of the important steps in the flow, 
+basically here where the original file (csv) is converted to an impex with the help of a pre-configured ImpexConverter.
+
+Impex Runner Task : imports the transformed file (impex) using ImportService.importData() method.
+
+Cleanup Task : deletes the transformed file (impex) and archive the original file (csv).
+
+The ImpexConverters for prices, products, medias, stocks, customers…, are already there and good to go.
+
+we will try to extend the hot folder functionalities to be able to import an other item type UnitModel.
+
+You need three macro steps to configure the hot folder :
+
+Define a base directory where the csv files will be put.
+Initiate your flow with the catalog and base directory…
+Create an ImpexConverter and associated with a MappingConverter
+
+1. Create an xml file hot-folder-store-training-spring.xml inside the …\hybris\bin\custom\training\trainingcore\resources\trainingcore\integration
+mainly in core.
+
+Inside the hot-folder-store-training-spring.xml add a base directory and an inbound-channel-adapter to watch over the base directory.
+
+<!-- Config a base directory -->
+	<bean id="baseDirectoryTraining" class="java.lang.String">
+		<constructor-arg value="#{baseDirectory}/${tenantId}/training" />  
+	</bean>
+
+	<!-- Scan for files inside the base directory with names matches the pattern ^(.*)-(\d+)\.csv -->
+	<file:inbound-channel-adapter id="batchFilesTraining" directory="#{baseDirectoryTraining}"
+								  filename-regex="^(.*)-(\d+)\.csv"
+								  comparator="fileOrderComparator">
+		<!--  Periodic trigger in milliseconds -->
+		<int:poller fixed-rate="1000" />
+	</file:inbound-channel-adapter>
+
+The #{baseDirectory} by default is ${HYBRIS_DATA_DIR}/acceleratorservices/import,        //inside data folder.
+you can re-define it with the property : acceleratorservices.batch.impex.basefolder
+
+
+2.Add an outbound-gateway to move the received file to processing and invoke the first step of the flow.
+
+<file:outbound-gateway request-channel="batchFilesTraining" reply-channel="batchFilesTrainingProc"    //request channel is inbound channel.
+						   directory="#{baseDirectoryTraining}/processing"    //reply channel for service-activator.
+						   delete-source-files="true" />
+
+
+3.Create a service-activator which is the first step of the flow, it feeds the flow with the catalog and other relevant information.
+
+<!-- Initialize the batch header with relevant information -->
+	<int:service-activator input-channel="batchFilesTrainingProc" output-channel="batchFilesHeaderInit"
+						   ref="trainingHeaderSetupTask"
+						   method="execute" />
+
+	<bean id="trainingHeaderSetupTask" class="de.hybris.platform.acceleratorservices.dataimport.batch.task.HeaderSetupTask">
+		<property name="catalog" value="trainingProductCatalog" />//every project has same
+		<property name="net" value="false" />
+		<property name="storeBaseDirectory" ref="baseDirectoryTraining" />
+	</bean>
+
+
+ImpexConverter and ConverterMapping==>
+
+Create an ImpexConvert for the UnitModel.
+
+The ImpexConverter has two properties a header and an impexRow :
+
+header : will be the header of the generated impex.
+impexRow : defines the mapping between the column of the csv file and the impex file.
+
+Inside the hot-folder-store-training-spring.xml, create a Spring bean from DefaultImpexConverter, with :
+
+header : INSERT_UPDATE Unit ;unitType[unique=true] ;code[unique=true] ;name[lang=$lang] ;conversion
+impexRow :  ;{+0}  ;{+1}  ;{2}  ;{3}
+
+
+<!-- UnitModel impex converter -->
+	<bean id="unitConverter" class="de.hybris.platform.acceleratorservices.dataimport.batch.converter.impl.DefaultImpexConverter">
+		<property name="header">
+			<value>
+				#{defaultImpexProductHeader}
+				INSERT_UPDATE Unit;unitType[unique=true];code[unique=true];name[lang=$lang];conversion
+			</value>
+		</property>
+		<property name="impexRow">
+			<value>;{+0};{+1};{2};{3}</value>
+		</property>
+	</bean>
+
+{+0} means that column 0 will be mapped to unitType[unique=true]
+{+1} means that column 1 will be mapped to code[unique=true]
+{2} means that column 2 will be mapped to name[lang=$lang]
+{3} means that column 3 will be mapped to conversion
+
+Map the unitConverter to a file name prefix using DefaultConverterMapping.
+
+<!-- UnitModel impex converter mapping to unit prefix -->
+	<bean id="unitConverterMapping"
+		  class="de.hybris.platform.acceleratorservices.dataimport.batch.converter.mapping.impl.DefaultConverterMapping"
+		  p:mapping="unit"     //whatever file start with this name it will map this converter with this..
+		  p:converter-ref="unitConverter"/>
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+CronJob==>
+
+A Cronjob (Cron job) in Hybris is a task that is executed manually by a user (Administrator) or started automatically via a Trigger, 
+it runs in the background as a single Thread.
+
+use it to make cronExpression==>http://www.cronmaker.com/
+
+The Job is the most important part here, it’s the one who holds the logic to be done (synchronization, indexation, cleaning,…).
+
+The Job consists of 2 parts a Model and a Jalo:
+
+Model is the identity of the Job for Hybris
+Jalo is a Java class where we will write the business logic to be executed.
+Let’s write a Hello World Job as an example:
+
+<itemtype code="HelloWorldCustomerJob" extends="Job"
+	autocreate="true" generate="true"
+	jaloclass="com.stackextend.training.core.jalo.HelloWorldCustomerJob">  /write its perform method.
+
+	<attributes>
+		<!-- no attribute needed -->
+	</attributes>
+
+</itemtype>
+
+
+but if we dont require attributes we donot need all this..
+
+
+Create CronJob that hold all the inputs to be passed to the Job (it’s optional).
+Create Our JobPerformable, then implement the logic to be done inside it.
+Register the JobPerformable as a Spring bean with id.
+Create a new instance of ServicelayerJob, then inject the bean id in it.//mapping with cronjob
+Create an instance CronJob model with this signle run configuration (inputs).
+Then Create a Trigger if it’s needed to schedule the CronJob in time.
+
+
+
+
+
+composite CronJob in Hybris==>
+
+In Hybris, a composite cronJob is a composition of multiple cronJobs used when we need to run a bundle of cronJobs successively.  It is often referred 
+as an ordered all or nothing execution, e.g. MediaImportComposite composed of MediaImportCronJob and MediaConversionCronJob.
+
+
+ Implementation
+Let’s assume that we have two cronJobs (totoCronJob and fooCronJob) that we want to run in order
+
+1. Create two instances of the CompositeEntryModel :
+
+INSERT_UPDATE CompositeEntry  ;code[unique=true]  ;executableCronJob(code)
+                              ;totoCronJobEntry   ;totoCronJob
+                              ;fooCronJobEntry    ;fooCronJob     //inserting already defined cronjob here
+
+2. Create an instance of the CompositeCronJobModel and attach the composite entries to it.
+
+INSERT_UPDATE CompositeCronJob  ;code[unique=true]    ;job(code)              ;compositeEntries(code)           ;sessionUser(uid)[default=admin]  ;sessionLanguage(isocode)[default=en]
+                                ;helloCompositeCronJob;compositeJobPerformable;totoCronJobEntry, fooCronJobEntry
+
+3. Run your composite cronJob from HMc.
+
+
+AbortableCronjob==>while extending cronjob override its isAbortable() and return true.and than u can abort through hmc.
+============================================================
+
+Scripting Job in SAP Hybris==>
+
+The scripting job is a very particular job in Hybris, it gives you the possibility to run scripts of type Groovy, BeanShell or Javascript as a cronJob.
+
+Flow==>
+Cronjob============>ScriptingJob-----------uri------------->script.
+
+Script : is a statement in Groovy, BeanShell or Javascript, in Hybris it’s an instance of the ScriptModel class.
+Scripting Job : is an instance of the ScriptingJobModel, It takes as a parameter the URI to the script, the URI could use http, https, ftp, file, classpath or model.
+Cron job : the cron job is an instance of the CronJobModel, it takes in parameter the Scripting Job.
+
+1.1Script==>
+
+First, let’s create our script Groovy, via the impex.
+
+INSERT_UPDATE Script;code[unique=true]	;scriptType(code)	;content
+					;helloWorldScript	;GROOVY				;println "Hello World!" 
+
+
+2.2. Scripting Job==>
+A scripting job is an instance of the ScriptingJobModel, the scripting job will be referring to our script helloWorldScript using URI of type model.
+
+INSERT_UPDATE ScriptingJob	;code[unique=true]		;scriptURI
+							;helloWorldScriptJob	;model://helloWorldScript 
+You can use any URI protocol (http, ftp, file, classpath…) you want for the scriptURI.
+
+
+
+2.3. Cron Job==>
+Last and not least, create an instance of the CronJobModel and attach to it the scripting job helloWorldScriptJob.
+
+INSERT_UPDATE CronJob	;code[unique=true]			;job(code)				;sessionLanguage(isocode)	;sessionUser(uid)
+						;helloWorldScriptCronJob	;helloWorldScriptJob	;en							;admin 
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Events are used in Hybris to play tasks that are :
+
+Low priority task.
+Task takes long time to run.
+Task to be run in a separated thread from the main thread.
+For example : send emails, persist logging data, save audit data…
+
+eventService-->publish--->event--->recieve--->EventListener
+
+EventService : Publish event using publishEvent(event) method.
+EventListener : Receive event and run logic defined inside onEvent(event) method.
+Event : Hold the necessary data to be passed to the EventListener.
+
+Create Event==>
+
+First create a class extends AbstractEvent, that will hold all the data to be passed to the EventListener
+
+
+import de.hybris.platform.servicelayer.event.events.AbstractEvent;
+
+public class HelloWorldEvent extends AbstractEvent {
+
+    private String fullName;
+
+    public HelloWorldEvent(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+}
+
+
+Create EventListener==>
+
+Create a HelloWorldEventListener extends AbstractEventListener, and add business logic inside the onEvent(event) method.
+
+package com.stackextend.training.core.event.listener;
+
+import com.stackextend.training.core.event.HelloWorldEvent;
+import de.hybris.platform.servicelayer.event.impl.AbstractEventListener;
+
+public class HelloWorldEventListener extends AbstractEventListener<HelloWorldEvent> {
+
+    @Override
+    protected void onEvent(HelloWorldEvent helloWorldEvent) {
+
+        String fullName = helloWorldEvent.getFullName();
+
+        System.out.println("Hello " + fullName);
+    }
+
+}
+
+Register the HelloWorldEventListener as a Spring bean.==>
+
+<!-- ...\hybris\bin\custom\training\trainingcore\resources\trainingcore-spring.xml -->
+
+<bean id="helloWorldEventListener"
+	  class="com.stackextend.training.core.event.listener.HelloWorldEventListener"
+	  parent="abstractSiteEventListener">
+
+	<!-- inject beans here if it's needed -->
+
+</bean>
+
+2.3. Publish Event==>
+
+Publishing the event is simple, you need just to call the eventService.publishEvent(event) with an instance of HelloWorldEvent.
+
+@Autowired
+private EventService eventService;
+
+// create HelloWorldEvent instance
+HelloWorldEvent event = new HelloWorldEvent("Manu Raghava");
+
+// Publish the event
+eventService.publishEvent(event);
+
+=====================================================================================================================================================================
+B2C Checkput Flow==>
+
+In an eCommerce website, the Checkout is the set of steps showing to a customer before placing an order.
+
+shoppingcart-->delieveryaddress->delieverymethod->payment->summary==>orderConfirmationPage
+
+
+A checkout step is defined by 3 main components :
+
+Checkout Step object: an instance of the CheckoutStep.
+Checkout Step controller: a Spring MVC controller.
+Checkout Step view page: a JSP page.
+
+
+Checkout Step Object
+A checkout step object is an instance of the CheckoutStep class, it’s declared in Spring by the bean id checkoutStep.
+
+A CheckoutStep composed of 4 elements :
+
+CheckoutGroup : it’s the container of all the checkout steps 
+
+CheckoutStepValidator : every checkout step has its own validator, 
+it’s used to check whether we are eligible to access to a checkout step or not 
+(for example you can’t access to the payment method step without passing by the delivery address and the delivery method steps).
+
+Transitions : it holds the redirection URLs to the previous, the next and the current checkout steps controllers.
+
+progressBarId : it’s is a unique id of the checkout step, used for breadcrumb.
+
+E.g. This is the definition of the delivery address step, it is located in the multi-step-checkout-config.xml.
+
+<!-- checkout step definintion -->
+<alias name="defaultResponsiveDeliveryAddressCheckoutStep" alias="responsiveDeliveryAddressCheckoutStep" />
+<bean id="defaultResponsiveDeliveryAddressCheckoutStep" parent="checkoutStep">
+	<property name="checkoutGroup" ref="responsiveCheckoutGroup"/>        // this is attatch with baseStore which is store specific.
+	<property name="checkoutStepValidator" ref="defaultResponsiveDeliveryAddressCheckoutValidator"/>
+	<property name="transitions">
+		<map merge="true">
+			<entry key="previous" value-ref="REDIRECT_TO_CART"/>
+			<entry key="current" value-ref="REDIRECT_TO_DELIVERY_ADDRESS"/>
+			<entry key="next" value-ref="REDIRECT_TO_DELIVERY_METHOD"/>
+		</map>
+	</property>
+	<property name="progressBarId" value="deliveryAddress"/>
+</bean>
+
+<!-- Redirects -->
+<bean id="REDIRECT_TO_CART" class="java.lang.String">
+	<constructor-arg value="redirect:/cart"/>
+</bean>
+<bean id="REDIRECT_TO_DELIVERY_ADDRESS" class="java.lang.String">
+	<constructor-arg value="redirect:/checkout/multi/delivery-address/add"/>  //call specific constructor according to it
+</bean>
+<bean id="REDIRECT_TO_DELIVERY_METHOD" class="java.lang.String">
+	<constructor-arg value="redirect:/checkout/multi/delivery-method/choose"/>
+</bean>
+
+
+Checkout Step Controller======>
+The checkout step controller should extend the AbstractCheckoutStepController.java
+and implement the following methods:enterStep(), next(), back() and getCheckoutStep().
+
+enterStep() : it’s the first entry point to the checkout step, it should return back the checkout step view page (see next section).
+back() : called whenever we want to go back to the previous checkout step.
+next() : called whenever we want to go to the next checkout step.
+getCheckoutStep() : should be implemented for the purpose of retrieving the current CheckoutStep.
+
+E.g. This is a lite version of the checkout step controller of the delivery address step.
+
+@Controller
+@RequestMapping(value = "/checkout/multi/delivery-address")
+public class DeliveryAddressCheckoutStepController extends AbstractCheckoutStepController
+{
+	private static final String DELIVERY_ADDRESS = "delivery-address";
+
+	// implementation of the enterStep() method
+	@Override
+	@RequestMapping(value = "/add", method = RequestMethod.GET)
+	@RequireHardLogIn
+	@PreValidateQuoteCheckoutStep
+	@PreValidateCheckoutStep(checkoutStep = DELIVERY_ADDRESS)
+	public String enterStep(final Model model, final RedirectAttributes redirectAttributes) throws CMSItemNotFoundException
+	{
+		// ...
+
+		return ControllerConstants.Views.Pages.MultiStepCheckout.AddEditDeliveryAddressPage;    //view page
+	}
+
+	// implementation of back() method : go to previous checkout step
+	@RequestMapping(value = "/back", method = RequestMethod.GET)
+	@RequireHardLogIn
+	@Override
+	public String back(final RedirectAttributes redirectAttributes)
+	{
+		return getCheckoutStep().previousStep();
+	}
+
+	// implementation of next() method : go to next checkout step
+	@RequestMapping(value = "/next", method = RequestMethod.GET)
+	@RequireHardLogIn
+	@Override
+	public String next(final RedirectAttributes redirectAttributes)
+	{
+		return getCheckoutStep().nextStep();
+	}
+
+	// implementation of the getCheckoutStep() method : get current CheckoutStep
+	protected CheckoutStep getCheckoutStep()
+	{
+		return getCheckoutStep(DELIVERY_ADDRESS);
+	}
+}
+
+The @PreValidateCheckoutStep(checkoutStep = DELIVERY_ADDRESS) calls the validator of the delivery address step defined previously in the xml.
+
+ Checkout Step View=====>
+The checkout step view page is a basic JSP page, it’s the same JSP page returned by the enterStep() method of the checkout step controller.
+
+The checkout step view page should have a link to the next() and back() method of the checkout step controller.
+
+E.g. The checkout JSP page for delivery address step is.
+
+${HYBRIS_BIN_DIR}/custom/training/trainingstorefront/web/webroot/WEBINF/views/responsive/pages/checkout/multi/addEditDeliveryAddressPage.jsp
+
+
+Checkout Group====>
+
+The checkout group or checkout flow group is a container of the checkout steps, technically it’s an instance of the CheckoutGroup.
+
+The default checkout group used for a given CMS site (e.g b2c electronics) is defined in the BaseStoreModel.
+
+E.g. The default checkout group of the electronics b2c accelerator is responsiveCheckoutGroup.
+
+Checkout flow group configuration in Hybris
+The responsiveCheckoutGroup is defined as :
+
+<alias name="defaultResponsiveMultiStepCheckoutGroup" alias="responsiveCheckoutGroup" />
+<bean id="defaultResponsiveMultiStepCheckoutGroup"  class="de.hybris.platform.acceleratorstorefrontcommons.checkout.steps.CheckoutGroup">
+	<property name="groupId"  value="responsiveCheckoutGroup"/>
+	<property name="checkoutStepMap">
+		<map merge="true">
+			<entry key="multi" value-ref="responsiveMultiStepCheckout"/>
+			<entry key="delivery-address" value-ref="responsiveDeliveryAddressCheckoutStep"/>
+			<entry key="delivery-method" value-ref="responsiveDeliveryMethodCheckoutStep"/>
+			<entry key="payment-method" value-ref="responsivePaymentMethodCheckoutStep"/>
+			<entry key="summary" value-ref="responsiveSummaryCheckoutStep"/>
+		</map>
+	</property>
+	<property name="validationResultsMap">
+		<map merge="true">
+			<entry key="FAILED" value-ref="REDIRECT_TO_CART"/>
+			<entry key="REDIRECT_TO_DELIVERY_ADDRESS" value-ref="REDIRECT_TO_DELIVERY_ADDRESS"/>
+			<entry key="REDIRECT_TO_CART" value-ref="REDIRECT_TO_CART"/>
+			<entry key="REDIRECT_TO_PAYMENT_METHOD" value-ref="REDIRECT_TO_PAYMENT_METHOD"/>
+			<entry key="REDIRECT_TO_DELIVERY_METHOD" value-ref="REDIRECT_TO_DELIVERY_METHOD"/>
+			<entry key="REDIRECT_TO_SUMMARY" value-ref="REDIRECT_TO_SUMMARY"/>
+		</map>
+	</property>
+	<property name="checkoutProgressBar">
+		<map merge="true">
+			<entry key="1" value-ref="responsiveDeliveryAddressCheckoutStep"/>
+			<entry key="2" value-ref="responsiveDeliveryMethodCheckoutStep"/>
+			<entry key="3" value-ref="responsivePaymentMethodCheckoutStep"/>
+			<entry key="4" value-ref="responsiveSummaryCheckoutStep"/>
+		</map>
+	</property>
+</bean>
+checkoutStepMap : a map contains the reference to the CheckoutSteps.
+validationResultsMap : redirection URLs as constants used when it’s needed.
+checkoutProgressBar : it’s is a unique id of the checkout steps, used for breadcrumb.
+
+
+Checkout Group Map======>
+The checkout map group is a Map that contains all the checkout flow group, we can retrieve a specific checkout flow group from the map using its id (key).
+
+<!--Checkout GroupMap-->
+<util:map id="checkoutFlowGroupMap" >
+	<entry key="apparelCheckoutGroup"  value-ref="apparelCheckoutGroup"/>
+	<entry key="defaultCheckoutGroup" value-ref="defaultCheckoutGroup"/>
+	<entry key="responsiveCheckoutGroup" value-ref="responsiveCheckoutGroup"/>
+</util:map>
+
+
+
+
+CheckoutFacade==>
+The CheckoutFacade and its implementation DefaultCheckoutFacade is crucial for a proper functioning of the checkout flow.
+
+It’s injected by default into the AbstractCheckoutController.java, hence it could be used within the checkout step controller.
+
+Some of the useful methods from the CheckoutFacade.java.
+
+boolean hasCheckoutCart() : to check if checkout cart exist.
+CartData getCheckoutCart() : to retrieve the current checkout cart if it exists.
+void prepareCartForCheckout() : to prepare cart for the first time for the checkout.
+OrderData placeOrder() : to place an order.
+boolean setDeliveryAddress(AddressData) : to set a delivery address for the checkout cart.
+List<DeliveryModeData> getSupportedDeliveryModes() : to get supported delivery modes for the checkout cart based on the delivery address
+
+
+-----------------------------------------LETS CHECK CHECKOUT FLOW FROM BEGINNING
+The checkout flow started when your click on the CHECK OUT button on the cart page.
+
+Cart page checkout in Hybris
+The checkout() method of the CheckoutController is the first thing getting invoked via the request URL  /checkout.
+
+@Controller
+@RequestMapping(value = "/checkout")
+public class CheckoutController extends AbstractCheckoutController {
+
+	//...
+
+	@RequestMapping(method = RequestMethod.GET)
+	public String checkout(final RedirectAttributes redirectModel) {
+
+		if (getCheckoutFlowFacade().hasValidCart()) {
+			// if cart not valid go to Cart page
+			if (validateCart(redirectModel)) {
+				return REDIRECT_PREFIX + "/cart";
+			}
+
+			// else prepare the current Cart for the checkout and redirect to /checkout/multi
+			else {
+				checkoutFacade.prepareCartForCheckout();
+				return getCheckoutRedirectUrl();
+			}
+		}
+
+		// No session cart or empty session cart. Bounce back to the cart page.
+		return REDIRECT_PREFIX + "/cart";
+	}
+
+	//...
+}
+This is not a step of the checkout flow group, its main role is the validation and the preparation of the checkout cart 
+then redirect to the /checkout/multi URL, which is the first step of checkout flow : responsiveMultiStepCheckout.
+
+
+ *)Multi Checkout Step===>
+This is the first checkout step of the checkout flow group, defined with :
+
+Checkout Step object id : responsiveMultiStepCheckout
+Checkout Step Controller : MultiStepCheckoutController
+URL Mapping : /checkout/multi
+Checkout Step View : NONE
+This is just an additional verification step, then redirect the customer to the second checkout step: responsiveDeliveryAddressCheckoutStep.
+
+**) Delivery Address Checkout Step===>
+Is the second checkout step, in this step, the customer is invited to provide its shipping/delivery address.
+
+Technically this checkout step is defined with :
+
+Checkout Step object id : responsiveDeliveryAddressCheckoutStep
+Checkout Step Controller : DeliveryAddressCheckoutStepController
+URL Mapping : /checkout/multi/delivery-address
+Checkout Step View : pages/checkout/multi/addEditDeliveryAddressPage.jsp
+
+***)Delivery Method Checkout Step
+In this step, the customer is invited to choose one of the supported delivery/shipping methods depending on its delivery address.
+
+Technically the delivery method step is defined with :
+
+Checkout Step object id : responsiveDeliveryMethodCheckoutStep
+Checkout Step Controller : DeliveryMethodCheckoutStepController
+URL Mapping : /checkout/multi/delivery-method
+Checkout Step View : pages/checkout/multi/chooseDeliveryMethodPage.jsp
+
+****)Payment Method Checkout Step
+In the payment checkout step, the customer is asked to choose from one of the supported payment methods and enter it’s payment credentials.
+
+Technically the payment method checkout step is defined with :
+
+Checkout Step object id : responsivePaymentMethodCheckoutStep
+Checkout Step Controller : PaymentMethodCheckoutStepController
+URL Mapping : /checkout/multi/payment-method
+Checkout Step View : pages/checkout/multi/addPaymentMethodPage.jsp
+
+Payment method checkout step Hybris
+In case of the HOP payment module, the customer will be redirected to an externally hosted page.
+
+For the sake of simplicity, I prefer to not mention some more details about this step as I will shed lights on it later 
+
+*****) Summary Checkout Step
+This is the last checkout step, in this step, a detailed summary of the order is displayed to the customer, so the customer can confirm/place the order or edit it.
+
+Technically this checkout step is defined with :
+
+Checkout Step object id : responsiveSummaryCheckoutStep
+Checkout Step Controller : SummaryCheckoutStepController
+URL Mapping : /checkout/multi/summary
+Checkout Step View : pages/checkout/multi/checkoutSummaryPage.jsp
+=====================================================================================================================================================================
+Restrictions in Hybris==>
+
+A restriction in Hybris is a set of rules applied to flexible searches in order to limit the search results based on certain specific conditions.
+
+By default, restrictions are not applied on admingroup members, admin will always get the full results.
+
+2.1. Create restriction==>
+First of all, you will need to create an instance of the SearchRestrictionModel using impex or HMC/Backoffice as shown below.
+
+INSERT_UPDATE SearchRestriction	;code[unique=true];name[lang=en];principal(UID)	;restrictedType(code);active;generate;query
+				;customerWithoutAnonymous;Customer Anonymous Restriction;employeegroup	;Customer;true	;true;{uid} NOT LIKE 'anonymous'
+
+
+code: Unique id code of the restriction.
+name: Name of the restriction.
+principal: User/user group to whom the restriction will be applied.
+restrictedType: Item type to which the restriction will be applied on.
+active: true means the restriction is enabled, false is disabled.
+query: conditions to be added to the WHERE clause of the flexible search.
+
+2.2. Use restriction
+When you run a flexible search query on CustomerModel as a User who belongs to the employeegroup.
+
+SELECT {pk}, {uid} FROM {Customer}
+The restriction query will systematically be added to the flexible search.
+
+SELECT {pk}, {uid} FROM {Customer} WHERE {uid} NOT LIKE 'anonymous'
+
+2.3. Test restriction on hac (hybris administration console)
+Navigate to hac  -> Console -> FlexibleSearch, add your flexibleSearch, employee account uid and run.
+
+
+
+creating User GRoup==>
+
+INSERT_UPDATE UserGroup;uid[unique=true];groups(uid);locname[lang=en];
+;b2bapprovergroup;b2bgroup;
+
+INSERT_UPDATE Employee;uid[unique=true];name;groups(uid)[mode=append];$setPassword;    //assign group to them here.
+
+
+INSERT_UPDATE B2BCreditLimit;code[unique=true];alertRateType(code,itemtype(code));alertThreshold;amount;currency(isocode);dateRange(code,itemtype(code));datePeriod[dateformat=dd.MM.yyyy hh:mm:ss];
+;Monthly40KAlert10Percent;PERCENTAGE:B2BRateType;10;40000;USD;MONTH:B2BPeriodRange;;  //creating limit for b2bcustomer
+
+
+INSERT_UPDATE B2BUserGroup;uid[unique=true];name;unit(uid);permissions(code,unit(uid));
+=====================================================================================================================================================================
+
+GROOVY SCRIPT==>
+
+Groovy is a script programming language based on Java, it is used in the Hybris world to create and run some very quick tasks, like cleaning and testing.
+
+Implementation
+The following Groovy script publish a HelloWorldEvent, using EventService.
+
+import de.hybris.platform.servicelayer.event.EventService
+import com.stackextend.training.core.event.HelloWorldEvent
+
+// retrieve beans from Spring context
+EventService eventService = spring.getBean("eventService")
+
+// do business logic
+HelloWorldEvent event = new HelloWorldEvent("Mouad EL Fakir");
+
+eventService.publishEvent(event);
+
+// return result
+return "OK"
+
+-=========================================================================================================================
+how to synchronize catalog via cronjob?
+CatalogueSynchronizationservice we will use inside jobperformable.
+
+how to insert value and uniquekey in catalogueaware item.xml..
+
+
+
+
+==========================================================================================================================================================================
+BaseStore==>contains--->currency,language--->contains product catalogue,classification catalogue---->websites,warehouse,paymentprovider--->order-process,delieverymodes
+
+it also contains location of every pos,,,geolocation
+
+*)product catalogue-->catalogue versions,active catalogue version ,mapping with base store.,restrictions--->categories
+every product catalogue link with a solr facet search config.
+
+categories-->have visible to option for user group.can have super categories,sub categories,add multimedia there===images,etc
+
+classification category==>.eg.===>based on seasons. also we can check it through product.superCategories()==>and than we can check it is instance of classification categories
+
+
+BaseSite==>all site related locale,cart removal cronjob timing,content catalogs,startpage,url pattern===>siteMap==indexing of pages ==========>cockpit url===>promotion group
+
+contentCatalogs===>cmssite,and alll wcms.
+
+===============================================================================================================================================================================
+How to change default password for Admin?
+
+As we all know that Admin is an Employee who belongs to Admin Group.
+
+We can change the password for Admin through impex or from backoffice directly by finding Admin employee.
+
+Step 1
+Create impex
+
+# Change admin password
+UPDATE Employee;UID[unique=true];password
+;admin;1234
+
+================================================================================================================================================================================
+How to use Enum values in Hybris ?
+
+Saving Enum value by associating it to required object
+
+OrderStatus enum defined in Hybris OOTB with values like CREATED,COMPLETED, CANCELLED etc
+
+Now we need to set this enum value to OrderModel, we can do it as below
+
+final OrderModel order = new OrderModel();//You may get order from some method
+order.setStatus(OrderStatus.CREATED);//You can set different value conditionally based on requirement
+ 
+modelService.save(order);
+
+Retrieving enum value associated with specific object and comparing it
+
+2)
+
+We will retrieve OrderStatus enum associated with OrderModel and use it
+
+
+//Load OrderModel from DB and assume its assigned to order object
+OrderModel order = getOrder(“100001”); //make DB call
+ 
+return OrderStatus.WAIT_FRAUD_MANUAL_CHECK.equals(order.getStatus());
+
+In this line, we are retrieving order status and comparing it with order status enum value as per our business logic.
+
+This line returns true if order needs to have Fraud Check and false otherwise.
+
+3)
+send enum value to Frontend for display
+
+We need to write below code in populator in most of the cases
+
+
+ 
+In that case, set status to DTO object and pass it to controller and Frontend
+
+//Load OrderModel from DB and assume its assigned to order object
+OrderModel order = getOrder(“100001”); //make DB call
+ 
+Model.addAttribute(“orderCurrentStatus”,order.getStatus().getCode());
+
+In Jsp/tag file, we can access it as below
+
+${orderCurrentStatus}
+
+GETTING ALL VALUES OF ENUM==>
+List<OrderStatus> orderStatusList = enumerationService.getEnumerationValues(OrderStatus.class);
+
+
+==================================================================================================================================================================================
+How to convert model to jalo item and vice versa?
+
+In Hybris, sometimes its required to access jalo item from the model and sometime it is required to access model from the jalo item.
+
+Example : Getting Order jalo item from OrderModel or getting OrderModel from Order jalo.
+
+to get jalo item from Model object, we just need to call getSource() method of ModelService as below
+
+
+Order orderItem = modelService.getSource(orderModel);
+
+Where,
+orderModel – instance of OrderModel
+modelService – injected in the class
+orderItem – returned jalo item
+
+How to access Model object from Jalo object ?
+
+To get Model object from Jalo object, we just need to call get() method of ModelService as below
+
+OrderModel orderModel = modelService.get(order);
+
+Where,
+order – jalo object
+modelService – injected in the class
+orderModel – returned instance of OrderModel
+
+
+===============================================================================================================================================================================
+escaping special characters in impex file?
+
+When we insert data through impex, its sometime necessary to insert special characters as part of data.
+
+When we provide these values in impex, impex can’t run it successfully.
+
+Its mainly because impex has its own definition for semicolon and colon characters.
+
+Semicolon in impex is field separator and colon is used for composite key.
+
+
+How do we escape special meaning of these characters and insert those characters as part of data?
+
+We can achieve this by using special delimiter called “path-delimiter”
+
+We can use any character for path-delimiter to escape special characters
+
+insert_update cmssite;uid[unique=true];defaultCatalog(id)[path-delimiter=!]
+;myStore_site;myStore:catalog
+
+Now when we run this impex, hybris searches for catalog id with value as “myStore:catalog” exactly in the table.
+
+================================================================================================================================================================================
+
+"#% impex.setDumpingAllowed( true )";         //this will ignore rows which are not valid..
+$productCatalog=apparelProductCatalog
+$catalogVersion=catalogversion(catalog(id[default=$productCatalog]),version[default='Staged'])[unique=true,default=$productCatalog:Staged]
+UPDATE Product;code[unique=true];$catalogVersion;name;
+;29531;;"Snowboard Ski Tool Toko Side Edge Angle Pro 88 Grad 1";
+;29532;;"Snowboard Ski Tool Toko Side Edge Tuning Angle Pro 87 Grad 1";
+;invalid_code;;"Snowboard Ski Tool Toko Side Edge Angle Pro 88 Grad 1";
+;29533;;"Snowboard Ski Tool Toko Ergo Multi Guide yellow 1";
+
+==================================================================================================================================================================================
+LOCALIZATION IN HYBRIS..==>
+
+Message could be a text label or info text or error messages etc
+
+Generally, we keep all these messages in a properties file specific to locale
+
+Example :
+
+English specific messages will be kept in base_en.properties
+German specific messages will be kept in base_de.properties
+French specific messages will be kept in base_fr.properties, and so on
+
+Each of these files are specific to specific locale or language.
+
+In our application, we need to load the messages from these properties file
+
+Messages will be kept in these files in the form of key – value pairs
+
+We can use key to load the value dynamically in our application wherever we want to load it.
+
+
+Example :
+
+base_en.properties
+
+address.country.invalid = Please select a country
+address.phone.invalid = Incorrect phone number
+product.code.invalid=Please provide valid product code
+
+Now we can use these messages in our application
+
+2) Sometime, We need to load these messages in Java class conditionally based on some business logic and add these messages in the model attribute to send it to front end
+
+In such case, we can use MessageSource and I18NService in our class
+
+In Hybris, these 2 dependencies are already defined in the AbstractPageController
+
+So, any controller extending this AbstractPageController can directly use it
+
+Its injected as below
+
+public abstract class AbstractPageController extends AbstractController
+{
+@Resource(name = "messageSource")
+private MessageSource messageSource;
+ 
+@Resource(name = "i18nService")
+private I18NService i18nService;
+ 
+protected MessageSource getMessageSource()
+    {
+        return messageSource;
+    }
+ 
+protected I18NService getI18nService()
+    {
+        return i18nService;
+    }
+ 
+//further code
+ 
+}
+
+We can use these dependencies and access messages as below
+
+String productInvalidMessage = getMessageSource().getMessage("product.code.invalid", null, getI18nService().getCurrentLocale());
+model.addAttribute(“productInvalidMessage”, productInvalidMessage);
+
+We can add this in the model attribute and can access in the jsp or tag file as below
+
+${productInvalidMessage}
+
+
+
+
+========================================================================================================================================================================
+How to get all the base products which are having variants in Hybris?
+
+Requirement :
+Need to fetch all the base products which are having variants to display those base products in the UI or to perform some logic on those products
+
+There are 2 ways to achieve the above requirement
+
+1) Directly using query, we can get all the base products which are having variants
+
+2) Load all the base products first and then call getVariants() method on each base product object to check whether variants list is empty or not
+
+Note: We should know that, relation between Base Product and its variants is One to Many
+
+
+Let’s do the implementation in both the ways
+
+
+1) Using Query
+
+We can write below query to achieve it
+
+select {p.pk} from {Product as p join VariantProduct as vp on {vp.baseProduct}={p.pk}}
+
+We can call this query in DAO layer as below
+
+
+String query = "select {p.pk} from {Product as p join VariantProduct as vp on {vp.baseProduct}={p.pk}}";  //only products
+Select {vp.pk} from {VariantProduct as vp join product as p on {vp.baseproduct}={p.pk}} where {p.code}= ‘M35364’   //variants of a given product.
+ 
+        final FlexibleSearchQuery searchQuery = new FlexibleSearchQuery(query);
+                searchQuery.setResultClassList(Collections.singletonList(ProductModel.class));
+        final SearchResult searchResult = getFlexibleSearchService().search(searchQuery);
+        List<ProductModel> products = searchResult.getResult();
+return products;
+
+
+
+2) Using getVariants() method
+
+Getting base products using query and then programtically filter base products having variants using getVariants() method
+
+
+ 
+In this way, we can load List of ProductModel first and We can iterate each product and filter them as below
+
+
+List<ProductModel> baseProducts = new ArrayList<ProductModel>();
+String query = "select {p.pk} FROM {Product as p}"
+final SearchResult<ProductModel> searchResult = getFlexibleSearchService().search(query);
+for (final ProductModel product : searchResult.getResult()) {
+   if(CollectionUtils.isNotEmpty(product.getVariants())) {
+baseProducts.add(product);
+      }
+   }
+}
+return baseProducts;
+
+
+======================================================================================================================================================================================
+
+Setting context values outside web context?
+
+We know that every web application will have a context within which session and other values will be stored.
+
+In hybris,when we try to fetch some objects which are related to user,carts etc Hybris by default uses session values set within web application context.
+
+Example : when we try to fetch product for a specific product code, then Hybris uses catalog version and other required details from session automatically.
+
+This works very well as long as we are calling getProductForCode() method within web application context,but sometime we need to use this method outside the web application.
+Example : We may need to call this method from cronjob,web service etc.
+
+Obviosuly, there is no web application context when we run cron job or make web service call, then in that case, above method call will throw below error
+
+could not translate value expression ‘session.catalogversion’
+
+So in any such scenario, we need to setup the web application context and thankfully Hybris has provided a way for it.
+
+Yes,Hybris provided a context class called “ImpersonationContext” which will be used to set the context values.
+
+
+We need to do below things to use it.
+
+Step 1
+Create ImpersonationContext object
+
+Copy this code
+final ImpersonationContext context = new ImpersonationContext();
+
+Step 2
+Set all the context related values using this object
+
+
+        context.setSite(site);
+                context.setUser(user);
+        context.setCatalogVersions(catalogVersionService.getCatalogVersion(“MyStoreCatalog”, "Online"););
+        context.setLanguage(language);
+        context.setCurrency(currency);
+        context.setCatalogVersions(getCatalogVersionService().getSessionCatalogVersions());
+		
+Note :
+Site,user,language,currency can be retrieved using appropriate service methods.
+
+Step 3
+Execute your code within this context using impersonationService as below
+
+
+//Overriding execute method of Executor
+impersonationService.executeInContext(context,new ImpersonationService.Executor<Object, ImpersonationService.Nothing>(){
+ 
+@override
+Public Object execute(){
+//Write your code here to call other methods as per need , something like below
+// getSomething();
+}
+});
+
+Alternative way of Step 3 (using Java 8 lambda expression)
+
+Copy this code
+impersonationService().executeInContext(context,() -> getSomething());
+
+Note :
+This way, all the required context values are available to hybris even when call is made from outside web app
+
+
+
+
+=====================================================================================================================================================================================
+Creating and Loading cart==>
+
+Whenever we need to create a cart, first thing we need to check is whether cart is already exist or not.
+
+Since this is a basic requirement of any eCommerce site, Hybris has already written a method in that way.
+
+So, we should use Hybris provided method getSessionCart() defined in DefaultCartFacade to serve this purpose.
+
+Yes, getSessionCart() method will make sure that cart is created if there is no cart exist, or it will load the existing cart if it exists already
+
+We have to use it as below
+
+final CartData cartData = cartFacade.getSessionCart();   // as we required
+
+Make sure cartFacade is injected in the required class.
+
+Above line execution makes sure that, you always have cart in the system
+
+we can use the above code wherever we need to make sure that cart is mandatory and without which we can’t proceed further.
+
+
+Deleting the cart
+
+There are many ways to delete the cart based on which cart we need to delete
+
+We can load the current session cart and delete it as below
+
+
+final CartModel cartModel = cartService().getSessionCart();    //as we want to delete
+modelService.remove(cartModel);
+sessionService.removeAttribute(“cart”);
+
+Make sure cartService,modelService and sessionService are injected in the required class.
+
+We can directly call façade method which does all the above things
+
+
+cartFacade().removeSessionCart();                           //vviiipppp
+
+Make sure cartFacade is injected in the required class.
+
+
+ 
+Creating  cart, loading cart and Removing cart operations are very crucial operations in any eCommerce site.
+
+We need to purge old carts after specific number of days as we don’t need to keep it in our DB
+
+We can load old carts based the requirement using flexible search query and can delete the cart using above code.
+
+We can check the same in Hybris OOTB logic for removing old carts.
+
+
+
+===========================================================================================================================================================
+How to set the delivery address of a cart?
+
+Let us see how we can set delivery address to a cart
+
+In Hybris data model, Cart is always associated with one delivery address
+
+
+AbstractOrderModel.java
+AddressModel deliveryAddress;
+
+Since CartModel is a subclass of AbstractOrderModel, CartModel will also have delivery address(AddressModel)
+
+Step 1
+Load the cart associated with the session
+
+
+final CartModel cartModel = cartService().getSessionCart();
+
+Make sure cartService is injected in the required class.
+
+Step 2
+Load all the addresses associated with user and delivery country using below code
+
+
+deliveryService.getSupportedDeliveryAddressesForOrder(cartModel, false)
+
+Make sure deliveryService is injected in the required class.
+
+Step 3
+load AddressModel for the given address_id (Need to pass address id from UI)
+
+Note : 
+This address_id has to be made available in UI and kept hidden if we select address from the list of address populated from backend.
+
+Compare this address with all the available address loaded in Step 2, If its matching any address, then return that AddressModel
+
+Note :
+ For new address, we need to create new AddressModel and associate it to cart.
+
+Step 4
+Set AddressModel obtained in Step 3 to CartModel
+
+
+cartModel.setDeliveryAddress(addressModel);
+
+step 5
+Save CartModel
+
+modelService().save(cartModel);
+
+
+
+As an alternative to all the above steps, we can make single call to below method
+
+checkoutFacade.setDeliveryAddress(addressData);
+
+But this method takes AddressData as a parameter, so prepare it and send.
+
+Make sure checkoutFacade is injected in the required class.
+
+Now new address should be associated with the current cart.
+
+
+Note :
+One user can have any number of address in any ecommerce application
+But it is always very much essential to have a cart with one valid delivery address
+
+===============================================================================================================================================================
+Cloning of Address in Hybris?
+
+We know that every customer in ecommerce site will have address associated with them.
+
+We also know that cart and order will also have an address which is same as customer address
+
+Cart will have a delivery address which is always referencing the address owned by a Customer
+So, whenever customer edits the address, same address will be updated for cart delivery address.
+This is because, cart delivery address is obtained by shallow cloning.
+
+Once the cart is converted to an order, the cart address will be cloned and attached to the newly created order.
+
+cloned address in order is owned by the order and not by the customer which means it does deep cloning.
+
+How to clone address in Hybris?
+
+We can clone address in either of the following 2 ways
+
+1) Shallow cloning
+2) Deep cloning
+
+1) Shallow cloning
+If we want to clone address and store only reference of the original address then we can do shallow cloning as below
+
+
+AddressModel clonedAddress = modelService.clone(originalAddress,AddressModel.class);
+
+In this case, any modification to original address will be reflected in cloned address
+
+
+ 
+Example : Cart delivery address cloned from customer address
+
+2) Deep cloning
+If we want to clone address and store it independent of original address then we can do deep cloning as below
+
+
+AddressModel clonedAddress = addressService.cloneAddress(originalAddress);
+
+Where addressService is an instance of AddressService class
+
+In this case, any modification to original address will not be reflected in cloned address
+
+Example : order delivery address cloned from cart delivery address
+
+Note : One Customer can have any number of addresses.
+
+================================================================================================================================================================
+Delivery Modes in Hybris
+
+ 
+In any ecommerce site, Delivery modes are very important during checkout experience.
+
+We need to have an option like Standard delivery, Express delivery so that User can select whichever is suitable for their order.
+
+
+How we define delivery modes in Hybris
+
+We mainly have Delivery zones where each Zone consists of set of countries
+
+So, we need to define the Zone first before defining delivery modes as below
+
+INSERT_UPDATE Zone;code[unique=true];countries(isocode)
+;uk;GB,GG,IM,JE
+;usa;US
+
+We need to define Delivery Modes required in our application using ZoneDeliveryMode as below
+
+INSERT_UPDATE ZoneDeliveryMode;code[unique=true];net;active[default=true]
+;premium;true
+;standard;true
+
+We have added 2 delivery modes here , we can add as many as our application requires.
+
+We need to link these delivery modes to Zone using ZoneDeliveryModeValue as below
+
+Linking delivery modes for UK zone
+
+# Delivery modes for UK zone
+INSERT_UPDATE ZoneDeliveryModeValue;deliveryMode(code)[unique=true];zone(code)[default='uk'][unique=true];currency(isocode)[unique=true];value;minimum[unique=true]
+;premium; ;$usCurrency;17,99;0,00
+;standard; ;$usCurrency;9,99;0,00
+
+Linking delivery modes for USA zone
+
+# Delivery modes for USA zone
+INSERT_UPDATE ZoneDeliveryModeValue;deliveryMode(code)[unique=true];zone(code)[default='usa'][unique=true];currency(isocode)[unique=true];value; minimum[unique=true]
+;premium; ;$usCurrency;19,99;0,00
+;standard; ;$usCurrency;11,99;0,00
+
+We need to assign these delivery modes to store using BaseStore2DeliveryModeRel as below
+
+# Assigning delivery modes to base store
+INSERT_UPDATE BaseStore2DeliveryModeRel;source(uid)[unique=true];target(code)[unique=true]
+;mystore;premium
+;mystore;standard
+
+We have assigned 2 delivery modes to our store “mystore”
+
+We will see these 2 delivery modes in our storefront when we access delivery modes using store.
+
+Note : mystore should be the base store defined already using store.impex
+
+===============================================================================================================================================================
+How to start cron job after server startup automatically?
+
+We have a property in hybris to start all cron jobs after server startup but to make a specific cron job to run after server startup, 
+we don’t have any such property
+
+We need to implement ServletContextListner interface and write the code to execute specific cron job on server start up
+
+Create a java class by implementing ServletContextListner interface
+
+
+Package com.kb.listener;
+public class CronjobContextListener implements ServletContextListener {
+ 
+  @Override
+  public void contextDestroyed(ServletContextEvent arg0) {
+    //Code can be written to execute before server shuts down.  
+  }
+ 
+  @Override
+  public void contextInitialized(ServletContextEvent arg0) {
+    // Write a code that needs to be executed just after the server starts
+ProductsRemovalCronJobModel  productsRemovalCronJobModel =modelService.create(ProductsRemovalCronJobModel.class);
+ 
+// assign Job to CronJob
+ServicelayerJobModel  servicelayerJobModel = modelService.create(ServicelayerJobModel.class);
+servicelayerJobModel.setActive(true);
+servicelayerJobModel.setSpringId("productsRemovalJob");
+productsRemovalCronJobModel.setJob(servicelayerJobModel);
+modelService.save(productsRemovalCronJobModel);
+cronJobService.performCronJob(productsRemovalCronJobModel);
+  }
+}
+
+configure above context listener class in storefront extension’s web.xml as below
+
+Copy this code
+<listener>
+    <listener-class>
+        com.kb.listener.CronjobContextListener
+</listener-class>
+</listener>
+
+Now whenever server starts, immediately above cron job executes.
+
+
+We can also override contextInitialized() method inside existing hybris context listener HybrisStorefrontContextLoaderListener instead of creating new one but we should not forget calling super.contextInitialized(event);
+
+====================================================================================================================================================
+hii responsive images work?
+===========================================================================================================================================================
+InterceptorContext==>use it in Interceptors when u require recent db changes..it has very important method for it..
+===========================================================================================================================================================
+what happen when we install addon==>
+1)entry in extension info of required-extension of storefront.
+2)entry in addon.less
+3)create project.properties from project.template
+4)adding web-spring.xml into storefront wweb.xml...
+
+=====================================================================================================================================================================================
+SAP Commerce contains a mechanism that builds one global context and a number of application contexts==>
+
+=====================================================================================================================================================================================
+
+Yes, get ahold of ApplicationContext and call .getBeanDefinitionNames()  // to get beans in applicationContext..
+
+Introduction to Application Contexts
+As has been mentioned, beans are managed by containers; the so-called application contexts. This is how this mechanism works in the hybris Commerce Suite:
+
+hybris Commerce Suite contains a mechanism that builds one global context and a number of application contexts. These contexts correspond to the number of tenants. This means that each tenant has its own application context.
+All application contexts have as the parent the global application context.
+Every web application has a separate web spring context, which has as the parent its tenant-specific application context.
+
+a)
+There is a new global, (non-tenant aware) application context that consists of global spring files, for example global-servicelayer-spring.xml.
+
+During its startup, the hybris Commerce Suite creates one instance of the global ApplicationContext, which contains all beans placed in global spring files, for example global-servicelayer-spring.xml.
+
+If you want to create your xml a globL==>SET SOME PROPERTIES in project.properties
+
+<extname>.global-context = <extname>-global-spring.xml
+
+T==>he hybris Commerce Suite provides the following method at the Registry to get the global ApplicationContext:
+
+Registry.getSingletonGlobalApplicationContext()) 
+hybris recommends you use this method if you want to deal with beans that are global beans, such as cache beans or tenant-not-aware registries.
+
+
+
+
+b)Core ApplicationContext:
+is constructed using all configuration files of the extensions enabled for a given tenant (each tenant can have a different set of extensions) 
+The construction process uses the classloader of the core extension. It has, as its parent, the (singleton) global application context.
+
+<extname>.application-context = <extname>-spring.xml   //same in project.properties.
+
+how to use ==>
+MyBeanType myBean = (MyBeanType)Registry.getApplicationContext().getBean("<extname>.mybean");//getCoreApplicationContext();
+
+
+
+c)Web Application Context
+To define the beans part of the Web Module of an extension or with scopes not available to the global ApplicationContext or core application contexts, 
+like session or request, you need to configure a web ApplicationContext in theweb.xml file. 
+You also need access to the core ApplicationContext to access beans of the Core Module, such as services.
+
+add it in <context -param>
+
+Accessing Web Application Context
+While the Registry.getCoreApplicationContext method always returns the core ApplicationContext, the Registry.getApplicationContext checks first 
+if there is a ServletContext currently holding a WebApplicationContext. 
+If that is the case, this one is returned, which is indeed your web ApplicationContext configured at your web.xml file. 
+If there is no current ServletContext or no ApplicationContext set at it, the global ApplicationContext is returned.
+
+
+==============================================================================================================================================================================
+order have payment transaction and payment info=====>payment transaction have different payment transaction enteries...
+transaction enteries have==>status of payment and code....
+payment info ====>card related ..last 4 digits..
+==============================================================================================================================================================================
+
+tenant==when we have different data for different sites but we have a single suite..
+
+
+The core-spring.xml file of the core extension adds a special scope named tenant to the global ApplicationContext. The tenant scope makes sure that the bean is instantiated individually for each individual tenant of the hybris, whereas singleton would create only one instance for all tenants to use.
+
+If you reference tenant-specific classes like services or DAOs inside your implementation, you have to use the tenant scope instead of the default Spring singleton scope. In case of doubt, use tenant instead of singleton.
+
+<bean id="myExtension.myBean" class="de.hybris.platform.myExtension.myClass" scope="tenant" 
+==============================================================================================================================================================================
+Aborting a cron job
+
+How to abort or terminate a running cron job ?
+
+Assume that our cron job has been running from the past one hour, now i want to abort it, then we can do that in Hyrbis
+
+Job is abortable only if it satisfies one of the below conditions
+
+1) isAbortable() method in cronjob performable class should be overridden to return true
+
+2) Define a new property in the *-spring.xml file where we defined our Job’s bean definition
+
+<property name="abortable" value="true"/>
+Now Job is abortable and can be done using below code
+
+
+cronJobService.requestAbortCronJob(running_cronjob_code);
+
+
+
+2)Setting session related attributes to the cron job
+
+Some time we write a cron job whose logic requires some session attributes like user,sessionLanguage and sessionCurrency etc.
+
+So how do we set these attributes to the cron job so that we can access them while writing the logic of the cron job ?
+
+It can be done in any one of the 2 ways listed below
+
+1) Set the session attributes through impex
+
+2) Set the session attributes through code
+
+lets see the code for the same
+
+1) Session attributes through impex
+
+INSERT_UPDATE CronJob;code[unique=true];job(code);sessionUser(uid);sessionLanguage(isocode);sessionCurrency(isocode)
+ 
+;myCronJob;myJob;user1;en;EUR
+Here when we define the instance of Cron Job , we also specify the session attributes like user,currency and language
+
+Above session values can be used while writing the logic inside Perform() method of Job
+
+2) Session attributes through Code
+
+Copy this code
+CronJobModel myCronJob=modelService.create(CronJobModel.class);
+ 
+// set JobModel to CronJobModel
+ 
+myCronJob.setSessionUser(mySessionUserModel);
+ 
+myCronJob.setSessionLanguage(mySessionLanguage);
+ 
+myCronJob.setSessionCurrency(mySessionCurrency);
+ 
+modelService.save(myCronjob);
+ 
+cronJobService.performCronJob(myCronJob);
+Here we have created the instance of CronJobModel and set all the session attributes then saved the Cron job model to DB.
+
+
+
+
+
+Cron Jobs in Clustered system
+
+How cron jobs run in a clustered hybris suite, will it run in all the nodes or only on single node ?
+
+Remember Cron jobs always executes on a single node only.
+
+we can specify the Node Identifier for the cron job to indicate on which Node it has to run using the below code
+
+CronJobModel myCronJob=modelService.create(CronJobModel.class);
+ 
+// set JobModel to CronJobModel
+ 
+//set session attributes if required
+ 
+ myCronJob.setNodeID(3);
+ 
+modelService.save(myCronjob);
+ 
+cronJobService.performCronJob(myCronJob);
+Now above cron job runs only in the Node 3 of the clustered environment.
+
+If we don’t set any Node Id for the Cron Job then Cron job can be executed by any Node within the cluster but only one Node at a time.
+
+
+How much overdue time we can allow for the triggers to get fired during the server startup ?
+This can be done by setting maxAcceptableDelay attribute to the Trigger.
+This attribute should have the value in seconds...
+==============================================================================================================================================================================
+INSERT_UPDATE category;code[unique=true];name[lang=de];name[lang=en];===?  localized:java.lang.string
+vouchers==>
+===============================================================================================================================
+CommerceCartParameter and CommerceCartParameter==>
+have all information related to cart and checkout ,beside hitting again and again on database we use this for like Commerce Cart calculation service.
+=====================================================================================================================================================
+Modifiers -- partOf ===>if we delete parent child should also be deleted..
+=====================================================================================================================================================
+Catalog vs Product vs CatalogVersion----->has one to one realtion.
+=====================================================================================================================================================
+
+===============================================
+Order Process hss==>
+1)Creating Order history---->saving order,time and description in it.
+2)CheckValidOrder===>set Status CHECKED_VALID or INVALID
+3)CheckAuthorizedPayment====>if invalid set Status PROCESSING_ERROR.
+for every order check it transactions and from transactions fetch entries. ==?
+4)SendOrderPlacedNotificationAction -->send mail to customer.
+5)TakePAyment--->Captures the Payment Transaction...set Order Staus Payment_Captured.,if payment failed it send a notification.
+6)CheckTransactionReviewStatus==>---->This action check if authorization has review status. if in review OrderStatus.SUSPENDED and remain in wait state..
+7)FraudCheck--->OrderStatus.FRAUD_CHECKED  work on this score < scoreLimit + scoreTolerance.
+8)sendFaudOrderNotification
+9)checkAuthorizeOrderPaymentAction-->check order.getPaymentInfo() or in entry checking type PaymentTransactionType.AUTHORIZATION and TransactionStatus.OrderStatus.PAYMENT_AUTHORIZED
+10)sendAuthorizationFailedNotificationAction if fail.
+11)OrderManualCheckedAction-->later
+12)splitOrderAction--->Fetching entries from order,getOrderSplittingService().splitOrderForConsignment(process.getOrder(),
+				entriesToSplit)  ///enties to split is array   ///using this service for consignment...
+				now start Consignment Process      OrderSTATUS.ORDER_SPLIT
+
+				
+
+=================
+how to find a frequent product placed in the in last 7 days
+select {p.code},COUNT({p.code}) AS 'value_occurrence'  from {OrderEntry as or join Product as p on {or.product}={p.pk}} where {or.creationtime}>'2023/02/01' group by {p.code} order by 'value_occurrence' desc
+=============================================
+how saved cart works ?
+SaveCartController
+In the ycommercewebservices extension, the SaveCartController class has been added. This class delegates the incoming save cart calls to the implementation of the SaveCartFacade interface, which does the actual work.
+
+final CommerceSaveCartParameterData parameters = new CommerceSaveCartParameterData();
+		parameters.setCartId(cartId);
+		parameters.setName(saveCartName);
+		parameters.setDescription(saveCartDescription);
+
+		final CommerceSaveCartResultData result = saveCartFacade.saveCart(parameters);
+
+fetching saved cart
+
+final CommerceSaveCartParameterData parameters = new CommerceSaveCartParameterData();
+		parameters.setCartId(cartId);
+
+		final CommerceSaveCartResultData result = saveCartFacade.getCartForCodeAndCurrentUser(parameters);
+		return getDataMapper().map(result, SaveCartResultWsDTO.class, fields);
+
+

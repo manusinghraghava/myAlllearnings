@@ -1,0 +1,19 @@
+Maths-->
+
+Proof techniques: Extremely important topic of mathematics to learn algorithms. Whenever you are studying an algorithm from a legit source like CLRS or MITOCW, you would see a lot proofs to prove the correctness and efficiency of algorithms. Mostly, two proof techniques are used. Induction and contradiction. Proof is not a thing which can be just learnt, it’s a skill that has to be mastered.
+
+Probability: I haven’t seen any advanced probability up till now in my journey of learning data structures and algorithms but basic probability is used mostly in the analysis of some algorithms. One most popular example would be hashing. You have to use some probability to understand how hashing works. Probability is used more extensively in the analysis of some randomized data structures and algorithms like skip lists and randomized quicksort or randomized median finding.
+
+Recurrence relations: Also a useful tool in analyzing the complexity of recursive algorithms like merge sort. It’s good that you know how to solve recurrence relations. In the courses on MITOCW, they only used substitution method, drawing the recursion tree method and the master’s theorem. They taught all of it and I think most sources to learn data structures and algorithms should also teach it.
+
+
+Number theory: Widely used in cryptography although I don’t know if you would want to learn that or not. I can’t think of any example where number theory is directly used in any algorithm right now but there are few must know topics in number theory which you must learn to solve problems using data structures and algorithms. Some of them are-
+a. Prime numbers and finding prime numbers using sieve's algorithm
+b. Greatest common divisor and Euclid's algorithm to find gcd
+c. A little modular arithmetic might also help.
+
+logs,Discrete math, calculus, recurrence relations, algebra, linear algebra, abstract algebra, Boolean algebra.
+
+
+
+==========================================================================================================================================

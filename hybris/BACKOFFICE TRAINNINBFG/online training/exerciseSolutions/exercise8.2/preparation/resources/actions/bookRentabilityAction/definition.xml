@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+  ~ [y] hybris Platform
+  ~
+  ~ Copyright (c) 2000-2015 hybris AG
+  ~ All rights reserved.
+  ~
+  ~ This software is the confidential and proprietary information of hybris
+  ~ ("Confidential Information"). You shall not disclose such Confidential
+  ~ Information and shall use it only in accordance with the terms of the
+  ~ license agreement you entered into with hybris.
+  -->
+<action-definition id="my.bookstore.backoffice.actions.changeBookRentabilityAction" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:noNamespaceSchemaLocation="http://www.hybris.com/schema/cockpitng/action-definition.xsd">
+
+    <name>Change Rentability Status</name>
+    <description>Make a book rentable or nonrentable</description>
+    <author>hybris</author>
+    <version>1.0</version>
+
+    <!--
+    TODO exercise 8.12: add the fully qualified name of the ChangeBookRentabilityAction class as the value of <actionClassName>
+    -->
+    <actionClassName>  </actionClassName>
+
+    <inputType>java.lang.Object</inputType>
+    <outputType>my.bookstore.core.model.BookModel</outputType>
+
+    <!--
+    TODO exercise 8.19:
+    For all three entries below (which are required even if they're empty), provide a path to each 
+    icon file (relative to the location of this definition.xml file, i.e., images/<iconFile> )
+    -->
+    <iconUri>  </iconUri>
+    <iconHoverUri>  </iconHoverUri>
+    <iconDisabledUri>  </iconDisabledUri>
+
+
+</action-definition>

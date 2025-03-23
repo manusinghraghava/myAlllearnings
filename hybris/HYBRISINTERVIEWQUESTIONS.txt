@@ -1,0 +1,165 @@
+What is cardinality between site, store, stocks and warehouse
+What is the use of hotfolder?
+How to load the custom data at the time system update and system initialization?
+- he asked the class name and method name for this
+- Continuation to this question
+What is the difference between essential data and project data ?
+How to load new attribute on the PDP page?
+- complete steps
+In depth questions on the project
+- concentrated on the integrations
+Impex query example on the dynamic attribute (he has given use case)
+Integration : we have integrated with the TripAdvisor.
+He has asked the complete procedure for integrating with this ( jars, classes and many more)
+He has given me around 5 use cases and expected different procedures
+
+Pragathi:
+First the questions will be based on your previous project experience and about responsibilities.
+Second about the cardinality among store site warehouse and stock.
+Backoffice customisation, Iteration and adding the values in map and list. (Writing the code snippet in chat box.)
+How to populate the new attribute on registeration page ? (Writing the complete process in code snippet form in chat box) 
+
+Chinnababu:
+1.Write a Flexible Search Query?
+2.difference between Product attributes and Classification attribbutes?
+3.write impex ?
+4.difference between b2b and b2c?
+5.cardinality b/w CAtegory and Category?
+6.cardinality b/w BaseStore and BaseSite?
+7.explain DAtahub integration ?
+8.what are interceptors ?
+9.which one invoke first from Preare interceptor and validate interceptor?
+10.How to add new attribute to plp page using solr?
+11.Solr Indexing?
+12.which data come first b/w product and Classification attribbutes?
+13.how to create new Cronjob & abandoned cron job ?
+14.Defining catalog aware item types?
+
+Java:
+-----
+1. what is functional interface ? use of functional interface?
+2. By using streams how to iterate and fetch perticular value from the list?
+
+Spring:
+------
+1. Dependency Injection ?
+2. how many scopes are availale and explain them? 
+
+What is cardinality between site, store, stocks and warehouse
+
+What is the use of hotfolder?
+How to load the custom data at the time system update and system initialization?
+
+- he asked the class name and method name for this
+
+- Continuation to this question
+
+What is the difference between essential data and project data ?
+
+How to load new attribute on the PDP page?
+
+- complete steps 
+
+In depth questions on the project
+
+- concentrated on the integrations
+
+Impex query example on the dynamic attribute (he has given use case)
+
+Integration : we have integrated with the TripAdvisor.
+
+He has asked the complete procedure for integrating with this ( jars, classes and many more)
+
+He has given me around 5 use cases and expected different procedures
+
+1. Flexible Queries:
+
+1. Select the count of products from Categories with category Code CONSOLE.
+2. Dispaly category Name from products with Categories
+3. Show Category name and all the count of products for all the Categories.
+
+2. Write Impex for adding category NewGame under Parent Category GAMES.
+
+3. What is product Classification? How do we classify between the products and when do we use?
+
+4. How do we delete all Orders from data modelling ? {Cascade Delete)
+
+5. How many types of Events are there? Whar are Events and Event Listeners? How do we classify and what are the methods we implement?
+
+6. What are Asynchronous Events? How do we define?
+
+7. What is Cron Job ? How do we define new Cron Job? what is process for customizing new cronjob?
+
+8. How do we write clusture Cron Jobs?
+
+9. What is Business Process? How do we write new Business Processes? what are the implementation classes to write Action classes?
+What is return Object For the Action Class?
+
+10. What is mechanism involved in OCC? What is the total process/flow if we want to customize whole process? How do we convert Data Object into dto?
+Why do we WsDto as response instead of data Object?
+
+11. Java Questions on java 8 features? When do we write lambda expressions?
+
+12. Write code for Following:
+
+1. How to iterate from maps for getting map keys and Values.
+2. How do we get only Particular Key value from Iteration?
+3. How do we add Key Value into ArrayList and Return?
+4. How do Print middle two values from Array Of integers like [2,3,4,5,6,7,8,9,0,1] if arrayLenth is greater than 2.
+
+Extra Behavioural and Manageral Questions at the end.
+
+How to show one new attribute on PLP and PDP?
+How to add one custom attribute in product and what all the steps required to store the same in DB and show in storefront?
+How to show facets and how it is different from solr indexed results?
+How to show search results based on custom attribute on top of the page?
+Asked about integrations which I worked on?
+Java code for iterating string Array?
+Java code to find character 'A' in a given string number of times?
+Java code to sum the list of given integer values?
+Difference between List and Map, how to iterate a map?
+How to do build and deployment on CCV2?
+
+Flexible search query.
+Impex use and available modes in impex?
+How to delete all the records in a table using impex?
+Solr indexing.
+Hot folder concept.
+class name which will insert the data into Hybris after impex import from HAC.
+Order process.xml explanation.
+OMS implementation done on previous project.
+Difference between creating the object using new keyword and modelservice.create method.
+Site, store differences
+Cart implementation done on previous project.
+How to show product and variant products in storefront using solr?
+How to use two different product catalogs in one store?
+How to add new steps in process.xml?
+How to show order success message/page to the customer instead of waiting for order creation in the backend?
+
+1) How to get Oauth access Token(customer specific)
+
+2) Flexible Search Query ( get only Parent Objects objects Ex: Fetech only UserModel objects not Customer Objects )
+
+3) How to get Particular Exception log in CCV2 Kibana Portal
+
+4) Implementation of Cronjobs ( normal and cloud cronjobs)'
+
+5) Items.xml Structure and write Map type attribute declaration in Chat
+
+6) Why Dynamic Attributes and how to implement?
+
+7) What is configurable populator and how to implement?
+
+8) How to convert Data object to WSDTO object?
+
+9) How to Override OOTB OCC API ?
+
+10) How to create custom Promotions?
+
+11) Cartdinality B/W B2BUnit and B2BCustomer and B2BUsergroup and differences b/w b2BUnit and B2BUsergroup and UserGroup?
+
+12) What is the difference b/w List and set and ArrayList vs Vector and Hasmap vs LinkedHashmap?
+
+13) Stream API related quetions ( Write a code to filter a List based on condition)
+
+14) What is Lamda Expression and Functional Interface?

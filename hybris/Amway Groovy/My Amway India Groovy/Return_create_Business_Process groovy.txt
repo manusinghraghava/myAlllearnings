@@ -1,0 +1,19 @@
+import de.hybris.platform.core.Registry;
+import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.servicelayer.event.EventService;
+import de.hybris.platform.returns.model.ReturnRequestModel;
+import java.lang.Long;
+import com.amway.indpointofsaleoccaddon.returns.facade.impl.IndPosOmsReturnFacadeImpl;
+import de.hybris.platform.core.PK;
+
+		final ModelService modelService = (ModelService) Registry.getApplicationContext().getBean("modelService");
+		final IndPosOmsReturnFacadeImpl indPosOmsReturnFacadeImpl = (IndPosOmsReturnFacadeImpl)  Registry.getApplicationContext().getBean("indPosOmsReturnFacade");
+		
+		
+		Long requestPK=8802224965635;
+		ReturnRequestModel returnRequest = modelService.get(new PK(requestPK));
+		
+		indPosOmsReturnFacadeImpl.publishReturnEvent(returnRequest)
+		
+		
+		

@@ -1,0 +1,126 @@
+import de.hybris.platform.core.Registry;
+import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.servicelayer.search.FlexibleSearchQuery;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Arrays;
+import org.apache.commons.collections4.CollectionUtils;
+import de.hybris.platform.servicelayer.search.SearchResult;
+import de.hybris.platform.servicelayer.model.ModelService;
+import com.amway.core.model.invoice.*;
+import de.hybris.platform.core.model.order.OrderModel;
+import com.amway.eventstream.model.AmwayEventStagingEntryModel;
+import com.amway.eventstream.enums.AmwayEventSyncState;
+import com.amway.indfacades.order.payload.*;
+import java.util.List;
+import java.util.Optional;
+
+import de.hybris.platform.cms2.model.site.CMSSiteModel;
+import de.hybris.platform.servicelayer.search.FlexibleSearchService;
+import org.apache.commons.collections4.CollectionUtils;
+import de.hybris.platform.servicelayer.i18n.CommonI18NService;
+import de.hybris.platform.store.BaseStoreModel;
+import de.hybris.platform.store.services.BaseStoreService;
+import de.hybris.platform.site.BaseSiteService;
+import org.apache.commons.lang.StringEscapeUtils;
+import com.amway.eventstream.enums.*;
+import java.text.SimpleDateFormat;  
+import java.util.*;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+
+
+void addColumn(FileWriter fileWriter,String entry)
+	{
+		try
+		{
+			if(StringUtils.isNotBlank(entry) && entry.contains(",")){
+				entry = entry.replace(",", StringUtils.EMPTY);
+			}
+			fileWriter.append(entry);
+			fileWriter.append(",");
+		}
+		catch(Exception e)
+{
+e.printStackTrace();
+}
+
+
+	}
+try{
+
+Date currentDate = new Date();
+Calendar cal = Calendar.getInstance();
+cal.setTime(currentDate);
+//change this for fetching order on different time
+
+Date previouDay = cal.getTime();
+
+formatter = new SimpleDateFormat("dd_MM_yyyy_HH_mm");
+
+String reportDate= formatter.format(previouDay);
+
+String eventQuery="select {o.pk} from {Order as o join OrderStatus as os on {os.pk}={o.status}} where {os.code} in ('CONFIRMATION_FAILED')";
+
+final SearchResult<OrderModel> eventSearchResult = ((FlexibleSearchService) Registry.getApplicationContext().getBean("flexibleSearchService")).search(eventQuery);
+
+final List<OrderModel> eventResults = eventSearchResult.getResult();
+
+String fileName ="/opt/hybris/data/amway/reports/events/invoiceDetailsForCancelledOrders_"+reportDate+".csv";
+
+FileWriter fileWriter = new FileWriter(fileName);
+
+			fileWriter.append(" Order Code , Receipt Type , Number , Order Date");
+
+			fileWriter.append("\n");
+if(CollectionUtils.isNotEmpty(eventResults))
+{
+
+for(OrderModel entry: eventResults)
+{
+
+ 
+  if(CollectionUtils.isNotEmpty(entry.getAmwayInvoices()))
+		 {
+		 for(AmwayInvoiceModel invoice: entry.getAmwayInvoices())
+		 {
+		 try{
+		     if(invoice!=null){
+addColumn(fileWriter,entry.getCode());
+addColumn(fileWriter,invoice.getIndReceiptType().getDisplayName());
+addColumn(fileWriter,invoice.getNumber());
+addColumn(fileWriter,entry.getCreationtime().toString());
+				fileWriter.append("\n");
+				}
+				}
+				catch(Exception e)
+				{
+				fileWriter.append("\n");
+				continue;
+				}
+				}
+				}
+}
+fileWriter.flush();
+}
+}
+catch(Exception e)
+{
+e.printStackTrace();
+}
+finally {
+			try {
+				if(fileWriter != null) {
+	   				fileWriter.close();
+				}
+			} 
+catch(Exception e)
+{
+e.printStackTrace();
+}
+}

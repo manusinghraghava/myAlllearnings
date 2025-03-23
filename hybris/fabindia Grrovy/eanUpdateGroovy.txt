@@ -1,0 +1,53 @@
+import org.apache.commons.lang3.StringUtils;
+import de.hybris.platform.core.Registry;
+import de.hybris.platform.servicelayer.model.ModelService;
+import de.hybris.platform.servicelayer.search.FlexibleSearchQuery;
+import de.hybris.platform.servicelayer.search.FlexibleSearchService;
+import org.apache.commons.collections4.CollectionUtils;
+import de.hybris.platform.servicelayer.search.SearchResult;
+import de.hybris.platform.core.model.product.*;
+import de.hybris.platform.variants.model.*;
+import de.hybris.platform.europe1.model.*;
+import de.hybris.platform.catalog.enums.*;
+import org.apache.commons.lang3.*;
+import java.util.*;
+import java.util.stream.*;
+import de.hybris.platform.servicelayer.model.ModelService;
+
+String vpQuery = "select {pk} from {Product as vp join catalogVersion as cv on {vp.catalogVersion}={cv.pk}} where {cv.version} = 'Staged'";
+final ModelService modelService = (ModelService) Registry.getApplicationContext().getBean("modelService"); 
+final SearchResult<ProductModel> vpSearchResult = ((FlexibleSearchService) Registry.getApplicationContext().getBean("flexibleSearchService")).search(vpQuery);
+final List<ProductModel> vpResults = vpSearchResult.getResult();
+
+void changeCode(ProductModel productModel)
+	{
+		if (StringUtils.isNotBlank(productModel.getSapEAN()) && (StringUtils.isBlank(productModel.getSapArticleNumber()) || StringUtils.equalsIgnoreCase(productModel.getSapArticleNumber(),productModel.getCode())))
+			{
+				productModel.setSapArticleNumber(productModel.getCode());
+				productModel.setCode(productModel.getSapEAN());
+			}
+if (StringUtils.isBlank(productModel.getSapEAN()))
+			{
+				productModel.setSapArticleNumber(productModel.getCode());
+			}			
+	}
+	
+if(CollectionUtils.isNotEmpty(vpResults))
+{
+for(ProductModel vProduct :vpResults)
+{
+
+
+try{
+changeCode(vProduct);
+modelService.save(vProduct);
+}
+catch(Exception e)
+{
+e.printStackTrace();
+
+}
+
+}
+
+}

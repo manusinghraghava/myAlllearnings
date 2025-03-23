@@ -1,0 +1,280 @@
+Java 9 Module System(jigsaw)
+Java Module System is a major change in Java 9 version. 
+Java added this feature to collect Java packages and code into a single unit called module.
+
+its like identifier package learn about it later..
+
+----------------------------------------------------------------------------------------------------------------------
+
+Java 9 Private Interface Methods
+In Java 9, we can create private methods inside an interface. 
+Interface allows us to declare private methods that help to share common code between non-abstract methods.
+
+Before Java 9, creating private methods inside an interface cause a compile time error.
+
+interface Sayable{  
+    default void say() {  
+        saySomething();  
+    }  
+    // Private method inside interface  
+    private void saySomething() {  
+        System.out.println("Hello... I'm private method");  
+    }  
+}  
+public class PrivateInterface implements Sayable {  
+    public static void main(String[] args) {  
+        Sayable s = new PrivateInterface();  
+        s.say();  
+    }  
+}  
+------------------------------------------------------------------------------------------------------------------------
+
+But the below program would not work with Java 7 because we can't put resource declared outside the try-with-resource.
+
+Java 7 Resource declared outside the resource block
+If we do like the following code in Java 7, compiler generates an error message.
+
+import java.io.FileNotFoundException;  
+import java.io.FileOutputStream;  
+public class FinalVariable {  
+    public static void main(String[] args) throws FileNotFoundException {  
+        FileOutputStream fileStream=new FileOutputStream("javatpoint.txt");  
+        try(fileStream){                                                          // but from java 9 u can declare outside and call like this
+             String greeting = "Welcome to javaTpoint.";      
+                byte b[] = greeting.getBytes();       
+                fileStream.write(b);      
+                System.out.println("File written");           
+        }catch(Exception e) {  
+            System.out.println(e);  
+        }         
+    }  
+}  
+Output:
+
+error: <identifier> expected
+		   try(fileStream){
+
+
+
+------------------------------------------------------------------------------------------------------------------------
+
+abstract class ABCD<T>{  
+    abstract T show(T a, T b);  
+}  
+public class TypeInferExample {  
+    public static void main(String[] args) {  
+        ABCD<String> a = new ABCD<String>() { // diamond operator is not empty  we can use diamond operator in java 9 with anynomous classes.
+            String show(String a, String b) {  
+                return a+b;   
+            }  
+        };    
+        String result = a.show("Java","9");  
+        System.out.println(result);  
+    }  
+}  
+And we get the same result.
+
+Output:
+
+Java9
+
+-----------------------------------------------------------------------------------------------------------------------
+
+Java 9 Safe Varargs Annotation
+It is an annotation which applies on a method or constructor that takes varargs parameters. 
+It is used to ensure that the method does not perform unsafe operations on its varargs parameters.
+
+It was included in Java7 and can only be applied on
+
+Final methods
+Static methods
+Constructors
+
+From Java 9, it can also be used with private instance methods.
+
+Note: The @SafeVarargs annotation can be applied only to methods that cannot be overridden. Applying to the other methods will throw a compile time error.
+
+Example==>
+
+import java.util.ArrayList;  
+import java.util.List;  
+public class SafeVar{  
+    // Applying @SaveVarargs annotation  
+    @SafeVarargs  
+    private void display(List<String>... products) { // Not using @SaveVarargs  
+        for (List<String> product : products) {  
+            System.out.println(product);  
+        }  
+    }  
+    public static void main(String[] args) {  
+        SafeVar p = new SafeVar();  
+        List<String> list = new ArrayList<String>();  
+        list.add("Laptop");  
+        list.add("Tablet");  
+        p.display(list);  
+    }     
+} 
+-----------------------------------------------------------------------------------------------------------------------
+
+Java 9 Factory Methods
+Java 9 Collection library includes static factory methods for List, Set and Map interface. These methods are useful to create small number of collection.
+
+Suppose, if we want to create a list of 5 elements, we need to write the following code.
+
+Example==>
+
+ Set<String> set = Set.of("Java","JavaFX","Spring","Hibernate","JSP");
+
+---------------------------------------------------------------------------------------------------------------------
+
+Java 9 Process API Improvement
+Java has improved its process API in Java 9 version that helps to manage and control operating system processes.
+
+Use ProcessHandle to get current process..
+
+Example==>
+public class ProcessApiExample {  
+    public static void main(String[] args) {  
+        ProcessHandle currentProcess = ProcessHandle.current();     // Current processhandle  
+        System.out.println("Process Id: "+currentProcess.pid());    // Process id   
+        System.out.println("Direct children: "+ currentProcess.children()); // Direct children of the process  
+        System.out.println("Class name: "+currentProcess.getClass());       // Class name  
+        System.out.println("All processes: "+ProcessHandle.allProcesses()); // All current processes   
+        System.out.println("Process info: "+currentProcess.info());         // Process info  
+        System.out.println("Is process alive: "+currentProcess.isAlive());   
+        System.out.println("Process's parent "+currentProcess.parent());  // Parent of the process  
+    }  
+}  
+
+
+-------------------------------------------------------------------------------------------------------------------
+
+New methods Introduced in Stream==>
+Java Stream takeWhile(Predicate) Method Example 1
+In this example, we have a list of integers and picks up even values by using takewhile method.
+
+import java.util.List;  
+import java.util.stream.Collectors;  
+import java.util.stream.Stream;  
+public class StreamExample {  
+    public static void main(String[] args) {  
+        List<Integer> list   
+        = Stream.of(1,2,3,4,5,6,7,8,9,10)  
+                .takeWhile(i -> (i % 2 == 0)).collect(Collectors.toList());     //take the element till the condition is true else didnt consider other elements..
+    System.out.println(list);  
+    }  
+}  
+This example returns an empty list because it fails at first list element, and takewhile stops here.
+
+Output:
+
+[]
+
+Java Stream dropWhile() Method
+Stream dropWhile method returns result on the basis of order of stream elements.
+
+
+ 
+Ordered stream: It returns a stream that contains elements after dropping the elements that match the given predicate.
+
+Unordered stream: It returns a stream that contains remaining elements of this stream after dropping a subset of elements that match the given predicate.
+
+Java Stream dropWhile() Method Example
+import java.util.List;  
+import java.util.stream.Collectors;  
+import java.util.stream.Stream;  
+public class StreamExample {  
+    public static void main(String[] args) {  
+        List<Integer> list   
+        = Stream.of(2,2,3,4,5,6,7,8,9,10)  
+                .dropWhile(i -> (i % 2 == 0)).collect(Collectors.toList());     
+    System.out.println(list);  
+    }  
+}  
+Output:
+
+[3, 4, 5, 6, 7, 8, 9, 10]   //dropping element while it gets 3
+
+Java 9 Stream ofNullable Method
+Stream ofNullable method returns a sequential stream that contains a single element, if non-null. Otherwise, it returns an empty stream.
+
+It helps to handle null stream and NullPointerException.
+
+
+Stream can have null values also.
+
+Java 9 Stream ofNullable Method Example 
+
+import java.util.stream.Stream;  
+  
+public class StreamExample {  
+    public static void main(String[] args) {  
+        Stream<Integer> val   
+        = Stream.ofNullable(null);     
+    val.forEach(System.out::println);  
+    }  
+}  
+This program will not produce any output.
+
+Java Stream Iterate Method
+
+A new overloaded method iterate is added to the Java 9 stream interface. This method allows us to iterate stream elements till the specified condition.
+
+It takes three arguments, seed, hasNext and next.
+
+Java Stream Iterate Method Example
+import java.util.stream.Stream;  
+  
+public class StreamExample {  
+    public static void main(String[] args) {  
+        Stream.iterate(1, i -> i <= 10, i -> i*3)  
+        .forEach(System.out::println);  
+    }  
+}  
+Output:
+
+1
+3
+9
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+
+It is an interactive Java Shell tool, it allows us to execute Java code from the shell and shows output immediately. 
+JShell is a REPL (Read Evaluate Print Loop) tool and run from the command line.
+
+Advantages of JShell
+Jshell has reduced all the efforts that are required to run a Java program and test a business logic.
+
+If we don't use Jshell, creating of Java program involves the following steps.
+
+Open editor and write program
+Save the program
+Compile the program
+Edit if any compile time error
+Run the program
+Edit if any runtime error
+Repeat the process
+Jshell does not require above steps. We can evaluate statements, methods and classes, even can write hello program without creating class.
+
+To start Jshell, first we must have installed Java 9 then open terminal in Linux or command prompt in windows and type jshell ?v. 
+It will start jshell session and displays a welcome message to the console.
+
+Take reference=>https://www.javatpoint.com/java-shell-tool
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Modularity==>
+As when we r going to create object we r going to use rt.jar(runtime)
+And it is growing day by day.
+So in java 9 oracle has introduced the module.
+As packages we want only to use .we will import those module.and we dont require to take tnsn for dependency jdk will take care of it..
+
+And in module we have control which should visible to outside world while sharing code..unlike packages.
+How to do==>create new file module-info.java.....===>and u can declare what we can show to outside world.
+
+module same like extension..
+
+use requires module_name to use functionalty of other module..
+
+use exports module_name to give functionality....and they depend on vice-versa both of them require each other..
+
+
+=========================================================================================================================================================
