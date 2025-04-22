@@ -1,0 +1,523 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.7.8 Chrome/128.0.6613.36 Electron/32.0.1 Safari/537.36" version="24.7.8" pages="16">
+  <diagram name="Git Agenda" id="YpZvSmniK9V5rSwcc3CN">
+    <mxGraphModel dx="1050" dy="661" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="VHY01CvbpaXcTICyz543-1" value="&lt;pre style=&quot;border-color: var(--border-color); font-size: 22px;&quot;&gt;&lt;font style=&quot;border-color: var(--border-color); font-size: 22px;&quot;&gt;&lt;font style=&quot;border-color: var(--border-color); font-size: 22px;&quot; color=&quot;#cc0066&quot;&gt;&lt;b style=&quot;font-size: 22px;&quot;&gt;Agenda&lt;/b&gt;&lt;/font&gt;&lt;/font&gt;&lt;/pre&gt;&lt;pre style=&quot;border-color: var(--border-color); font-size: 22px;&quot;&gt;&lt;font style=&quot;border-color: var(--border-color); font-size: 22px;&quot;&gt;&lt;font style=&quot;border-color: var(--border-color); font-size: 22px;&quot; color=&quot;#cc0066&quot;&gt;Module 2&lt;/font&gt;: Version Control System&lt;/font&gt;&lt;/pre&gt;&lt;h1 style=&quot;font-size: 22px;&quot;&gt;&lt;div style=&quot;border-color: var(--border-color); font-size: 22px;&quot;&gt;&lt;pre style=&quot;border-color: var(--border-color); line-height: 200%; font-size: 22px;&quot;&gt;&lt;span style=&quot;font-weight: normal; font-size: 22px;&quot;&gt;&lt;font style=&quot;border-color: var(--border-color); font-size: 22px;&quot;&gt; 1. Introduction to Version control system&lt;br style=&quot;border-color: var(--border-color); font-size: 22px;&quot;&gt;&lt;/font&gt;&lt;font style=&quot;border-color: var(--border-color); font-size: 22px;&quot;&gt; 2. Types of Version Control system&lt;br style=&quot;border-color: var(--border-color); font-size: 22px;&quot;&gt;&lt;/font&gt;&lt;font style=&quot;border-color: var(--border-color); font-size: 22px;&quot;&gt; 3. Introduction to Git&lt;br style=&quot;border-color: var(--border-color); font-size: 22px;&quot;&gt;&lt;/font&gt;&lt;font style=&quot;border-color: var(--border-color); font-size: 22px;&quot;&gt; 4. Git Lifecycle&lt;br style=&quot;border-color: var(--border-color); font-size: 22px;&quot;&gt;&lt;/font&gt;&lt;font style=&quot;border-color: var(--border-color); font-size: 22px;&quot;&gt; 5. Git commands &amp;amp; Branches&lt;br style=&quot;border-color: var(--border-color); font-size: 22px;&quot;&gt;&lt;/font&gt;&lt;font style=&quot;border-color: var(--border-color); font-size: 22px;&quot;&gt; 6. Merging in Git&lt;br style=&quot;border-color: var(--border-color); font-size: 22px;&quot;&gt;&lt;/font&gt;&lt;font style=&quot;border-color: var(--border-color); font-size: 22px;&quot;&gt; 7. Resolving Merge Conflicts&lt;br style=&quot;border-color: var(--border-color); font-size: 22px;&quot;&gt;&lt;/font&gt;&lt;font style=&quot;border-color: var(--border-color); font-size: 22px;&quot;&gt; 8. Git Workflow (branching strategry)&lt;/font&gt;&lt;/span&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div style=&quot;border-color: var(--border-color); font-size: 22px;&quot;&gt;&lt;br style=&quot;border-color: var(--border-color); font-weight: 400; background-color: rgb(255, 255, 255); font-size: 22px;&quot;&gt;&lt;/div&gt;&lt;/h1&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;fontSize=22;" parent="1" vertex="1">
+          <mxGeometry x="159" y="50" width="613" height="538" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="4YtAKjzrqkJCi8TO_20z" name="Types of VCS">
+    <mxGraphModel dx="954" dy="577" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="oFI_bFkvAub5L_uY2wqZ-1" value="Version control system" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=23;" parent="1" vertex="1">
+          <mxGeometry x="24" y="18" width="303" height="96" as="geometry" />
+        </mxCell>
+        <mxCell id="oFI_bFkvAub5L_uY2wqZ-2" value="Centralized Version control system" style="rounded=1;whiteSpace=wrap;html=1;fontSize=18;" parent="1" vertex="1">
+          <mxGeometry x="58" y="145" width="204" height="93" as="geometry" />
+        </mxCell>
+        <mxCell id="oFI_bFkvAub5L_uY2wqZ-3" value="Distributed Version control system" style="rounded=1;whiteSpace=wrap;html=1;fontSize=18;" parent="1" vertex="1">
+          <mxGeometry x="58" y="251" width="207" height="84" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="MLBNJJhqrhndouZX00MK" name="need for vcs">
+    <mxGraphModel dx="954" dy="577" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="Z-3GROieoZMZpPvCuzKp-2" value="some project" style="rounded=1;whiteSpace=wrap;html=1;fontSize=25;" parent="1" vertex="1">
+          <mxGeometry x="177" y="44" width="187" height="68" as="geometry" />
+        </mxCell>
+        <mxCell id="Z-3GROieoZMZpPvCuzKp-6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.442;exitY=0.05;exitDx=0;exitDy=0;entryX=0.25;entryY=1;entryDx=0;entryDy=0;exitPerimeter=0;" parent="1" source="Z-3GROieoZMZpPvCuzKp-13" target="Z-3GROieoZMZpPvCuzKp-2" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="137" y="265" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Z-3GROieoZMZpPvCuzKp-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" parent="1" source="Z-3GROieoZMZpPvCuzKp-4" target="Z-3GROieoZMZpPvCuzKp-2" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Z-3GROieoZMZpPvCuzKp-4" value="Developer - Aus" style="rounded=1;whiteSpace=wrap;html=1;fontSize=18;" parent="1" vertex="1">
+          <mxGeometry x="236" y="269" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="Z-3GROieoZMZpPvCuzKp-8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.75;entryY=1;entryDx=0;entryDy=0;" parent="1" source="Z-3GROieoZMZpPvCuzKp-5" target="Z-3GROieoZMZpPvCuzKp-2" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Z-3GROieoZMZpPvCuzKp-5" value="Developer - India" style="rounded=1;whiteSpace=wrap;html=1;fontSize=18;" parent="1" vertex="1">
+          <mxGeometry x="386" y="272" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="Z-3GROieoZMZpPvCuzKp-13" value="Developer - UK" style="rounded=1;whiteSpace=wrap;html=1;fontSize=17;" parent="1" vertex="1">
+          <mxGeometry x="86" y="267" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="Z-3GROieoZMZpPvCuzKp-14" value="Software code written by previous developer (latest)" style="rounded=1;whiteSpace=wrap;html=1;fontSize=17;" parent="1" vertex="1">
+          <mxGeometry x="603" y="48" width="220" height="165" as="geometry" />
+        </mxCell>
+        <mxCell id="Z-3GROieoZMZpPvCuzKp-15" value="older versions" style="rounded=1;whiteSpace=wrap;html=1;fontSize=24;" parent="1" vertex="1">
+          <mxGeometry x="627" y="259" width="193" height="77" as="geometry" />
+        </mxCell>
+        <mxCell id="Z-3GROieoZMZpPvCuzKp-16" value="import xyz&lt;br style=&quot;font-size: 18px;&quot;&gt;function main()&lt;br style=&quot;font-size: 18px;&quot;&gt;// logic&lt;br style=&quot;font-size: 18px;&quot;&gt;do this for generic server" style="rounded=1;whiteSpace=wrap;html=1;fontSize=18;" parent="1" vertex="1">
+          <mxGeometry x="218" y="348" width="205" height="211" as="geometry" />
+        </mxCell>
+        <mxCell id="Z-3GROieoZMZpPvCuzKp-17" value="import abc&lt;br style=&quot;font-size: 18px;&quot;&gt;function main()&lt;br style=&quot;font-size: 18px;&quot;&gt;// logic&lt;br style=&quot;font-size: 18px;&quot;&gt;do this for specific server" style="rounded=1;whiteSpace=wrap;html=1;fontSize=18;" parent="1" vertex="1">
+          <mxGeometry x="454" y="352" width="205" height="211" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="c4bVf6MtFUjyOZ9cYt8G" name="Git Lifecycle">
+    <mxGraphModel dx="954" dy="577" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="mYDbPHvVgtmqPeOXG0It-4" value="&lt;pre&gt;GIT Lifecycle&lt;/pre&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=22;" parent="1" vertex="1">
+          <mxGeometry x="35" y="37" width="178" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="7ZsGhtI60ht-brpEXiWF-4" value="Working Directory" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;fontSize=17;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="48" y="149" width="165" height="356" as="geometry" />
+        </mxCell>
+        <mxCell id="7ZsGhtI60ht-brpEXiWF-5" value="Staging Area" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;fontSize=17;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="351" y="150" width="165" height="355" as="geometry" />
+        </mxCell>
+        <mxCell id="7ZsGhtI60ht-brpEXiWF-6" value="Commit" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;fontSize=17;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="626" y="150" width="165" height="352" as="geometry" />
+        </mxCell>
+        <mxCell id="7ZsGhtI60ht-brpEXiWF-17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.25;entryDx=0;entryDy=0;strokeWidth=2;endArrow=classic;endFill=1;flowAnimation=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="213" y="204" as="sourcePoint" />
+            <mxPoint x="350" y="204" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="7ZsGhtI60ht-brpEXiWF-18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.25;entryDx=0;entryDy=0;strokeWidth=2;endArrow=classic;endFill=1;flowAnimation=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="515" y="205" as="sourcePoint" />
+            <mxPoint x="626" y="205" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="1p7RzX7IOJ1AwIxPl_vJ-3" value="commit id created" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="616" y="61" width="221" height="30" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="HzSWJsMvNREoI4RyfFFD" name="tags">
+    <mxGraphModel dx="954" dy="577" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="zLAvjvVBs-cc2LiT2JCl-1" value="Git Tags:" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=23;" parent="1" vertex="1">
+          <mxGeometry x="62" y="52" width="199" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="zLAvjvVBs-cc2LiT2JCl-6" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="zLAvjvVBs-cc2LiT2JCl-2" target="zLAvjvVBs-cc2LiT2JCl-3" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="zLAvjvVBs-cc2LiT2JCl-2" value="COMMIT A" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" parent="1" vertex="1">
+          <mxGeometry x="52" y="173" width="66" height="66" as="geometry" />
+        </mxCell>
+        <mxCell id="zLAvjvVBs-cc2LiT2JCl-7" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="zLAvjvVBs-cc2LiT2JCl-3" target="zLAvjvVBs-cc2LiT2JCl-4" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="zLAvjvVBs-cc2LiT2JCl-3" value="COMMIT B" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" parent="1" vertex="1">
+          <mxGeometry x="171" y="173" width="66" height="66" as="geometry" />
+        </mxCell>
+        <mxCell id="zLAvjvVBs-cc2LiT2JCl-8" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="zLAvjvVBs-cc2LiT2JCl-4" target="zLAvjvVBs-cc2LiT2JCl-5" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="zLAvjvVBs-cc2LiT2JCl-4" value="COMMIT C" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" parent="1" vertex="1">
+          <mxGeometry x="287" y="173" width="66" height="66" as="geometry" />
+        </mxCell>
+        <mxCell id="zLAvjvVBs-cc2LiT2JCl-5" value="COMMIT D" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" parent="1" vertex="1">
+          <mxGeometry x="409" y="173" width="66" height="66" as="geometry" />
+        </mxCell>
+        <mxCell id="zLAvjvVBs-cc2LiT2JCl-9" value="Releasing Software" style="rounded=1;whiteSpace=wrap;html=1;fontSize=19;" parent="1" vertex="1">
+          <mxGeometry x="409" y="23" width="191" height="99" as="geometry" />
+        </mxCell>
+        <mxCell id="zLAvjvVBs-cc2LiT2JCl-10" value="Windows 10" style="rounded=1;whiteSpace=wrap;html=1;fontSize=18;" parent="1" vertex="1">
+          <mxGeometry x="44" y="307" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="zLAvjvVBs-cc2LiT2JCl-11" value="Windows 11" style="rounded=1;whiteSpace=wrap;html=1;fontSize=18;" parent="1" vertex="1">
+          <mxGeometry x="216" y="307" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="zLAvjvVBs-cc2LiT2JCl-12" value="Ubuntu 18.04" style="rounded=1;whiteSpace=wrap;html=1;fontSize=18;" parent="1" vertex="1">
+          <mxGeometry x="648" y="132" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="zLAvjvVBs-cc2LiT2JCl-13" value="Ubuntu 22.04" style="rounded=1;whiteSpace=wrap;html=1;fontSize=18;" parent="1" vertex="1">
+          <mxGeometry x="648" y="214" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="zLAvjvVBs-cc2LiT2JCl-14" value="Microsoft Office 2016" style="rounded=1;whiteSpace=wrap;html=1;fontSize=18;" parent="1" vertex="1">
+          <mxGeometry x="456" y="367" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="zLAvjvVBs-cc2LiT2JCl-15" value="Microsoft Office 2019" style="rounded=1;whiteSpace=wrap;html=1;fontSize=18;" parent="1" vertex="1">
+          <mxGeometry x="604" y="364" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="zLAvjvVBs-cc2LiT2JCl-16" value="Version" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=21;" parent="1" vertex="1">
+          <mxGeometry y="435" width="154" height="47" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="jbiyX5ByHtZTEfG4toa0" name="fork">
+    <mxGraphModel dx="954" dy="577" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="QbxAqEQP2c93ynZAk2ai-1" value="FORK" style="rounded=0;whiteSpace=wrap;html=1;fontSize=22;" parent="1" vertex="1">
+          <mxGeometry x="64" y="30" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="QbxAqEQP2c93ynZAk2ai-2" value="Not a git concept/feature , it is a github is providing" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;" parent="1" vertex="1">
+          <mxGeometry x="360" y="45" width="286" height="53" as="geometry" />
+        </mxCell>
+        <mxCell id="QbxAqEQP2c93ynZAk2ai-3" value="Repository owned by someone else (neither company, neither you)&lt;br&gt;repository by other account" style="rounded=1;whiteSpace=wrap;html=1;fontSize=18;" parent="1" vertex="1">
+          <mxGeometry x="56" y="221" width="160" height="252" as="geometry" />
+        </mxCell>
+        <mxCell id="QbxAqEQP2c93ynZAk2ai-4" value="Repository owned by Company&lt;br&gt;company&#39;s account" style="rounded=1;whiteSpace=wrap;html=1;fontSize=18;" parent="1" vertex="1">
+          <mxGeometry x="312" y="226" width="160" height="252" as="geometry" />
+        </mxCell>
+        <mxCell id="QbxAqEQP2c93ynZAk2ai-5" value="Fork - Create a copy of the original repository under your account" style="rounded=1;whiteSpace=wrap;html=1;fontSize=18;" parent="1" vertex="1">
+          <mxGeometry x="560" y="230" width="160" height="252" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="RhJM7uLG1b88a4g9NJDU" name="fork">
+    <mxGraphModel dx="954" dy="577" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="ge_WFQR1Jo3dk_TUFEQP-4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="ge_WFQR1Jo3dk_TUFEQP-1" target="ge_WFQR1Jo3dk_TUFEQP-2" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ge_WFQR1Jo3dk_TUFEQP-1" value="Repository owned by Company&lt;br&gt;company&#39;s account" style="rounded=1;whiteSpace=wrap;html=1;fontSize=18;" parent="1" vertex="1">
+          <mxGeometry x="11" y="9" width="162" height="252" as="geometry" />
+        </mxCell>
+        <mxCell id="ge_WFQR1Jo3dk_TUFEQP-2" value="Fork - Create a copy of the original repository under your account&lt;br&gt;&lt;br&gt;any changes you want to do, do it on repo but under your user account" style="rounded=1;whiteSpace=wrap;html=1;fontSize=18;" parent="1" vertex="1">
+          <mxGeometry x="260" y="9" width="160" height="252" as="geometry" />
+        </mxCell>
+        <mxCell id="ge_WFQR1Jo3dk_TUFEQP-3" value="&amp;nbsp;How to push changes to company&#39;s repository (Two Ways) - Normal Pull Request, FORK&amp;nbsp;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=19;" parent="1" vertex="1">
+          <mxGeometry x="171" y="379" width="364" height="101" as="geometry" />
+        </mxCell>
+        <mxCell id="ge_WFQR1Jo3dk_TUFEQP-5" value="First push changes to repo under your name,&lt;br style=&quot;font-size: 18px;&quot;&gt;&lt;br style=&quot;font-size: 18px;&quot;&gt;then create PR -&amp;gt; from your account repo to company owned repo" style="rounded=1;whiteSpace=wrap;html=1;fontSize=18;" parent="1" vertex="1">
+          <mxGeometry x="557" y="47" width="188" height="161" as="geometry" />
+        </mxCell>
+        <mxCell id="EHpD6CYTYxR1IGDr7n8S-1" value="For Very sensitive/critical Projects&lt;br&gt;- company will not allow you to push your changes or features to company repository" style="rounded=1;whiteSpace=wrap;html=1;fontSize=23;" parent="1" vertex="1">
+          <mxGeometry x="541" y="291" width="195" height="305" as="geometry" />
+        </mxCell>
+        <mxCell id="EHpD6CYTYxR1IGDr7n8S-2" value="&lt;font style=&quot;font-size: 19px;&quot;&gt;no Human error&lt;br&gt;they want you to&amp;nbsp;any changes you want to do, do it on repo but under your user account&lt;br&gt;&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="11" y="291" width="133" height="292" as="geometry" />
+        </mxCell>
+        <mxCell id="EHpD6CYTYxR1IGDr7n8S-3" value="any kind access to actual repo not given" style="rounded=1;whiteSpace=wrap;html=1;fontSize=17;" parent="1" vertex="1">
+          <mxGeometry x="208" y="267" width="158" height="86" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="4sMAn9Rnak04yGC154Ku" name="PR">
+    <mxGraphModel dx="954" dy="577" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="yb_08odHftizWx5zXuvq-1" value="Pull Request - (Done on Github, remote repo)&lt;br style=&quot;font-size: 19px;&quot;&gt;REVIEW&lt;br style=&quot;font-size: 19px;&quot;&gt;&lt;br style=&quot;font-size: 19px;&quot;&gt;first step: you were working on some branch you created (test)&lt;br style=&quot;font-size: 19px;&quot;&gt;second step: you push the changes&amp;nbsp;&lt;br style=&quot;font-size: 19px;&quot;&gt;Third step: Create Pull Request (from your branch test -&amp;gt; development)&lt;br style=&quot;font-size: 19px;&quot;&gt;Fourth Step: Review by team&lt;br style=&quot;font-size: 19px;&quot;&gt;Fifth Step: Approve by team/ Merge&amp;nbsp;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=19;" parent="1" vertex="1">
+          <mxGeometry x="46" y="63" width="498" height="288" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="WHfynITZNqCh-F5gRPh6" name="merge">
+    <mxGraphModel dx="954" dy="577" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="R_YuxAzsIsUFxtu1HSWi-1" value="&lt;br style=&quot;font-size: 20px;&quot;&gt;First technique&lt;br style=&quot;font-size: 20px;&quot;&gt;git merge" style="rounded=1;whiteSpace=wrap;html=1;fontSize=20;" parent="1" vertex="1">
+          <mxGeometry x="35" y="28" width="219" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="R_YuxAzsIsUFxtu1HSWi-2" value="branch A" style="rounded=1;whiteSpace=wrap;html=1;fontSize=18;" parent="1" vertex="1">
+          <mxGeometry x="424" y="48" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="R_YuxAzsIsUFxtu1HSWi-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" parent="1" source="R_YuxAzsIsUFxtu1HSWi-3" target="R_YuxAzsIsUFxtu1HSWi-2" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="R_YuxAzsIsUFxtu1HSWi-3" value="branch B" style="rounded=1;whiteSpace=wrap;html=1;fontSize=18;" parent="1" vertex="1">
+          <mxGeometry x="424" y="163" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="R_YuxAzsIsUFxtu1HSWi-9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.25;exitDx=0;exitDy=0;" parent="1" source="R_YuxAzsIsUFxtu1HSWi-5" target="R_YuxAzsIsUFxtu1HSWi-6" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="R_YuxAzsIsUFxtu1HSWi-11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=0;entryY=0.25;entryDx=0;entryDy=0;" parent="1" source="R_YuxAzsIsUFxtu1HSWi-5" target="R_YuxAzsIsUFxtu1HSWi-7" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="R_YuxAzsIsUFxtu1HSWi-5" value="Copies the changes from Branch B to Branch A&lt;br style=&quot;font-size: 17px;&quot;&gt;1. copy + paste&lt;br style=&quot;font-size: 17px;&quot;&gt;2. New commit id will get created." style="rounded=1;whiteSpace=wrap;html=1;fontSize=17;" parent="1" vertex="1">
+          <mxGeometry x="13" y="275" width="366" height="151" as="geometry" />
+        </mxCell>
+        <mxCell id="R_YuxAzsIsUFxtu1HSWi-6" value="Fast-Forward, new merge commit id will not get created" style="rounded=1;whiteSpace=wrap;html=1;fontSize=18;" parent="1" vertex="1">
+          <mxGeometry x="585" y="227" width="208" height="104" as="geometry" />
+        </mxCell>
+        <mxCell id="R_YuxAzsIsUFxtu1HSWi-7" value="New commit id will get created" style="rounded=1;whiteSpace=wrap;html=1;fontSize=18;" parent="1" vertex="1">
+          <mxGeometry x="580" y="386" width="211" height="117" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="UMPqT0sFmRJ-fVLFudUg" name=" git merge categories">
+    <mxGraphModel dx="954" dy="577" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="pkwisU0XTqOICtZxi2o_-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.25;exitDx=0;exitDy=0;" parent="1" source="pkwisU0XTqOICtZxi2o_-1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="530" y="179" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pkwisU0XTqOICtZxi2o_-8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.75;exitDx=0;exitDy=0;" parent="1" source="pkwisU0XTqOICtZxi2o_-1" target="pkwisU0XTqOICtZxi2o_-6" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pkwisU0XTqOICtZxi2o_-1" value="Merge - (COPY &amp;amp; PASTE)&lt;br style=&quot;font-size: 20px;&quot;&gt;copy from one branch and paste to another branch" style="rounded=1;whiteSpace=wrap;html=1;fontSize=20;" parent="1" vertex="1">
+          <mxGeometry x="51" y="123" width="241" height="223" as="geometry" />
+        </mxCell>
+        <mxCell id="pkwisU0XTqOICtZxi2o_-2" value="&lt;br style=&quot;font-size: 19px;&quot;&gt;Git Merge" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=19;" parent="1" vertex="1">
+          <mxGeometry x="20" y="18" width="132" height="49" as="geometry" />
+        </mxCell>
+        <mxCell id="pkwisU0XTqOICtZxi2o_-3" value="git merge (frequently used)" style="rounded=1;whiteSpace=wrap;html=1;fontSize=24;" parent="1" vertex="1">
+          <mxGeometry x="533" y="141" width="210" height="79" as="geometry" />
+        </mxCell>
+        <mxCell id="pkwisU0XTqOICtZxi2o_-6" value="git rebase (rare)" style="rounded=1;whiteSpace=wrap;html=1;fontSize=24;" parent="1" vertex="1">
+          <mxGeometry x="533" y="250" width="210" height="79" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="rrTDdyOQCm_XGoxc02Rv" name="branches">
+    <mxGraphModel dx="954" dy="577" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="Xp9hvV_bBMrB_M2xgvWF-6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="Xp9hvV_bBMrB_M2xgvWF-1" target="Xp9hvV_bBMrB_M2xgvWF-7" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="392" y="87" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Xp9hvV_bBMrB_M2xgvWF-1" value="remote repo" style="rounded=1;whiteSpace=wrap;html=1;fontSize=22;" parent="1" vertex="1">
+          <mxGeometry x="86" y="50" width="155" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="Xp9hvV_bBMrB_M2xgvWF-2" value="E-comm Website" style="rounded=1;whiteSpace=wrap;html=1;fontSize=16;" parent="1" vertex="1">
+          <mxGeometry x="538" y="57" width="171" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="Xp9hvV_bBMrB_M2xgvWF-3" value="client" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;" parent="1" vertex="1">
+          <mxGeometry x="587" y="128" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="Xp9hvV_bBMrB_M2xgvWF-4" value="&lt;font style=&quot;font-size: 17px;&quot;&gt;Requirement:&lt;br&gt;1. create a simple website about my business&lt;br&gt;2. List all the products&lt;br&gt;3. buy the product (debit card, CASH)&amp;nbsp;&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="724" y="18" width="223" height="211" as="geometry" />
+        </mxCell>
+        <mxCell id="Xp9hvV_bBMrB_M2xgvWF-5" value="location repo" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="119" y="138" width="137" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="Xp9hvV_bBMrB_M2xgvWF-7" value="Production Servers" style="rounded=1;whiteSpace=wrap;html=1;fontSize=17;" parent="1" vertex="1">
+          <mxGeometry x="340" y="57" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="Xp9hvV_bBMrB_M2xgvWF-10" value="&lt;font style=&quot;font-size: 20px;&quot;&gt;Branch&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="86" y="218" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="Xp9hvV_bBMrB_M2xgvWF-11" value="isolated folder" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=22;" parent="1" vertex="1">
+          <mxGeometry x="244" y="222.5" width="213" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="Xp9hvV_bBMrB_M2xgvWF-15" value="&lt;font style=&quot;font-size: 20px;&quot;&gt;Main&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="95" y="310" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="Xp9hvV_bBMrB_M2xgvWF-16" value="development (copy main branch files)" style="rounded=1;whiteSpace=wrap;html=1;fontSize=17;" parent="1" vertex="1">
+          <mxGeometry x="109" y="395" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="Xp9hvV_bBMrB_M2xgvWF-17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="1" target="Xp9hvV_bBMrB_M2xgvWF-18" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="364" y="342" as="targetPoint" />
+            <mxPoint x="213" y="342" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Xp9hvV_bBMrB_M2xgvWF-18" value="Production Servers" style="rounded=1;whiteSpace=wrap;html=1;fontSize=17;" parent="1" vertex="1">
+          <mxGeometry x="312" y="312" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="Xp9hvV_bBMrB_M2xgvWF-19" value="&lt;font style=&quot;font-size: 17px;&quot;&gt;Requirement:&lt;br&gt;buy the product (user should be able to make payment by credit card, UPI, payment mechanism)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="477" y="198" width="223" height="211" as="geometry" />
+        </mxCell>
+        <mxCell id="Xp9hvV_bBMrB_M2xgvWF-22" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" parent="1" source="Xp9hvV_bBMrB_M2xgvWF-20" target="Xp9hvV_bBMrB_M2xgvWF-16" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Xp9hvV_bBMrB_M2xgvWF-20" value="Developer1&amp;nbsp;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="111" y="514" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="Xp9hvV_bBMrB_M2xgvWF-23" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="Xp9hvV_bBMrB_M2xgvWF-21" target="Xp9hvV_bBMrB_M2xgvWF-16" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Xp9hvV_bBMrB_M2xgvWF-21" value="Developer2" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="321" y="517" width="120" height="59" as="geometry" />
+        </mxCell>
+        <mxCell id="9c4wjEOqw9VQd3x0ZsKq-1" value="&lt;b style=&quot;font-size: 14px;&quot;&gt;Testing Servers&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=14;" parent="1" vertex="1">
+          <mxGeometry x="557" y="425" width="120" height="60" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="NOQB6pyUTBI9mvz1hsFO" name="stash">
+    <mxGraphModel dx="954" dy="577" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="K47Zju3PDmoBtF0wbEia-1" value="git stash? (backup)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=22;" parent="1" vertex="1">
+          <mxGeometry x="62" y="40" width="238" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="K47Zju3PDmoBtF0wbEia-3" value="development branch" style="rounded=1;whiteSpace=wrap;html=1;fontSize=16;" parent="1" vertex="1">
+          <mxGeometry x="99" y="238" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="K47Zju3PDmoBtF0wbEia-4" value="main branch" style="rounded=1;whiteSpace=wrap;html=1;fontSize=19;" parent="1" vertex="1">
+          <mxGeometry x="101" y="124" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="K47Zju3PDmoBtF0wbEia-5" value="Developer 1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" parent="1" vertex="1">
+          <mxGeometry x="137" y="367" width="30" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="K47Zju3PDmoBtF0wbEia-9" value="" style="endArrow=classic;html=1;rounded=0;" parent="1" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="154" y="363" as="sourcePoint" />
+            <mxPoint x="154" y="299" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="K47Zju3PDmoBtF0wbEia-10" value="1. Working on my tasks&lt;br style=&quot;font-size: 22px;&quot;&gt;2. complete your task later, we have more important priority task&lt;br style=&quot;font-size: 22px;&quot;&gt;3. let complete priority task, then you can come back to your task" style="rounded=1;whiteSpace=wrap;html=1;fontSize=22;" parent="1" vertex="1">
+          <mxGeometry x="392" y="67" width="222" height="387" as="geometry" />
+        </mxCell>
+        <mxCell id="K47Zju3PDmoBtF0wbEia-11" value="1. You have Not committed your worked&lt;br style=&quot;font-size: 20px;&quot;&gt;2. you will do git stash (take backup) your work&lt;br style=&quot;font-size: 20px;&quot;&gt;3. switch other branch (finish high priority task)&lt;br style=&quot;font-size: 20px;&quot;&gt;4. come back to your branch - restore your work (files)" style="rounded=1;whiteSpace=wrap;html=1;fontSize=20;" parent="1" vertex="1">
+          <mxGeometry x="674" y="74" width="214" height="384" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="cRu5iLP9fi7BvvSv3KqR" name="stash">
+    <mxGraphModel dx="954" dy="1404" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="m21zkUCGgBf_NLkvx6OU-1" value="Working Directory" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=23;" parent="1" vertex="1">
+          <mxGeometry x="124" y="193" width="192" height="312" as="geometry" />
+        </mxCell>
+        <mxCell id="m21zkUCGgBf_NLkvx6OU-2" value="Staging Area" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=23;" parent="1" vertex="1">
+          <mxGeometry x="381" y="193" width="192" height="312" as="geometry" />
+        </mxCell>
+        <mxCell id="m21zkUCGgBf_NLkvx6OU-3" value="Commit" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=23;" parent="1" vertex="1">
+          <mxGeometry x="655" y="193" width="192" height="312" as="geometry" />
+        </mxCell>
+        <mxCell id="m21zkUCGgBf_NLkvx6OU-6" value="git stash" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=23;" parent="1" vertex="1">
+          <mxGeometry x="708" y="-10" width="290" height="62" as="geometry" />
+        </mxCell>
+        <mxCell id="m21zkUCGgBf_NLkvx6OU-7" value="git stash pop" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=24;" parent="1" vertex="1">
+          <mxGeometry x="77" y="48" width="292" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="m21zkUCGgBf_NLkvx6OU-8" value="&lt;font style=&quot;font-size: 19px;&quot;&gt;example.py&lt;/font&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="443" y="256" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="m21zkUCGgBf_NLkvx6OU-9" value="git stash -u" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=26;" parent="1" vertex="1">
+          <mxGeometry x="752" y="30" width="224" height="62" as="geometry" />
+        </mxCell>
+        <mxCell id="m21zkUCGgBf_NLkvx6OU-10" value="file_working_directory" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=19;" parent="1" vertex="1">
+          <mxGeometry x="120.5" y="248" width="199" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="m21zkUCGgBf_NLkvx6OU-11" value="git stash apply" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=24;" parent="1" vertex="1">
+          <mxGeometry x="77" y="114" width="292" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="m21zkUCGgBf_NLkvx6OU-12" value="Recover the files from backup and delete the backup in stash" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;" parent="1" vertex="1">
+          <mxGeometry x="381" y="48" width="273" height="58" as="geometry" />
+        </mxCell>
+        <mxCell id="m21zkUCGgBf_NLkvx6OU-13" value="Recover the files from backup&amp;nbsp;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;" parent="1" vertex="1">
+          <mxGeometry x="379" y="104" width="273" height="58" as="geometry" />
+        </mxCell>
+        <mxCell id="m21zkUCGgBf_NLkvx6OU-15" value="backup location" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="814" y="103" width="120" height="60" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="qMjhaOckLpxv-oZKhWdC" name="git clone">
+    <mxGraphModel dx="954" dy="577" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="mKYGtNY2Jtr43Klr3LXE-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="6m0XKo_1RAq0CcN5eYUH-1" target="mKYGtNY2Jtr43Klr3LXE-1" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="mKYGtNY2Jtr43Klr3LXE-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="6m0XKo_1RAq0CcN5eYUH-1" target="mKYGtNY2Jtr43Klr3LXE-4" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="6m0XKo_1RAq0CcN5eYUH-1" value="git clone" style="rounded=1;whiteSpace=wrap;html=1;fontSize=25;" parent="1" vertex="1">
+          <mxGeometry x="108" y="211" width="193" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="mKYGtNY2Jtr43Klr3LXE-1" value="&lt;font style=&quot;font-size: 24px;&quot;&gt;mirror copy (join a project, want to have the repo from remote to local)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="410" y="78" width="373" height="96" as="geometry" />
+        </mxCell>
+        <mxCell id="mKYGtNY2Jtr43Klr3LXE-4" value="if you delete the repository, then you download the repo again from remote to local" style="rounded=1;whiteSpace=wrap;html=1;fontSize=21;" parent="1" vertex="1">
+          <mxGeometry x="405" y="256" width="402" height="99" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="iewytpki6bXeAjTku7xL" name="pull vs clone">
+    <mxGraphModel dx="954" dy="577" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="0-pimiACMQpLrmRq244E-1" value="git pull vs git clone" style="rounded=1;whiteSpace=wrap;html=1;fontSize=27;" parent="1" vertex="1">
+          <mxGeometry x="76" y="30" width="296" height="73" as="geometry" />
+        </mxCell>
+        <mxCell id="0-pimiACMQpLrmRq244E-2" value="git clone - you only do it once&lt;br&gt;&lt;br&gt;it will download the whole repo (mirror copy)" style="rounded=1;whiteSpace=wrap;html=1;fontSize=25;" parent="1" vertex="1">
+          <mxGeometry x="72.5" y="149" width="336.5" height="224" as="geometry" />
+        </mxCell>
+        <mxCell id="0-pimiACMQpLrmRq244E-3" value="git pull - frequently you will use,&amp;nbsp;&lt;br&gt;but will download latest changes all the time." style="rounded=1;whiteSpace=wrap;html=1;fontSize=25;" parent="1" vertex="1">
+          <mxGeometry x="472" y="152" width="408" height="210" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="iqbHrH6KS8AWofH8QAa9" name="gitflow workflow">
+    <mxGraphModel dx="1354" dy="977" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="8173s8afwSuUCn_WHqip-1" value="Git Flow branching strategy" style="rounded=1;whiteSpace=wrap;html=1;fontSize=22;" parent="1" vertex="1">
+          <mxGeometry x="-259" y="-95" width="258" height="71" as="geometry" />
+        </mxCell>
+        <mxCell id="UISAkuWo1imy3CG5nA0A-1" value="Main (PROD) - software&lt;br&gt;only file creating a bug" style="rounded=1;whiteSpace=wrap;html=1;fontSize=27;" parent="1" vertex="1">
+          <mxGeometry x="-257" y="52" width="325" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="UISAkuWo1imy3CG5nA0A-11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="UISAkuWo1imy3CG5nA0A-2" target="UISAkuWo1imy3CG5nA0A-1" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="UISAkuWo1imy3CG5nA0A-2" value="Release&amp;nbsp;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=27;" parent="1" vertex="1">
+          <mxGeometry x="-259" y="155" width="263" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="mWHYiJSA1lsFJrQ28Cyo-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="UISAkuWo1imy3CG5nA0A-3" target="UISAkuWo1imy3CG5nA0A-1" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="mWHYiJSA1lsFJrQ28Cyo-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.25;exitY=1;exitDx=0;exitDy=0;" parent="1" source="UISAkuWo1imy3CG5nA0A-3" target="UISAkuWo1imy3CG5nA0A-4" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="UISAkuWo1imy3CG5nA0A-3" value="Hotfix branch (security patch) critical" style="rounded=1;whiteSpace=wrap;html=1;fontSize=26;" parent="1" vertex="1">
+          <mxGeometry x="42" y="-46" width="263" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="UISAkuWo1imy3CG5nA0A-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="UISAkuWo1imy3CG5nA0A-4" target="UISAkuWo1imy3CG5nA0A-2" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="UISAkuWo1imy3CG5nA0A-4" value="development&amp;nbsp;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=27;" parent="1" vertex="1">
+          <mxGeometry x="-241" y="445" width="263" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="UISAkuWo1imy3CG5nA0A-7" value="&lt;b style=&quot;font-size: 19px;&quot;&gt;Step 1:&amp;nbsp;&lt;/b&gt;&amp;nbsp;Development branch (which existing code from main)&lt;br style=&quot;font-size: 19px;&quot;&gt;&lt;br style=&quot;font-size: 19px;&quot;&gt;&lt;b style=&quot;font-size: 19px;&quot;&gt;Step 2&lt;/b&gt;: When you want to add/ work on new feature, create a feature from development branch&lt;br style=&quot;font-size: 19px;&quot;&gt;&lt;br style=&quot;font-size: 19px;&quot;&gt;&lt;b style=&quot;font-size: 19px;&quot;&gt;Step 3&lt;/b&gt;: once a specific feature is created then PR (merge) into development&lt;br style=&quot;font-size: 19px;&quot;&gt;&lt;b style=&quot;font-size: 19px;&quot;&gt;Step 4&lt;/b&gt;: When you have enough features (commits) then you will raise PR from development branch to Release branch&lt;br style=&quot;font-size: 19px;&quot;&gt;&lt;br style=&quot;font-size: 19px;&quot;&gt;&lt;b style=&quot;font-size: 19px;&quot;&gt;Step 5:&lt;/b&gt; In release, you all README.MD, license, documents, releases (tags)&lt;br style=&quot;font-size: 19px;&quot;&gt;&lt;br style=&quot;font-size: 19px;&quot;&gt;&lt;b style=&quot;font-size: 19px;&quot;&gt;Step 6&lt;/b&gt;: Merge into Main branch" style="rounded=1;whiteSpace=wrap;html=1;fontSize=19;" parent="1" vertex="1">
+          <mxGeometry x="154" y="63" width="449" height="447" as="geometry" />
+        </mxCell>
+        <mxCell id="UISAkuWo1imy3CG5nA0A-8" value="2 - 4 weeks&amp;nbsp;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=23;" parent="1" vertex="1">
+          <mxGeometry x="421" y="-41" width="253" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="mWHYiJSA1lsFJrQ28Cyo-3" value="features" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="-160" y="557" width="120" height="60" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
